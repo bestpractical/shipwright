@@ -1,0 +1,87 @@
+Shipwright is a tool to help you bundle your app and its dependences.
+Especially it's tuned for perl apps so you can include CPAN modules 
+dependences more easily.
+
+The mechanize is simple, you put all the sources of your app and its
+dependences to the repository( with svk or svn as backend ) with proper
+dependence hints( whipwright will guess from the Makefile.PL or Build.PL if
+not provided ), then you can export them as a whole, build and install them,
+that's all. 
+
+Follow the tutorial to feel how it's going :)
+
+Below is some details you might need to know.
+
+After you initialize a project, the files in the backend are:
+
+################################################################
+
+bin/
+ shipwright-builder   # used for build, install or just test
+
+ shipwright-installed-utility
+# will be copied to the install's bin dir, you can use it to fix 
+# the outdated shebang line in case you relocate the dists later
+
+ shipwright-utility
+# builder's own utlity, you can use it to update build order
+
+dists/
+# all the sources of your dists live here
+
+etc/
+ shipwright-script-wrapper
+# wrapper for installed files, mainly for optimizing env
+
+scripts/
+# all the build script and dependence hints live here
+
+shipwright/
+ order.yml # the actual build order
+t/
+ test # will run this if with --only-test when build
+
+################################################################
+
+
+After you import, e.g. Acme::Hello, both the dists and scripts dirs
+ will have `Acme-Hello' and `Locale-Maketext-Lexicon' subdirs.
+
+under scripts/Acme-Hello there're two files: 'build' and 'require.yml'
+
+1. build:
+
+################################################################
+
+configure: %%PERL%% Build.PL --install_base=%%INSTALL_BASE%%
+make: ./Build
+test: ./Build test
+install: ./Build install
+
+################################################################
+
+Each line is of `type: cmd' format, and the cmd is executed line by
+line(which's also true for t/test).
+
+we now support two template in cmd, %%PERL%% and %%INSTALL_BASE%%, so you can
+set it till you build.
+
+The `test' type is paticular:
+- if we build with --skip-test, the corresponding cmd won't be executed. 
+- if we build with --force, even the test cmd failed, we still go on building.
+
+2. require.yml
+
+################################################################
+build_requires: {}
+
+conflicts: {}
+
+recommends: 
+  Locale-Maketext-Lexicon: 
+    version: 0.15
+requires: {}
+################################################################
+
+This's the hint by which we can get right build order 
+

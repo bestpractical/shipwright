@@ -1,0 +1,9 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+use Shipwright;
+use Shipwright::Script;
+
+local $SIG{INT} = sub { warn "Stopped\n"; exit; };
+Shipwright::Script->dispatch();

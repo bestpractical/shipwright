@@ -1,0 +1,41 @@
+Let's run the tutorial, if it works, it works ;)
+
+Ok, we'll build a simple project, e.g we want to build Acme::Hello( we love
+examples with name hello ;) 
+The repo is svk://__shipwright/hello. 
+Here's the instructions:
+
+1. init 
+
+$ shipwright create -r svk://__shipwright/hello
+
+2. import
+
+$ shipwright import -r svk://__shipwright/hello Acme::Hello
+
+Then shipwright will try to download, and import Acme::Hello and all its deps.
+If you want to skip some deps, e.g. Locale::Maketext and
+Locale::Maketext::Lexicon, just add `--skip Locale::Maketext and Locale::Maketext::Lexicon' arg
+
+run `shipwright help import' to get more options
+
+3. build
+
+$ shipwright build -r svk://__shipwright/hello
+
+Test is kind of time consuming? you can add `--skip-test' to skip test.
+
+run `shipwright help build' to get more options
+
+the log of the above 3 commands can be found in tutorial.log
+4. update some dists
+
+if you just want to update a dist( just the dist source itself, don't want to
+update build or require.yml ), use the `update' cmd.
+techenically, it will delete the dir in dists and import again.
+
+if not, you can import it again, which will overwrite the old one. 
+techenically, it will delete the corresponding dir
+in dists/ and scripts/, then add new one. 
+If you want to overwrite dep dists too, please use --overwrite 
+

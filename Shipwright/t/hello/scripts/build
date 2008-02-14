@@ -1,0 +1,4 @@
+configure: /usr/bin/perl Build.PL --install_base=%%INSTALL_BASE%%
+make: ./Build
+test: ./Build test
+install: ./Build install
