@@ -50,11 +50,6 @@ __END__
 Shipwright - Best Practical Builder
 
 
-=head1 VERSION
-
-This document describes Shipwright version 0.0.2
-
-
 =head1 SYNOPSIS
 
     use Shipwright;
