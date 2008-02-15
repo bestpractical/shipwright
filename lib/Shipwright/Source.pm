@@ -11,7 +11,6 @@ Hash::Merge::set_behavior('RIGHT_PRECEDENT');
 
 our %DEFAULT = (
     follow            => 1,
-    mini_perl_version => 5.008.008,
 );
 
 $DEFAULT{directory} = tempdir( CLEANUP => 0 );
