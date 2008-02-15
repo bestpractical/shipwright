@@ -38,7 +38,7 @@ sub run {
 
     die "need repository arg" unless $self->repository;
 
-    $self->skip( [ split /\s*,\s*/, $self->skip || '' ] );
+    $self->skip( { map { $_ => 1 } split /\s*,\s*/, $self->skip || '' } );
 
     my $shipwright = Shipwright->new(
         repository => $self->repository,

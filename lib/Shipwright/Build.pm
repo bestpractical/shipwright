@@ -98,7 +98,7 @@ sub run {
         );
 
         for my $dist ( @{ $self->order } ) {
-            unless ( grep { $dist eq $_ } @{ $self->skip || [] } ) {
+            unless ( $self->skip && $self->skip->{$dist} ) {
                 $self->_install($dist);
             }
             chdir $self->build_base;
@@ -202,7 +202,7 @@ sub _wrapper {
     # then link to it, else link to the normal one
         if (   $type
             && grep( { $_ eq $type } @{ $self->order } )
-            && !( grep { $_ eq $type } @{ $self->skip || [] } )
+            && !( $self->skip && $self->skip->{$type} )
             && -e File::Spec->catfile( '..', 'etc', "shipwright-$type-wrapper" )
           )
         {
