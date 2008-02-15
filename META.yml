@@ -13,9 +13,8 @@ meta-spec:
 name: Shipwright
 no_index: 
   directory: 
-    - examples
-    - docs
     - t
+    - docs
     - inc
     - t
 requires: 
@@ -39,4 +38,4 @@ requires:
   YAML::Syck: 0.71
   version: 0
 tests: t/*.t t/*/*.t
-version: 1.0
+version: 1.01
