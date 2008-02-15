@@ -32,6 +32,7 @@ else {
 
 
 no_index( directory => 't' );
+no_index( directory => 'docs' );
 
 install_script('bin/shipwright');
 auto_install;
