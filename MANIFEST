@@ -1,7 +1,5 @@
 bin/shipwright
 Changes
-docs/intro
-docs/tutorial
 docs/tutorial.log
 inc/Module/AutoInstall.pm
 inc/Module/Install.pm
@@ -37,6 +35,7 @@ lib/Shipwright/Source/FTP.pm
 lib/Shipwright/Source/HTTP.pm
 lib/Shipwright/Source/SVK.pm
 lib/Shipwright/Source/SVN.pm
+lib/Shipwright/Tutorial.pod
 lib/Shipwright/Util.pm
 Makefile.PL
 MANIFEST			This list of files

@@ -6,3 +6,10 @@ Revision history for Shipwright
        no config any more
 1.0    Fri Feb 15 03:38:17 CST 2008
        the first public release
+
+1.01 Fri Feb 15 14:30:34 EST 2008
+
+* Fixed search.cpan.org indexing of documentation. 
+  Added more doc
+  Fixed a few cpantesters-reported issues
+
