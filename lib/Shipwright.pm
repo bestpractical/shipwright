@@ -56,9 +56,55 @@ Shipwright - Best Practical Builder
 
 =head1 DESCRIPTION
 
+Shipwright's a tool to help you bundle dists.
 
-=head1 INTERFACE
+We don't want to repeat ourself, so when we write a dist, we'll try to use
+as many already created and great modules( sure, I bet most of them can be
+found on CPAN, though not all ) as we can.
 
+When we want to install it, we have to install all of its dependences to let
+it happy. Luckily, we have CPAN:: and CPANPLUS:: to help us install nearly
+all of them without much pain, then maybe we need to fix the left non-cpan 
+deps manually( usually, we'd fix the non-cpan deps first ;)
+
+This surely works, but there're some drawbacks, especially for a large dist
+which uses many cpan modules and even requires other stuff.  The install
+instructions maybe too many to not be very friendly to end users, and it's not
+easy to do version control with all the dependent dists since most of them are
+from somewhere else we can't control.  If we need other non-perl dists( e.g.
+we need subversion and swig for SVK ), then things'll be worse.
+
+So we wrote Shipwright, a tool to help you bundle a dist with all of 
+dependences, no matter it's a CPAN module or a dist from other place.
+And it'll be very easy to install the bundle, usually with just one command:
+
+$ ./bin/shipwright-builder
+
+The thought of shipwright is simple:
+
+   raw material                   shipwright factory            
+--------------------           ------------------------       
+|  all the seperate|  import   |  internal shipwright |  build
+|  dist sources    |  =====>   |  repository          |  ====> 
+-------------------|            -----------------------
+
+    final product
+------------------------
+|  installed to system |
+------------------------
+
+So there're mainly two useful commands in shipwright: import and build, which
+can be invoked like this:
+
+$ shipwright import ...
+
+$ shipwright build ...
+
+If you get a shipwright build repository, but don't have shipwright installed
+on your system, there's no problem to install at all: the repository has
+bin/shipwright-builder script.  ( in fact, we encourage you building with
+bin/shipwright-builder, because you can hack the script freely without worrying
+about global changes )
 
 
 =head1 DEPENDENCIES
