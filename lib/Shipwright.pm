@@ -237,6 +237,10 @@ Normally, there're bin, bin-wrapper, etc, tools and lib directories.
 One thing need to note is files below bin are for you to run, which are 
 wrappers to the files bellow bin-wrapper with same names.
 
+=head1 SEE ALSO
+
+L<Shipwright::Tutorial>
+
 =head1 DEPENDENCIES
 
 None.
