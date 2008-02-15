@@ -19,6 +19,33 @@ use Shipwright::Util;
 =head2 new
 
 initialize all Shipwright's components if possible.
+args is a hash, supported keys: 
+
+general part:
+
+    repository: specify backend's path. e.g. svk:/t/test
+    log_level: specify log level. default is INFO
+    log_file: specify log file. default is append to screen.
+
+source part:
+
+    source: source need to import
+    name: source's name
+    follow: follow dep chain or not. default is true
+    min_perl_version: minimal required perl version. 
+             default is the same as the perl which's running shipwright
+    skip: hashref of which the keys are the skipped modules when import
+          default is undefined
+
+build part:
+
+    skip: hashref of which the keys are the skipped dists when install
+          default is undefined
+    skip_test: skip test or not. default is false
+    install_base: install base path. default is a temp directory
+    force: force install even if tests fail. default is false
+    only_test: not install, just test. (used for already installed dists)
+                default is false
 
 =cut
 
