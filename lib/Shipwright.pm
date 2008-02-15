@@ -18,6 +18,8 @@ use Shipwright::Util;
 
 =head2 new
 
+initialize all Shipwright's components if possible.
+
 =cut
 
 sub new {
@@ -56,6 +58,8 @@ Shipwright - Best Practical Builder
 
 =head1 DESCRIPTION
 
+=head2 Summary
+
 Shipwright's a tool to help you bundle dists.
 
 We don't want to repeat ourself, so when we write a dist, we'll try to use
@@ -65,20 +69,25 @@ found on CPAN, though not all ) as we can.
 When we want to install it, we have to install all of its dependences to let
 it happy. Luckily, we have CPAN:: and CPANPLUS:: to help us install nearly
 all of them without much pain, then maybe we need to fix the left non-cpan 
-deps manually( usually, we'd fix the non-cpan deps first ;)
+deps manually( usually, we'd fix the non-cpan deps first because some cpan
+modules depend on them ;)
 
 This surely works, but there're some drawbacks, especially for a large dist
-which uses many cpan modules and even requires other stuff.  The install
-instructions maybe too many to not be very friendly to end users, and it's not
-easy to do version control with all the dependent dists since most of them are
-from somewhere else we can't control.  If we need other non-perl dists( e.g.
-we need subversion and swig for SVK ), then things'll be worse.
+which uses many cpan modules and even requires other stuff.  The install cmds
+sometimes are too many to not be very friendly to end users, and it's not easy
+to do version control with all the dependent dists since most of them are from
+somewhere else we can't control.  If we need other non-perl dists( e.g.  we
+need subversion and swig for SVK ), things'll be worse.
 
 So we wrote Shipwright, a tool to help you bundle a dist with all of 
 dependences, no matter it's a CPAN module or a dist from other place.
 And it'll be very easy to install the bundle, usually with just one command:
 
 $ ./bin/shipwright-builder
+
+Follow the tutorial to feel how it's going :)
+
+=head2 Design
 
 The thought of shipwright is simple:
 
@@ -88,7 +97,7 @@ The thought of shipwright is simple:
 |  dist sources    |  =====>   |  repository          |  ====> 
 -------------------|            -----------------------
 
-    final product
+ vessels(final product) 
 ------------------------
 |  installed to system |
 ------------------------
@@ -102,13 +111,106 @@ $ shipwright build ...
 
 If you get a shipwright build repository, but don't have shipwright installed
 on your system, there's no problem to install at all: the repository has
-bin/shipwright-builder script.  ( in fact, we encourage you building with
+bin/shipwright-builder script.  ( in fact, we encourage you to build with
 bin/shipwright-builder, because you can hack the script freely without worrying
-about global changes )
+about the changes maybe hurt other shipwright builds )
 
+=head2 Details
+
+=head3 after initialize
+
+After initialize a project, the files in the repo are:
+
+=over 4
+
+bin/
+     shipwright-builder   # used for build, install or just test
+    
+    # builder's own utlity, you can use it to update build order
+     shipwright-utility
+
+etc/
+    # wrapper for installed bin files, mainly for optimizing env
+     shipwright-script-wrapper
+    
+    # wrapper for installed perl scripts
+    shipwright-perl-wrapper         
+    
+    # source files you can `source', for tcsh and bash, respectively.
+    # both'll be installed to tools/
+    shipwright-source-tcsh, shipwright-source-bash
+    
+    shipwright-utility # utility which'll be installed to tools/
+ 
+dists/ # all the sources of your dists live here
+
+scripts/ # all the build scripts and dependence hints live here
+
+shipwright/
+    order.yml # the actual build order
+    source.yml # non-cpan dists' name => url map
+    map.yml # cpan dists' module => name map
+
+t/
+    test # will run this if with --only-test when build
+
+=back
+
+=head3 after import
+
+After import, e.g. Acme::Hello, both the dists and scripts directories will
+have `cpan-Acme-Hello' directory.
+
+Under scripts/cpan-Acme-Hello there're two files: 'build' and 'require.yml'.
+
+=head4 build
+
+=over 4
+
+configure: %%PERL%% Build.PL --install_base=%%INSTALL_BASE%%
+make: ./Build
+test: ./Build test
+install: ./Build install
+clean: %%PERL%% Build realclean
+
+=back
+
+Each line is of `type: cmd' format, and the cmd is executed line by
+line(which's also true for t/test).
+
+We now support three templates in cmd, %%PERL%%, %%PERL_ARCHNAME%% and
+%%INSTALL_BASE%%, so you can set it till build.
+
+The `test' type is paticular:
+- if we build with --skip-test, the corresponding cmd won't be executed. 
+- if we build with --force, even the test cmd failed, we still go on building.
+
+the `clean' type is also different: it's executed only when --clean.
+
+=head4 require.yml
+
+=over 4
+
+build_requires: {}
+
+conflicts: {}
+
+recommends: 
+  cpan-Locale-Maketext-Lexicon: 
+    version: 0.15
+requires: {}
+
+This's the hint by which we can get right build order 
+
+=back
+
+=head4 after install
+
+Normally, there're bin, bin-wrapper, etc, tools and lib directories.
+One thing need to note is files below bin are for you to run, which are 
+wrappers to the files bellow bin-wrapper with same names.
 
 =head1 DEPENDENCIES
-
 
 None.
 
