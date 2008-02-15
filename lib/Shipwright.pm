@@ -10,11 +10,11 @@ use base qw/Class::Accessor::Fast/;
 
 __PACKAGE__->mk_accessors(qw/backend source build log_level log_file/);
 
+use Shipwright::Logger;
+use Shipwright::Util;
 use Shipwright::Backend;
 use Shipwright::Source;
 use Shipwright::Build;
-use Shipwright::Logger;
-use Shipwright::Util;
 
 =head2 new
 
