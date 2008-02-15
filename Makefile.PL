@@ -31,8 +31,6 @@ else {
 }
 
 
-no_index( directory => 'examples' );
-no_index( directory => 'docs' );
 no_index( directory => 't' );
 
 install_script('bin/shipwright');
