@@ -40,14 +40,14 @@ The log of the above 3 commands can be found in F<docs/tutorial.log>.
 
 =head2 Updating distributions
 
-If you just want to update a dist (just the dist source itself, instead of
-rebuilding or regenerating F<require.yml>), then use the C<update> command,
-which will delete that directory in dists and import again.
+There're two commands we can use to update a dist: C<update> and C<import>.
 
-If not, you can import it again, which will overwrite the old one. 
+If you'd like to just update the dist source( files in F<dists/> ), use
+C<update>. It will delete the directory in dists and add it again.
 
-Techenically, it will delete the corresponding dir in F<dists/> and
-F<scripts/>, then add new one.  If you want to overwrite dep dists too,
-then use the C<--overwrite> option.
+The other way is to C<import> the dist again.
+Techenically, it will delete the corresponding dirs in F<dists/> and
+F<scripts/>, then add new ones.  If you want to update dep dists too,
+just add C<--overwrite> option.
 
 =cut
