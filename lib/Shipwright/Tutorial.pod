@@ -1,50 +1,53 @@
-=head1 Summary
+=head1 NAME
 
-Let's run the tutorial, if it works, it works ;)
+Shipwright::Tutorial - Introduction to Shipwright 
 
-Ok, we'll build a simple project in this tutorial: 
+=head1 SYNOPSIS
 
-We'd like to build Acme::Hello( we love examples with name hello ;) 
+In this tutorial, we'll build a simple project: The L<Acme::Hello> module from
+CPAN.  (We love examples with name hello ;))
 
-The repo is svk://__shipwright/hello 
+We will use C<svk://__shipwright/hello> as our repository.
 
-=head1 Instructions
+=head1 DESCRIPTION
 
 =head2 1. init
 
-$ shipwright create -r svk://__shipwright/hello
+    $ shipwright create -r svk://__shipwright/hello
 
 =head2 2. import
 
-$ shipwright import -r svk://__shipwright/hello Acme::Hello
+    $ shipwright import -r svk://__shipwright/hello Acme::Hello
 
-Then shipwright will try to download, and import Acme::Hello and all its deps.
-If you want to skip some deps, e.g. Locale::Maketext and
-Locale::Maketext::Lexicon, just add `--skip Locale::Maketext and Locale::Maketext::Lexicon' arg
+Then shipwright will try to download, and import L<Acme::Hello> and all its dependencies.
 
-run `shipwright help import' to get more options
+If you want to skip some deps, e.g. L<Locale::Maketext> and L<Locale::Maketext::Lexicon>,
+just say C<--skip Locale::Maketext> and C<--skip Locale::Maketext::Lexicon>.
+
+Run C<shipwright help import> to see more options.
 
 =head2 3. build
 
-$ shipwright build -r svk://__shipwright/hello
+    $ shipwright build -r svk://__shipwright/hello
 
-Test is kind of time consuming? you can add `--skip-test' to skip test.
+Test is kind of time consuming? you can add C<--skip-test> to skip tests.
 
-run `shipwright help build' to get more options
+Run C<shipwright help build> to see more options.
 
-the log of the above 3 commands can be found in docs/tutorial.log
+The log of the above 3 commands can be found in F<docs/tutorial.log>.
 
 =head1 Note
 
-=head2 update dist(s)
+=head2 Updating distributions
 
-if you just want to update a dist( just the dist source itself, don't want to
-update build or require.yml ), use the `update' cmd.
-techenically, it will delete the dir in dists and import again.
+If you just want to update a dist (just the dist source itself, instead of
+rebuilding or regenerating F<require.yml>), then use the C<update> command,
+which will delete that directory in dists and import again.
 
-if not, you can import it again, which will overwrite the old one. 
-techenically, it will delete the corresponding dir
-in dists/ and scripts/, then add new one. 
-If you want to overwrite dep dists too, please use --overwrite 
+If not, you can import it again, which will overwrite the old one. 
+
+Techenically, it will delete the corresponding dir in F<dists/> and
+F<scripts/>, then add new one.  If you want to overwrite dep dists too,
+then use the C<--overwrite> option.
 
 =cut
