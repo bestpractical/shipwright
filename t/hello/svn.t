@@ -8,10 +8,12 @@ use File::Copy::Recursive qw/dircopy/;
 use File::Spec;
 use Cwd;
 use Test::More tests => 17;
+use IPC::Cmd qw/can_run/;
 
 SKIP: {
-    skip "can't find svn in PATH", 17,
-      unless `whereis svn` && `whereis svnadmin`;
+    skip "can't find svn or svnadmin in PATH", 17,
+      unless can_run('svn') && can_run('svnadmin');
+
     my $cwd = getcwd;
 
     my $repo = 'file:///tmp/shipwright_svn/hello';

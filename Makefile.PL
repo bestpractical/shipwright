@@ -4,6 +4,7 @@ use inc::Module::Install 0.46;
 name 'Shipwright';
 all_from 'lib/Shipwright.pm';
 build_requires 'Module::Build' => 0;
+build_requires 'IPC::Cmd' => 0;
 requires 'App::CLI' => 0;
 requires 'Algorithm::Dependency::Ordered' => 0;
 requires 'Algorithm::Dependency::Source::HoA' => 0;

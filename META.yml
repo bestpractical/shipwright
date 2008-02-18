@@ -3,6 +3,7 @@ abstract: Best Practical Builder
 author: 
   - sunnavy  C<< <sunnavy@bestpractical.com> >>
 build_requires: 
+  IPC::Cmd: 0
   Module::Build: 0
 distribution_type: module
 generated_by: Module::Install version 0.68

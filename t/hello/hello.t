@@ -7,11 +7,12 @@ use File::Copy;
 use File::Copy::Recursive qw/dircopy/;
 use File::Spec;
 use Cwd;
+use IPC::Cmd qw/can_run/;
 
 use Test::More tests => 40;
 SKIP: {
-    skip "can't find svk in PATH", 40,
-      unless `whereis svk`;
+    skip "can't find svk or svnadmin in PATH", 40,
+      unless can_run('svk') && can_run('svnadmin');
 
     my $cwd  = getcwd;
 
