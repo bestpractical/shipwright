@@ -81,8 +81,8 @@ sub _follow {
             if (   $source =~ /Module::Build/
                 && $self->name ne 'cpan-Module-Build' )
             {
-                unless ( $require->{build_requires}{'Module::Build'} ) {
-                    $require->{build_requires} = { 'Module::Build' => 0 };
+                unless ( defined $require->{build_requires}{'Module::Build'} ) {
+                    $require->{build_requires}{'Module::Build'} = 0;
                 }
             }
 
@@ -130,7 +130,7 @@ sub _follow {
 #            }
 
             Shipwright::Util->run( [ 'make', 'clean' ] );
-            Shipwright::Util->run( [ 'rm', 'Makefile.old' ] );
+            Shipwright::Util->run( [ 'rm',   'Makefile.old' ] );
         }
 
         for my $type (qw/requires recommends build_requires/) {
