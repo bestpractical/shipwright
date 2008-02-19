@@ -281,7 +281,9 @@ else {
     open $log, '>', 'build.log' or die $!;
 
     require CPAN;
-    eval { require CPAN::Config } or warn "can't require CPAN::Config: $@";
+
+    # don't bother people no CPAN::Config since it's not a problem
+    eval { require CPAN::Config };
 
     # we don't want any prereqs any more!
     {
