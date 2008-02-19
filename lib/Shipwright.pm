@@ -89,7 +89,7 @@ Shipwright - Best Practical Builder
 
 Shipwright's a tool to help you bundle dists.
 
-We don't want to repeat ourself, so when we write a dist, we'll try to use
+We don't want to repeat ourselves, so when we write a dist, we'll try to use
 as many already created and great modules( sure, I bet most of them can be
 found on CPAN, though not all ) as we can.
 
