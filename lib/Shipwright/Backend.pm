@@ -481,12 +481,18 @@ sub substitute {
     my $text = shift;
     return unless $text;
 
-    my $perl          = $args{'perl'} || $^X;
-    my $perl_archname = `$perl -MConfig -e 'print \$Config{archname}'`;
-    my $install_base  = $args{'install-base'};
-    $text =~ s/%%PERL%%/$perl/g;
-    $text =~ s/%%PERL_ARCHNAME%%/$perl_archname/g;
+    my $install_base  = $args{'install-base'}; 
     $text =~ s/%%INSTALL_BASE%%/$install_base/g;
+    
+    my $perl = $args{'perl'} || $^X;
+
+    if ( -e $perl ) {
+        # we only need to substitute below stuff if $perl exists;
+        my $perl_archname = `$perl -MConfig -e 'print \$Config{archname}'`;
+        $text =~ s/%%PERL%%/$perl/g;
+        $text =~ s/%%PERL_ARCHNAME%%/$perl_archname/g;
+    }
+    
     return $text;
 }
 
