@@ -381,6 +381,8 @@ else {
 sub install {
     my $dir = shift;
 
+    print "start to build and install $dir\n";
+
     my $cmds = cmds(File::Spec->catfile( 'scripts', $dir, 'build' ));
 
     chdir File::Spec->catfile( 'dists', $dir );
@@ -413,6 +415,7 @@ sub install {
     }
 
     print $log "build $dir with success!\n";
+    print '=' x 80, "\n";
 }
 
 sub wrap_bin {
