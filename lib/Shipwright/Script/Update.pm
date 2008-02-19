@@ -14,7 +14,6 @@ use File::Copy qw/copy move/;
 use File::Temp qw/tempdir/;
 use Config;
 use Hash::Merge;
-use List::MoreUtils qw/uniq/;
 
 Hash::Merge::set_behavior('RIGHT_PRECEDENT');
 
