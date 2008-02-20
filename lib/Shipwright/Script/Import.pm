@@ -17,6 +17,7 @@ use File::Copy qw/copy move/;
 use File::Temp qw/tempdir/;
 use Config;
 use Hash::Merge;
+use List::MoreUtils qw/uniq first_index/;
 
 Hash::Merge::set_behavior('RIGHT_PRECEDENT');
 
@@ -152,6 +153,8 @@ sub run {
         $shipwright->backend->source(
             Hash::Merge::merge( $shipwright->backend->source || {}, $new_url )
         );
+
+        reorder($shipwright);
     }
 
     # import tests
@@ -305,6 +308,52 @@ sub parent_dir {
     my @dirs   = File::Spec->splitdir($source);
     pop @dirs;
     return File::Spec->catfile(@dirs);
+}
+
+=head2 reorder
+
+make some hack for order.
+move ExtUtils::MakeMaker and Module::Build to the head of cpan dists
+
+=cut
+
+sub reorder {
+    my $shipwright = shift;
+    my $order      = $shipwright->backend->order;
+
+    my $first_cpan_index = first_index { /^cpan-/ } @$order;
+
+    unless (
+        (
+            $order->[$first_cpan_index] eq 'cpan-ExtUtils-MakeMaker'
+            && ( ( ( first_index { $_ eq 'cpan-Module-Build' } @$order ) == -1 )
+                || $order->[ $first_cpan_index + 1 ] eq 'cpan-Module-Build' )
+        )
+        || (
+            $order->[$first_cpan_index] eq 'cpan-Module-Build'
+            && (
+                (
+                    ( first_index { $_ eq 'cpan-ExtUtils-MakeMaker' } @$order )
+                    == -1
+                )
+                || $order->[ $first_cpan_index + 1 ] eq
+                'cpan-ExtUtils-MakeMaker'
+            )
+        )
+      )
+    {
+        for my $build (qw/cpan-ExtUtils-MakeMaker cpan-Module-Build/) {
+            my $index = first_index { $build eq $_ } @$order;
+            next if $index == -1;    # $index == -1 if not found
+            if ( $index > $first_cpan_index ) {    # not the 1st cpan dist
+                splice @$order, $first_cpan_index, 0, $build;
+            }
+        }
+    }
+
+    @$order = uniq @$order;
+    $shipwright->backend->order($order);
+
 }
 
 1;
