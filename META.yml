@@ -33,6 +33,7 @@ requires:
   Hash::Merge: 0
   IPC::Run3: 0
   LWP::UserAgent: 0
+  List::MoreUtils: 0
   Log::Log4perl: 0
   Module::CoreList: 0
   UNIVERSAL::require: 0

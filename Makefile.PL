@@ -18,6 +18,7 @@ requires 'File::Spec' => 0;
 requires 'File::Slurp' => 0;
 requires 'Hash::Merge' => 0;
 requires 'IPC::Run3' => 0;
+requires 'List::MoreUtils' => 0;
 requires 'Log::Log4perl' => 0;
 requires 'LWP::UserAgent' => 0;
 requires 'Module::CoreList' => 0;
