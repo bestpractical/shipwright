@@ -579,6 +579,8 @@ sub clean {
             print $log "clean $dir with success $!\n";
         }
     }
+
+    print '=' x 80, "\n";
 }
 
 sub get_install_base {
