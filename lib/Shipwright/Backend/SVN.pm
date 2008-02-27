@@ -58,6 +58,8 @@ sub initialize {
         File::Spec->catfile( $dir, 'bin', 'shipwright-utility' ) => 'utility',
         File::Spec->catfile( $dir, 't',   'test' )               => 'null',
         File::Spec->catfile( $dir, 'shipwright', 'order.yml' ) => 'null',
+        File::Spec->catfile( $dir, 'shipwright', 'map.yml' )    => 'null',
+        File::Spec->catfile( $dir, 'shipwright', 'source.yml' ) => 'null',
     );
 
     for ( keys %map ) {
