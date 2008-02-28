@@ -275,7 +275,7 @@ sub _update_url {
     my $url  = shift;
 
     my $map = {};
-    if ( -e $self->url_path ) {
+    if ( -e $self->url_path && ! -z $self->url_path ) {
         $map = Shipwright::Util::LoadFile( $self->url_path );
     }
     $map->{$name} = $url;
