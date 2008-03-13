@@ -52,7 +52,7 @@ sub run {
     my $self   = shift;
     my $source = shift;
 
-    $self->source($source) if $source;
+    $self->source($source) if $source && !$self->source;
     $self->follow(1) unless defined $self->follow;
     $self->skip( { map { $_ => 1 } split /\s*,\s*/, $self->skip || '' } );
 

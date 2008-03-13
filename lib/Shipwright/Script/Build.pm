@@ -34,7 +34,8 @@ sub options {
 sub run {
     my $self         = shift;
     my $install_base = shift;
-    $self->install_base($install_base) if $install_base;
+    $self->install_base($install_base)
+      if $install_base && !$self->install_base;
 
     die "need repository arg" unless $self->repository;
 

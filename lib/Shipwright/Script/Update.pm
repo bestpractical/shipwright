@@ -40,7 +40,7 @@ sub run {
     my $self = shift;
     my $name = shift;
 
-    $self->name($name) if $name;
+    $self->name($name) if $name && ! $self->name;
 
     for (qw/repository/) {
         die "need $_ arg" unless $self->$_();
