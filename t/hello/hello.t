@@ -19,12 +19,6 @@ SKIP: {
 
     create_svk_repo();
 
-    my $svk_root = tempdir;
-    $ENV{SVKROOT} = $svk_root;
-    my $svk_root_local = File::Spec->catfile( $svk_root, 'local' );
-    system("svnadmin create $svk_root_local");
-    system("svk depotmap -i");
-
     my $repo = '//__shipwright/hello';
 
     my %source = (
