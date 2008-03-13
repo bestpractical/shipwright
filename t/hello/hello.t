@@ -7,14 +7,17 @@ use File::Copy;
 use File::Copy::Recursive qw/dircopy/;
 use File::Spec;
 use Cwd;
-use IPC::Cmd qw/can_run/;
 
 use Test::More tests => 40;
-SKIP: {
-    skip "can't find svk or svnadmin in PATH", 40,
-      unless can_run('svk') && can_run('svnadmin');
+use Shipwright::Test qw/has_svk create_svk_repo/;
 
-    my $cwd  = getcwd;
+SKIP: {
+    skip "no svk and svnadmin found", 40
+      unless has_svk();
+
+    my $cwd = getcwd;
+
+    create_svk_repo();
 
     my $svk_root = tempdir;
     $ENV{SVKROOT} = $svk_root;

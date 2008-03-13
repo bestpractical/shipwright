@@ -8,25 +8,21 @@ use File::Copy::Recursive qw/dircopy/;
 use File::Spec;
 use Cwd;
 use Test::More tests => 17;
-use IPC::Cmd qw/can_run/;
+use Shipwright::Test qw/has_svn create_svn_repo/;
 
 SKIP: {
-    skip "can't find svn or svnadmin in PATH", 17,
-      unless can_run('svn') && can_run('svnadmin');
+    skip "no svn found", 17
+      unless has_svn();
 
     my $cwd = getcwd;
 
-    my $repo = 'file:///tmp/shipwright_svn/hello';
-
-    system('rm -rf /tmp/shipwright_svn') && warn "delete repo failed: $!";
-    system('svnadmin create /tmp/shipwright_svn')
-      && die "create repo failed: $!";
+    my $repo = create_svn_repo() . '/hello';
 
     my $shipwright = Shipwright->new(
         repository => "svn:$repo",
         source => File::Spec->catfile( 't', 'hello', 'Acme-Hello-0.03.tar.gz' ),
         log_level => 'FATAL',
-        follow       => 0,
+        follow    => 0,
     );
 
     isa_ok( $shipwright->backend, 'Shipwright::Backend::SVN' );
@@ -58,7 +54,7 @@ SKIP: {
         name         => 'hello',
         source       => $source_dir,
         build_script => $script_dir,
-        log_level => 'FATAL',
+        log_level    => 'FATAL',
     );
     ok( grep( {/Build\.PL/} `svn cat $repo/scripts/Acme-Hello/build` ),
         'build script ok' );
