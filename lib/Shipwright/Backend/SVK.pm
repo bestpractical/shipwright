@@ -60,6 +60,7 @@ sub initialize {
         File::Spec->catfile( $dir, 'shipwright', 'order.yml' )  => 'null',
         File::Spec->catfile( $dir, 'shipwright', 'map.yml' )    => 'null',
         File::Spec->catfile( $dir, 'shipwright', 'source.yml' ) => 'null',
+        File::Spec->catfile( $dir, 'shipwright', 'flags.yml' ) => 'null',
     );
 
     for ( keys %map ) {
@@ -524,6 +525,42 @@ sub requires {
     my ($string) = Shipwright::Util->run(
         [ 'svk', 'cat', $self->repository . "/scripts/$name/require.yml" ], 1 );
     return Shipwright::Util::Load($string) || {};
+}
+
+=head2 flags
+
+get or set flags
+
+=cut
+
+sub flags {
+    my $self   = shift;
+    my %args = @_;
+
+    croak "need dist arg" unless $args{dist};
+
+    if ($args{flags}) {
+        my $dir = tempdir( CLEANUP => 1 );
+        my $file = File::Spec->catfile( $dir, 'flags.yml' );
+
+        $self->checkout(
+            path   => '/shipwright/flags.yml',
+            target => $file,
+        );
+
+        my $flags = Shipwright::Util::LoadFile( $file );
+        $flags->{$args{dist}} = $args{flags};
+
+        Shipwright::Util::DumpFile( $file, $flags );
+        $self->commit( path => $file, comment => "set flags for $args{dist}" );
+        $self->checkout( detach => 1, target => $file );
+    }
+    else {
+        my ($out) = Shipwright::Util->run(
+            [ 'svk', 'cat', $self->repository . '/shipwright/flags.yml' ] );
+        $out = Shipwright::Util::Load($out) || {};
+        return $out->{$args{dist}} || []; 
+    }
 }
 
 1;
