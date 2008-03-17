@@ -1,0 +1,47 @@
+#!/usr/bin/env perl 
+use strict;
+use warnings;
+
+use Getopt::Long;
+use File::Spec;
+use Cwd;
+
+my %args;
+GetOptions( \%args, 'install-links=s', 'help' );
+
+my $USAGE = <<'END'
+run: ./tools/shipwright-utility --install-links
+
+options: 
+
+help: print this usage
+
+install-links: link files in bin, sbin, or libexec to other places
+    e.g. --install-links /usr/local
+
+END
+  ;
+
+if ( $args{'help'} ) {
+    print $USAGE;
+}
+elsif ( $args{'install-links'} ) {
+    my $cwd = getcwd();
+
+    for my $dir (qw/bin sbin libexec/) {
+        next unless -e $dir;
+        my $dh;
+        opendir $dh, $dir or die $!;
+
+        mkdir File::Spec->catfile( $args{'install-links'},       $dir )
+          unless -e File::Spec->catfile( $args{'install-links'}, $dir );
+        my @files = readdir $dh;
+        for (@files) {
+            next if $_ eq '.' || $_ eq '..';
+            symlink File::Spec->catfile( $cwd, $dir, $_ ),
+              File::Spec->catfile( $args{'install-links'}, $dir, $_ ) or die
+                  $!;
+        }
+    }
+}
+

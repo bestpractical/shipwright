@@ -1,0 +1,9 @@
+#!/usr/bin/env tcsh
+if ( $# == 1 ) then
+    setenv PATH $1/bin:$PATH
+    setenv PERL5LIB $1/lib/perl5/site_perl:$1/lib/perl5:${PERL5LIB}
+    setenv LD_LIBRARY_PATH $1/lib:${LD_LIBRARY_PATH}
+    setenv DYLD_LIBRARY_PATH $1/lib:${DYLD_LIBRARY_PATH}
+else
+    echo 'USAGE: source shipwright-source-tcsh BASEPATH'
+endif

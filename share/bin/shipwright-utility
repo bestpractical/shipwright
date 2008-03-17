@@ -1,0 +1,94 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+
+use Getopt::Long;
+use YAML::Syck;
+
+my %args;
+GetOptions( \%args, 'update-order', 'keep-requires=s', 'keep-recommends=s',
+    'keep-build-requires=s', 'for-dists=s', 'help' );
+
+my $USAGE = <<'END'
+run: ./bin/shipwright-utility --update-order
+
+options: 
+
+help: print this usage
+
+update-order: regenerate install order.
+    sub options:
+        keep-requires: keep dists with requires dep type. default is true.
+        keep-recommends: keep dists with recommends dep type. default is true.
+        keep-build-requires: keep dists with build-requires dep type. default is true.
+        for-dists: make order only for these dists, seperated by comma.
+        default is for all the dists in the source.
+
+    e.g. --update-order --keep-recommends 0 --for-dists Jifty-DBI,Jifty
+
+END
+;
+
+if ( $args{'help'} ) { 
+    print $USAGE;
+    exit 0;
+}
+if ( $args{'update-order'} ) {
+    for ( 'keep-requires', 'keep-recommends', 'keep-build-requires' ) {
+        $args{$_} = 1 unless defined $args{$_}; 
+    }
+
+    my @dists = split /,\s*/, $args{'for-dists'};
+    unless (@dists) {
+        my $out = `ls scripts`;
+        my $sep = $/;
+        @dists = split /$sep/, $out;
+        chomp @dists;
+        s{/$}{} for @dists;
+    }
+
+    my $require = {};
+
+    for (@dists) {
+        fill_deps( %args, require => $require, dist => $_ );
+    }
+
+    require Algorithm::Dependency::Ordered;
+    require Algorithm::Dependency::Source::HoA;
+
+    my $source = Algorithm::Dependency::Source::HoA->new($require);
+    $source->load();
+    my $dep = Algorithm::Dependency::Ordered->new( source => $source, )
+      or die $@;
+    my $order = $dep->schedule_all();
+    DumpFile( 'shipwright/order.yml', $order );
+}
+
+sub fill_deps {
+    my %args    = @_;
+    my $require = $args{require};
+    my $dist    = $args{dist};
+
+    my $string;
+    my $req = LoadFile("scripts/$dist/require.yml");
+
+    if ( $req->{requires} ) {
+        for (qw/requires recommends build_requires/) {
+            my $arg = "keep-$_";
+            $arg =~ s/_/-/g;
+            push @{ $require->{$dist} }, keys %{ $req->{$_} }
+              if $args{$arg};
+        }
+    }
+    else {
+
+        #for back compatbility
+        push @{ $require->{$dist} }, keys %$req;
+    }
+
+    for my $dep ( @{ $require->{$dist} } ) {
+        next if $require->{$dep};
+        fill_deps( %args, dist => $dep );
+    }
+}
+
