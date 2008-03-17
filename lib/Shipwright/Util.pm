@@ -5,8 +5,6 @@ use strict;
 use Carp;
 use IPC::Run3;
 
-my $log = Log::Log4perl->get_logger('Shipwright::Util');
-
 BEGIN {
     local $@;
     eval { require YAML::Syck; };
@@ -47,6 +45,8 @@ sub run {
     my $class = shift;
     my $cmd   = shift;
     my $ignore_failure = shift;
+
+    my $log = Log::Log4perl->get_logger('Shipwright::Util');
 
     my ( $out, $err );
     $log->info( "run cmd:\n" . join ' ', @$cmd );
