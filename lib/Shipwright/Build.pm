@@ -8,7 +8,7 @@ use base qw/Class::Accessor::Fast/;
 
 __PACKAGE__->mk_accessors(
     qw/install_base perl build_base skip_test commands log
-      skip only_test force order/
+      skip only_test force order flags/
 );
 
 use File::Spec;
@@ -97,7 +97,23 @@ sub run {
             )
         );
 
+        my $flags = {};
+
+        if ( -e File::Spec->catfile( 'shipwright', 'flags.yml' ) ) {
+
+            $flags = Shipwright::Util::LoadFile(
+                File::Spec->catfile( 'shipwright', 'flags.yml' ) );
+        }
+
+DIST:
         for my $dist ( @{ $self->order } ) {
+            if ( $flags->{$dist} )
+            {    # undefined means default, will be installed
+                for my $flag ( @{$flags->{$dist}} ) {
+                    next DIST unless $self->flags->{$flag};
+                }
+            }
+
             unless ( $self->skip && $self->skip->{$dist} ) {
                 $self->_install($dist);
             }
