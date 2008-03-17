@@ -45,7 +45,7 @@ sub run {
         repository => $self->repository,
         log_level  => $self->log_level,
         log_file   => $self->log_file,
-        build_skip => $self->skip,
+        skip       => $self->skip,
     );
     $shipwright->backend->export( target => $shipwright->build->build_base );
     $shipwright->build->skip_test(1) if $self->skip_test;
