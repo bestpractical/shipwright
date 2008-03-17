@@ -46,6 +46,7 @@ build part:
     force: force install even if tests fail. default is false
     only_test: not install, just test. (used for already installed dists)
                 default is false
+    flags: flags for building. default is { default => 1 }
 
 =cut
 

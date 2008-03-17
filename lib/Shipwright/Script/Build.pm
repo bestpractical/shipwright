@@ -7,7 +7,7 @@ use Carp;
 use base qw/App::CLI::Command Class::Accessor::Fast Shipwright::Script/;
 __PACKAGE__->mk_accessors(
     qw/repository log_level install_base build_base skip skip_test only_test
-      force log_file/
+      force log_file flags/
 );
 
 use Shipwright;
@@ -40,13 +40,21 @@ sub run {
     die "need repository arg" unless $self->repository;
 
     $self->skip( { map { $_ => 1 } split /\s*,\s*/, $self->skip || '' } );
+    $self->flags(
+        {
+            default => 1,
+            map { $_ => 1 } split /\s*,\s*/, $self->flags || ''
+        }
+    );
 
     my $shipwright = Shipwright->new(
         repository => $self->repository,
         log_level  => $self->log_level,
         log_file   => $self->log_file,
         skip       => $self->skip,
+        flags      => $self->flags,
     );
+
     $shipwright->backend->export( target => $shipwright->build->build_base );
     $shipwright->build->skip_test(1) if $self->skip_test;
     $shipwright->build->run( map { $_ => $self->$_ }
