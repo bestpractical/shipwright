@@ -4,6 +4,9 @@ use warnings;
 use strict;
 use Carp;
 use IPC::Run3;
+use UNIVERSAL::require;
+use File::Spec;
+our ( $SHIPWRIGHT_ROOT, $SHARE_ROOT );
 
 BEGIN {
     local $@;
@@ -62,6 +65,50 @@ sub run {
     }
 
     return ( $out, $err );
+
+}
+
+=head2 shipwright_root
+
+Returns the root directory that Shipwright has been installed into.
+Uses %INC to figure out where Shipwright.pm is.
+
+=cut
+
+sub shipwright_root {
+    my $self = shift;
+
+    unless ($SHIPWRIGHT_ROOT) {
+        my $dir = (File::Spec->splitpath($INC{"Shipwright.pm"}))[1];
+        $SHIPWRIGHT_ROOT = File::Spec->rel2abs($dir);
+    }
+
+    return ($SHIPWRIGHT_ROOT);
+}
+
+=head2 share_root
+
+Returns the 'share' directory of the installed Shipwright module. This is
+currently only used to store the initial files in vessel.
+
+=cut
+
+sub share_root {
+    my $self = shift;
+    
+    File::ShareDir->require;
+    $SHARE_ROOT ||=  eval { File::Spec->rel2abs(
+            File::ShareDir::module_dir('Shipwright') )};
+
+    unless ( $SHARE_ROOT && -d $SHARE_ROOT) {
+        # XXX TODO: This is a bloody hack
+        # Module::Install::Share and File::ShareDir don't play nicely
+        # together
+        my @root = File::Spec->splitdir($self->shipwright_root); 
+        $root[-1] = 'share'; # replace 'lib' to 'share'
+        $SHARE_ROOT = File::Spec->catdir(@root);
+    }
+    return ($SHARE_ROOT);
 
 }
 
