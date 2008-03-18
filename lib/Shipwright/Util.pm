@@ -5,6 +5,8 @@ use strict;
 use Carp;
 use IPC::Run3;
 use File::Spec;
+use Shipwright; # we need this to find where Shipwright.pm lives
+
 our ( $SHIPWRIGHT_ROOT, $SHARE_ROOT );
 
 BEGIN {
