@@ -7,6 +7,7 @@ use File::Spec;
 use Shipwright::Util;
 use File::Temp qw/tempdir/;
 use File::Copy;
+use File::Copy::Recursive qw/dircopy/;
 
 # our project's own files will be in //local/test/main
 # all the dependance packages will be in //local/test/deps
@@ -39,35 +40,15 @@ initialize a project
 sub initialize {
     my $self = shift;
     my $dir = tempdir( CLEANUP => 1 );
-    for (qw/shipwright dists etc bin scripts t/) {
+    dircopy( Shipwright::Util->share_root, $dir );
+
+    # share_root can't keep empty dirs, we have to create them manually
+    for (qw/dists scripts t/) {
         mkdir File::Spec->catfile( $dir, $_ );
     }
 
-    my %map = (
-        File::Spec->catfile( $dir, 'etc', 'shipwright-script-wrapper' ) =>
-          'wrapper',
-        File::Spec->catfile( $dir, 'etc', 'shipwright-perl-wrapper' ) =>
-          'perl_wrapper',
-        File::Spec->catfile( $dir, 'etc', 'shipwright-utility' ) =>
-          'installed_utility',
-        File::Spec->catfile( $dir, 'etc', 'shipwright-source-bash' ) =>
-          'source_bash',
-        File::Spec->catfile( $dir, 'etc', 'shipwright-source-tcsh' ) =>
-          'source_tcsh',
-        File::Spec->catfile( $dir, 'bin', 'shipwright-builder' ) => 'builder',
-        File::Spec->catfile( $dir, 'bin', 'shipwright-utility' ) => 'utility',
-        File::Spec->catfile( $dir, 't',   'test' )               => 'null',
-        File::Spec->catfile( $dir, 'shipwright', 'order.yml' ) => 'null',
-        File::Spec->catfile( $dir, 'shipwright', 'map.yml' )    => 'null',
-        File::Spec->catfile( $dir, 'shipwright', 'source.yml' ) => 'null',
-        File::Spec->catfile( $dir, 'shipwright', 'flags.yml' ) => 'null',
-    );
-
-    for ( keys %map ) {
-        open my $fh, '>', $_ or die "can't open file $_: $!";
-        print $fh Shipwright::Backend->make_script( $map{$_} );
-        close $fh;
-    }
+    # hack for share_root living under blib/
+    unlink( File::Spec->catfile( $dir, '.exists' ) );
 
     $self->delete;    # clean repository in case it exists
     $self->log->info( 'initialize ' . $self->repository );
@@ -77,18 +58,6 @@ sub initialize {
         _initialize => 1,
     );
 
-    for (
-        'bin/shipwright-builder',      'bin/shipwright-utility',
-        'etc/shipwright-perl-wrapper', 'etc/shipwright-script-wrapper',
-        't/test',                      'etc/shipwright-utility',
-      )
-    {
-        $self->propset(
-            path  => $_,
-            type  => 'svn:executable',
-            value => '*'
-        );
-    }
 }
 
 =head2 import
