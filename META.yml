@@ -3,6 +3,7 @@ abstract: Best Practical Builder
 author: 
   - sunnavy  C<< <sunnavy@bestpractical.com> >>
 build_requires: 
+  ExtUtils::MakeMaker: 6.11
   IPC::Cmd: 0
   Module::Build: 0
 distribution_type: module
@@ -27,6 +28,7 @@ requires:
   Class::Accessor::Fast: 0
   File::Copy: 0
   File::Copy::Recursive: 0
+  File::ShareDir: 0
   File::Slurp: 0
   File::Spec: 0
   File::Temp: 0

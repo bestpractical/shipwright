@@ -14,6 +14,7 @@ requires 'Class::Accessor::Fast' => 0;
 requires 'File::Temp' => 0;
 requires 'File::Copy' => 0;
 requires 'File::Copy::Recursive' => 0;
+requires 'File::ShareDir' => 0;
 requires 'File::Spec' => 0;
 requires 'File::Slurp' => 0;
 requires 'Hash::Merge' => 0;
@@ -37,6 +38,7 @@ no_index( directory => 't' );
 no_index( directory => 'docs' );
 
 install_script('bin/shipwright');
+install_share;
 auto_install;
 
 tests('t/*.t t/*/*.t');
