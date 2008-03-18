@@ -60,7 +60,7 @@ SKIP: {
     chomp @dirs;
     is_deeply(
         [@dirs],
-        [ 'bin/', 'dists/', 'etc/', 'scripts/', 'shipwright/', 't/' ],
+        [ 'bin/', 'dists/', 'etc/', 'inc/', 'scripts/', 'shipwright/', 't/' ],
         'initialize works'
     );
 
