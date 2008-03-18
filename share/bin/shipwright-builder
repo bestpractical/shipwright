@@ -9,6 +9,7 @@ use File::Find qw/find/;
 use Config;
 use Getopt::Long;
 use Cwd;
+use inc::YAML::Tiny;
 
 my $build_base = getcwd;
 
@@ -60,7 +61,9 @@ if ( $args{'help'} ) {
 
 $args{skip} = [ split /,\s*/, $args{skip} || '' ];
 
-my $order = parse_order( File::Spec->catfile( 'shipwright', 'order.yml' ) );
+# YAML::Tiny objects are array based.
+my $order =
+  ( YAML::Tiny->read( File::Spec->catfile( 'shipwright', 'order.yml' ) ) )->[0];
 
 my $log;
 
@@ -311,18 +314,6 @@ sub substitute {
     }
 
     return $text;
-}
-
-sub parse_order {
-    my $file  = shift;
-    my $order = [];
-    open my $fh, '<', $file or die $!;
-    while (<$fh>) {
-        if (/^- (\S+)/) {
-            push @$order, $1;
-        }
-    }
-    return $order;
 }
 
 sub test {
