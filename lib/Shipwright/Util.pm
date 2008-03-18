@@ -4,7 +4,6 @@ use warnings;
 use strict;
 use Carp;
 use IPC::Run3;
-use UNIVERSAL::require;
 use File::Spec;
 our ( $SHIPWRIGHT_ROOT, $SHARE_ROOT );
 
@@ -61,7 +60,7 @@ sub run {
         $log->error(
             'failed to run ' . join( ' ', @$cmd ) . " with exit number $?" );
 
-        die "something wrong :-(" unless $ignore_failure;
+        die "something wrong when execute @$cmd: $?" unless $ignore_failure;
     }
 
     return ( $out, $err );
@@ -96,7 +95,7 @@ currently only used to store the initial files in vessel.
 sub share_root {
     my $self = shift;
     
-    File::ShareDir->require;
+    require File::ShareDir;
     $SHARE_ROOT ||=  eval { File::Spec->rel2abs(
             File::ShareDir::module_dir('Shipwright') )};
 
