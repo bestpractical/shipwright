@@ -1,5 +1,7 @@
 package YAML::Tiny;
 
+## no critic
+
 use strict;
 BEGIN {
 	require 5.004;
