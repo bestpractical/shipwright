@@ -77,15 +77,6 @@ elsif ( $args{'clean'} ) {
     open $log, '>', 'clean.log' or die $!;
 
     $args{'install-base'} = get_install_base() unless $args{'install-base'};
-    unless ( $args{perl} ) {
-        if ( -e File::Spec->catfile( $args{'install-base'}, 'bin', 'perl' ) ) {
-            $args{perl} =
-              File::Spec->catfile( $args{'install-base'}, 'bin', 'perl' );
-        }
-        else {
-            $args{perl} = $^X;
-        }
-    }
 
     for my $dist (@$order) {
         unless ( grep { $dist eq $_ } @{ $args{skip} } ) {
@@ -125,15 +116,12 @@ else {
     print $fh $args{'install-base'};
     close $fh;
 
-    unless ( $args{perl} ) {
+    unless ( $args{perl} && -e $args{perl} ) {
         if ( ( grep { $_ eq 'perl' } @$order )
             && !( grep { $_ eq 'perl' } @{ $args{skip} } ) )
         {
             $args{perl} =
               File::Spec->catfile( $args{'install-base'}, 'bin', 'perl' );
-        }
-        else {
-            $args{perl} = $^X;
         }
     }
 
@@ -304,14 +292,19 @@ sub substitute {
     my $install_base  = $args{'install-base'};
     $text =~ s/%%INSTALL_BASE%%/$install_base/g;
 
-    my $perl = $args{'perl'} || $^X;
+    my $perl;
 
-    if ( -e $perl ) {
-        # we only need to substitute below stuff if $perl exists;
-        my $perl_archname = `$perl -MConfig -e 'print \$Config{archname}'`;
-        $text =~ s/%%PERL%%/$perl/g;
-        $text =~ s/%%PERL_ARCHNAME%%/$perl_archname/g;
+    if ( $args{perl} && -e $args{perl} ) {
+        $perl = $args{perl};
     }
+    else {
+        $perl = $^X;
+    }
+
+    my $perl_archname = `$perl -MConfig -e 'print \$Config{archname}'`;
+    $text =~ s/%%PERL%%/$perl/g;
+    $text =~ s/%%PERL_ARCHNAME%%/$perl_archname/g;
+    
 
     return $text;
 }
