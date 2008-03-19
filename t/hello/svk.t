@@ -12,7 +12,7 @@ use Test::More tests => 41;
 use Shipwright::Test qw/has_svk create_svk_repo/;
 
 SKIP: {
-    skip "no svk and svnadmin found", 40
+    skip "no svk and svnadmin found", 41
       unless has_svk();
 
     my $cwd = getcwd;
