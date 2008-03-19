@@ -59,7 +59,7 @@ if ( $args{'help'} ) {
 }
 
 
-$args{skip} = [ split /,\s*/, $args{skip} || '' ];
+$args{skip} = { map { $_ => 1 } split /,\s*/, $args{skip} || '' };
 
 # YAML::Tiny objects are array based.
 my $order =
@@ -79,7 +79,7 @@ elsif ( $args{'clean'} ) {
     $args{'install-base'} = get_install_base() unless $args{'install-base'};
 
     for my $dist (@$order) {
-        unless ( grep { $dist eq $_ } @{ $args{skip} } ) {
+        unless ( $args{skip}{$dist} ) {
             clean($dist);
         }
         chdir $build_base;
@@ -118,7 +118,7 @@ else {
 
     unless ( $args{perl} && -e $args{perl} ) {
         if ( ( grep { $_ eq 'perl' } @$order )
-            && !( grep { $_ eq 'perl' } @{ $args{skip} } ) )
+            && ! $args{skip}{perl} )
         {
             $args{perl} =
               File::Spec->catfile( $args{'install-base'}, 'bin', 'perl' );
@@ -170,7 +170,7 @@ else {
         'shipwright-utility' );
 
     for my $dist (@$order) {
-        unless ( grep { $dist eq $_ } @{ $args{skip} } ) {
+        unless ( $args{skip}{$dist} ) {
             install($dist);
         }
         chdir $build_base;
@@ -260,7 +260,7 @@ sub wrap_bin {
     # then link to it, else link to the normal one
         if (   $type
             && grep( { $_ eq $type } @$order )
-            && !( grep { $_ eq $type } @{ $args{skip} } ) 
+            && ! $args{skip}{$type}
             && -e File::Spec->catfile( '..', 'etc', "shipwright-$type-wrapper" )
           )
         {
