@@ -369,7 +369,7 @@ Shipwright::Script::Import - import a source(maybe with a lot of dependences)
   shipwright import          import a source
 
  Options:
-   --repository(-r)   specify the repository of our vessel
+   --repository(-r)   specify the repository of our project
    --log-level(-l)    specify the log level
    --comment(-m)      specify the comment
    --source(-s)       specify the source path

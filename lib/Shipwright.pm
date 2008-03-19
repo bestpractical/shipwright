@@ -125,10 +125,10 @@ The thought of shipwright is simple:
 |  dist sources    |  =====>   |  repository          |  ====> 
 -------------------|            -----------------------
 
- vessels(final product) 
-------------------------
-|  installed to system |
-------------------------
+     vessel(final product) 
+-----------------------------------------------
+|  all packages installed with smart wrappers |
+-----------------------------------------------
 
 So there're mainly two useful commands in shipwright: import and build, which
 can be invoked like this:
@@ -147,7 +147,7 @@ about the changes maybe hurt other shipwright builds )
 
 =head3 after initialize
 
-After initialize a vessel, the files in the repo are:
+After initialize a project, the files in the repo are:
 
 =over 4
 

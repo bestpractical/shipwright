@@ -29,7 +29,7 @@ sub new {
 
 =head2 initialize
 
-initialize a vessel
+initialize a project
 
 =cut
 
@@ -50,7 +50,7 @@ sub initialize {
     $self->log->info( 'initialize ' . $self->repository );
     $self->import(
         source      => $dir,
-        comment     => 'create vessel',
+        comment     => 'create project',
         _initialize => 1,
     );
 
@@ -114,7 +114,7 @@ sub import {
 =head2 export
 
 a wrapper of export cmd of svn
-export a vessel, partly or as a whole
+export a project, partly or as a whole
 
 =cut
 
@@ -130,7 +130,7 @@ sub export {
 =head2 checkout
 
 a wrapper of checkout cmd of svn
-checkout a vessel, partly or as a whole
+checkout a project, partly or as a whole
 
 =cut
 
@@ -467,7 +467,7 @@ sub propset {
 
 =head2 test_script
 
-set test_script for a vessel, aka. udpate t/test script
+set test_script for a project, aka. udpate t/test script
 
 =cut
 

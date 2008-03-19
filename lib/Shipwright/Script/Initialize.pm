@@ -45,14 +45,14 @@ __END__
 
 =head1 NAME
 
-Shipwright::Script::Initialize - create a vessel
+Shipwright::Script::Initialize - create a project
 
 =head1 SYNOPSIS
 
-  shipwright create          create a vessel
+  shipwright create          create a project
 
  Options:
-   --repository(-r)       specify the repository of our vessel
+   --repository(-r)       specify the repository of our project
    --log-level(-l)            specify the log level
 
 =head1 AUTHOR

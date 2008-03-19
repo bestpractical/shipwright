@@ -90,7 +90,7 @@ sub shipwright_root {
 =head2 share_root
 
 Returns the 'share' directory of the installed Shipwright module. This is
-currently only used to store the initial files in vessel.
+currently only used to store the initial files in project.
 
 =cut
 

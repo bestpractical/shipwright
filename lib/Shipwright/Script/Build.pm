@@ -74,21 +74,21 @@ __END__
 
 =head1 NAME
 
-Shipwright::Script::Build - build the specified vessel
+Shipwright::Script::Build - build the specified project
 
 =head1 SYNOPSIS
 
-  shipwright build           build a vessel
+  shipwright build           build a project
 
  Options:
-   --repository(-r)   specify the repository of our vessel
+   --repository(-r)   specify the repository of our project
    --log-level(-l)    specify the log level
    --install-base     specify install base. default is an autocreated temp dir
    --skip             specify dists which'll be skipped
    --skip-test        specify whether to skip test
    --only-test        just test(the running script is t/test)
    --flags            specify flags
-   --name             specify the name of the vessel
+   --name             specify the name of the project
 
 =head1 AUTHOR
 

@@ -156,7 +156,7 @@ Shipwright::Script::Update - update dist(s)
   shipwright update          update dist(s)
 
  Options:
-   --repository(-r)   specify the repository of our vessel
+   --repository(-r)   specify the repository of our project
    --log-level(-l)    specify the log level
    --name             specify the source name( only alphanumeric characters and - )
    --all              update all the dists

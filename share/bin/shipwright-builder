@@ -31,7 +31,7 @@ install-base: where we will install
     defaults: a temp dir below your system's tmp.
     e.g. --install-base /home/local/mydist
 
-name: the name of the vessel. used to create a better named dir if
+name: the name of the project. used to create a better named dir if
     install_base is not supplied
     e.g. --name mydist
 
