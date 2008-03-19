@@ -1,3 +1,5 @@
+## no critic
+
 =head1 NAME
 
 Shipwright::Manual - Shipwright documentation
