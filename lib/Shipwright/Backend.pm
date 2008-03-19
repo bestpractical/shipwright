@@ -7,9 +7,8 @@ use UNIVERSAL::require;
 
 =head2 new
 
-accept the backend part in config as args.
-e.g ( module => 'SVK', project => 'test', ... )
-returns the the individual Backend object.
+returns the the corresponding Backend object by the type of $args{repository}.
+now only supports SVK and SVN
 
 =cut
 

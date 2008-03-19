@@ -4,8 +4,7 @@ Shipwright::Tutorial - Introduction to Shipwright
 
 =head1 SYNOPSIS
 
-In this tutorial, we'll build a simple project: The L<Acme::Hello> module from
-CPAN.  (We love examples with name hello ;))
+In this tutorial, we'll create a simple project(we call it a vessel): The L<Acme::Hello> module from CPAN.  (We love examples with name hello ;))
 
 We will use C<svk://__shipwright/hello> as our repository.
 

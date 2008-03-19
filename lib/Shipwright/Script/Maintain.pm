@@ -67,14 +67,14 @@ __END__
 
 =head1 NAME
 
-Shipwright::Script::Maintain - maintain a project
+Shipwright::Script::Maintain - maintain a vessel
 
 =head1 SYNOPSIS
 
   shipwright maintain --update-order        update the build order
 
  Options:
-   --repository(-r)   specify the repository of our project
+   --repository(-r)   specify the repository of our vessel
    --log-level(-l)    specify the log level
    --update-order     update the build order
 

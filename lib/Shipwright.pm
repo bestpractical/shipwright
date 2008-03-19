@@ -147,7 +147,7 @@ about the changes maybe hurt other shipwright builds )
 
 =head3 after initialize
 
-After initialize a project, the files in the repo are:
+After initialize a vessel, the files in the repo are:
 
 =over 4
 

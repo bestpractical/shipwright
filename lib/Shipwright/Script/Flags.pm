@@ -97,7 +97,7 @@ Shipwright::Script::Flags - maintain a dist's flags
   shipwright flags --dist RT --add mysql 
 
  Options:
-   --repository(-r)   specify the repository of our project
+   --repository(-r)   specify the repository of our vessel
    --log-level(-l)    specify the log level
    --dist             specify the dist
    --add, --delete, --set  specify the flags split by comma

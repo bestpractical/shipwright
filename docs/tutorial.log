@@ -14,7 +14,7 @@ svk delete -m 'delete repository' //__shipwright/hello/
 Committed revision 79509.
 2008/02/11 22:21:44 INFO> SVK.pm:72 Shipwright::Backend::SVK::initialize - initialize //__shipwright/hello
 2008/02/11 22:21:44 INFO> Util.pm:52 Shipwright::Util::run - run cmd:
-svk import /var/folders/fn/fnQpv1CVF1OQBIYiaE+cQE+++TI/-Tmp-/mELaiutEO6 //__shipwright/hello -m 'created project'
+svk import /var/folders/fn/fnQpv1CVF1OQBIYiaE+cQE+++TI/-Tmp-/mELaiutEO6 //__shipwright/hello -m 'created vessel'
 2008/02/11 22:21:45 INFO> Util.pm:54 Shipwright::Util::run - run output:
 Committed revision 79510.
 Import path //__shipwright/hello initialized.

@@ -9,10 +9,6 @@ use File::Temp qw/tempdir/;
 use File::Copy;
 use File::Copy::Recursive qw/dircopy/;
 
-# our project's own files will be in //local/test/main
-# all the dependance packages will be in //local/test/deps
-# the shipwright's stuff will be in //local/test/shipwright
-
 our %REQUIRE_OPTIONS = ( import => [qw/source/] );
 
 use base qw/Class::Accessor::Fast/;
@@ -33,7 +29,7 @@ sub new {
 
 =head2 initialize
 
-initialize a project
+initialize a vessel
 
 =cut
 
@@ -56,7 +52,7 @@ sub initialize {
     $self->import(
         source      => $dir,
         _initialize => 1,
-        comment     => 'created project',
+        comment     => 'created vessel',
     );
 }
 
@@ -111,7 +107,7 @@ sub import {
 
 =head2 export
 
-export a project, partly or as a whole
+export a vessel, partly or as a whole
 
 =cut
 
@@ -128,7 +124,7 @@ sub export {
 =head2 checkout
 
 a wrapper of checkout cmd of svk
-checkout a project, partly or as a whole
+checkout a vessel, partly or as a whole
 
 =cut
 
@@ -461,7 +457,7 @@ sub propset {
 
 =head2 test_script
 
-set test_script for a project, aka. udpate t/test script
+set test_script for a vessel, aka. udpate t/test script
 
 =cut
 
