@@ -1,0 +1,13 @@
+=head1 NAME
+
+Shipwright::Manual::Glossary - Glossary for Shipwright
+
+=head1 DESCRIPTION
+
+=head2 vessel
+
+Shipwright's final product.
+
+What does the actual shipwright produce?
+Believe me, it's vessel! :)
+

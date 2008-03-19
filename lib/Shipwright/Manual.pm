@@ -12,6 +12,10 @@ The manual is divided into several parts, each covering a specific topic.
 
 A simple tutorial to help you know what shipwright generally is.
 
+=item L<Shipwright::Glossary>
+
+Glossary for Shipwright
+
 =back
 
 =cut
