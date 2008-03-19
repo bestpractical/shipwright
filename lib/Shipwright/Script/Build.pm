@@ -41,8 +41,13 @@ sub run {
 
     die "need repository arg" unless $self->repository;
 
-    if ( ! $self->name && $self->repository =~ /([-.\w]+)$/ ) {
-        $self->name( $1 );
+    unless ( $self->name ) {
+        if ( $self->repository =~ m{([-.\w]+)/([.\d]+)$} ) {
+            $self->name( "$1-$2" );
+        }
+        elsif ( $self->repository =~ /([-.\w]+)$/ ) {
+            $self->name( $1 );
+        }
     }
 
     $self->skip( { map { $_ => 1 } split /\s*,\s*/, $self->skip || '' } );

@@ -116,12 +116,18 @@ else {
         $CPAN::Config->{prerequisites_policy} = 'ignore';
     }
 
-    my $name = $args{'name'};
-    ($name) = $build_base =~ /([-.\w]+)$/ unless $name;
+    unless ( $args{name} ) {
+        if ( $build_base =~ m{([-.\w]+)[\\/]([.\d]+)$} ) {
+            $args{name} = "$1-$2";
+        }
+        elsif ( $build_base =~ m{([-.\w]+)$} ) {
+            $args{name} = $1;
+        }
+    }
 
     unless ( $args{'install-base'} ) {
-        my $dir = tempdir( $name . '-XXXXXX', DIR => File::Spec->tmpdir );
-        $args{'install-base'} = File::Spec->catfile( $dir, $name );
+        my $dir = tempdir( $args{name} . '-XXXXXX', DIR => File::Spec->tmpdir );
+        $args{'install-base'} = File::Spec->catfile( $dir, $args{name} );
 
         print $log
           "no default install-base, will set it to $args{'install-base'}\n";
