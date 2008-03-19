@@ -17,7 +17,7 @@ my %args;
 GetOptions(
     \%args,  'install-base=s', 'perl=s',    'skip=s',
     'flags=s', 'skip-test',      'only-test', 'force',
-    'clean', 'project-name',   'help',
+    'clean', 'name=s',   'help',
 );
 
 my $USAGE = <<'END'
@@ -30,6 +30,10 @@ help: print this usage
 install-base: where we will install
     defaults: a temp dir below your system's tmp.
     e.g. --install-base /home/local/mydist
+
+name: the name of the vessel. used to create a better named dir if
+    install_base is not supplied
+    e.g. --name mydist
 
 perl: which perl to use for the to be installed dists. 
     defaults: if we have perl in the source, it will use that one.
@@ -112,12 +116,12 @@ else {
         $CPAN::Config->{prerequisites_policy} = 'ignore';
     }
 
-    my $project_name = $args{'project-name'};
-    ($project_name) = $build_base =~ /([-.\w]+)$/ unless $project_name;
+    my $name = $args{'name'};
+    ($name) = $build_base =~ /([-.\w]+)$/ unless $name;
 
     unless ( $args{'install-base'} ) {
-        my $dir = tempdir( $project_name . '-XXXXXX', DIR => '/tmp' );
-        $args{'install-base'} = File::Spec->catfile( $dir, $project_name );
+        my $dir = tempdir( $name . '-XXXXXX', DIR => File::Spec->tmpdir );
+        $args{'install-base'} = File::Spec->catfile( $dir, $name );
 
         print $log
           "no default install-base, will set it to $args{'install-base'}\n";

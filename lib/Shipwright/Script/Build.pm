@@ -7,7 +7,7 @@ use Carp;
 use base qw/App::CLI::Command Class::Accessor::Fast Shipwright::Script/;
 __PACKAGE__->mk_accessors(
     qw/repository log_level install_base build_base skip skip_test only_test
-      force log_file flags/
+      force log_file flags name/
 );
 
 use Shipwright;
@@ -21,6 +21,7 @@ sub options {
         'l|log-level=s'  => 'log_level',
         'log-file=s'     => 'log_file',
         'install-base=s' => 'install_base',
+        'name=s'         => 'name',
         'skip=s'         => 'skip',
         'flags=s'        => 'flags',
         'skip-test'      => 'skip_test',
@@ -40,6 +41,10 @@ sub run {
 
     die "need repository arg" unless $self->repository;
 
+    if ( ! $self->name && $self->repository =~ /([-.\w]+)$/ ) {
+        $self->name( $1 );
+    }
+
     $self->skip( { map { $_ => 1 } split /\s*,\s*/, $self->skip || '' } );
     $self->flags(
         {
@@ -54,6 +59,7 @@ sub run {
         log_file   => $self->log_file,
         skip       => $self->skip,
         flags      => $self->flags,
+        name       => $self->name,
     );
 
     $shipwright->backend->export( target => $shipwright->build->build_base );
@@ -81,6 +87,8 @@ Shipwright::Script::Build - build the specified project
    --skip             specify dists which'll be skipped
    --skip-test        specify whether to skip test
    --only-test        just test(the running script is t/test)
+   --flags            specify flags
+   --name             specify the name of the project
 
 =head1 AUTHOR
 

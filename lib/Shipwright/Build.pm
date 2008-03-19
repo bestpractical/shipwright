@@ -8,7 +8,7 @@ use base qw/Class::Accessor::Fast/;
 
 __PACKAGE__->mk_accessors(
     qw/install_base perl build_base skip_test commands log
-      skip only_test force order flags/
+      skip only_test force order flags name/
 );
 
 use File::Spec;
@@ -33,7 +33,9 @@ sub new {
       File::Spec->catfile( tempdir( CLEANUP => 0 ), 'build' );
 
     unless ( $self->install_base ) {
-        $self->install_base( tempdir( CLEANUP => 0 ) );
+
+        my $dir = tempdir( $self->name . '-XXXXXX', DIR => File::Spec->tmpdir );
+        $self->install_base( File::Spec->catfile( $dir, $self->name ) );
     }
 
     no warnings 'uninitialized';
