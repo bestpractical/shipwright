@@ -105,14 +105,12 @@ sub run {
                 File::Spec->catfile( 'shipwright', 'flags.yml' ) );
         }
 
-DIST:
         for my $dist ( @{ $self->order } ) {
-            if ( $flags->{$dist} )
-            {    # undefined means default, will be installed
-                for my $flag ( @{$flags->{$dist}} ) {
-                    next DIST unless $self->flags->{$flag};
-                }
-            }
+
+            # $flags->{$dist} is undef means 'default', will be installed
+            next
+              if $flags->{$dist} && !grep { $self->flags->{$_} }
+                  @{ $flags->{$dist} };
 
             unless ( $self->skip && $self->skip->{$dist} ) {
                 $self->_install($dist);
@@ -153,7 +151,7 @@ sub _install {
             $cmd  = $_;
         }
 
-        next if $type eq 'clean'; # don't need to clean when install
+        next if $type eq 'clean';    # don't need to clean when install
         if ( $self->skip_test && $type eq 'test' ) {
             $self->log->info("skip build $type part in $dir");
             next;

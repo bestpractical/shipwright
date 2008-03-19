@@ -22,6 +22,7 @@ sub options {
         'log-file=s'     => 'log_file',
         'install-base=s' => 'install_base',
         'skip=s'         => 'skip',
+        'flags=s'        => 'flags',
         'skip-test'      => 'skip_test',
         'only-test'      => 'only_test',
         'force'          => 'force',

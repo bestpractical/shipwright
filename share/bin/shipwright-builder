@@ -13,12 +13,11 @@ use inc::YAML::Tiny;
 
 my $build_base = getcwd;
 
-
 my %args;
 GetOptions(
-    \%args,      'install-base=s', 'perl=s', 'skip=s',
-    'skip-test', 'only-test',      'force',  'clean',
-    'project-name', 'help',
+    \%args,  'install-base=s', 'perl=s',    'skip=s',
+    'flags=s', 'skip-test',      'only-test', 'force',
+    'clean', 'project-name',   'help',
 );
 
 my $USAGE = <<'END'
@@ -40,6 +39,9 @@ perl: which perl to use for the to be installed dists.
 skip: dists we don't want to install, comma seperated. 
     e.g. --skip perl,Module-Build
 
+flags: set flags we need, comma seperated
+   e.g.  --flags mysql,standalone
+
 skip-test: skip test part if there're
 
 force: if tests fail, install anyway
@@ -58,19 +60,24 @@ if ( $args{'help'} ) {
     exit 0;
 }
 
-
-$args{skip} = { map { $_ => 1 } split /,\s*/, $args{skip} || '' };
+$args{skip} = { map { $_ => 1 } split /\s*,\s*/, $args{skip} || '' };
+$args{flags} = {
+    default => 1,
+    map { $_ => 1 } split /\s*,\s*/, $args{flags} || ''
+};
 
 # YAML::Tiny objects are array based.
 my $order =
   ( YAML::Tiny->read( File::Spec->catfile( 'shipwright', 'order.yml' ) ) )->[0];
+my $flags =
+  ( YAML::Tiny->read( File::Spec->catfile( 'shipwright', 'flags.yml' ) ) )->[0];
 
 my $log;
 
 if ( $args{'only-test'} ) {
     open $log, '>', 'test.log' or die $!;
 
-    $args{'install-base'} = get_install_base() unless $args{'install-base'}; 
+    $args{'install-base'} = get_install_base() unless $args{'install-base'};
     test();
 }
 elsif ( $args{'clean'} ) {
@@ -79,6 +86,10 @@ elsif ( $args{'clean'} ) {
     $args{'install-base'} = get_install_base() unless $args{'install-base'};
 
     for my $dist (@$order) {
+        next
+          if $flags->{$dist} && !grep { $args{flags}{$_} }
+              @{ $flags->{$dist} };
+
         unless ( $args{skip}{$dist} ) {
             clean($dist);
         }
@@ -86,6 +97,7 @@ elsif ( $args{'clean'} ) {
     }
 }
 else {
+
     # for install
     open $log, '>', 'build.log' or die $!;
 
@@ -118,7 +130,7 @@ else {
 
     unless ( $args{perl} && -e $args{perl} ) {
         if ( ( grep { $_ eq 'perl' } @$order )
-            && ! $args{skip}{perl} )
+            && !$args{skip}{perl} )
         {
             $args{perl} =
               File::Spec->catfile( $args{'install-base'}, 'bin', 'perl' );
@@ -170,6 +182,12 @@ else {
         'shipwright-utility' );
 
     for my $dist (@$order) {
+
+        # $flags->{$dist} is undef means 'default', will be installed
+        next
+          if $flags->{$dist} && ! grep { $args{flags}{$_} }
+              @{ $flags->{$dist} };
+
         unless ( $args{skip}{$dist} ) {
             install($dist);
         }
@@ -188,7 +206,7 @@ sub install {
     my $dir = shift;
 
     print "start to build and install $dir\n";
-    my $cmds = cmds(File::Spec->catfile( 'scripts', $dir, 'build' ));
+    my $cmds = cmds( File::Spec->catfile( 'scripts', $dir, 'build' ) );
 
     chdir File::Spec->catfile( 'dists', $dir );
 
@@ -260,7 +278,7 @@ sub wrap_bin {
     # then link to it, else link to the normal one
         if (   $type
             && grep( { $_ eq $type } @$order )
-            && ! $args{skip}{$type}
+            && !$args{skip}{$type}
             && -e File::Spec->catfile( '..', 'etc', "shipwright-$type-wrapper" )
           )
         {
@@ -289,7 +307,7 @@ sub substitute {
     my $text = shift;
     return unless $text;
 
-    my $install_base  = $args{'install-base'};
+    my $install_base = $args{'install-base'};
     $text =~ s/%%INSTALL_BASE%%/$install_base/g;
 
     my $perl;
@@ -304,14 +322,13 @@ sub substitute {
     my $perl_archname = `$perl -MConfig -e 'print \$Config{archname}'`;
     $text =~ s/%%PERL%%/$perl/g;
     $text =~ s/%%PERL_ARCHNAME%%/$perl_archname/g;
-    
 
     return $text;
 }
 
 sub test {
 
-    my $cmds = cmds(File::Spec->catfile( 't', 'test' ));
+    my $cmds = cmds( File::Spec->catfile( 't', 'test' ) );
 
     for (@$cmds) {
         my ( $type, $cmd ) = @$_;
@@ -330,7 +347,6 @@ sub cmds {
     my $file = shift;
 
     my @cmds;
-
 
     {
         open my $fh, '<', $file or die $!;
@@ -362,7 +378,7 @@ sub cmds {
 sub clean {
     my $dir = shift;
 
-    my $cmds = cmds(File::Spec->catfile( 'scripts', $dir, 'build' ));
+    my $cmds = cmds( File::Spec->catfile( 'scripts', $dir, 'build' ) );
 
     chdir File::Spec->catfile( 'dists', $dir );
 
