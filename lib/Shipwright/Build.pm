@@ -96,7 +96,7 @@ sub run {
         $self->order(
             Shipwright::Util::LoadFile(
                 File::Spec->catfile( 'shipwright', 'order.yml' )
-            )
+            ) || []
         );
 
         my $flags = {};
