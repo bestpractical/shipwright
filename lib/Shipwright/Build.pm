@@ -32,6 +32,8 @@ sub new {
     $self->{build_base} =
       File::Spec->catfile( tempdir( CLEANUP => 0 ), 'build' );
 
+    $self->name( 'vessel' ) unless $self->name;
+
     unless ( $self->install_base ) {
 
         my $dir = tempdir( $self->name . '-XXXXXX', DIR => File::Spec->tmpdir );
