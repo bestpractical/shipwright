@@ -8,7 +8,7 @@ use File::Copy::Recursive qw/dircopy/;
 use File::Spec;
 use Cwd;
 
-use Test::More tests => 40;
+use Test::More tests => 41;
 use Shipwright::Test qw/has_svk create_svk_repo/;
 
 SKIP: {
@@ -63,6 +63,7 @@ SKIP: {
         [ 'bin/', 'dists/', 'etc/', 'inc/', 'scripts/', 'shipwright/', 't/' ],
         'initialize works'
     );
+
 
     # source
     my $source_dir = $shipwright->source->run();
@@ -194,4 +195,27 @@ SKIP: {
         qr/Acme-Hello.*howdy/s,
         'updated order works'
     );
+
+
+    # build with 0 packages
+    
+    {
+        my $shipwright = Shipwright->new(
+            repository => "svk:$repo",
+            log_level  => 'FATAL',
+        );
+    
+        # init
+        $shipwright->backend->initialize();
+        $shipwright->backend->export( target => $shipwright->build->build_base );
+        my $install_dir = tempdir;
+        $shipwright->build->run( install_base => $install_dir );
+        ok(
+            -e File::Spec->catfile(
+                $install_dir, 'etc', 'shipwright-script-wrapper'
+            ),
+            'build with 0 packages ok'
+        );
+    }
 }
+
