@@ -15,9 +15,9 @@ my $build_base = getcwd;
 
 my %args;
 GetOptions(
-    \%args,  'install-base=s', 'perl=s',    'skip=s',
+    \%args,    'install-base=s', 'perl=s',    'skip=s',
     'flags=s', 'skip-test',      'only-test', 'force',
-    'clean', 'name=s',   'help',
+    'clean',   'name=s',         'help',
 );
 
 my $USAGE = <<'END'
@@ -91,8 +91,7 @@ elsif ( $args{'clean'} ) {
 
     for my $dist (@$order) {
         next
-          if $flags->{$dist} && !grep { $args{flags}{$_} }
-              @{ $flags->{$dist} };
+          if $flags->{$dist} && !grep { $args{flags}{$_} } @{ $flags->{$dist} };
 
         unless ( $args{skip}{$dist} ) {
             clean($dist);
@@ -195,8 +194,7 @@ else {
 
         # $flags->{$dist} is undef means 'default', will be installed
         next
-          if $flags->{$dist} && ! grep { $args{flags}{$_} }
-              @{ $flags->{$dist} };
+          if $flags->{$dist} && !grep { $args{flags}{$_} } @{ $flags->{$dist} };
 
         unless ( $args{skip}{$dist} ) {
             install($dist);
@@ -216,34 +214,51 @@ sub install {
     my $dir = shift;
 
     print "start to build and install $dir\n";
-    my $cmds = cmds( File::Spec->catfile( 'scripts', $dir, 'build' ) );
 
-    chdir File::Spec->catfile( 'dists', $dir );
-
-    for (@$cmds) {
-        my ( $type, $cmd ) = @$_;
-        next if $type eq 'clean';
-
-        if ( $args{'skip-test'} && $type eq 'test' ) {
-            print $log "skip build $type part in $dir\n";
-            next;
-        }
-
-        print $log "build $type part in $dir with cmd: $cmd\n";
-
-        print "we'll run the cmd: $cmd\n";
+    if ( -e File::Spec->catfile( 'scripts', $dir, 'build.pl' ) ) {
+        print $log "found build.pl for $dir, will install $dir using that\n";
+        my $cmd = join ' ', $args{perl} || $^X,
+          File::Spec->catfile( 'scripts', $dir, 'build.pl' ),
+          '--source'       => File::Spec->catfile( 'dists', $dir ),
+          '--install-base' => $args{'install-base'},
+          '--flags' => join( ',', keys %{ $args{flags} } ),
+          $args{'skip-test'} ? '--skip-test' : (),
+          $args{'force'} ? '--force' : (), $args{'clean'} ? '--clean' : ();
         if ( system($cmd) ) {
-            print $log "build $dir $type part with failure: $!\n";
-            if ( $args{force} && $type eq 'test' ) {
-                print $log
+            print $log "build $dir with failure: $!\n";
+            die "build $dir with failure: $!\n";
+        }
+    }
+    else {
+        my $cmds = cmds( File::Spec->catfile( 'scripts', $dir, 'build' ) );
+
+        chdir File::Spec->catfile( 'dists', $dir );
+
+        for (@$cmds) {
+            my ( $type, $cmd ) = @$_;
+            next if $type eq 'clean';
+
+            if ( $args{'skip-test'} && $type eq 'test' ) {
+                print $log "skip build $type part in $dir\n";
+                next;
+            }
+
+            print $log "build $type part in $dir with cmd: $cmd\n";
+
+            print "we'll run the cmd: $cmd\n";
+            if ( system($cmd) ) {
+                print $log "build $dir $type part with failure: $!\n";
+                if ( $args{force} && $type eq 'test' ) {
+                    print $log
 "although tests failed, will install anyway since we have force arg\n";
+                }
+                else {
+                    die "build $dir $type part with failure: $!\n";
+                }
             }
             else {
-                die "build $dir $type part with failure: $!\n";
+                print $log "build $dir $type part with success!\n";
             }
-        }
-        else {
-            print $log "build $dir $type part with success!\n";
         }
     }
 
@@ -388,20 +403,34 @@ sub cmds {
 sub clean {
     my $dir = shift;
 
-    my $cmds = cmds( File::Spec->catfile( 'scripts', $dir, 'build' ) );
+    my $cmd;
 
-    chdir File::Spec->catfile( 'dists', $dir );
+    if ( -e File::Spec->catfile( 'scripts', $dir, 'build.pl' ) ) {
+        print $log "found build.pl for $dir, will clean $dir using that\n";
+        $cmd = join ' ', $args{perl} || $^X,
+          File::Spec->catfile( 'scripts', $dir, 'build.pl' ),
+          '--source' => File::Spec->catfile( 'dists', $dir ),
+          '--clean';
+    }
+    else {
+        my $cmds = cmds( File::Spec->catfile( 'scripts', $dir, 'build' ) );
 
-    for (@$cmds) {
-        my ( $type, $cmd ) = @$_;
-        next unless $type eq 'clean';
+        chdir File::Spec->catfile( 'dists', $dir );
 
-        if ( system($cmd) ) {
-            print $log "clean $dir with failure: $!\n";
+        for (@$cmds) {
+            my ( $type, $c ) = @$_;
+            if ( $type eq 'clean' ) {
+                $cmd = $c;
+                last;
+            }
         }
-        else {
-            print $log "clean $dir with success $!\n";
-        }
+    }
+
+    if ( system($cmd) ) {
+        print $log "clean $dir with failure: $!\n";
+    }
+    else {
+        print $log "clean $dir with success $!\n";
     }
 
     print '=' x 80, "\n";

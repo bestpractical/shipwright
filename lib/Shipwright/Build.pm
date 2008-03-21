@@ -32,7 +32,7 @@ sub new {
     $self->{build_base} =
       File::Spec->catfile( tempdir( CLEANUP => 0 ), 'build' );
 
-    $self->name( 'vessel' ) unless $self->name;
+    $self->name('vessel') unless $self->name;
 
     unless ( $self->install_base ) {
 
@@ -98,7 +98,8 @@ sub run {
         $self->order(
             Shipwright::Util::LoadFile(
                 File::Spec->catfile( 'shipwright', 'order.yml' )
-            ) || []
+              )
+              || []
         );
 
         my $flags = {};
@@ -136,46 +137,65 @@ sub _install {
     my $self = shift;
     my $dir  = shift;
 
-    my @cmds = read_file( File::Spec->catfile( 'scripts', $dir, 'build' ) );
-    chomp @cmds;
-    @cmds = map { $self->_substitute($_) } @cmds;
+    if ( -e File::Spec->catfile( 'scripts', $dir, 'build.pl' ) ) {
+        $self->log->info(
+            "found build.pl for $dir, will install $dir using that");
+        Shipwright::Util->run(
+            [
+                $self->perl || $^X,
+                File::Spec->catfile( 'scripts', $dir, 'build.pl' ),
+                '--source'       => File::Spec->catfile( 'dists', $dir ),
+                '--install-base' => $self->install_base,
+                '--flags' => join( ',', keys %{ $self->flags } ),
+                $self->skip_test ? '--skip-test' : (),
+                $self->force     ? '--force'     : (),
+            ]
+        );
 
-    chdir File::Spec->catfile( 'dists', $dir );
+    }
+    else {
 
-    for (@cmds) {
-        my ( $type, $cmd );
-        next unless /\S/;
+        my @cmds = read_file( File::Spec->catfile( 'scripts', $dir, 'build' ) );
+        chomp @cmds;
+        @cmds = map { $self->_substitute($_) } @cmds;
 
-        if (/^(\S+):\s*(.*)/) {
-            $type = $1;
-            $cmd  = $2;
-        }
-        else {
-            $type = '';
-            $cmd  = $_;
-        }
+        chdir File::Spec->catfile( 'dists', $dir );
 
-        next if $type eq 'clean';    # don't need to clean when install
-        if ( $self->skip_test && $type eq 'test' ) {
-            $self->log->info("skip build $type part in $dir");
-            next;
-        }
+        for (@cmds) {
+            my ( $type, $cmd );
+            next unless /\S/;
 
-        $self->log->info("build $type part in $dir");
-
-        if ( system($cmd) ) {
-            $self->log->error("build $dir with failure when run $type: $!");
-            if ( $self->force && $type eq 'error' ) {
-                $self->log->error(
-"although tests failed, will install anyway since we have force arg\n"
-                );
+            if (/^(\S+):\s*(.*)/) {
+                $type = $1;
+                $cmd  = $2;
             }
             else {
-                die "install failed";
+                $type = '';
+                $cmd  = $_;
+            }
+
+            next if $type eq 'clean';    # don't need to clean when install
+            if ( $self->skip_test && $type eq 'test' ) {
+                $self->log->info("skip build $type part in $dir");
+                next;
+            }
+
+            $self->log->info("build $type part in $dir");
+
+            if ( system($cmd) ) {
+                $self->log->error("build $dir with failure when run $type: $!");
+                if ( $self->force && $type eq 'error' ) {
+                    $self->log->error(
+"although tests failed, will install anyway since we have force arg\n"
+                    );
+                }
+                else {
+                    die "install failed";
+                }
             }
         }
-    }
 
+    }
     $self->log->info("build $dir with success!");
 }
 
