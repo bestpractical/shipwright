@@ -42,4 +42,4 @@ requires:
   YAML::Syck: 0.71
   version: 0
 tests: t/*.t t/*/*.t
-version: 1.01
+version: 1.10
