@@ -1,0 +1,69 @@
+=head1 NAME
+
+Shipwright::Manual::CustomizeBuild - Customize build way for a dist
+
+=head1 DESCRIPTION
+
+Now we support two ways to build a dist: a perl script (F<dists/foo/build.pl>) and a list of tagged commands(  F<dists/foo/build> ). 
+
+F<dists/foo/build.pl> has higher precedence, so if there're both
+F<dists/foo/build.pl> and F<dists/foo/build>, the latter will be omitted.
+
+=head2 build.pl
+
+When executing F<build.pl>, the current working dir will be F<dists/foo>
+
+The script will be ran with a list of arguments( the format is designed well
+to be extracted with L<Getopt::Long> easily): 
+
+=over 4
+
+=item --install-base=s
+
+you'd be familiar with this :)
+
+e.g. --install-base '/tmp/test-xxxxxx/test'
+
+=item --flags=s
+
+a list of flags, joined by comma.
+
+e.g. --flags default,mysql
+
+=item --skip-test
+
+whether to skip test or not
+
+=item --force
+
+If test fails, whether to go on or just die.
+
+=item --clean
+
+if provided with this arg, the script should do the C<clean> work instead of
+C<install> work.
+
+=back
+
+=head2 build
+
+This is a plain file, each line should be either blank or the format of 
+C<type: cmd>, the command will be executed line by line, and the current
+working dir will be F<dists/foo>.
+
+Now we support three templates in cmd, %%PERL%%, %%PERL_ARCHNAME%% and
+%%INSTALL_BASE%%, so we don't need to set it until we know.
+
+There're two special types: C<test> and C<clean>
+
+=over 4
+
+=item test
+
+- if with C<--skip-test>, this cmd won't be executed. 
+- if with C<--force>, even if the test cmd fails, we'll still go on building.
+
+=item clean
+
+if with C<--clean>, all the cmds won't be executed but this one.
+

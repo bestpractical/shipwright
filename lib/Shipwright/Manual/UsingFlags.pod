@@ -1,0 +1,45 @@
+=head1 NAME
+
+Shipwright::Manual::UsingFlags - Using Flags
+
+=head1 DESCRIPTION
+
+B<Flags> is supported since 1.10.
+
+It's another way to skip some dists, and even more...
+
+Imagining you want to create a project, there're several database types
+you want to support, while for each B<vessel>, you'd like users to choose only 
+one type.( sometimes you have to choose one because some other dists
+will be confused if provided more than one type. e.g. for RT, you have to
+supply the database type when ./configure ).
+
+Well, B<Flags> is right for this.
+
+e.g. you want to support both mysql and postgresql, and you've imported mysql, DBD::mysql( will be named as cpan-DBD-mysql), postgresql and DBD::Pg( cpan-DBD-Pg).
+
+then you need to mark dists with flags, let's say they are C<mysql> and
+C<postgresql>.
+
+    $ shipwright flags set mysql mysql
+    $ shipwright flags set cpan-DBD-mysql mysql
+    $ shipwright flags set postgresql postgresql
+    $ shipwright flags set cpan-DBD-Pg postgresql
+
+B<Flags> related things are stored in F<shipwright/flags.yml>
+
+So when building you can set C<--flags> arg to C<mysql> or C<postgresql> to
+install that type db and related stuff only.
+
+If a dist need this info to configure( RT in our example ), you'll need
+to customize the build script, see L<Shipwright::Manual::CustomizeBuild> for
+more info about that.
+
+Note:
+
+Shipwright will automatically add C<default> to C<--flags> args, and if one dist isn't set flags at all( so no such item in F<shipwright/flags.yml> ), it'll be the same as C<default> so it can be installed by default. 
+
+=head1 SEE ALSO
+
+L<Shipwright::Manual::CustomizeBuild>
+
