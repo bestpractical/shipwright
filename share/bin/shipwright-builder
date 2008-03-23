@@ -410,6 +410,8 @@ sub clean {
         $cmd = join ' ', $args{perl} || $^X,
           File::Spec->catfile( 'scripts', $dir, 'build.pl' ),
           '--source' => File::Spec->catfile( 'dists', $dir ),
+          '--install-base' => $args{'install-base'},
+          '--flags' => join( ',', keys %{ $args{flags} } ),
           '--clean';
     }
     else {
