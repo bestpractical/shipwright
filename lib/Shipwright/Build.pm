@@ -137,14 +137,15 @@ sub _install {
     my $self = shift;
     my $dir  = shift;
 
-    if ( -e File::Spec->catfile( 'scripts', $dir, 'build.pl' ) ) {
+    chdir File::Spec->catfile( 'dists', $dir );
+
+    if ( -e File::Spec->catfile( '..', '..', 'scripts', $dir, 'build.pl' ) ) {
         $self->log->info(
             "found build.pl for $dir, will install $dir using that");
         Shipwright::Util->run(
             [
                 $self->perl || $^X,
-                File::Spec->catfile( 'scripts', $dir, 'build.pl' ),
-                '--source'       => File::Spec->catfile( 'dists', $dir ),
+                File::Spec->catfile( '..', '..', 'scripts', $dir, 'build.pl' ),
                 '--install-base' => $self->install_base,
                 '--flags' => join( ',', keys %{ $self->flags } ),
                 $self->skip_test ? '--skip-test' : (),
@@ -155,11 +156,10 @@ sub _install {
     }
     else {
 
-        my @cmds = read_file( File::Spec->catfile( 'scripts', $dir, 'build' ) );
+        my @cmds = read_file(
+            File::Spec->catfile( '..', '..', 'scripts', $dir, 'build' ) );
         chomp @cmds;
         @cmds = map { $self->_substitute($_) } @cmds;
-
-        chdir File::Spec->catfile( 'dists', $dir );
 
         for (@cmds) {
             my ( $type, $cmd );

@@ -212,27 +212,26 @@ else {
 
 sub install {
     my $dir = shift;
+    chdir File::Spec->catfile( 'dists', $dir );
 
     print "start to build and install $dir\n";
 
-    if ( -e File::Spec->catfile( 'scripts', $dir, 'build.pl' ) ) {
+    if ( -e File::Spec->catfile( '..', '..', 'scripts', $dir, 'build.pl' ) ) {
         print $log "found build.pl for $dir, will install $dir using that\n";
         my $cmd = join ' ', $args{perl} || $^X,
-          File::Spec->catfile( 'scripts', $dir, 'build.pl' ),
-          '--source'       => File::Spec->catfile( 'dists', $dir ),
+          File::Spec->catfile( '..', '..', 'scripts', $dir, 'build.pl' ),
           '--install-base' => $args{'install-base'},
-          '--flags' => join( ',', keys %{ $args{flags} } ),
+          '--flags'        => join( ',', keys %{ $args{flags} } ),
           $args{'skip-test'} ? '--skip-test' : (),
-          $args{'force'} ? '--force' : (), $args{'clean'} ? '--clean' : ();
+          $args{'force'} ? '--force' : (),
+          $args{'clean'} ? '--clean' : ();
         if ( system($cmd) ) {
             print $log "build $dir with failure: $!\n";
             die "build $dir with failure: $!\n";
         }
     }
     else {
-        my $cmds = cmds( File::Spec->catfile( 'scripts', $dir, 'build' ) );
-
-        chdir File::Spec->catfile( 'dists', $dir );
+        my $cmds = cmds( File::Spec->catfile( '..', '..', 'scripts', $dir, 'build' ) );
 
         for (@$cmds) {
             my ( $type, $cmd ) = @$_;
@@ -404,20 +403,18 @@ sub clean {
     my $dir = shift;
 
     my $cmd;
+    chdir File::Spec->catfile( 'dists', $dir );
 
-    if ( -e File::Spec->catfile( 'scripts', $dir, 'build.pl' ) ) {
+    if ( -e File::Spec->catfile( '..', '..', 'scripts', $dir, 'build.pl' ) ) {
         print $log "found build.pl for $dir, will clean $dir using that\n";
         $cmd = join ' ', $args{perl} || $^X,
-          File::Spec->catfile( 'scripts', $dir, 'build.pl' ),
-          '--source' => File::Spec->catfile( 'dists', $dir ),
+          File::Spec->catfile( '..', '..', 'scripts', $dir, 'build.pl' ),
           '--install-base' => $args{'install-base'},
           '--flags' => join( ',', keys %{ $args{flags} } ),
           '--clean';
     }
     else {
-        my $cmds = cmds( File::Spec->catfile( 'scripts', $dir, 'build' ) );
-
-        chdir File::Spec->catfile( 'dists', $dir );
+        my $cmds = cmds( File::Spec->catfile( '..', '..', 'scripts', $dir, 'build' ) );
 
         for (@$cmds) {
             my ( $type, $c ) = @$_;
