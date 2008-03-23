@@ -206,14 +206,7 @@ clean: %%PERL%% Build realclean
 Each line is of `type: cmd' format, and the cmd is executed line by
 line(which's also true for t/test).
 
-We now support three templates in cmd, %%PERL%%, %%PERL_ARCHNAME%% and
-%%INSTALL_BASE%%, so you can set it till build.
-
-The `test' type is paticular:
-- if we build with --skip-test, the corresponding cmd won't be executed. 
-- if we build with --force, even the test cmd failed, we still go on building.
-
-the `clean' type is also different: it's executed only when --clean.
+see L<Shipwright::Manual::CustomizeBuild> for more info.
 
 =head4 require.yml
 
@@ -240,7 +233,9 @@ wrappers to the files bellow bin-wrapper with same names.
 
 =head1 SEE ALSO
 
-L<Shipwright::Tutorial>
+L<Shipwright::Manual::Tutorial>
+L<Shipwright::Manual::UsingFlags>
+L<Shipwright::Manual::CustomizeBuild>
 
 =head1 DEPENDENCIES
 
