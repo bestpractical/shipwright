@@ -147,7 +147,7 @@ sub _install {
                 $self->perl || $^X,
                 File::Spec->catfile( '..', '..', 'scripts', $dir, 'build.pl' ),
                 '--install-base' => $self->install_base,
-                '--flags' => join( ',', keys %{ $self->flags } ),
+                '--flags'        => join( ',', keys %{ $self->flags } ),
                 $self->skip_test ? '--skip-test' : (),
                 $self->force     ? '--force'     : (),
             ]
@@ -203,15 +203,26 @@ sub _install {
 sub _wrapper {
     my $self = shift;
 
-    my %seen;
-
     my $sub = sub {
         my $file = $_;
         return unless $file and -f $file;
-        return if $seen{$File::Find::name}++;
         my $dir = ( File::Spec->splitdir($File::Find::dir) )[-1];
         mkdir File::Spec->catfile( $self->install_base,       "$dir-wrapped" )
           unless -d File::Spec->catfile( $self->install_base, "$dir-wrapped" );
+
+        # return if it's been wrapped already
+        if (
+            -e File::Spec->catfile( $self->install_base, "$dir-wrapped", $file )
+          )
+        {
+            $self->log->warn(
+                'found '
+                  . File::Spec->catfile( $self->install_base, "$dir-wrapped",
+                    $file )
+                  . ', skipping' . "\n"
+            );
+            return;
+        }
 
         my $type;
         if ( -T $file ) {

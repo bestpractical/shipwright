@@ -223,15 +223,15 @@ sub install {
           '--install-base' => $args{'install-base'},
           '--flags'        => join( ',', keys %{ $args{flags} } ),
           $args{'skip-test'} ? '--skip-test' : (),
-          $args{'force'} ? '--force' : (),
-          $args{'clean'} ? '--clean' : ();
+          $args{'force'} ? '--force' : (), $args{'clean'} ? '--clean' : ();
         if ( system($cmd) ) {
             print $log "build $dir with failure: $!\n";
             die "build $dir with failure: $!\n";
         }
     }
     else {
-        my $cmds = cmds( File::Spec->catfile( '..', '..', 'scripts', $dir, 'build' ) );
+        my $cmds =
+          cmds( File::Spec->catfile( '..', '..', 'scripts', $dir, 'build' ) );
 
         for (@$cmds) {
             my ( $type, $cmd ) = @$_;
@@ -268,16 +268,24 @@ sub install {
 sub wrap_bin {
     my $self = shift;
 
-    my %seen;
-
     my $sub = sub {
         my $file = $_;
-        return unless $file and -f $file;
-        return if $seen{$File::Find::name}++;
+        return unless -f $file;
         my $dir = ( File::Spec->splitdir($File::Find::dir) )[-1];
         mkdir File::Spec->catfile( $args{'install-base'}, "$dir-wrapped" )
           unless -d File::Spec->catfile( $args{'install-base'},
             "$dir-wrapped" );
+
+        # return if it's been wrapped already
+        if ( File::Spec->catfile( $args{'install-base'}, "$dir-wrapped", $file )
+          )
+        {
+            print $log 'found '
+              . File::Spec->catfile( $args{'install-base'}, "$dir-wrapped",
+                $file )
+              . ', skipping' . "\n";
+            return
+        }
 
         my $type;
         if ( -T $file ) {
@@ -410,11 +418,12 @@ sub clean {
         $cmd = join ' ', $args{perl} || $^X,
           File::Spec->catfile( '..', '..', 'scripts', $dir, 'build.pl' ),
           '--install-base' => $args{'install-base'},
-          '--flags' => join( ',', keys %{ $args{flags} } ),
+          '--flags'        => join( ',', keys %{ $args{flags} } ),
           '--clean';
     }
     else {
-        my $cmds = cmds( File::Spec->catfile( '..', '..', 'scripts', $dir, 'build' ) );
+        my $cmds =
+          cmds( File::Spec->catfile( '..', '..', 'scripts', $dir, 'build' ) );
 
         for (@$cmds) {
             my ( $type, $c ) = @$_;
