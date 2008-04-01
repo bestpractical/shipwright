@@ -277,7 +277,7 @@ sub wrap_bin {
             "$dir-wrapped" );
 
         # return if it's been wrapped already
-        if ( File::Spec->catfile( $args{'install-base'}, "$dir-wrapped", $file )
+        if ( -e File::Spec->catfile( $args{'install-base'}, "$dir-wrapped", $file )
           )
         {
             print $log 'found '
