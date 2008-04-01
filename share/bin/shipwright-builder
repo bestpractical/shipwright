@@ -138,11 +138,13 @@ else {
     close $fh;
 
     unless ( $args{perl} && -e $args{perl} ) {
-        if ( ( grep { $_ eq 'perl' } @$order )
-            && !$args{skip}{perl} )
+        my $perl = File::Spec->catfile( $args{'install-base'}, 'bin', 'perl' );
+
+        # -e $perl makes sense when we install on to another vessel
+        if ( ( ( grep { $_ eq 'perl' } @$order ) && !$args{skip}{perl} )
+            || -e $perl )
         {
-            $args{perl} =
-              File::Spec->catfile( $args{'install-base'}, 'bin', 'perl' );
+            $args{perl} = $perl;
         }
     }
 
@@ -277,14 +279,15 @@ sub wrap_bin {
             "$dir-wrapped" );
 
         # return if it's been wrapped already
-        if ( -e File::Spec->catfile( $args{'install-base'}, "$dir-wrapped", $file )
-          )
+        if (
+            -e File::Spec->catfile( $args{'install-base'}, "$dir-wrapped",
+                $file ) )
         {
             print $log 'found '
               . File::Spec->catfile( $args{'install-base'}, "$dir-wrapped",
                 $file )
               . ', skipping' . "\n";
-            return
+            return;
         }
 
         my $type;
