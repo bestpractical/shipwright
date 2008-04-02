@@ -39,6 +39,8 @@ source part:
 
 build part:
 
+    perl: the path of perl that runs the cmds in scripts/foo/build(.pl)
+          default is $^X, the one that is running shipwright
     skip: hashref of which the keys are the skipped dists when install
           default is undefined
     skip_test: skip test or not. default is false

@@ -110,6 +110,26 @@ sub run {
                 File::Spec->catfile( 'shipwright', 'flags.yml' ) );
         }
 
+        unless ( $self->perl && -e $self->perl ) {
+            my $perl =
+              File::Spec->catfile( $self->install_base, 'bin', 'perl' );
+
+            # -e $perl makes sense when we install on to another vessel
+            if (
+                (
+                    ( grep { $_ eq 'perl' } @{ $self->order } )
+                    && !$self->skip->{perl}
+                )
+                || -e $perl
+              )
+            {
+                $self->perl($perl);
+            }
+            else {
+                $self->perl($^X);
+            }
+        }
+
         for my $dist ( @{ $self->order } ) {
 
             # $flags->{$dist} is undef means 'default', will be installed
@@ -144,7 +164,7 @@ sub _install {
             "found build.pl for $dir, will install $dir using that");
         Shipwright::Util->run(
             [
-                $self->perl || $^X,
+                $self->perl,
                 File::Spec->catfile( '..', '..', 'scripts', $dir, 'build.pl' ),
                 '--install-base' => $self->install_base,
                 '--flags'        => join( ',', keys %{ $self->flags } ),
@@ -229,7 +249,7 @@ sub _wrapper {
             open my $fh, '<', $file or die "can't open $file: $!";
             my $shebang = <$fh>;
             my $base    = quotemeta $self->install_base;
-            my $perl    = quotemeta $self->perl || $^X;
+            my $perl    = quotemeta $self->perl;
 
             if ( $shebang =~ m{$perl} ) {
                 $type = 'perl';
@@ -282,7 +302,7 @@ sub _substitute {
 
     return unless $text;
 
-    my $perl          = $self->perl || $^X;
+    my $perl          = $self->perl;
     my $perl_archname = `$perl -MConfig -e 'print \$Config{archname}'`;
     my $install_base  = $self->install_base;
     $text =~ s/%%PERL%%/$perl/g;
