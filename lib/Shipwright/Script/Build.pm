@@ -43,10 +43,10 @@ sub run {
 
     unless ( $self->name ) {
         if ( $self->repository =~ m{([-.\w]+)/([.\d]+)$} ) {
-            $self->name( "$1-$2" );
+            $self->name("$1-$2");
         }
         elsif ( $self->repository =~ /([-.\w]+)$/ ) {
-            $self->name( $1 );
+            $self->name($1);
         }
     }
 
@@ -59,18 +59,13 @@ sub run {
     );
 
     my $shipwright = Shipwright->new(
-        repository => $self->repository,
-        log_level  => $self->log_level,
-        log_file   => $self->log_file,
-        skip       => $self->skip,
-        flags      => $self->flags,
-        name       => $self->name,
+        map { $_ => $self->$_ }
+          qw/repository log_level log_file skip skip_test
+          flags name force only_test install_base/
     );
 
     $shipwright->backend->export( target => $shipwright->build->build_base );
-    $shipwright->build->skip_test(1) if $self->skip_test;
-    $shipwright->build->run( map { $_ => $self->$_ }
-          qw/install_base only_test force/ );
+    $shipwright->build->run();
 }
 
 1;
