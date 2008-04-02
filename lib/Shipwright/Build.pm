@@ -33,6 +33,7 @@ sub new {
       File::Spec->catfile( tempdir( CLEANUP => 0 ), 'build' );
 
     $self->name('vessel') unless $self->name;
+    $self->skip( {} ) unless $self->skip;
 
     unless ( $self->install_base ) {
 
@@ -102,12 +103,11 @@ sub run {
               || []
         );
 
-        my $flags = {};
 
         if ( -e File::Spec->catfile( 'shipwright', 'flags.yml' ) ) {
 
-            $flags = Shipwright::Util::LoadFile(
-                File::Spec->catfile( 'shipwright', 'flags.yml' ) );
+            $self->flags( Shipwright::Util::LoadFile(
+                File::Spec->catfile( 'shipwright', 'flags.yml' ) ) || {} );
         }
 
         unless ( $self->perl && -e $self->perl ) {
@@ -132,10 +132,10 @@ sub run {
 
         for my $dist ( @{ $self->order } ) {
 
-            # $flags->{$dist} is undef means 'default', will be installed
+            # $self->flags->{$dist} is undef means 'default', will be installed
             next
-              if $flags->{$dist} && !grep { $self->flags->{$_} }
-                  @{ $flags->{$dist} };
+              if $self->flags->{$dist} && !grep { $self->flags->{$_} }
+                  @{ $self->flags->{$dist} };
 
             unless ( $self->skip && $self->skip->{$dist} ) {
                 $self->_install($dist);
@@ -251,6 +251,7 @@ sub _wrapper {
             my $base    = quotemeta $self->install_base;
             my $perl    = quotemeta $self->perl;
 
+            return unless $shebang;
             if ( $shebang =~ m{$perl} ) {
                 $type = 'perl';
             }
