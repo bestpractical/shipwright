@@ -538,6 +538,41 @@ sub flags {
     }
 }
 
+=head2 version
+
+get or set version
+
+=cut
+
+sub version {
+    my $self   = shift;
+    my %args = @_;
+
+    croak "need dist arg" unless $args{dist};
+
+    if ($args{version}) {
+        my $dir = tempdir( CLEANUP => 1 );
+        my $file = File::Spec->catfile( $dir, 'version.yml' );
+
+        $self->checkout(
+            path   => '/shipwright',
+            target => $dir,
+        );
+
+        my $version = Shipwright::Util::LoadFile( $file );
+        $version->{$args{dist}} = $args{version};
+
+        Shipwright::Util::DumpFile( $file, $version );
+        $self->commit( path => $file, comment => "set version for $args{dist}" );
+    }
+    else {
+        my ($out) = Shipwright::Util->run(
+            [ 'svn', 'cat', $self->repository . '/shipwright/version.yml' ] );
+        $out = Shipwright::Util::Load($out) || {};
+        return $out->{$args{version}}; 
+    }
+}
+
 1;
 
 __END__
