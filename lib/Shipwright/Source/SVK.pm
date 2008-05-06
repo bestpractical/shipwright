@@ -51,6 +51,17 @@ sub run {
 sub _run {
     my $self   = shift;
     my $source = $self->source;
+
+    my ($out) = Shipwright::Util->run(
+        [
+            'svk', 'info', $self->source,
+        ]
+    );
+
+    if ( $out =~ /^Revision: (\d+)/m ) {
+        $self->version( $1 );
+    }
+
     my @cmds;
     push @cmds,
       [
@@ -62,6 +73,7 @@ sub _run {
         'svk', 'co', '-d',
         File::Spec->catfile( $self->download_directory, $self->name )
       ];
+
 
     $self->source(
         File::Spec->catfile( $self->download_directory, $self->name ) );

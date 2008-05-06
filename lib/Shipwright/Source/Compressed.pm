@@ -15,7 +15,10 @@ sub run {
     my $self = shift;
 
     $self->name( $self->just_name( $self->path ) ) unless $self->name;
+    $self->version( $self->just_version( $self->path ) ) unless $self->version;
     $self->log->info( 'run source ' . $self->name . ': ' . $self->source );
+
+    $self->_update_version( $self->name, $self->version );
 
     $self->_update_url( $self->name, $self->source )
       unless $self->{_no_update_url};

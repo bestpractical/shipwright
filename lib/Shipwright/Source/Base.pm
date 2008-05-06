@@ -13,7 +13,8 @@ use Cwd qw/getcwd/;
 use base qw/Class::Accessor::Fast/;
 __PACKAGE__->mk_accessors(
     qw/source directory download_directory follow min_perl_version map_path
-      skip map keep_recommends keep_build_requires name log url_path/
+      skip map keep_recommends keep_build_requires name log url_path
+      version_path version/
 );
 
 =head2 new
@@ -214,12 +215,14 @@ sub _follow {
                                 %$self,
                                 source => $require->{$type}{$module}{source},
                                 name   => $name,
+                                version => undef,
                             );
                         }
                         else {
                             $s = Shipwright::Source->new(
                                 %$self,
                                 source => $module,
+                                version => undef,
                                 name => '',   # cpan name is automaticaly fixed.
                             );
                         }
@@ -282,6 +285,19 @@ sub _update_url {
     Shipwright::Util::DumpFile( $self->url_path, $map );
 }
 
+sub _update_version {
+    my $self = shift;
+    my $name = shift;
+    my $version  = shift;
+
+    my $map = {};
+    if ( -e $self->version_path && ! -z $self->version_path ) {
+        $map = Shipwright::Util::LoadFile( $self->version_path );
+    }
+    $map->{$name} = $version;
+    Shipwright::Util::DumpFile( $self->version_path, $map );
+}
+
 sub _is_skipped {
     my $self   = shift;
     my $module = shift;
@@ -323,8 +339,29 @@ sub just_name {
     my $self = shift;
     my $name = shift;
     $name .= '.tar.gz' unless $name =~ /(tar\.gz|tgz|tar\.bz2)$/;
+
     require CPAN::DistnameInfo;
-    return CPAN::DistnameInfo->new($name)->dist;
+    my $info = CPAN::DistnameInfo->new( $name );
+    my $dist = $info->dist;
+    return $dist;
+}
+
+=head2 just_version
+
+return version
+
+=cut
+
+sub just_version {
+    my $self = shift;
+    my $name = shift;
+    $name .= '.tar.gz' unless $name =~ /(tar\.gz|tgz|tar\.bz2)$/;
+
+    require CPAN::DistnameInfo;
+    my $info = CPAN::DistnameInfo->new( $name );
+    my $version = $info->version;
+    $version =~ s/^v//;
+    return $version;
 }
 
 1;

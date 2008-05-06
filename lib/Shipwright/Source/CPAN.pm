@@ -77,7 +77,9 @@ sub _run {
 
     $module->distribution->get;
 
-    my $dist = CPAN::DistnameInfo->new( $module->cpan_file )->dist;
+    my $info = CPAN::DistnameInfo->new( $module->cpan_file );
+    my $dist = $info->dist;
+
     $self->name( 'cpan-' . $dist );
     $self->_update_map( $self->source, 'cpan-' . $dist );
 

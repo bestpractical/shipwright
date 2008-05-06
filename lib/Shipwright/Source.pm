@@ -13,13 +13,14 @@ our %DEFAULT = (
     follow            => 1,
 );
 
-$DEFAULT{directory} = tempdir( CLEANUP => 0 );
+$DEFAULT{directory} = '/tmp'; #tempdir( CLEANUP => 0 );
 $DEFAULT{download_directory} =
   File::Spec->catfile( $DEFAULT{directory}, 'download' );
 $DEFAULT{map_path} = File::Spec->catfile( $DEFAULT{directory}, 'map.yml' );
 $DEFAULT{url_path} = File::Spec->catfile( $DEFAULT{directory}, 'url.yml' );
+$DEFAULT{version_path} = File::Spec->catfile( $DEFAULT{directory}, 'version.yml' );
 
-for ( qw/map_path url_path/ ) {
+for ( qw/map_path url_path version_path/ ) {
     open my $fh, '>', $DEFAULT{$_} or die "can't write to $DEFAULT{$_}: $!";
     close $fh;
 }
