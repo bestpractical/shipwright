@@ -52,19 +52,21 @@ sub _run {
     my $self   = shift;
     my $source = $self->source;
 
-    my ($out) = Shipwright::Util->run(
-        [
-            'svn', 'info', $source,
-        ]
-    );
 
-    if ( $out =~ /^Revision: (\d+)/m ) {
-        $self->version( $1 );
-    }
     my $cmd    = [
         'svn', 'export', $self->source,
-        File::Spec->catfile( $self->download_directory, $self->name )
+        File::Spec->catfile( $self->download_directory, $self->name ),
+        $self->version ? ( '-r', $self->version ) : (),
     ];
+
+    unless ( $self->version ) {
+        my ($out) = Shipwright::Util->run( [ 'svn', 'info', $source, ] );
+
+        if ( $out =~ /^Revision: (\d+)/m ) {
+            $self->version($1);
+        }
+    }
+
     $self->source(
         File::Spec->catfile( $self->download_directory, $self->name ) );
     Shipwright::Util->run($cmd);
