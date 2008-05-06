@@ -45,7 +45,7 @@ sub run {
 
     if ( $self->dist ) {
         if ( exists $info->{$self->dist} ) {
-            print $self->dist, ': ', $info->{$self->dist}, " dist.\n";
+            print $self->dist, ': ', $info->{$self->dist} || '' , " dist.\n";
         }
         else {
             print $self->dist, ': not exist' . "\n";
@@ -53,7 +53,7 @@ sub run {
     }
     else {
         for my $dist ( sort keys %$info ) {
-            print $dist, ': ', $info->{$dist}, "\n";
+            print $dist, ': ', $info->{$dist} || '' , "\n";
         }
     }
 }
