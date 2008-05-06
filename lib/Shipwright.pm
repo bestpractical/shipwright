@@ -36,6 +36,7 @@ source part:
              default is the same as the perl which's running shipwright
     skip: hashref of which the keys are the skipped modules when import
           default is undefined
+    version: source's version, default is undefined
 
 build part:
 
