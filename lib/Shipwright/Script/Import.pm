@@ -43,7 +43,7 @@ sub options {
     );
 }
 
-my %imported;
+my (%imported, $version);
 
 =head2 run
 =cut
@@ -106,6 +106,9 @@ sub run {
             )
         );
 
+        $version =
+          Shipwright::Util::LoadFile( $shipwright->source->version_path );
+
         my ($name) = $self->source =~ m{.*/(.*)$};
         $imported{$name}++;
 
@@ -132,6 +135,7 @@ sub run {
             source  => $self->source,
             comment => $self->comment || 'import ' . $self->source,
             overwrite => 1,    # import anyway for the main dist
+            version => $version->{$name},
         );
         $shipwright->backend->import(
             source       => $self->source,
@@ -232,6 +236,7 @@ sub import_req {
                         comment   => 'deps for ' . $source,
                         source    => $s,
                         overwrite => $self->overwrite,
+                        version   => $version->{$dist},
                     );
                     $shipwright->backend->import(
                         source       => $s,

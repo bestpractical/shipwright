@@ -95,6 +95,11 @@ sub import {
                 $self->log->info(
                     "import $args{source} to " . $self->repository );
                 $self->_add_to_order($name);
+                $self->version(
+                    dist    => $name,
+                    version => $args{version},
+                );
+
                 Shipwright::Util->run(
                     $self->_cmd( import => %args, name => $name ) );
             }
