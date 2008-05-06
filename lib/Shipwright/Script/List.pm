@@ -45,7 +45,7 @@ sub run {
 
     if ( $self->dist ) {
         if ( exists $info->{$self->dist} ) {
-            print $self->dist, ': ', $info->{$self->dist} || '' , " dist.\n";
+            print $self->dist, ': ', $info->{$self->dist} || '' , "\n";
         }
         else {
             print $self->dist, ': not exist' . "\n";
