@@ -13,7 +13,7 @@ our %DEFAULT = (
     follow            => 1,
 );
 
-$DEFAULT{directory} = '/tmp'; #tempdir( CLEANUP => 0 );
+$DEFAULT{directory} = tempdir( CLEANUP => 0 );
 $DEFAULT{download_directory} =
   File::Spec->catfile( $DEFAULT{directory}, 'download' );
 $DEFAULT{map_path} = File::Spec->catfile( $DEFAULT{directory}, 'map.yml' );
