@@ -546,7 +546,7 @@ sub version {
 
     croak "need dist arg" unless $args{dist};
 
-    if ($args{version}) {
+    if ( exists $args{version} ) {
         my $dir = tempdir( CLEANUP => 1 );
         my $file = File::Spec->catfile( $dir, 'version.yml' );
 
