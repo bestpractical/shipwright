@@ -48,7 +48,7 @@ sub run {
             print $self->dist, ': ', $info->{$self->dist} || '' , "\n";
         }
         else {
-            print $self->dist, ': not exist' . "\n";
+            print $self->dist, " doesn't exist.\n";
         }
     }
     else {
