@@ -7,7 +7,8 @@ use Carp;
 use base qw/App::CLI::Command Class::Accessor::Fast Shipwright::Script/;
 __PACKAGE__->mk_accessors(
     qw/repository log_level comment source follow build_script require_yml
-      name test_script extra_tests overwrite min_perl_version skip log_file/
+      name test_script extra_tests overwrite min_perl_version skip log_file
+      version/
 );
 
 use Shipwright;
@@ -40,6 +41,7 @@ sub options {
         'overwrite'        => 'overwrite',
         'min-perl-version' => 'min_perl_version',
         'skip=s'           => 'skip',
+        'version=s'        => 'version',
     );
 }
 
@@ -81,6 +83,7 @@ sub run {
         follow           => $self->follow,
         min_perl_version => $self->min_perl_version,
         skip             => $self->skip,
+        version          => $self->version,
     );
 
     if ( $self->source ) {
@@ -387,6 +390,7 @@ Shipwright::Script::Import - import a source(maybe with a lot of dependences)
    --min-perl-version minimal perl version( default is the same as the one
                       which runs this cmd )
    --overwrite        import anyway even if we have deps dists in repo already
+   --version          specify the source's version
 
 =head1 AUTHOR
 
