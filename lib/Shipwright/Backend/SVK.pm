@@ -570,7 +570,23 @@ sub version {
     }
 }
 
+=head2 versions
+
+get versions
+
+=cut
+
+sub versions {
+    my $self = shift;
+
+    my ($out) = Shipwright::Util->run(
+        [ 'svk', 'cat', $self->repository . '/shipwright/version.yml' ] );
+    $out = Shipwright::Util::Load($out) || {};
+    return $out;
+}
+
 1;
+
 
 __END__
 
