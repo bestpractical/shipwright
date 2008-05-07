@@ -75,10 +75,23 @@ sub _run {
         return;
     }
 
-    $module->distribution->get;
+    my $source = $module->cpan_file;
 
     my $info = CPAN::DistnameInfo->new( $module->cpan_file );
     my $dist = $info->dist;
+
+    my $distribution = $module->distribution;
+    if ( $self->version ) {
+        my $latest_version = $info->version;
+        my $version = $self->version;
+        if ( $latest_version =~ /^v/ && $version !~ /^v/ ) {
+            $version = 'v' . $version;
+        }
+        $distribution->{ID} =~ s/$latest_version/$version/;
+        $source =~ s/$latest_version/$version/;
+    }
+
+    $distribution->get;
 
     $self->name( 'cpan-' . $dist );
     $self->_update_map( $self->source, 'cpan-' . $dist );
@@ -86,7 +99,7 @@ sub _run {
     $self->source(
         File::Spec->catfile(
             $CPAN::Config->{keep_source_where}, 'authors',
-            'id',                               $module->cpan_file
+            'id',                               $source
         )
     );
     return 1;
