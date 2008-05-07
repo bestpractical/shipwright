@@ -57,7 +57,7 @@ sub run {
     else {
         for my $dist ( sort keys %$versions ) {
             print $dist, ': ', "\n";
-            print ' ' x 4 . 'version: ', $versions->{$dist}, "\n";
+            print ' ' x 4 . 'version: ', $versions->{$dist} || '', "\n";
             print ' ' x 4 . 'from: ', $source->{$dist} || 'CPAN', "\n";
         }
     }
