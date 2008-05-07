@@ -41,19 +41,24 @@ sub run {
         log_file   => $self->log_file,
     );
 
-    my $info = $shipwright->backend->versions;
+    my $versions = $shipwright->backend->versions;
+    my $source = $shipwright->backend->source;
 
     if ( $self->dist ) {
-        if ( exists $info->{$self->dist} ) {
-            print $self->dist, ': ', $info->{$self->dist} || '' , "\n";
+        if ( exists $versions->{$self->dist} ) {
+            print $self->dist, ': ', "\n";
+            print ' ' x 4 . 'version: ', $versions->{$self->dist}, "\n";
+            print ' ' x 4 . 'from: ', $source->{$self->dist} || 'CPAN', "\n";
         }
         else {
             print $self->dist, " doesn't exist.\n";
         }
     }
     else {
-        for my $dist ( sort keys %$info ) {
-            print $dist, ': ', $info->{$dist} || '' , "\n";
+        for my $dist ( sort keys %$versions ) {
+            print $dist, ': ', "\n";
+            print ' ' x 4 . 'version: ', $versions->{$dist}, "\n";
+            print ' ' x 4 . 'from: ', $source->{$dist} || 'CPAN', "\n";
         }
     }
 }
