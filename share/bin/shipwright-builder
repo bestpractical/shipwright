@@ -14,11 +14,13 @@ use inc::YAML::Tiny;
 my $build_base = getcwd;
 
 my %args;
-GetOptions(
+
+die "unknown option"
+  unless GetOptions(
     \%args,    'install-base=s', 'perl=s',    'skip=s',
     'flags=s', 'skip-test',      'only-test', 'force',
     'clean',   'name=s',         'help',
-);
+  );
 
 my $USAGE = <<'END'
 run: ./bin/shipwright-builder
