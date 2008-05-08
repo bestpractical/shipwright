@@ -16,7 +16,7 @@ sub alias {
 
 sub prepare {
     my $self = shift;
-    if ( $ARGV[0] =~ /--?h(elp)?/i ) {
+    if ( $ARGV[0] && $ARGV[0] =~ /--?h(elp)?/i ) {
         $ARGV[0] = 'help';
     }
     return $self->SUPER::prepare(@_);
