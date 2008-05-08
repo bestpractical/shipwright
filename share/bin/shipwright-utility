@@ -6,8 +6,14 @@ use Getopt::Long;
 use YAML::Syck;
 
 my %args;
-GetOptions( \%args, 'update-order', 'keep-requires=s', 'keep-recommends=s',
-    'keep-build-requires=s', 'for-dists=s', 'help' );
+
+die "unknown option"
+  unless GetOptions(
+          \%args,                  'update-order',
+          'keep-requires=s',       'keep-recommends=s',
+          'keep-build-requires=s', 'for-dists=s',
+          'help',
+  );
 
 my $USAGE = <<'END'
 run: ./bin/shipwright-utility --update-order
