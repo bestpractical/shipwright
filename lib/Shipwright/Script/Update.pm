@@ -135,10 +135,13 @@ sub update {
 
     $shipwright->source->run;
 
+    my $version = Shipwright::Util::LoadFile( $shipwright->source->version_path );
+
     $shipwright->backend->import(
         source  => File::Spec->catfile( $shipwright->source->directory, $name ),
         comment => "update $name",
         overwrite => 1,
+        version => $version->{$name},
     );
 
 }
