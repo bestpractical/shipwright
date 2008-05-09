@@ -76,6 +76,7 @@ Shipwright::Script::Maintain - maintain a project
  Options:
    --repository(-r)   specify the repository of our project
    --log-level(-l)    specify the log level
+   --log-file         specify the log file
    --update-order     update the build order
 
 =head1 AUTHOR

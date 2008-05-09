@@ -161,6 +161,7 @@ Shipwright::Script::Update - update dist(s)
  Options:
    --repository(-r)   specify the repository of our project
    --log-level(-l)    specify the log level
+   --log-file         specify the log file
    --name             specify the source name( only alphanumeric characters and - )
    --all              update all the dists
    --follow           update one dist with all its deps(recursively)

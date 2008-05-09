@@ -99,6 +99,7 @@ Shipwright::Script::Flags - maintain a dist's flags
  Options:
    --repository(-r)   specify the repository of our project
    --log-level(-l)    specify the log level
+   --log-file         specify the log file
    --dist             specify the dist
    --add, --delete, --set  specify the flags split by comma
 

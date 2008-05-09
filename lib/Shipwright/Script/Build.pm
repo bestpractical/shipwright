@@ -84,6 +84,7 @@ Shipwright::Script::Build - build the specified project
  Options:
    --repository(-r)   specify the repository of our project
    --log-level(-l)    specify the log level
+   --log-file         specify the log file
    --install-base     specify install base. default is an autocreated temp dir
    --skip             specify dists which'll be skipped
    --skip-test        specify whether to skip test

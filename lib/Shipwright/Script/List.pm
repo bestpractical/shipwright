@@ -173,6 +173,7 @@ Shipwright::Script::List - list dists of a project
  Options:
    --repository(-r)   specify the repository of our project
    --log-level(-l)    specify the log level
+   --log-file         specify the log file
    --dist             sepecify the dist name
 
 =head1 AUTHOR
