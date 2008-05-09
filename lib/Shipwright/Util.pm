@@ -53,7 +53,7 @@ sub run {
     my $log = Log::Log4perl->get_logger('Shipwright::Util');
 
     my ( $out, $err );
-    $log->info( "run cmd:\n" . join ' ', @$cmd );
+    $log->info( "run cmd: " . join ' ', @$cmd );
     run3( $cmd, \*STDIN, \$out, \$err );
     $log->info("run output:\n$out") if $out;
     $log->warn("run err:\n$err")    if $err;
