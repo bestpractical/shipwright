@@ -39,7 +39,7 @@ sub new {
           File::Spec->catfile( $cpan_dir, 'sources' );
         $CPAN::Config->{prefs_dir} = File::Spec->catfile( $cpan_dir, 'prefs' );
         $CPAN::Config->{prerequisites_policy} = 'follow';
-        $CPAN::Config->{urllist} ||= [];
+        $CPAN::Config->{urllist} = [];
         write_file( $config_file,
             Data::Dumper->Dump( [$CPAN::Config], ['$CPAN::Config'] ) );
 
