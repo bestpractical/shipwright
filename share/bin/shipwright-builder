@@ -16,11 +16,9 @@ my $build_base = getcwd;
 my %args;
 
 die "unknown option"
-  unless GetOptions(
-    \%args,    'install-base=s', 'perl=s',    'skip=s',
-    'flags=s', 'skip-test',      'only-test', 'force',
-    'clean',   'name=s',         'help',
-  );
+  unless GetOptions( \%args, 'install-base=s', 'perl=s', 'skip=s', 'flags=s',
+    'skip-test', 'skip-test-except-final', 'only-test', 'force', 'clean',
+    'name=s', 'help', );
 
 my $USAGE = <<'END'
 run: ./bin/shipwright-builder
@@ -48,7 +46,9 @@ skip: dists we don't want to install, comma seperated.
 flags: set flags we need, comma seperated
    e.g.  --flags mysql,standalone
 
-skip-test: skip test part if there're
+skip-test: skip all the tests
+
+skip-test-except-final: skip all the tests except the final dist.
 
 force: if tests fail, install anyway
 
@@ -218,6 +218,14 @@ sub install {
     my $dir = shift;
     chdir File::Spec->catfile( 'dists', $dir );
 
+    my $skip_test = $args{'skip-test'} || $args{'skip-test-except-final'};
+
+    if ( $dir eq $order->[-1] && $args{'skip-test-except-final'} ) {
+
+        # do not skip our main dist's test
+        $skip_test = 0;
+    }
+
     print "start to build and install $dir\n";
 
     if ( -e File::Spec->catfile( '..', '..', 'scripts', $dir, 'build.pl' ) ) {
@@ -226,8 +234,8 @@ sub install {
           File::Spec->catfile( '..', '..', 'scripts', $dir, 'build.pl' ),
           '--install-base' => $args{'install-base'},
           '--flags'        => join( ',', keys %{ $args{flags} } ),
-          $args{'skip-test'} ? '--skip-test' : (),
-          $args{'force'} ? '--force' : (), $args{'clean'} ? '--clean' : ();
+          $skip_test ? '--skip-test' : (), $args{'force'} ? '--force' : (),
+          $args{'clean'} ? '--clean' : ();
         if ( system($cmd) ) {
             print $log "build $dir with failure: $!\n";
             die "build $dir with failure: $!\n";
@@ -241,7 +249,7 @@ sub install {
             my ( $type, $cmd ) = @$_;
             next if $type eq 'clean';
 
-            if ( $args{'skip-test'} && $type eq 'test' ) {
+            if ( $skip_test && $type eq 'test' ) {
                 print $log "skip build $type part in $dir\n";
                 next;
             }
