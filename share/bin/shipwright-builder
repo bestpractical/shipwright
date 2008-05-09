@@ -190,7 +190,7 @@ else {
             File::Spec->catfile( $args{'install-base'}, 'tools', $_ ) );
     }
 
-    chmod 0755,
+    chmod oct 755,
       File::Spec->catfile( $args{'install-base'}, 'tools',
         'shipwright-utility' );
 
@@ -337,7 +337,7 @@ sub wrap_bin {
                 'shipwright-script-wrapper' ) => $file
               or die $!;
         }
-        chmod 0755, $file;
+        chmod oct 755, $file;
     };
 
     my @dirs =
