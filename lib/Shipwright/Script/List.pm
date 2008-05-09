@@ -47,7 +47,10 @@ sub run {
 
     my $latest_version = {};
 
-    if ( $self->with_latest_version || $self->only_update ) {
+    # only_update option implies with_latest_version
+    $self->with_latest_version(1) if $self->only_update;
+
+    if ( $self->with_latest_version ) {
         my $map = $shipwright->backend->map;
 
         if ( $self->dist ) {
@@ -175,6 +178,8 @@ Shipwright::Script::List - list dists of a project
    --log-level(-l)    specify the log level
    --log-file         specify the log file
    --dist             sepecify the dist name
+   --with-latest-version  show the latest version if possible
+   --only-update      only show the dists that can be updated
 
 =head1 AUTHOR
 
