@@ -1,4 +1,4 @@
-package Shipwright::Script::Initialize;
+package Shipwright::Script::Create;
 
 use strict;
 use warnings;
@@ -45,7 +45,7 @@ __END__
 
 =head1 NAME
 
-Shipwright::Script::Initialize - create a project
+Shipwright::Script::Create - create a project
 
 =head1 SYNOPSIS
 
