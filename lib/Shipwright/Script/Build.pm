@@ -40,8 +40,6 @@ sub run {
     $self->install_base($install_base)
       if $install_base && !$self->install_base;
 
-    die "need repository arg" unless $self->repository;
-
     unless ( $self->name ) {
         if ( $self->repository =~ m{([-.\w]+)/([.\d]+)$} ) {
             $self->name("$1-$2");

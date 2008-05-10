@@ -35,9 +35,7 @@ sub run {
 
     $self->dist if $dist && !$self->dist;
 
-    for (qw/repository dist/) {
-        die "need $_ arg" unless $self->$_();
-    }
+    die "need dist arg" unless $self->dist();
 
     my $shipwright = Shipwright->new(
         repository => $self->repository,

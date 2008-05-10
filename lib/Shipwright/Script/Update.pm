@@ -42,10 +42,6 @@ sub run {
 
     $self->name($name) if $name && ! $self->name;
 
-    for (qw/repository/) {
-        die "need $_ arg" unless $self->$_();
-    }
-
     die 'need name arg' unless $self->name || $self->all;
 
     $shipwright = Shipwright->new(

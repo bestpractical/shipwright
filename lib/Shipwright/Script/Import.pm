@@ -45,7 +45,7 @@ sub options {
     );
 }
 
-my (%imported, $version);
+my ( %imported, $version );
 
 =head2 run
 =cut
@@ -58,9 +58,7 @@ sub run {
     $self->follow(1) unless defined $self->follow;
     $self->skip( { map { $_ => 1 } split /\s*,\s*/, $self->skip || '' } );
 
-    for (qw/repository source/) {
-        die "need $_ arg" unless $self->$_();
-    }
+    die "need source arg" unless $self->source();
 
     if ( $self->name ) {
         if ( $self->name =~ /::/ ) {
@@ -137,8 +135,8 @@ sub run {
         $shipwright->backend->import(
             source  => $self->source,
             comment => $self->comment || 'import ' . $self->source,
-            overwrite => 1,    # import anyway for the main dist
-            version => $version->{$name},
+            overwrite => 1,                   # import anyway for the main dist
+            version   => $version->{$name},
         );
         $shipwright->backend->import(
             source       => $self->source,

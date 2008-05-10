@@ -8,7 +8,7 @@ use base qw/App::CLI/;
 =cut
 
 sub alias {
-    return ( ls => 'list');
+    return ( ls => 'list' );
 }
 
 =head2 prepare
@@ -22,6 +22,10 @@ sub prepare {
         $ARGV[0] = 'help';
     }
 
+    # all the cmds need --repository arg
+    unless ( $ARGV[0] ne 'help' && grep { /-r|--repository/ } @ARGV ) {
+        unshift @ARGV, 'help';
+    }
 
     return $self->SUPER::prepare(@_);
 }
@@ -31,8 +35,8 @@ sub prepare {
 
 sub log {
     my $self = shift;
-    Shipwright::Logger->new( $self );
-    return Log::Log4perl->get_logger( ref $self ) ;
+    Shipwright::Logger->new($self);
+    return Log::Log4perl->get_logger( ref $self );
 }
 
 1;

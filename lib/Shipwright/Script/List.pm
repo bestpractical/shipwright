@@ -32,8 +32,6 @@ sub run {
     my $self = shift;
     my $dist = shift;
 
-    die "need repository arg" unless $self->repository();
-
     $self->dist($dist) if $dist && !$self->dist;
 
     my $shipwright = Shipwright->new(

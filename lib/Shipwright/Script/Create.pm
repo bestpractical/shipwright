@@ -27,10 +27,7 @@ sub options {
 
 sub run {
     my $self       = shift;
-    my $repository = shift;
-    $self->repository($repository) if $repository && ! $self->repository;
-    die 'need repository arg' unless $self->repository;
-
+    
     my $shipwright = Shipwright->new(
         repository => $self->repository,
         log_level  => $self->log_level,
