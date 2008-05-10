@@ -53,14 +53,3 @@ Shipwright::Script::Create - create a project
    --log-level(-l)            specify the log level
    --log-file         specify the log file
 
-=head1 AUTHOR
-
-sunnavy  C<< <sunnavy@bestpractical.com> >>
-
-=head1 LICENCE AND COPYRIGHT
-
-Copyright 2007 Best Practical Solutions.
-
-This program is free software; you can redistribute it and/or modify it
-under the same terms as Perl itself.
-
