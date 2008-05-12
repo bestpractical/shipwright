@@ -23,8 +23,22 @@ sub prepare {
     }
 
     # all the cmds need --repository arg
-    unless ( $ARGV[0] ne 'help' && grep { /^(-r|--repository)$/ } @ARGV ) {
-        unshift @ARGV, 'help';
+    if ( $ARGV[0] ne 'help' ) {
+        my %args = @ARGV[ 1 .. $#ARGV ];
+        my $repo = $args{'-r'} || $args{'--repository'};
+
+        if ($repo) {
+
+            my $backend = Shipwright::Backend->new( repository => $repo, );
+
+            my $valid = $backend->check_repository( action => $ARGV[0] );
+
+            die "invalid repository: $repo"
+              unless $backend->check_repository( action => $ARGV[0] );
+        }
+        else {
+            unshift @ARGV, 'help';
+        }
     }
 
     return $self->SUPER::prepare(@_);
