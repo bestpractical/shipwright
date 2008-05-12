@@ -23,7 +23,7 @@ sub prepare {
     }
 
     # all the cmds need --repository arg
-    unless ( $ARGV[0] ne 'help' && grep { /-r|--repository/ } @ARGV ) {
+    unless ( $ARGV[0] ne 'help' && grep { /^(-r|--repository)$/ } @ARGV ) {
         unshift @ARGV, 'help';
     }
 
