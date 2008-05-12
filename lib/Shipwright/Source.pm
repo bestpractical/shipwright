@@ -56,17 +56,18 @@ sub type {
     return 'CPAN'       if $$source =~ s/^cpan://i;
 
     # prefix that can be omitted
-    for my $type (qw/svk svn http ftp/) {
+    for my $type (qw/svn http ftp/) {
         if ( $$source =~ /^$type:/i ) {
             $$source =~ s{^$type:(?!//)}{}i;
             return uc $type;
         }
-
-        # extra svk type inference
-        if ( $source =~ m{^//} ) {
-            return 'SVK';
-        }
     }
+
+    if ( $$source =~ m{^(//|svk:)}i ) {
+        $$source =~ s/^svk://i;
+        return 'SVK';
+    }
+
 }
 
 1;
