@@ -40,7 +40,7 @@ sub run {
         log_file   => $self->log_file,
     );
 
-    my $versions = $shipwright->backend->versions;
+    my $versions = $shipwright->backend->version;
     my $source   = $shipwright->backend->source;
 
     my $latest_version = {};
