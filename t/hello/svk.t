@@ -26,10 +26,11 @@ SKIP: {
         'ftp://example.com/hello.tar.gz'     => 'FTP',
         'svn:file:///home/sunnavy/svn/hello' => 'SVN',
         'svk://local/hello'                  => 'SVK',
-        'Acme::Hello'                        => 'CPAN',
-        File::Spec->catfile( 't', 'hello', 'Acme-Hello-0.03.tar.gz' ) =>
+        'cpan:Acme::Hello'                   => 'CPAN',
+        'file:'
+          . File::Spec->catfile( 't', 'hello', 'Acme-Hello-0.03.tar.gz' ) =>
           'Compressed',
-        File::Spec->catfile( 't', 'hello' ) => 'Directory',
+        'dir:' . File::Spec->catfile( 't', 'hello' ) => 'Directory',
     );
 
     for ( keys %source ) {
@@ -44,8 +45,9 @@ SKIP: {
 
     my $shipwright = Shipwright->new(
         repository => "svk:$repo",
-        source => File::Spec->catfile( 't', 'hello', 'Acme-Hello-0.03.tar.gz' ),
-        follow => 0,
+        source     => 'file:'
+          . File::Spec->catfile( 't', 'hello', 'Acme-Hello-0.03.tar.gz' ),
+        follow    => 0,
         log_level => 'FATAL',
     );
 
@@ -63,7 +65,6 @@ SKIP: {
         [ 'bin/', 'dists/', 'etc/', 'inc/', 'scripts/', 'shipwright/', 't/' ],
         'initialize works'
     );
-
 
     # source
     my $source_dir = $shipwright->source->run();
@@ -143,7 +144,7 @@ SKIP: {
     chdir $cwd;
     $shipwright = Shipwright->new(
         repository => "svk:$repo",
-        source => File::Spec->catfile( 't', 'hello', 'Acme-Hello-0.03.tar.gz' ),
+        source => 'file:' . File::Spec->catfile( 't', 'hello', 'Acme-Hello-0.03.tar.gz' ),
         name   => 'howdy',
         follow => 0,
         log_level => 'FATAL',
@@ -196,18 +197,18 @@ SKIP: {
         'updated order works'
     );
 
-
     # build with 0 packages
-    
+
     {
         my $shipwright = Shipwright->new(
             repository => "svk:$repo",
             log_level  => 'FATAL',
         );
-    
+
         # init
         $shipwright->backend->initialize();
-        $shipwright->backend->export( target => $shipwright->build->build_base );
+        $shipwright->backend->export(
+            target => $shipwright->build->build_base );
         my $install_dir = tempdir;
         $shipwright->build->run( install_base => $install_dir );
         ok(

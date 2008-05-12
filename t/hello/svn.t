@@ -20,7 +20,8 @@ SKIP: {
 
     my $shipwright = Shipwright->new(
         repository => "svn:$repo",
-        source => File::Spec->catfile( 't', 'hello', 'Acme-Hello-0.03.tar.gz' ),
+        source     => 'file:'
+          . File::Spec->catfile( 't', 'hello', 'Acme-Hello-0.03.tar.gz' ),
         log_level => 'FATAL',
         follow    => 0,
     );
@@ -105,9 +106,10 @@ SKIP: {
     chdir $cwd;
     $shipwright = Shipwright->new(
         repository => "svn:$repo",
-        source => File::Spec->catfile( 't', 'hello', 'Acme-Hello-0.03.tar.gz' ),
-        name   => 'howdy',
-        follow => 0,
+        source     => 'file:'
+          . File::Spec->catfile( 't', 'hello', 'Acme-Hello-0.03.tar.gz' ),
+        name      => 'howdy',
+        follow    => 0,
         log_level => 'FATAL',
     );
 
