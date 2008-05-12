@@ -613,7 +613,6 @@ sub check_repository {
             return 1 if $info;
         }
 
-        return 0;
     }
     else {
 
@@ -621,9 +620,9 @@ sub check_repository {
         my $info = $self->info( path => 'shipwright' );
 
         return 1 if $info;
-        return 0;
     }
 
+    return 0;
 }
 
 1;
