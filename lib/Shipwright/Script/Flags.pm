@@ -43,11 +43,11 @@ sub run {
         log_file   => $self->log_file,
     );
 
-    my $old = $shipwright->backend->flags( dist => $self->dist ) || [];
+    my $flags = $shipwright->backend->flags;
 
     unless ( defined $self->add || defined $self->delete || defined $self->set )
     {
-        print join( ', ', @$old ), "\n";
+        print join( ', ', @{ $flags->{ $self->dist } || [] } ), "\n";
         return;
     }
 
@@ -55,30 +55,25 @@ sub run {
         die 'you should specify one and only one of add, delete and set';
     }
 
-    my $new;
-
     if ( defined $self->add ) {
         $self->add( [ grep { /^\w+$/ } split /,\s*/, $self->add ] );
-        $new = [ uniq @{ $self->add }, @$old ];
+        $flags->{ $self->dist } =
+          [ uniq @{ $self->add }, @{ $flags->{ $self->dist } || [] } ];
     }
     elsif ( defined $self->delete ) {
         $self->delete( [ split /,\s*/, $self->delete ] );
         my %seen;    # lookup table
         @seen{ @{ $self->delete } } = ();
 
-        for (@$old) {
-            push( @$new, $_ ) unless exists $seen{$_};
-        }
+        @{ $flags->{ $self->dist } } =
+          grep { exists $seen{$_} } @{ $flags->{ $self->dist } || [] };
 
     }
     elsif ( defined $self->set ) {
-        $new = [ grep { /^\w+$/ } split /,\s*/, $self->set ];
+        $flags->{ $self->dist } = [ grep { /^\w+$/ } split /,\s*/, $self->set ];
     }
 
-    $shipwright->backend->flags(
-        dist  => $self->dist,
-        flags => $new,
-    );
+    $shipwright->backend->flags( $flags );
 
 }
 
