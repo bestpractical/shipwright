@@ -593,6 +593,32 @@ sub versions {
     return $out;
 }
 
+=head2 check_repository
+
+=cut
+
+sub check_repository {
+    my $self = shift;
+    my %args = @_;
+
+    if ( $args{action} eq 'create' ) {
+
+            my $info = $self->info;
+
+            return 1 if $info;
+
+    }
+    else {
+
+        # every valid shipwright repo has 'shipwright' subdir;
+        my $info = $self->info( path => 'shipwright' );
+        return 1 if $info;
+
+    }
+
+    return 0;
+}
+
 1;
 
 __END__
