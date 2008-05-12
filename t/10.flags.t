@@ -19,7 +19,7 @@ SKIP: {
         log_level => 'FATAL',
     );
 
-    test_flags( shipwright => $shipwright, dist => 'foo' );
+    test_flags( shipwright => $shipwright, name => 'foo' );
 
 }
 
@@ -34,26 +34,26 @@ SKIP: {
         log_level => 'FATAL',
     );
 
-    test_flags( shipwright => $shipwright, dist => 'foo' );
+    test_flags( shipwright => $shipwright, name => 'foo' );
 
 }
 
 sub test_flags {
     my %args = @_;
     my $shipwright = $args{shipwright};
-    my $dist = $args{dist};
+    my $name = $args{name};
 
     # init
     $shipwright->backend->initialize();
 
-    my $flags = $shipwright->backend->flags( dist => 'hello' );
+    my $flags = $shipwright->backend->flags( name => 'hello' );
     is_deeply( $flags, [], 'initial flags are []' );
 
-    $shipwright->backend->flags( dist => 'hello', flags => [ 'foo', 'bar' ] );
-    $flags = $shipwright->backend->flags( dist => 'hello' );
+    $shipwright->backend->flags( name => 'hello', flags => [ 'foo', 'bar' ] );
+    $flags = $shipwright->backend->flags( name => 'hello' );
     is_deeply( $flags, [ 'foo', 'bar' ], "set flags to ['foo', 'bar']" );
 
-    $shipwright->backend->flags( dist => 'hello', flags => [] );
-    $flags = $shipwright->backend->flags( dist => 'hello' );
+    $shipwright->backend->flags( name => 'hello', flags => [] );
+    $flags = $shipwright->backend->flags( name => 'hello' );
     is_deeply( $flags, [], "set flags to []" );
 }
