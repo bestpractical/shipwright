@@ -31,6 +31,13 @@ sub prepare {
 
             my $backend = Shipwright::Backend->new( repository => $repo, );
 
+            # this $shipwright object will do nothing, except for init logging
+            my $shipwright = Shipwright->new(
+                repository => '//magic',
+                log_level  => $args{'-l'} || $args{'--log-level'},
+                log_file   => $args{'--log-file'},
+            );
+
             die "invalid repository: $repo"
               unless $backend->check_repository( action => $ARGV[0] );
         }
