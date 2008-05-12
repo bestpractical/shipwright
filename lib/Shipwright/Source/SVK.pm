@@ -18,9 +18,6 @@ sub new {
     $self->name( $self->just_name( $self->source ) ) unless $self->name;
     $self->_update_url( $self->name, $self->source );
 
-    my $s = $self->source;
-    $s =~ s!^\s*svk:!!;
-    $self->source($s);
     return $self;
 }
 
