@@ -16,7 +16,7 @@ SKIP: {
 
     my $shipwright = Shipwright->new(
         repository => "svk:$repo",
-        log_level => 'FATAL',
+        log_level  => 'FATAL',
     );
 
     test_flags( shipwright => $shipwright, name => 'foo' );
@@ -31,7 +31,7 @@ SKIP: {
 
     my $shipwright = Shipwright->new(
         repository => "svn:$repo",
-        log_level => 'FATAL',
+        log_level  => 'FATAL',
     );
 
     test_flags( shipwright => $shipwright, name => 'foo' );
@@ -39,21 +39,29 @@ SKIP: {
 }
 
 sub test_flags {
-    my %args = @_;
+    my %args       = @_;
     my $shipwright = $args{shipwright};
-    my $name = $args{name};
+    my $name       = $args{name};
 
     # init
     $shipwright->backend->initialize();
 
-    my $flags = $shipwright->backend->flags( name => 'hello' );
-    is_deeply( $flags, [], 'initial flags are []' );
+    my $flags = $shipwright->backend->flags;
+    is_deeply( $flags->{$name}, undef, 'initial flags are undef' );
 
-    $shipwright->backend->flags( name => 'hello', flags => [ 'foo', 'bar' ] );
-    $flags = $shipwright->backend->flags( name => 'hello' );
-    is_deeply( $flags, [ 'foo', 'bar' ], "set flags to ['foo', 'bar']" );
+    $flags->{$name} = [ 'foo', 'bar' ];
+    $shipwright->backend->flags($flags);
 
-    $shipwright->backend->flags( name => 'hello', flags => [] );
-    $flags = $shipwright->backend->flags( name => 'hello' );
-    is_deeply( $flags, [], "set flags to []" );
+    $flags = $shipwright->backend->flags;
+    is_deeply(
+        $flags->{$name},
+        [ 'foo', 'bar' ],
+        "set flags to ['foo', 'bar']"
+    );
+
+    $flags->{$name} = [];
+    $shipwright->backend->flags($flags);
+
+    $flags = $shipwright->backend->flags;
+    is_deeply( $flags->{$name}, [], "set flags to []" );
 }
