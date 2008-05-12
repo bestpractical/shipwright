@@ -77,7 +77,9 @@ sub import {
                 $self->_cmd( import => %args, name => $name ) );
         }
         elsif ( $args{build_script} ) {
-            if ( $self->info( path => "scripts/$name") && not $args{overwrite} ) {
+            if ( $self->info( path => "scripts/$name" )
+                && not $args{overwrite} )
+            {
                 $self->log->warn(
 "path scripts/$name alreay exists, need to set overwrite arg to overwrite"
                 );
@@ -91,7 +93,8 @@ sub import {
             }
         }
         else {
-            if ( $self->info( path => "dists/$name") && not $args{overwrite} ) {
+            if ( $self->info( path => "dists/$name" ) && not $args{overwrite} )
+            {
                 $self->log->warn(
 "path dists/$name alreay exists, need to set overwrite arg to overwrite"
                 );
@@ -100,7 +103,7 @@ sub import {
                 $self->delete("dists/$name");
                 $self->log->info(
                     "import $args{source} to " . $self->repository );
-                $self->_add_to_order( $name );
+                $self->_add_to_order($name);
                 $self->version(
                     dist    => $name,
                     version => $args{version},
@@ -420,7 +423,7 @@ wrapper of delete cmd of svn
 sub delete {
     my $self = shift;
     my $path = shift || '';
-    if ( $self->info( path => $path) ) {
+    if ( $self->info( path => $path ) ) {
         $self->log->info( "delete " . $self->repository . "/$path" );
         Shipwright::Util->run( $self->_cmd( delete => path => $path ), 1 );
     }
@@ -439,12 +442,18 @@ sub info {
 
     my ( $info, $err ) =
       Shipwright::Util->run( $self->_cmd( info => path => $path ), 1 );
-    if ($err) {
-        $err =~ s/\s+$//;
-        $self->log->warn($err);
-        return;
+
+    if (wantarray) {
+        return $info, $err;
     }
-    return $info;
+    else {
+        if ($err) {
+            $err =~ s/\s+$//;
+            $self->log->warn($err);
+            return;
+        }
+        return $info;
+    }
 }
 
 =head2 propset
@@ -517,12 +526,12 @@ get or set flags
 =cut
 
 sub flags {
-    my $self   = shift;
+    my $self = shift;
     my %args = @_;
 
     croak "need dist arg" unless $args{dist};
 
-    if ($args{flags}) {
+    if ( $args{flags} ) {
         my $dir = tempdir( CLEANUP => 1 );
         my $file = File::Spec->catfile( $dir, 'flags.yml' );
 
@@ -531,8 +540,8 @@ sub flags {
             target => $dir,
         );
 
-        my $flags = Shipwright::Util::LoadFile( $file );
-        $flags->{$args{dist}} = $args{flags};
+        my $flags = Shipwright::Util::LoadFile($file);
+        $flags->{ $args{dist} } = $args{flags};
 
         Shipwright::Util::DumpFile( $file, $flags );
         $self->commit( path => $file, comment => "set flags for $args{dist}" );
@@ -541,7 +550,7 @@ sub flags {
         my ($out) = Shipwright::Util->run(
             [ 'svn', 'cat', $self->repository . '/shipwright/flags.yml' ] );
         $out = Shipwright::Util::Load($out) || {};
-        return $out->{$args{dist}} || []; 
+        return $out->{ $args{dist} } || [];
     }
 }
 
@@ -552,7 +561,7 @@ get or set version
 =cut
 
 sub version {
-    my $self   = shift;
+    my $self = shift;
     my %args = @_;
 
     croak "need dist arg" unless $args{dist};
@@ -566,17 +575,20 @@ sub version {
             target => $dir,
         );
 
-        my $version = Shipwright::Util::LoadFile( $file );
-        $version->{$args{dist}} = $args{version};
+        my $version = Shipwright::Util::LoadFile($file);
+        $version->{ $args{dist} } = $args{version};
 
         Shipwright::Util::DumpFile( $file, $version );
-        $self->commit( path => $file, comment => "set version for $args{dist}" );
+        $self->commit(
+            path    => $file,
+            comment => "set version for $args{dist}"
+        );
     }
     else {
         my ($out) = Shipwright::Util->run(
             [ 'svn', 'cat', $self->repository . '/shipwright/version.yml' ] );
         $out = Shipwright::Util::Load($out) || {};
-        return $out->{$args{version}}; 
+        return $out->{ $args{version} };
     }
 }
 
@@ -605,9 +617,9 @@ sub check_repository {
 
     if ( $args{action} eq 'create' ) {
 
-            my $info = $self->info;
+        my ( $info, $err ) = $self->info;
 
-            return 1 if $info;
+        return 1 if $info || $err && $err =~ /Not a valid URL/;
 
     }
     else {

@@ -444,8 +444,14 @@ sub info {
     my ( $info, $err ) =
       Shipwright::Util->run( $self->_cmd( info => path => $path ), 1 );
     $self->log->warn($err) if $err;
-    return if $info =~ /not exist|not a checkout path/;
-    return $info;
+
+    if ( wantarray ) {
+        return $info, $err;
+    }
+    else {
+        return if $info =~ /not exist|not a checkout path/;
+        return $info;
+    }
 }
 
 =head2 propset
