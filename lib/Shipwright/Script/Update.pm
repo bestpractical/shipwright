@@ -73,7 +73,7 @@ sub run {
 
                 return if $checked{$name}++; # we've checked this $name
 
-                my ($require) = $shipwright->backend->requires($name);
+                my ($require) = $shipwright->backend->requires( name => $name );
                 for my $type (qw/requires build_requires recommends/) {
                     for ( keys %{ $require->{$type} } ) {
                         $find_deps->( $_ );

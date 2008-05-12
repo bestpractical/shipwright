@@ -71,7 +71,7 @@ sub import {
 
     unless ( $args{_initialize} ) {
         if ( $args{_extra_tests} ) {
-            $self->delete("t/extra");
+            $self->delete( path => "t/extra");
             $self->log->info( "import extra tests to " . $self->repository );
             Shipwright::Util->run(
                 $self->_cmd( import => %args, name => $name ) );
@@ -85,7 +85,7 @@ sub import {
                 );
             }
             else {
-                $self->delete("scripts/$name");
+                $self->delete( path => "scripts/$name");
                 $self->log->info(
                     "import $args{source}'s scripts to " . $self->repository );
                 Shipwright::Util->run(
@@ -100,12 +100,12 @@ sub import {
                 );
             }
             else {
-                $self->delete("dists/$name");
+                $self->delete( path => "dists/$name");
                 $self->log->info(
                     "import $args{source} to " . $self->repository );
                 $self->_add_to_order($name);
                 $self->version(
-                    dist    => $name,
+                    name    => $name,
                     version => $args{version},
                 );
 
@@ -284,7 +284,7 @@ sub update_order {
     my $require = {};
 
     for (@dists) {
-        $self->_fill_deps( %args, require => $require, dist => $_ );
+        $self->_fill_deps( %args, require => $require, name => $_ );
     }
 
     require Algorithm::Dependency::Ordered;
@@ -302,7 +302,7 @@ sub _fill_deps {
     my $self    = shift;
     my %args    = @_;
     my $require = $args{require};
-    my $dist    = $args{dist};
+    my $name    = $args{name};
 
     my ($string) = Shipwright::Util->run(
         [ 'svn', 'cat', $self->repository . "/scripts/$_/require.yml" ], 1 );
@@ -311,19 +311,19 @@ sub _fill_deps {
 
     if ( $req->{requires} ) {
         for (qw/requires recommends build_requires/) {
-            push @{ $require->{$dist} }, keys %{ $req->{$_} }
+            push @{ $require->{$name} }, keys %{ $req->{$_} }
               if $args{"keep_$_"};
         }
     }
     else {
 
         #for back compatbility
-        push @{ $require->{$dist} }, keys %$req;
+        push @{ $require->{$name} }, keys %$req;
     }
 
-    for my $dep ( @{ $require->{$dist} } ) {
+    for my $dep ( @{ $require->{$name} } ) {
         next if $require->{$dep};
-        $self->_fill_deps( %args, dist => $dep );
+        $self->_fill_deps( %args, name => $dep );
     }
 }
 
@@ -422,7 +422,9 @@ wrapper of delete cmd of svn
 
 sub delete {
     my $self = shift;
-    my $path = shift || '';
+    my %args = @_;
+
+    my $path = $args{path} || '';
     if ( $self->info( path => $path ) ) {
         $self->log->info( "delete " . $self->repository . "/$path" );
         Shipwright::Util->run( $self->_cmd( delete => path => $path ), 1 );
@@ -438,7 +440,7 @@ wrapper of info cmd of svn
 sub info {
     my $self = shift;
     my %args = @_;
-    my $path = $args{path};
+    my $path = $args{path} || '';
 
     my ( $info, $err ) =
       Shipwright::Util->run( $self->_cmd( info => path => $path ), 1 );
@@ -529,7 +531,7 @@ sub flags {
     my $self = shift;
     my %args = @_;
 
-    croak "need dist arg" unless $args{dist};
+    croak "need name arg" unless $args{name};
 
     if ( $args{flags} ) {
         my $dir = tempdir( CLEANUP => 1 );
@@ -541,16 +543,16 @@ sub flags {
         );
 
         my $flags = Shipwright::Util::LoadFile($file);
-        $flags->{ $args{dist} } = $args{flags};
+        $flags->{ $args{name} } = $args{flags};
 
         Shipwright::Util::DumpFile( $file, $flags );
-        $self->commit( path => $file, comment => "set flags for $args{dist}" );
+        $self->commit( path => $file, comment => "set flags for $args{name}" );
     }
     else {
         my ($out) = Shipwright::Util->run(
             [ 'svn', 'cat', $self->repository . '/shipwright/flags.yml' ] );
         $out = Shipwright::Util::Load($out) || {};
-        return $out->{ $args{dist} } || [];
+        return $out->{ $args{name} } || [];
     }
 }
 
@@ -564,7 +566,7 @@ sub version {
     my $self = shift;
     my %args = @_;
 
-    croak "need dist arg" unless $args{dist};
+    croak "need name arg" unless $args{name};
 
     if ( exists $args{version} ) {
         my $dir = tempdir( CLEANUP => 1 );
@@ -576,12 +578,12 @@ sub version {
         );
 
         my $version = Shipwright::Util::LoadFile($file);
-        $version->{ $args{dist} } = $args{version};
+        $version->{ $args{name} } = $args{version};
 
         Shipwright::Util::DumpFile( $file, $version );
         $self->commit(
             path    => $file,
-            comment => "set version for $args{dist}"
+            comment => "set version for $args{name}"
         );
     }
     else {
