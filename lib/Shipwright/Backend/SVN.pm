@@ -77,7 +77,7 @@ sub import {
                 $self->_cmd( import => %args, name => $name ) );
         }
         elsif ( $args{build_script} ) {
-            if ( $self->info("scripts/$name") && not $args{overwrite} ) {
+            if ( $self->info( path => "scripts/$name") && not $args{overwrite} ) {
                 $self->log->warn(
 "path scripts/$name alreay exists, need to set overwrite arg to overwrite"
                 );
@@ -91,7 +91,7 @@ sub import {
             }
         }
         else {
-            if ( $self->info("dists/$name") && not $args{overwrite} ) {
+            if ( $self->info( path => "dists/$name") && not $args{overwrite} ) {
                 $self->log->warn(
 "path dists/$name alreay exists, need to set overwrite arg to overwrite"
                 );
@@ -420,7 +420,7 @@ wrapper of delete cmd of svn
 sub delete {
     my $self = shift;
     my $path = shift || '';
-    if ( $self->info($path) ) {
+    if ( $self->info( path => $path) ) {
         $self->log->info( "delete " . $self->repository . "/$path" );
         Shipwright::Util->run( $self->_cmd( delete => path => $path ), 1 );
     }
@@ -434,7 +434,9 @@ wrapper of info cmd of svn
 
 sub info {
     my $self = shift;
-    my $path = shift;
+    my %args = @_;
+    my $path = $args{path};
+
     my ( $info, $err ) =
       Shipwright::Util->run( $self->_cmd( info => path => $path ), 1 );
     if ($err) {
