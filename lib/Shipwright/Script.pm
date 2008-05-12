@@ -31,8 +31,6 @@ sub prepare {
 
             my $backend = Shipwright::Backend->new( repository => $repo, );
 
-            my $valid = $backend->check_repository( action => $ARGV[0] );
-
             die "invalid repository: $repo"
               unless $backend->check_repository( action => $ARGV[0] );
         }
