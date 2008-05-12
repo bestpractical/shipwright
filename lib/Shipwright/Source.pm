@@ -61,8 +61,12 @@ sub type {
             $$source =~ s{^$type:(?!//)}{}i;
             return uc $type;
         }
-    }
 
+        # extra svk type inference
+        if ( $source =~ m{^//} ) {
+            return 'SVK';
+        }
+    }
 }
 
 1;
