@@ -516,11 +516,9 @@ get or set flags
 
 sub flags {
     my $self = shift;
-    my %args = @_;
+    my $flags = shift;
 
-    croak "need name arg" unless $args{name};
-
-    if ( $args{flags} ) {
+    if ( $flags ) {
         my $dir = tempdir( CLEANUP => 1 );
         my $file = File::Spec->catfile( $dir, 'flags.yml' );
 
@@ -529,18 +527,14 @@ sub flags {
             target => $file,
         );
 
-        my $flags = Shipwright::Util::LoadFile($file);
-        $flags->{ $args{name} } = $args{flags};
-
         Shipwright::Util::DumpFile( $file, $flags );
-        $self->commit( path => $file, comment => "set flags for $args{name}" );
+        $self->commit( path => $file, comment => 'set flags' );
         $self->checkout( detach => 1, target => $file );
     }
     else {
         my ($out) = Shipwright::Util->run(
             [ 'svk', 'cat', $self->repository . '/shipwright/flags.yml' ] );
-        $out = Shipwright::Util::Load($out) || {};
-        return $out->{ $args{name} } || [];
+        return Shipwright::Util::Load($out) || {};
     }
 }
 
