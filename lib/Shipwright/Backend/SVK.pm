@@ -95,10 +95,10 @@ sub import {
                 $self->log->info(
                     "import $args{source} to " . $self->repository );
                 $self->_add_to_order($name);
-                $self->version(
-                    name    => $name,
-                    version => $args{version},
-                );
+
+                my $version = $self->version;
+                $version->{$name} = $args{version};
+                $self->version($version);
 
                 Shipwright::Util->run(
                     $self->_cmd( import => %args, name => $name ) );
@@ -501,7 +501,7 @@ return hashref to require.yml for a dist
 sub requires {
     my $self = shift;
     my %args = @_;
-    my $name = $args{$name};
+    my $name = $args{name};
 
     my ($string) = Shipwright::Util->run(
         [ 'svk', 'cat', $self->repository . "/scripts/$name/require.yml" ], 1 );
@@ -552,11 +552,9 @@ get or set version
 
 sub version {
     my $self = shift;
-    my %args = @_;
+    my $version = shift;
 
-    croak "need name arg" unless $args{name};
-
-    if ( exists $args{version} ) {
+    if ( $version ) {
         my $dir = tempdir( CLEANUP => 1 );
         my $file = File::Spec->catfile( $dir, 'version.yml' );
 
@@ -565,37 +563,18 @@ sub version {
             target => $file,
         );
 
-        my $version = Shipwright::Util::LoadFile($file);
-        $version->{ $args{name} } = $args{version};
-
         Shipwright::Util::DumpFile( $file, $version );
         $self->commit(
             path    => $file,
-            comment => "set version for $args{name}"
+            comment => 'set version',
         );
         $self->checkout( detach => 1, target => $file );
     }
     else {
         my ($out) = Shipwright::Util->run(
             [ 'svk', 'cat', $self->repository . '/shipwright/version.yml' ] );
-        $out = Shipwright::Util::Load($out) || {};
-        return $out->{ $args{name} };
+        return Shipwright::Util::Load($out) || {};
     }
-}
-
-=head2 versions
-
-get versions
-
-=cut
-
-sub versions {
-    my $self = shift;
-
-    my ($out) = Shipwright::Util->run(
-        [ 'svk', 'cat', $self->repository . '/shipwright/version.yml' ] );
-    $out = Shipwright::Util::Load($out) || {};
-    return $out;
 }
 
 =head2 check_repository
