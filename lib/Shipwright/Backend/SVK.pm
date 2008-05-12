@@ -505,12 +505,12 @@ get or set flags
 =cut
 
 sub flags {
-    my $self   = shift;
+    my $self = shift;
     my %args = @_;
 
     croak "need dist arg" unless $args{dist};
 
-    if ($args{flags}) {
+    if ( $args{flags} ) {
         my $dir = tempdir( CLEANUP => 1 );
         my $file = File::Spec->catfile( $dir, 'flags.yml' );
 
@@ -519,8 +519,8 @@ sub flags {
             target => $file,
         );
 
-        my $flags = Shipwright::Util::LoadFile( $file );
-        $flags->{$args{dist}} = $args{flags};
+        my $flags = Shipwright::Util::LoadFile($file);
+        $flags->{ $args{dist} } = $args{flags};
 
         Shipwright::Util::DumpFile( $file, $flags );
         $self->commit( path => $file, comment => "set flags for $args{dist}" );
@@ -530,7 +530,7 @@ sub flags {
         my ($out) = Shipwright::Util->run(
             [ 'svk', 'cat', $self->repository . '/shipwright/flags.yml' ] );
         $out = Shipwright::Util::Load($out) || {};
-        return $out->{$args{dist}} || []; 
+        return $out->{ $args{dist} } || [];
     }
 }
 
@@ -541,7 +541,7 @@ get or set version
 =cut
 
 sub version {
-    my $self   = shift;
+    my $self = shift;
     my %args = @_;
 
     croak "need dist arg" unless $args{dist};
@@ -555,18 +555,21 @@ sub version {
             target => $file,
         );
 
-        my $version = Shipwright::Util::LoadFile( $file );
-        $version->{$args{dist}} = $args{version};
+        my $version = Shipwright::Util::LoadFile($file);
+        $version->{ $args{dist} } = $args{version};
 
         Shipwright::Util::DumpFile( $file, $version );
-        $self->commit( path => $file, comment => "set version for $args{dist}" );
+        $self->commit(
+            path    => $file,
+            comment => "set version for $args{dist}"
+        );
         $self->checkout( detach => 1, target => $file );
     }
     else {
         my ($out) = Shipwright::Util->run(
             [ 'svk', 'cat', $self->repository . '/shipwright/version.yml' ] );
         $out = Shipwright::Util::Load($out) || {};
-        return $out->{$args{dist}}; 
+        return $out->{ $args{dist} };
     }
 }
 
@@ -585,8 +588,45 @@ sub versions {
     return $out;
 }
 
-1;
+=head2 check_repository
 
+=cut
+
+sub check_repository {
+    my $self = shift;
+    my %args = @_;
+
+    if ( $args{action} eq 'create' ) {
+
+        # svk always has //
+        return 1 if $self->repository =~ m{^//};
+
+        if ( $self->repository =~ m{^(/[^/]+/)} ) {
+            my $ori = $self->repository;
+            $self->repository($1);
+
+            my $info = $self->info;
+
+            # revert back
+            $self->repository($ori);
+
+            return 1 if $info;
+        }
+
+        return 0;
+    }
+    else {
+
+        # every valid shipwright repo has 'shipwright' subdir;
+        my $info = $self->info( path => 'shipwright' );
+
+        return 1 if $info;
+        return 0;
+    }
+
+}
+
+1;
 
 __END__
 
