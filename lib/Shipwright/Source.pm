@@ -9,18 +9,17 @@ use File::Temp qw/tempdir/;
 
 Hash::Merge::set_behavior('RIGHT_PRECEDENT');
 
-our %DEFAULT = (
-    follow            => 1,
-);
+our %DEFAULT = ( follow => 1, );
 
 $DEFAULT{directory} = tempdir( CLEANUP => 0 );
 $DEFAULT{download_directory} =
   File::Spec->catfile( $DEFAULT{directory}, 'download' );
 $DEFAULT{map_path} = File::Spec->catfile( $DEFAULT{directory}, 'map.yml' );
 $DEFAULT{url_path} = File::Spec->catfile( $DEFAULT{directory}, 'url.yml' );
-$DEFAULT{version_path} = File::Spec->catfile( $DEFAULT{directory}, 'version.yml' );
+$DEFAULT{version_path} =
+  File::Spec->catfile( $DEFAULT{directory}, 'version.yml' );
 
-for ( qw/map_path url_path version_path/ ) {
+for (qw/map_path url_path version_path/) {
     open my $fh, '>', $DEFAULT{$_} or die "can't write to $DEFAULT{$_}: $!";
     close $fh;
 }
@@ -33,9 +32,11 @@ sub new {
     my $class = shift;
     my %args = %{ merge( \%DEFAULT, {@_} ) };
 
-    my $type = delete $args{type} || type( $args{source} );
-
     croak "need source option" unless $args{source};
+
+    my $type = type( \$args{source} );
+
+    croak "invalid source $args{source}" unless $type;
 
     my $module = 'Shipwright::Source::' . $type;
     $module->require or die $@;
@@ -49,33 +50,19 @@ sub new {
 sub type {
     my $source = shift;
 
-    if ( -e $source ) {
-        if ( -d $source ) {
-            return 'Directory';
+    # prefix that can't be omitted
+    return 'Compressed' if $$source =~ s/^file://i;
+    return 'Directory'  if $$source =~ s/^dir(ectory)?://i;
+    return 'CPAN'       if $$source =~ s/^cpan://i;
+
+    # prefix that can be omitted
+    for my $type (qw/svk svn http ftp/) {
+        if ( $$source =~ /^$type:/i ) {
+            $$source =~ s{^$type:(?!//)}{}i;
+            return uc $type;
         }
-        elsif ( -f $source && $source =~ /\.(tgz|tar\.(gz|bz2))$/ ) {
-            return 'Compressed';
-        }
-        else {
-            croak
-"only support directory and compressed file which contains only one directory";
-        }
     }
-    elsif ( $source =~ m{^\s*http://} ) {
-        return 'HTTP';
-    }
-    elsif ( $source =~ m{^\s*ftp://} ) {
-        return 'FTP';
-    }
-    elsif ( $source =~ m{^\s*svn[:+]} ) {
-        return 'SVN';
-    }
-    elsif ( $source =~ m{^\s*(svk:|//)} ) {
-        return 'SVK';
-    }
-    else {
-        return 'CPAN';
-    }
+
 }
 
 1;
