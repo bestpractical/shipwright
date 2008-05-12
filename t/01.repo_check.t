@@ -6,17 +6,17 @@ use Shipwright::Test qw/has_svk create_svk_repo has_svn create_svn_repo/;
 use File::Spec::Functions qw/catfile/;
 use File::Temp qw/tempdir/;
 
-use Test::More tests => 8;
-
-my $shipwright = Shipwright->new( log_level => 'fatal', repository => '//foo' );
+use Test::More tests => 10;
 
 SKIP: {
-    skip "no svk found", 4
+    skip "no svk found", 5
       unless has_svk();
 
     create_svk_repo();
 
-    # repo check for action 'create'
+    my $shipwright =
+      Shipwright->new( log_level => 'fatal', repository => '//bar' );
+    $shipwright->backend->initialize;
 
     my %map = (
         create => {
@@ -26,6 +26,7 @@ SKIP: {
         list => {
             '//__shipwright/foo' => 0,
             'svk:/noexists/'     => 0,
+            '//bar'              => 1,
         },
     );
 
@@ -43,22 +44,27 @@ SKIP: {
 }
 
 SKIP: {
-    skip "no svn found", 4
+    skip "no svn found", 5
       unless has_svn();
 
     my $valid   = create_svn_repo();
     my $invalid = 'svn:file:///aa/bb/cc';
 
-    # repo check for action 'create'
+    my $shipwright = Shipwright->new(
+        log_level  => 'fatal',
+        repository => "svn:$valid/bar"
+    );
+    $shipwright->backend->initialize;
 
     my %map = (
         create => {
             "svn:$valid" => 1,
-            $invalid     => 0,
+            $invalid         => 0,
         },
         list => {
-            "svn:$valid" => 0,
-            $invalid     => 0,
+            "svn:$valid"     => 0,
+            $invalid         => 0,
+            "svn:$valid/bar" => 1,
         },
     );
 
