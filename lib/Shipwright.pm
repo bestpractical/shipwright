@@ -58,7 +58,21 @@ sub new {
 
     my %args = @_;
 
-    my $self = { log_level => $args{log_level}, log_file => $args{log_file} };
+    my $log_file = $args{log_file};
+
+    unless ($log_file) {
+        # a better named log_file, in the name of reposiotry
+        require File::Spec;
+        my $info = join '', map { /\w/ ? $_ : '_' } split //, $args{repository};
+        $log_file =
+          File::Spec->catfile( File::Spec->tmpdir, "shipwright_${info}.log" );
+    }
+
+    my $self = {
+        log_level => $args{log_level},
+        log_file  => $log_file,
+    };
+    
     bless $self, $class;
 
     Shipwright::Logger->new($self);
