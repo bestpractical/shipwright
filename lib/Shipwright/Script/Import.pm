@@ -175,6 +175,8 @@ sub run {
         $shipwright->backend->test_script( source => $self->test_script );
     }
 
+    print "imported with success\n";
+
 }
 
 =head2 import_req
