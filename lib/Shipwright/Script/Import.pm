@@ -391,3 +391,53 @@ Shipwright::Script::Import - import a source(maybe with a lot of dependences)
    --overwrite        import anyway even if we have deps dists in repo already
    --version          specify the source's version
 
+=head2 supported source types
+
+Generally, the format is L<type:schema>, be careful, there is no blank between
+type and schema, just a colon there.
+
+=over 4
+
+=item CPAN
+
+e.g. cpan:Jifty::DBI  cpan:File::Spec
+
+=item File
+
+e.g. L<file:/home/sunnavy/foo-1.23.tar.gz>
+L<file:/home/sunnavy/foo-1.23.tar.bz2>
+L<file:/home/sunnavy/foo-1.23.tgz>
+
+=item Directory
+
+e.g. L<directory:/home/sunnavy/foo-1.23>
+L<dir:/home/sunnavy/foo-1.23>
+
+=item HTTP
+
+e.g. L<http:http://example/foo-1.23.tar.gz>
+
+yeah, two `http:' are not good, we can omit one like this: 
+
+L<http://example.com/foo-1.23.tar.gz>
+
+F<.tgz> and F<.tar.bz2> are also supported.
+
+=item FTP
+
+e.g. L<ftp:ftp://example.com/foo-1.23.tar.gz>
+L<ftp://example.com/foo-1.23.tar.gz>
+
+F<.tgz> and F<.tar.bz2> are also supported.
+
+=item SVK
+
+e.g. L<svk://public/foo-1.23> L<svk:/local/foo-1.23>
+
+=item SVN
+
+e.g. L<svn:file:///home/public/foo-1.23>
+L<svn:http://svn.example.com/foo-1.23>
+
+=back
+
