@@ -221,7 +221,7 @@ sub _follow {
                         else {
                             $s = Shipwright::Source->new(
                                 %$self,
-                                source => $module,
+                                source => "cpan:$module",
                                 version => undef,
                                 name => '',   # cpan name is automaticaly fixed.
                             );
