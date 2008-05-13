@@ -24,25 +24,58 @@ sub prepare {
 
     # all the cmds need --repository arg
     if ( $ARGV[0] ne 'help' ) {
-        my %args = @ARGV[ 1 .. $#ARGV ];
-        my $repo = $args{'-r'} || $args{'--repository'};
 
-        if ($repo) {
+        # test some options in advance, so we can exit asap.
+        my %args;
 
-            my $backend = Shipwright::Backend->new( repository => $repo, );
+        for ( my $i = 1 ; $i <= $#ARGV - 1 ; $i++ ) {
+            if ( $ARGV[$i] eq '-r' || $ARGV[$i] eq '--repository' ) {
+                if ( $ARGV[ $i + 1 ] =~ /^-/ ) {
+                    die 'option repository requires an argument';
+                }
+                else {
+                    $args{repository} = $ARGV[ $i + 1 ];
+                }
+                $i++;    # skip the argument
+            }
+            elsif ( $ARGV[$i] eq '-l' || $ARGV[$i] eq '--log-level' ) {
+                if ( $ARGV[ $i + 1 ] =~ /^-/ ) {
+                    die 'option log-level requires an argument';
+                }
+                else {
+                    $args{log_level} = $ARGV[ $i + 1 ];
+                }
+                $i++;    # skip the argument
+            }
+            elsif ( $ARGV[$i] eq '--log-file' ) {
+                if ( $ARGV[ $i + 1 ] =~ /^-/ ) {
+                    die 'option log-file requires an argument';
+                }
+                else {
+                    $args{log_file} = $ARGV[ $i + 1 ];
+                }
+                $i++;    # skip the argument
+            }
+
+        }
+
+        if ($args{repository}) {
+
+            my $backend =
+              Shipwright::Backend->new( repository => $args{repository} );
 
             # this $shipwright object will do nothing, except for init logging
             my $shipwright = Shipwright->new(
-                repository => $repo,
-                log_level  => $args{'-l'} || $args{'--log-level'},
-                log_file   => $args{'--log-file'},
+                repository => $args{repository},
+                log_level  => $args{log_level},
+                log_file   => $args{log_file},
             );
 
-            die "invalid repository: $repo"
+            die "invalid repository: $args{repository}"
               unless $backend->check_repository( action => $ARGV[0] );
         }
         else {
-            unshift @ARGV, 'help';
+            @ARGV = ( 'help', $ARGV[0] );
         }
     }
 
