@@ -5,7 +5,7 @@ use strict;
 use Carp;
 use IPC::Run3;
 use File::Spec;
-use Shipwright; # we need this to find where Shipwright.pm lives
+use Shipwright;    # we need this to find where Shipwright.pm lives
 
 our ( $SHIPWRIGHT_ROOT, $SHARE_ROOT );
 
@@ -31,13 +31,15 @@ BEGIN {
 to make pod-coverage.t happy.
 Load, LoadFile, Dump and DumpFile are just dropped in from YAML or YAML::Syck
 =cut
+
 =head2 LoadFile
 =cut
+
 =head2 Dump
 =cut
+
 =head2 DumpFile
 =cut
-
 
 =head2 run
 
@@ -46,17 +48,17 @@ a wrapper of run3 sub in IPC::Run3.
 =cut
 
 sub run {
-    my $class = shift;
-    my $cmd   = shift;
+    my $class          = shift;
+    my $cmd            = shift;
     my $ignore_failure = shift;
 
     my $log = Log::Log4perl->get_logger('Shipwright::Util');
 
     my ( $out, $err );
     $log->info( "run cmd: " . join ' ', @$cmd );
-    Shipwright::Util->select( 'null' );
+    Shipwright::Util->select('null');
     run3( $cmd, \*STDIN, \$out, \$err );
-    Shipwright::Util->select( 'stdout' );
+    Shipwright::Util->select('stdout');
 
     $log->info("run output:\n$out") if $out;
     $log->warn("run err:\n$err")    if $err;
@@ -83,7 +85,7 @@ sub shipwright_root {
     my $self = shift;
 
     unless ($SHIPWRIGHT_ROOT) {
-        my $dir = (File::Spec->splitpath($INC{"Shipwright.pm"}))[1];
+        my $dir = ( File::Spec->splitpath( $INC{"Shipwright.pm"} ) )[1];
         $SHIPWRIGHT_ROOT = File::Spec->rel2abs($dir);
     }
 
@@ -99,23 +101,23 @@ currently only used to store the initial files in project.
 
 sub share_root {
     my $self = shift;
-    
-    require File::ShareDir;
-    $SHARE_ROOT ||=  eval { File::Spec->rel2abs(
-            File::ShareDir::module_dir('Shipwright') )};
 
-    unless ( $SHARE_ROOT && -d $SHARE_ROOT) {
+    require File::ShareDir;
+    $SHARE_ROOT ||=
+      eval { File::Spec->rel2abs( File::ShareDir::module_dir('Shipwright') ) };
+
+    unless ( $SHARE_ROOT && -d $SHARE_ROOT ) {
+
         # XXX TODO: This is a bloody hack
         # Module::Install::Share and File::ShareDir don't play nicely
         # together
-        my @root = File::Spec->splitdir($self->shipwright_root); 
-        $root[-1] = 'share'; # replace 'lib' to 'share'
+        my @root = File::Spec->splitdir( $self->shipwright_root );
+        $root[-1] = 'share';                       # replace 'lib' to 'share'
         $SHARE_ROOT = File::Spec->catdir(@root);
     }
     return ($SHARE_ROOT);
 
 }
-
 
 =head2 select
 
@@ -123,22 +125,35 @@ wrapper for the select in core
 
 =cut
 
-my ( $null, $stdout );
-open $null, '>', '/dev/null';
-$stdout = select $null;
-select $stdout;
+my ( $null_fh, $stdout_fh, $cpan_fh, $cpan_log_path, $cpan_fh_flag );
+
+# use $cpan_fh_flag to record if we've selected cpan_fh before, so so,
+# we don't need to warn that any more.
+
+open $null_fh, '>', '/dev/null';
+
+$cpan_log_path =
+  File::Spec->catfile( File::Spec->tmpdir, 'shipwright_cpan.log' );
+open $cpan_fh, '>>', $cpan_log_path;
+$stdout_fh = select;
 
 sub select {
     my $self = shift;
     my $type = shift;
+
     if ( $type eq 'null' ) {
-        select $null;
+        select $null_fh;
     }
     elsif ( $type eq 'stdout' ) {
-        select $stdout;
+        select $stdout_fh;
+    }
+    elsif ( $type eq 'cpan' ) {
+        warn "CPAN related output will be at $cpan_log_path\n"
+          unless $cpan_fh_flag;
+        $cpan_fh_flag = 1;
+        select $cpan_fh;
     }
 }
-
 
 1;
 
