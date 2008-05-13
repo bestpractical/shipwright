@@ -33,7 +33,7 @@ sub prepare {
 
             # this $shipwright object will do nothing, except for init logging
             my $shipwright = Shipwright->new(
-                repository => '//magic',
+                repository => $repo,
                 log_level  => $args{'-l'} || $args{'--log-level'},
                 log_file   => $args{'--log-file'},
             );
