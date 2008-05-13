@@ -25,26 +25,26 @@ unshift @INC, $cpan_dir;
 sub new {
     my $class = shift;
     my $self  = $class->SUPER::new(@_);
-    CPAN::Config->use;
-
-    mkdir File::Spec->catfile( $cpan_dir, 'CPAN' );
-    my $config_file = File::Spec->catfile( $cpan_dir, 'CPAN', 'MyConfig.pm' );
-
-    unless ( -f $config_file ) {
-        $CPAN::Config->{cpan_home} = File::Spec->catfile($cpan_dir);
-        $CPAN::Config->{build_dir} = File::Spec->catfile( $cpan_dir, 'build' );
-        $CPAN::Config->{histfile} =
-          File::Spec->catfile( $cpan_dir, 'histfile' );
-        $CPAN::Config->{keep_source_where} =
-          File::Spec->catfile( $cpan_dir, 'sources' );
-        $CPAN::Config->{prefs_dir} = File::Spec->catfile( $cpan_dir, 'prefs' );
-        $CPAN::Config->{prerequisites_policy} = 'follow';
-        $CPAN::Config->{urllist} = [];
-        write_file( $config_file,
-            Data::Dumper->Dump( [$CPAN::Config], ['$CPAN::Config'] ) );
-
-    }
-    require CPAN::MyConfig;
+#    CPAN::Config->use;
+#
+#    mkdir File::Spec->catfile( $cpan_dir, 'CPAN' );
+#    my $config_file = File::Spec->catfile( $cpan_dir, 'CPAN', 'MyConfig.pm' );
+#
+#    unless ( -f $config_file ) {
+#        $CPAN::Config->{cpan_home} = File::Spec->catfile($cpan_dir);
+#        $CPAN::Config->{build_dir} = File::Spec->catfile( $cpan_dir, 'build' );
+#        $CPAN::Config->{histfile} =
+#          File::Spec->catfile( $cpan_dir, 'histfile' );
+#        $CPAN::Config->{keep_source_where} =
+#          File::Spec->catfile( $cpan_dir, 'sources' );
+#        $CPAN::Config->{prefs_dir} = File::Spec->catfile( $cpan_dir, 'prefs' );
+#        $CPAN::Config->{prerequisites_policy} = 'follow';
+#        $CPAN::Config->{urllist}              = [];
+#        write_file( $config_file,
+#            Data::Dumper->Dump( [$CPAN::Config], ['$CPAN::Config'] ) );
+#
+#    }
+#    require CPAN::MyConfig;
     return $self;
 }
 
@@ -66,40 +66,62 @@ sub _run {
     my $self = shift;
     return if $self->source eq 'perl';    # don't expand perl itself;
 
-    my $module = CPAN::Shell->expand( 'Module', $self->source );
+    my ( $source, $distribution );
 
-    unless ($module) {
-        $self->log->warn( "can't find "
-              . $self->source
-              . ' on CPAN, assuming you will manually fix it. good luck!' );
-        return;
-    }
+    if ( $self->source =~ /\.tar\.gz$/ ) {
 
-    my $source = $module->cpan_file;
+        # it's a disribution
+        $distribution = CPAN::Shell->expand( 'Distribution', $self->source );
 
-    my $info = CPAN::DistnameInfo->new( $module->cpan_file );
-    my $dist = $info->dist;
-
-    my $distribution = $module->distribution;
-    if ( $self->version ) {
-        my $latest_version = $info->version;
-        my $version = $self->version;
-        if ( $latest_version =~ /^v/ && $version !~ /^v/ ) {
-            $version = 'v' . $version;
+        unless ($distribution) {
+            $self->log->warn( "can't find "
+                  . $self->source
+                  . ' on CPAN, assuming you will manually fix it. good luck!' );
+            return;
         }
-        $distribution->{ID} =~ s/$latest_version/$version/;
-        $source =~ s/$latest_version/$version/;
+
+        $source = $distribution->{ID};
     }
+    else {
+
+        # it's a module
+        my $module = CPAN::Shell->expand( 'Module', $self->source );
+
+        unless ($module) {
+            $self->log->warn( "can't find "
+                  . $self->source
+                  . ' on CPAN, assuming you will manually fix it. good luck!' );
+            return;
+        }
+
+        $source = $module->cpan_file;
+
+        $distribution = $module->distribution;
+
+        my $info = CPAN::DistnameInfo->new( $module->cpan_file );
+
+        if ( $self->version ) {
+            my $latest_version = $info->version;
+            my $version        = $self->version;
+            if ( $latest_version =~ /^v/ && $version !~ /^v/ ) {
+                $version = 'v' . $version;
+            }
+            $distribution->{ID} =~ s/$latest_version/$version/;
+            $source             =~ s/$latest_version/$version/;
+        }
+    }
+
+    my $name = CPAN::DistnameInfo->new( $distribution->{ID} )->dist;
 
     $distribution->get;
 
-    $self->name( 'cpan-' . $dist );
-    $self->_update_map( $self->source, 'cpan-' . $dist );
+    $self->name( 'cpan-' . $name );
+    $self->_update_map( $self->source, 'cpan-' . $name );
 
     $self->source(
         File::Spec->catfile(
-            $CPAN::Config->{keep_source_where}, 'authors',
-            'id',                               $source
+            $CPAN::Config->{keep_source_where},
+            'authors', 'id', $source
         )
     );
     return 1;
