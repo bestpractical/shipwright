@@ -6,7 +6,7 @@ use Carp;
 
 use base qw/App::CLI::Command Class::Accessor::Fast Shipwright::Script/;
 __PACKAGE__->mk_accessors(
-    qw/repository log_level log_file dist with_latest_version only_update/);
+    qw/repository log_level log_file name with_latest_version only_update/);
 
 use Shipwright;
 
@@ -15,7 +15,7 @@ sub options {
         'r|repository=s'      => 'repository',
         'l|log-level=s'       => 'log_level',
         'log-file=s'          => 'log_file',
-        'dist=s'              => 'dist',
+        'name=s'              => 'name',
         'with-latest-version' => 'with_latest_version',
         'only-update'         => 'only_update',
     );
@@ -23,9 +23,9 @@ sub options {
 
 sub run {
     my $self = shift;
-    my $dist = shift;
+    my $name = shift;
 
-    $self->dist($dist) if $dist && !$self->dist;
+    $self->name($name) if $name && !$self->name;
 
     my $shipwright = Shipwright->new(
         repository => $self->repository,
@@ -44,16 +44,16 @@ sub run {
     if ( $self->with_latest_version ) {
         my $map = $shipwright->backend->map;
 
-        if ( $self->dist ) {
-            if ( $self->dist =~ /^cpan-/ ) {
+        if ( $self->name ) {
+            if ( $self->name =~ /^cpan-/ ) {
                 my %reversed = reverse %$map;
-                my $module   = $reversed{ $self->dist };
-                $latest_version->{ $self->dist } =
+                my $module   = $reversed{ $self->name };
+                $latest_version->{ $self->name } =
                   $self->_latest_version( name => $module );
             }
             else {
-                $latest_version->{ $self->dist } =
-                  $self->_latest_version( url => $source->{ $self->dist } );
+                $latest_version->{ $self->name } =
+                  $self->_latest_version( url => $source->{ $self->name } );
             }
         }
         else {
@@ -64,31 +64,31 @@ sub run {
                   $self->_latest_version( name => $module );
             }
 
-            for my $dist ( keys %$source ) {
-                next if exists $latest_version->{$dist};
-                if ( $source->{$dist} =~ m{^(svn|svk|//)} ) {
-                    $latest_version->{$dist} =
-                      $self->_latest_version( url => $source->{$dist} );
+            for my $name ( keys %$source ) {
+                next if exists $latest_version->{$name};
+                if ( $source->{$name} =~ m{^(svn|svk|//)} ) {
+                    $latest_version->{$name} =
+                      $self->_latest_version( url => $source->{$name} );
                 }
             }
         }
     }
 
-    if ( $self->dist ) {
+    if ( $self->name ) {
         my $new_versions = {};
-        $new_versions->{ $self->dist } = $versions->{ $self->dist }
-          if exists $versions->{ $self->dist };
+        $new_versions->{ $self->name } = $versions->{ $self->name }
+          if exists $versions->{ $self->name };
         $versions = $new_versions;
     }
-    for my $dist ( sort keys %$versions ) {
+    for my $name ( sort keys %$versions ) {
         my $flip = 1;
 
         if ( $self->only_update ) {
             $flip = 0;
-            if ( $latest_version->{$dist} ) {
+            if ( $latest_version->{$name} ) {
                 require version;
-                my $latest = version->new( $latest_version->{$dist} );
-                if ( $latest gt $versions->{$dist} ) {
+                my $latest = version->new( $latest_version->{$name} );
+                if ( $latest gt $versions->{$name} ) {
                     $flip = 1;
                 }
             }
@@ -96,18 +96,18 @@ sub run {
         }
 
         if ($flip) {
-            print $dist, ': ', "\n";
-            print ' ' x 4 . 'version: ', $versions->{$dist} || '',     "\n";
-            print ' ' x 4 . 'from: ',    $source->{$dist}   || 'CPAN', "\n";
+            print $name, ': ', "\n";
+            print ' ' x 4 . 'version: ', $versions->{$name} || '',     "\n";
+            print ' ' x 4 . 'from: ',    $source->{$name}   || 'CPAN', "\n";
             if ( $self->with_latest_version ) {
-                print ' ' x 4 . 'latest_version: ', $latest_version->{$dist}
+                print ' ' x 4 . 'latest_version: ', $latest_version->{$name}
                   || 'unknown', "\n";
             }
         }
     }
 
-    if ( $self->dist && keys %$versions == 0 ) {
-        print $self->dist, " doesn't exist\n";
+    if ( $self->name && keys %$versions == 0 ) {
+        print $self->name, " doesn't exist\n";
     }
 }
 
@@ -169,7 +169,7 @@ Shipwright::Script::List - list dists of a project
    --repository(-r)   specify the repository of our project
    --log-level(-l)    specify the log level
    --log-file         specify the log file
-   --dist             sepecify the dist name
+   --name             sepecify the dist name
    --with-latest-version  show the latest version if possible
    --only-update      only show the dists that can be updated
 
