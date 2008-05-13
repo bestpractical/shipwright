@@ -53,7 +53,14 @@ sub type {
     # prefix that can't be omitted
     return 'Compressed' if $$source =~ s/^file://i;
     return 'Directory'  if $$source =~ s/^dir(ectory)?://i;
-    return 'CPAN'       if $$source =~ s/^cpan://i;
+
+    if ( $$source =~ s/^cpan://i ) {
+
+        # if it's not a distribution name, like 
+        # 'S/SU/SUNNAVY/IP-QQWry-v0.0.15.tar.gz', convert '-' to '::'.
+        $$source =~ s/-/::/g unless $$source =~ /\.tar\.gz$/;
+        return 'CPAN';
+    }
 
     # prefix that can be omitted
     for my $type (qw/svn http ftp/) {
