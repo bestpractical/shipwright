@@ -25,6 +25,7 @@ unshift @INC, $cpan_dir;
 sub new {
     my $class = shift;
     my $self  = $class->SUPER::new(@_);
+
 #    CPAN::Config->use;
 #
 #    mkdir File::Spec->catfile( $cpan_dir, 'CPAN' );
@@ -79,6 +80,10 @@ sub _run {
                   . ' on CPAN, assuming you will manually fix it. good luck!' );
             return;
         }
+
+        # distribution source isn't good for shipwright, convert it to a
+        # module name it contains
+        $self->source( ( $distribution->containsmods )[0] );
 
         $source = $distribution->{ID};
     }
