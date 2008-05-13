@@ -61,6 +61,9 @@ sub run {
           Shipwright::Source::Compressed->new( %$self, _no_update_url => 1 );
         $compressed->run(@_);
     }
+    else {
+        die 'invalid source: ' . $self->source;
+    }
 }
 
 sub _run {
@@ -117,6 +120,11 @@ sub _run {
     }
 
     my $name = CPAN::DistnameInfo->new( $distribution->{ID} )->dist;
+
+
+    if ( $name eq 'perl' ) {
+        die 'perl itself contains ' . $self->source . ', will not process';
+    }
 
     $distribution->get;
 
