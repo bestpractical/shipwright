@@ -25,7 +25,7 @@ sub _initialize_log4perl {
     my $class      = shift;
     my $shipwright = shift;
 
-    my $log_level = uc $shipwright->log_level || 'INFO';
+    my $log_level = uc $shipwright->log_level || 'ERROR';
     my %default;
 
     if ( $shipwright->log_file ) {

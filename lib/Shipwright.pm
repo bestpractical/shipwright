@@ -24,7 +24,7 @@ args is a hash, supported keys:
 general part:
 
     repository: specify backend's path. e.g. svk:/t/test
-    log_level: specify log level. default is INFO
+    log_level: specify log level. default is ERROR
     log_file: specify log file. default is append to screen.
 
 source part:
