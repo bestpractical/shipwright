@@ -54,7 +54,10 @@ sub run {
 
     my ( $out, $err );
     $log->info( "run cmd: " . join ' ', @$cmd );
+    Shipwright::Util->select( 'null' );
     run3( $cmd, \*STDIN, \$out, \$err );
+    Shipwright::Util->select( 'stdout' );
+
     $log->info("run output:\n$out") if $out;
     $log->warn("run err:\n$err")    if $err;
 
@@ -112,6 +115,30 @@ sub share_root {
     return ($SHARE_ROOT);
 
 }
+
+
+=sub select
+
+wrapper for the select in core
+
+=cut
+
+my ( $null, $stdout );
+open $null, '>', '/dev/null';
+$stdout = select $null;
+select $stdout;
+
+sub select {
+    my $self = shift;
+    my $type = shift;
+    if ( $type eq 'null' ) {
+        select $null;
+    }
+    elsif ( $type eq 'stdout' ) {
+        select $stdout;
+    }
+}
+
 
 1;
 
