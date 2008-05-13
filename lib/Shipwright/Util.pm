@@ -117,7 +117,7 @@ sub share_root {
 }
 
 
-=sub select
+=head2 select
 
 wrapper for the select in core
 
