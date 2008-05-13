@@ -145,11 +145,12 @@ sub _latest_version {
         # cpan
         require CPAN;
         require CPAN::DistnameInfo;
-        open my $fh, '>', '/dev/null';
-        my $stdout = select $fh;
+
+        Shipwright::Util->select( 'null' );
 
         my $module = CPAN::Shell->expand( 'Module', $args{name} );
-        select $stdout;
+
+        Shipwright::Util->select( 'stdout' );
 
         my $info    = CPAN::DistnameInfo->new( $module->cpan_file );
         my $version = $info->version;
