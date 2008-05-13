@@ -11,9 +11,6 @@ __PACKAGE__->mk_accessors(
 use Shipwright;
 use List::MoreUtils qw/uniq/;
 
-=head2 options
-=cut
-
 sub options {
     (
         'r|repository=s' => 'repository',
@@ -25,9 +22,6 @@ sub options {
         'dist=s'         => 'dist',
     );
 }
-
-=head2 run
-=cut
 
 sub run {
     my $self = shift;

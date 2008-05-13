@@ -9,10 +9,6 @@ __PACKAGE__->mk_accessors(
     qw/repository log_level log_file dist with_latest_version only_update/);
 
 use Shipwright;
-use Data::Dumper;
-
-=head2 options
-=cut
 
 sub options {
     (
@@ -24,9 +20,6 @@ sub options {
         'only-update'         => 'only_update',
     );
 }
-
-=head2 run
-=cut
 
 sub run {
     my $self = shift;

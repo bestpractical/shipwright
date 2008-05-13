@@ -22,9 +22,6 @@ use List::MoreUtils qw/uniq first_index/;
 
 Hash::Merge::set_behavior('RIGHT_PRECEDENT');
 
-=head2 options
-=cut
-
 sub options {
     (
         'r|repository=s'   => 'repository',
@@ -46,9 +43,6 @@ sub options {
 }
 
 my ( %imported, $version );
-
-=head2 run
-=cut
 
 sub run {
     my $self   = shift;
@@ -120,11 +114,11 @@ sub run {
                 File::Spec->catfile( $script_dir, 'build' ) );
         }
         else {
-            $self->generate_build( $self->source, $script_dir, $shipwright );
+            $self->_generate_build( $self->source, $script_dir, $shipwright );
         }
 
         if ( $self->follow ) {
-            $self->import_req( $self->source, $shipwright );
+            $self->_import_req( $self->source, $shipwright );
 
             move(
                 File::Spec->catfile( $self->source, '__require.yml' ),
@@ -159,7 +153,7 @@ sub run {
             Hash::Merge::merge( $shipwright->backend->source || {}, $new_url )
         );
 
-        reorder($shipwright);
+        $self->_reorder($shipwright);
     }
 
     # import tests
@@ -179,19 +173,15 @@ sub run {
 
 }
 
-=head2 import_req
+# _import_req: import required dists for a dist
 
-import required dists for a dist
-
-=cut
-
-sub import_req {
+sub _import_req {
     my $self         = shift;
     my $source       = shift;
     my $shipwright   = shift;
     my $require_file = File::Spec->catfile( $source, '__require.yml' );
 
-    my $dir = parent_dir($source);
+    my $dir = $self->_parent_dir($source);
 
     my $map_file = File::Spec->catfile( $dir, 'map.yml' );
 
@@ -225,7 +215,7 @@ sub import_req {
 
                     $s = File::Spec->catfile( $dir, $s );
 
-                    $self->import_req( $s, $shipwright );
+                    $self->_import_req( $s, $shipwright );
 
                     my $script_dir = tempdir( CLEANUP => 1 );
                     move(
@@ -233,7 +223,7 @@ sub import_req {
                         File::Spec->catfile( $script_dir, 'require.yml' )
                     ) or die "move $s/__require.yml failed: $!";
 
-                    $self->generate_build( $s, $script_dir, $shipwright );
+                    $self->_generate_build( $s, $script_dir, $shipwright );
 
                     $shipwright->backend->import(
                         comment   => 'deps for ' . $source,
@@ -254,13 +244,10 @@ sub import_req {
 
 }
 
-=head2 generate_build
+# _generate_build:
+# automatically generate build script if not provided
 
-automatically generate build script if not provided
-
-=cut
-
-sub generate_build {
+sub _generate_build {
     my $self       = shift;
     my $source_dir = shift;
     my $script_dir = shift;
@@ -305,27 +292,22 @@ sub generate_build {
     close $fh;
 }
 
-=head2 parent_dir
+# _parent_dir: return parent dir
 
-return parent dir 
-
-=cut
-
-sub parent_dir {
+sub _parent_dir {
+    my $self = shift;
     my $source = shift;
     my @dirs   = File::Spec->splitdir($source);
     pop @dirs;
     return File::Spec->catfile(@dirs);
 }
 
-=head2 reorder
+# _reorder:
+# make some hack for order.
+# move ExtUtils::MakeMaker and Module::Build to the head of cpan dists
 
-make some hack for order.
-move ExtUtils::MakeMaker and Module::Build to the head of cpan dists
-
-=cut
-
-sub reorder {
+sub _reorder {
+    my $self = shift;
     my $shipwright = shift;
     my $order      = $shipwright->backend->order;
 

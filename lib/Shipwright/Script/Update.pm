@@ -17,9 +17,6 @@ use Hash::Merge;
 
 Hash::Merge::set_behavior('RIGHT_PRECEDENT');
 
-=head2 options
-=cut
-
 sub options {
     (
         'r|repository=s' => 'repository',
@@ -33,8 +30,6 @@ sub options {
 
 my ( $shipwright, $map, $source );
 
-=head2 run
-=cut
 
 sub run {
     my $self = shift;
@@ -56,7 +51,7 @@ sub run {
     if ( $self->all ) {
         my $dists = $shipwright->backend->order || [];
         for (@$dists) {
-            update($_);
+            $self->_update($_);
         }
     }
     else {
@@ -85,15 +80,13 @@ sub run {
             @dists = keys %checked;
         }
         for ( @dists, $self->name ) {
-            update($_);
+            $self->_update($_);
         }
     }
 }
 
-=head2 update
-=cut
-
-sub update {
+sub _update {
+    my $self = shift;
     my $name = shift;
 
     if ( $source->{$name} ) {

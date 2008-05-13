@@ -11,9 +11,6 @@ use Shipwright;
 use File::Spec;
 use Shipwright::Util;
 
-=head2 options
-=cut
-
 sub options {
     (
         'r|repository=s' => 'repository',
@@ -21,9 +18,6 @@ sub options {
         'log-file=s'     => 'log_file',
     );
 }
-
-=head2 run
-=cut
 
 sub run {
     my $self       = shift;

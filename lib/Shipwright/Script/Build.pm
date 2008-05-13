@@ -12,9 +12,6 @@ __PACKAGE__->mk_accessors(
 
 use Shipwright;
 
-=head2 options
-=cut
-
 sub options {
     (
         'r|repository=s' => 'repository',
@@ -30,9 +27,6 @@ sub options {
         'perl'           => 'perl',
     );
 }
-
-=head2 run
-=cut
 
 sub run {
     my $self         = shift;
