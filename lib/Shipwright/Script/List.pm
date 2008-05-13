@@ -139,7 +139,7 @@ sub _latest_version {
         require CPAN;
         require CPAN::DistnameInfo;
 
-        Shipwright::Util->select( 'null' );
+        Shipwright::Util->select( 'cpan' );
 
         my $module = CPAN::Shell->expand( 'Module', $args{name} );
 
