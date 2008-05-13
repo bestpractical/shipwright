@@ -100,11 +100,24 @@ elsif ( $args{'clean'} ) {
         }
         chdir $build_base;
     }
+
+    unlink '__need_clean';
 }
 else {
 
     # for install
     open $log, '>', 'build.log' or die $!;
+
+    if ( -e '__need_clean' ) {
+        print "seems it has been built before, need to clean first\n";
+        print $log "seems it has been built before, need to clean first\n";
+        system("$0 --clean") && die "clean failed: $!";
+
+    }
+
+    # set clean flag again
+    open my $tmp_fh, '>', '__need_clean' or die $!;
+    close $tmp_fh;
 
     require CPAN;
 
