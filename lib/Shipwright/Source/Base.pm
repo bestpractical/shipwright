@@ -213,15 +213,15 @@ sub _follow {
                         {
                             $s = Shipwright::Source->new(
                                 %$self,
-                                source => $require->{$type}{$module}{source},
-                                name   => $name,
+                                source  => $require->{$type}{$module}{source},
+                                name    => $name,
                                 version => undef,
                             );
                         }
                         else {
                             $s = Shipwright::Source->new(
                                 %$self,
-                                source => "cpan:$module",
+                                source  => "cpan:$module",
                                 version => undef,
                                 name => '',   # cpan name is automaticaly fixed.
                             );
@@ -236,6 +236,7 @@ sub _follow {
                     }
                 }
 
+                # convert required module name to dist name like cpan-Jifty-DBI
                 if ( $map->{$module} && $map->{$module} =~ /^cpan-/ ) {
                     $require->{$type}{ $map->{$module} } =
                       delete $require->{$type}{$module};
@@ -278,7 +279,7 @@ sub _update_url {
     my $url  = shift;
 
     my $map = {};
-    if ( -e $self->url_path && ! -z $self->url_path ) {
+    if ( -e $self->url_path && !-z $self->url_path ) {
         $map = Shipwright::Util::LoadFile( $self->url_path );
     }
     $map->{$name} = $url;
@@ -286,12 +287,12 @@ sub _update_url {
 }
 
 sub _update_version {
-    my $self = shift;
-    my $name = shift;
-    my $version  = shift;
+    my $self    = shift;
+    my $name    = shift;
+    my $version = shift;
 
     my $map = {};
-    if ( -e $self->version_path && ! -z $self->version_path ) {
+    if ( -e $self->version_path && !-z $self->version_path ) {
         $map = Shipwright::Util::LoadFile( $self->version_path );
     }
     $map->{$name} = $version;
@@ -341,7 +342,7 @@ sub just_name {
     $name .= '.tar.gz' unless $name =~ /(tar\.gz|tgz|tar\.bz2)$/;
 
     require CPAN::DistnameInfo;
-    my $info = CPAN::DistnameInfo->new( $name );
+    my $info = CPAN::DistnameInfo->new($name);
     my $dist = $info->dist;
     return $dist;
 }
@@ -358,7 +359,7 @@ sub just_version {
     $name .= '.tar.gz' unless $name =~ /(tar\.gz|tgz|tar\.bz2)$/;
 
     require CPAN::DistnameInfo;
-    my $info = CPAN::DistnameInfo->new( $name );
+    my $info    = CPAN::DistnameInfo->new($name);
     my $version = $info->version;
     $version =~ s/^v//;
     return $version;
