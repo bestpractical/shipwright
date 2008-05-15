@@ -16,7 +16,7 @@ sub new {
     my $self  = $class->SUPER::new(@_);
 
     $self->name( $self->just_name( $self->source ) ) unless $self->name;
-    $self->_update_url( $self->name, $self->source );
+    $self->_update_url( $self->name, 'svn:' . $self->source );
 
     return $self;
 }

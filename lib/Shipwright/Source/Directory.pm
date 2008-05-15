@@ -33,7 +33,7 @@ sub run {
         $self->version );
 
     $self->_update_url( $self->name || $self->just_name( $self->path ),
-        $self->source ) unless $self->{_no_update_url};
+        'directory:' . $self->source ) unless $self->{_no_update_url};
 
     $self->SUPER::run(@_);
     $self->_follow(

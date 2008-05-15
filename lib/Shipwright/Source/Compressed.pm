@@ -20,7 +20,7 @@ sub run {
 
     $self->_update_version( $self->name, $self->version );
 
-    $self->_update_url( $self->name, $self->source )
+    $self->_update_url( $self->name, 'file:' . $self->source )
       unless $self->{_no_update_url};
 
     my $ret = $self->SUPER::run(@_);

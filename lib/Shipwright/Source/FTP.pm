@@ -32,7 +32,7 @@ sub _run {
     my $file;
     if ( $source =~ m{.*/(.+\.(tar\.gz|tgz|tar\.bz2))$} ) {
         $file = $1;
-        $self->_update_url( $self->just_name($file), $source );
+        $self->_update_url( $self->just_name($file), 'ftp:' . $source );
         my $src_dir = $self->download_directory;
         mkdir $src_dir unless -e $src_dir;
         $self->source( File::Spec->catfile( $src_dir, $file ) );
