@@ -116,7 +116,7 @@ sub _update {
 
         $shipwright->source(
             Shipwright::Source->new(
-                source => $s,
+                source => "cpan:$s",
                 follow => 0,
             )
         );
