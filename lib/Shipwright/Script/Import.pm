@@ -49,6 +49,28 @@ sub run {
     my $source = shift;
 
     $self->source($source) if $source && !$self->source;
+
+    if ( $self->name && !$self->source ) {
+
+        # don't have source specified, use the one in repo
+        my $shipwright = Shipwright->new(
+            repository => $self->repository,
+            log_level  => $self->log_level,
+            log_file   => $self->log_file,
+        );
+        my $map    = $shipwright->backend->map    || {};
+        my $source = $shipwright->backend->source || {};
+
+        my $r_map = { reverse %$map };
+        if ( $r_map->{ $self->name } ) {
+            $self->source( 'cpan:' . $r_map->{ $self->name } );
+        }
+        elsif ( $source->{ $self->name } ) {
+            $self->source( $source->{ $self->name } );
+        }
+
+    }
+
     $self->follow(1) unless defined $self->follow;
     $self->skip( { map { $_ => 1 } split /\s*,\s*/, $self->skip || '' } );
 
@@ -295,7 +317,7 @@ sub _generate_build {
 # _parent_dir: return parent dir
 
 sub _parent_dir {
-    my $self = shift;
+    my $self   = shift;
     my $source = shift;
     my @dirs   = File::Spec->splitdir($source);
     pop @dirs;
@@ -307,7 +329,7 @@ sub _parent_dir {
 # move ExtUtils::MakeMaker and Module::Build to the head of cpan dists
 
 sub _reorder {
-    my $self = shift;
+    my $self       = shift;
     my $shipwright = shift;
     my $order      = $shipwright->backend->order;
 
