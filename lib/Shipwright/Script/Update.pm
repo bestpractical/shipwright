@@ -30,12 +30,11 @@ sub options {
 
 my ( $shipwright, $map, $source );
 
-
 sub run {
     my $self = shift;
     my $name = shift;
 
-    $self->name($name) if $name && ! $self->name;
+    $self->name($name) if $name && !$self->name;
 
     die 'need name arg' unless $self->name || $self->all;
 
@@ -55,23 +54,25 @@ sub run {
         }
     }
     else {
-        if ( !$source->{$name} && $map->{$name} ) {
-            $self->name( $map->{$name} );    # in case the name is module name
+        if ( !$source->{ $self->name } && $map->{ $self->name } ) {
+
+            # in case the name is module name
+            $self->name( $map->{ $self->name } );
         }
 
         my @dists;
         if ( $self->follow ) {
-            my ( %checked );
+            my (%checked);
             my $find_deps;
             $find_deps = sub {
                 my $name = shift;
 
-                return if $checked{$name}++; # we've checked this $name
+                return if $checked{$name}++;    # we've checked this $name
 
                 my ($require) = $shipwright->backend->requires( name => $name );
                 for my $type (qw/requires build_requires recommends/) {
                     for ( keys %{ $require->{$type} } ) {
-                        $find_deps->( $_ );
+                        $find_deps->($_);
                     }
                 }
             };
@@ -124,13 +125,14 @@ sub _update {
 
     $shipwright->source->run;
 
-    my $version = Shipwright::Util::LoadFile( $shipwright->source->version_path );
+    my $version =
+      Shipwright::Util::LoadFile( $shipwright->source->version_path );
 
     $shipwright->backend->import(
         source  => File::Spec->catfile( $shipwright->source->directory, $name ),
         comment => "update $name",
         overwrite => 1,
-        version => $version->{$name},
+        version   => $version->{$name},
     );
 
 }
