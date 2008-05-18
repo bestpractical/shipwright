@@ -111,7 +111,7 @@ else {
     if ( -e '__need_clean' ) {
         print "seems it has been built before, need to clean first\n";
         print $log "seems it has been built before, need to clean first\n";
-        system("$0 --clean") && die "clean failed: $!";
+        system("$0 --clean") && die 'clean failed.';
 
     }
 
@@ -252,8 +252,8 @@ sub install {
           $skip_test ? '--skip-test' : (), $args{'force'} ? '--force' : (),
           $args{'clean'} ? '--clean' : ();
         if ( system($cmd) ) {
-            print $log "build $dir with failure: $!\n";
-            die "build $dir with failure: $!\n";
+            print $log "build $dir with failure.\n";
+            die "build $dir with failure.\n";
         }
     }
     else {
@@ -273,13 +273,13 @@ sub install {
 
             print "we'll run the cmd: $cmd\n";
             if ( system($cmd) ) {
-                print $log "build $dir $type part with failure: $!\n";
+                print $log "build $dir $type part with failure.\n";
                 if ( $args{force} && $type eq 'test' ) {
                     print $log
 "although tests failed, will install anyway since we have force arg\n";
                 }
                 else {
-                    die "build $dir $type part with failure: $!\n";
+                    die "build $dir $type part with failure.\n";
                 }
             }
             else {
@@ -394,7 +394,7 @@ sub test {
         my ( $type, $cmd ) = @$_;
         print $log "run tests $type part with cmd: $cmd\n";
         if ( system($cmd ) ) {
-            die "something wrong when execute $cmd: $?";
+            die "something wrong when execute $cmd.";
         }
         else {
             print $log "run test $type part with success\n";
@@ -463,10 +463,10 @@ sub clean {
     }
 
     if ( system($cmd) ) {
-        print $log "clean $dir with failure: $!\n";
+        print $log "clean $dir with failure.\n";
     }
     else {
-        print $log "clean $dir with success $!\n";
+        print $log "clean $dir with success.\n";
     }
 
     print '=' x 80, "\n";
