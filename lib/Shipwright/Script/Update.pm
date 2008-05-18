@@ -84,6 +84,8 @@ sub run {
             $self->_update($_);
         }
     }
+
+    print "updated with success\n";
 }
 
 sub _update {
