@@ -28,6 +28,7 @@ sub run {
         log_file   => $self->log_file,
     );
     $shipwright->backend->initialize();
+    print "created with success\n";
 }
 
 1;
