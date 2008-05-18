@@ -339,7 +339,10 @@ trim the version stuff from dist name
 sub just_name {
     my $self = shift;
     my $name = shift;
-    $name .= '.tar.gz' unless $name =~ /(tar\.gz|tgz|tar\.bz2)$/;
+
+    $name =~ s/tar\.bz2$/tar.gz/;  # CPAN::DistnameInfo doesn't like bz2
+
+    $name .= '.tar.gz' unless $name =~ /(tar\.gz|tgz)$/;
 
     require CPAN::DistnameInfo;
     my $info = CPAN::DistnameInfo->new($name);
