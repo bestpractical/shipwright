@@ -42,7 +42,7 @@ sub _run {
 
         require LWP::UserAgent;
         my $ua = LWP::UserAgent->new;
-        $ua->timeout(10);
+        $ua->timeout(1200);
 
         my $response = $ua->get($source);
 
