@@ -71,13 +71,15 @@ sub import {
 
     unless ( $args{_initialize} || $args{_extra_tests} ) {
         if ( $args{build_script} ) {
-            if ( $self->info( path => "scripts/$name") && not $args{overwrite} ) {
+            if ( $self->info( path => "scripts/$name" )
+                && not $args{overwrite} )
+            {
                 $self->log->warn(
 "path scripts/$name alreay exists, need to set overwrite arg to overwrite"
                 );
             }
             else {
-                $self->delete( path => "scripts/$name");
+                $self->delete( path => "scripts/$name" );
                 $self->log->info(
                     "import $args{source}'s scripts to " . $self->repository );
                 Shipwright::Util->run(
@@ -85,13 +87,14 @@ sub import {
             }
         }
         else {
-            if ( $self->info( path => "dists/$name") && not $args{overwrite} ) {
+            if ( $self->info( path => "dists/$name" ) && not $args{overwrite} )
+            {
                 $self->log->warn(
 "path dists/$name alreay exists, need to set overwrite arg to overwrite"
                 );
             }
             else {
-                $self->delete( path => "dists/$name");
+                $self->delete( path => "dists/$name" );
                 $self->log->info(
                     "import $args{source} to " . $self->repository );
                 $self->_add_to_order($name);
@@ -425,7 +428,7 @@ sub delete {
     my $self = shift;
     my %args = @_;
     my $path = $args{path} || '';
-    if ( $self->info( path => $path) ) {
+    if ( $self->info( path => $path ) ) {
         $self->log->info( "delete " . $self->repository . "/$path" );
         Shipwright::Util->run( $self->_cmd( delete => path => $path ), 1 );
     }
@@ -446,7 +449,7 @@ sub info {
       Shipwright::Util->run( $self->_cmd( info => path => $path ), 1 );
     $self->log->warn($err) if $err;
 
-    if ( wantarray ) {
+    if (wantarray) {
         return $info, $err;
     }
     else {
@@ -515,10 +518,10 @@ get or set flags
 =cut
 
 sub flags {
-    my $self = shift;
+    my $self  = shift;
     my $flags = shift;
 
-    if ( $flags ) {
+    if ($flags) {
         my $dir = tempdir( CLEANUP => 1 );
         my $file = File::Spec->catfile( $dir, 'flags.yml' );
 
@@ -545,10 +548,10 @@ get or set version
 =cut
 
 sub version {
-    my $self = shift;
+    my $self    = shift;
     my $version = shift;
 
-    if ( $version ) {
+    if ($version) {
         my $dir = tempdir( CLEANUP => 1 );
         my $file = File::Spec->catfile( $dir, 'version.yml' );
 
@@ -606,6 +609,41 @@ sub check_repository {
     }
 
     return 0;
+}
+
+=head2 update
+
+update shipwright's own files, e.g. bin/shipwright-builder
+
+=cut
+
+sub update {
+    my $self = shift;
+    my %args = @_;
+
+    croak "need path option" unless $args{path};
+
+    croak "$args{path} seems not shipwright's own file"
+      unless -e File::Spec->catfile( Shipwright::Util->share_root,
+              $args{path} );
+
+    $args{path} = '/' . $args{path} unless $args{path} =~ m{^/};
+
+    my $dir = tempdir( CLEANUP => 1 );
+    my $file = File::Spec->catfile( $dir, $args{path} );
+
+    $self->checkout(
+        path   => $args{path},
+        target => $file,
+    );
+
+    copy( File::Spec->catfile( Shipwright::Util->share_root, $args{path} ),
+        $file );
+    $self->commit(
+        path    => $file,
+        comment => "update $args{path}",
+    );
+    $self->checkout( detach => 1, target => $file );
 }
 
 1;
