@@ -119,16 +119,18 @@ else {
     open my $tmp_fh, '>', '__need_clean' or die $!;
     close $tmp_fh;
 
-    require CPAN;
+    # some perl distribution( e.g. on fedora ) doesn't have CPAN module
+    # so we put it in eval block
+    eval {
+        require CPAN;
 
-    # don't bother people no CPAN::Config since it's not a problem
-    eval { require CPAN::Config };
+        # don't bother people no CPAN::Config since it's not a problem
+        require CPAN::Config;
 
-    # we don't want any prereqs any more!
-    {
+        # we don't want any prereqs any more!
         no warnings 'once';
         $CPAN::Config->{prerequisites_policy} = 'ignore';
-    }
+    };
 
     unless ( $args{name} ) {
         if ( $build_base =~ m{([-.\w]+)[\\/]([.\d]+)$} ) {
