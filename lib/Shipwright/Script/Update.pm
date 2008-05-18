@@ -5,7 +5,8 @@ use warnings;
 use Carp;
 
 use base qw/App::CLI::Command Class::Accessor::Fast Shipwright::Script/;
-__PACKAGE__->mk_accessors(qw/repository log_level name all follow log_file/);
+__PACKAGE__->mk_accessors(
+    qw/repository log_level name all follow log_file builder utility/);
 
 use Shipwright;
 use File::Spec;
@@ -25,6 +26,8 @@ sub options {
         'name=s'         => 'name',
         'a|all'          => 'all',
         'follow'         => 'follow',
+        'builder'        => 'builder',
+        'utility'        => 'utility',
     );
 }
 
@@ -34,54 +37,67 @@ sub run {
     my $self = shift;
     my $name = shift;
 
-    $self->name($name) if $name && !$self->name;
-
-    die 'need name arg' unless $self->name || $self->all;
-
     $shipwright = Shipwright->new(
         repository => $self->repository,
         log_level  => $self->log_level,
         log_file   => $self->log_file,
     );
 
-    $map    = $shipwright->backend->map    || {};
-    $source = $shipwright->backend->source || {};
+    if ( $self->builder ) {
+        $shipwright->backend->update(
+            path => File::Spec->catfile( 'bin', 'shipwright-builder' ) );
+    }
+    elsif ( $self->utility ) {
+        $shipwright->backend->update(
+            path => File::Spec->catfile( 'bin', 'shipwright-utility' ) );
 
-    if ( $self->all ) {
-        my $dists = $shipwright->backend->order || [];
-        for (@$dists) {
-            $self->_update($_);
-        }
     }
     else {
-        if ( !$source->{ $self->name } && $map->{ $self->name } ) {
 
-            # in case the name is module name
-            $self->name( $map->{ $self->name } );
+        $self->name($name) if $name && !$self->name;
+
+        die 'need name arg' unless $self->name || $self->all;
+
+        $map    = $shipwright->backend->map    || {};
+        $source = $shipwright->backend->source || {};
+
+        if ( $self->all ) {
+            my $dists = $shipwright->backend->order || [];
+            for (@$dists) {
+                $self->_update($_);
+            }
         }
+        else {
+            if ( !$source->{ $self->name } && $map->{ $self->name } ) {
 
-        my @dists;
-        if ( $self->follow ) {
-            my (%checked);
-            my $find_deps;
-            $find_deps = sub {
-                my $name = shift;
+                # in case the name is module name
+                $self->name( $map->{ $self->name } );
+            }
 
-                return if $checked{$name}++;    # we've checked this $name
+            my @dists;
+            if ( $self->follow ) {
+                my (%checked);
+                my $find_deps;
+                $find_deps = sub {
+                    my $name = shift;
 
-                my ($require) = $shipwright->backend->requires( name => $name );
-                for my $type (qw/requires build_requires recommends/) {
-                    for ( keys %{ $require->{$type} } ) {
-                        $find_deps->($_);
+                    return if $checked{$name}++;    # we've checked this $name
+
+                    my ($require) =
+                      $shipwright->backend->requires( name => $name );
+                    for my $type (qw/requires build_requires recommends/) {
+                        for ( keys %{ $require->{$type} } ) {
+                            $find_deps->($_);
+                        }
                     }
-                }
-            };
+                };
 
-            $find_deps->( $self->name );
-            @dists = keys %checked;
-        }
-        for ( @dists, $self->name ) {
-            $self->_update($_);
+                $find_deps->( $self->name );
+                @dists = keys %checked;
+            }
+            for ( @dists, $self->name ) {
+                $self->_update($_);
+            }
         }
     }
 
@@ -158,4 +174,6 @@ Shipwright::Script::Update - update dist(s)
    --name             specify the source name( only alphanumeric characters and - )
    --all              update all the dists
    --follow           update one dist with all its deps(recursively)
+   --builder          update bin/shipwright-builder
+   --utility          update bin/shipwright-utility
 
