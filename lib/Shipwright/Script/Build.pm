@@ -11,6 +11,7 @@ __PACKAGE__->mk_accessors(
 );
 
 use Shipwright;
+use Cwd 'abs_path';
 
 sub options {
     (
@@ -33,6 +34,12 @@ sub run {
     my $install_base = shift;
     $self->install_base($install_base)
       if $install_base && !$self->install_base;
+
+    if ( $self->install_base ) {
+
+        # convert relative path to be absolute
+        $self->install_base( abs_path( $self->install_base ) );
+    }
 
     unless ( $self->name ) {
         if ( $self->repository =~ m{([-.\w]+)/([.\d]+)$} ) {

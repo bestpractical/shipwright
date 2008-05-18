@@ -8,7 +8,7 @@ use File::Copy qw/move copy/;
 use File::Find qw/find/;
 use Config;
 use Getopt::Long;
-use Cwd;
+use Cwd qw/getcwd abs_path/;
 use inc::YAML::Tiny;
 
 my $build_base = getcwd;
@@ -71,6 +71,10 @@ $args{flags} = {
     default => 1,
     map { $_ => 1 } split /\s*,\s*/, $args{flags} || ''
 };
+
+if ( $args{'install-base'} ) {
+    $args{'install-base'} = abs_path( $args{'install-base'} );
+}
 
 # YAML::Tiny objects are array based.
 my $order =
