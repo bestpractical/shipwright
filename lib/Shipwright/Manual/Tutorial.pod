@@ -51,7 +51,8 @@ If you would like to just update the distribution source (files in F<dists/>),
 use C<update>. It will delete the directory in dists/ and add it again.
 
 The other way is to C<import> the distribution again. This will delete the
-corresponding dirs in F<dists/> and F<scripts/>, then add new ones. If you
-want to update the dependency lists too, just add the C<--overwrite> option.
+corresponding directories in F<dists/> and F<scripts/> and then add new ones. If
+you want to update the dependency lists too, just add the C<--overwrite>
+option.
 
 =cut
