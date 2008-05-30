@@ -1,14 +1,17 @@
 =head1 NAME
 
-Shipwright::Tutorial - Introduction to Shipwright 
+Shipwright::Tutorial - introduction to Shipwright 
 
 =head1 SYNOPSIS
 
-In this tutorial, we'll create a simple project: The L<Acme::Hello> module from CPAN.  (We love examples with name hello ;))
+In this tutorial, we'll create a simple distribution: the L<Acme::Hello> module
+from CPAN.
 
 We will use C<svk://__shipwright/hello> as our repository.
 
 =head1 DESCRIPTION
+
+There are three main steps to creating a shipwright distribution.
 
 =head2 1. init
 
@@ -18,10 +21,12 @@ We will use C<svk://__shipwright/hello> as our repository.
 
     $ shipwright import -r svk://__shipwright/hello Acme::Hello
 
-Then shipwright will try to download, and import L<Acme::Hello> and all its dependencies.
+Then shipwright will try to download and import L<Acme::Hello> and all its
+dependencies.
 
-If you want to skip some deps, e.g. L<Locale::Maketext> and L<Locale::Maketext::Lexicon>,
-just say C<--skip Locale::Maketext> and C<--skip Locale::Maketext::Lexicon>.
+If you want to skip some dependencies, e.g. L<Locale::Maketext> and
+L<Locale::Maketext::Lexicon>, just say C<--skip Locale::Maketext> and C<--skip
+Locale::Maketext::Lexicon>.
 
 Run C<shipwright help import> to see more options.
 
@@ -29,24 +34,24 @@ Run C<shipwright help import> to see more options.
 
     $ shipwright build -r svk://__shipwright/hello
 
-Test is kind of time consuming? you can add C<--skip-test> to skip tests.
+If tests are time-consuming or for some reason unnecessary for your build, you
+can add C<--skip-test> to skip them.
 
 Run C<shipwright help build> to see more options.
 
-The log of the above 3 commands can be found in F<docs/tutorial.log>.
+A log of the above commands can be found in F<docs/tutorial.log>.
 
-=head1 Note
+=head1 NOTES
 
 =head2 Updating distributions
 
-There're two commands we can use to update a dist: C<update> and C<import>.
+There are two commands we can use to update a distribution: C<update> and C<import>.
 
-If you'd like to just update the dist source( files in F<dists/> ), use
-C<update>. It will delete the directory in dists and add it again.
+If you would like to just update the distribution source (files in F<dists/>),
+use C<update>. It will delete the directory in dists/ and add it again.
 
-The other way is to C<import> the dist again.
-Techenically, it will delete the corresponding dirs in F<dists/> and
-F<scripts/>, then add new ones.  If you want to update dep dists too,
-just add C<--overwrite> option.
+The other way is to C<import> the distribution again. This will delete the
+corresponding dirs in F<dists/> and F<scripts/>, then add new ones. If you
+want to update the dependency lists too, just add the C<--overwrite> option.
 
 =cut
