@@ -28,32 +28,32 @@ options:
 help: print this usage
 
 install-base: where we will install
-    defaults: a temp dir below your system's tmp.
+    defaults: a temp dir below your system's tmp
     e.g. --install-base /home/local/mydist
 
 name: the name of the project. used to create a better named dir if
     install_base is not supplied
     e.g. --name mydist
 
-perl: which perl to use for the to be installed dists. 
-    defaults: if we have perl in the source, it will use that one.
-              else, it will use the one which runs this builder script.
+perl: which perl to use for the to be installed dists
+    defaults: if we have perl in the source, it will use that one
+              otherwise, it will use the one which runs this builder script
     e.g. --perl /usr/bin/perl
 
-skip: dists we don't want to install, comma seperated. 
+skip: dists we don't want to install, comma-separated
     e.g. --skip perl,Module-Build
 
-flags: set flags we need, comma seperated
-   e.g.  --flags mysql,standalone
+flags: set flags we need, comma-separated
+    e.g.  --flags mysql,standalone
 
 skip-test: skip all the tests
 
-skip-test-except-final: skip all the tests except the final dist.
+skip-test-except-final: skip all the tests except the final dist
 
 force: if tests fail, install anyway
 
-only-test: test for the installed dists.
-    it's used to be sure everything is ok after we install with success. 
+only-test: test for the installed dists
+    it's used to be sure everything is ok after we install with success,
     need to specify --install-base if nothing find in __install_base.
 
 clean: clean the source
