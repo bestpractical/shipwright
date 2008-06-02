@@ -1,6 +1,6 @@
 =head1 NAME
 
-Shipwright::Tutorial - introduction to Shipwright 
+Shipwright::Manual::Tutorial - introduction to Shipwright
 
 =head1 SYNOPSIS
 
@@ -13,16 +13,17 @@ We will use C<svk://__shipwright/hello> as our repository.
 
 There are three main steps to creating a shipwright distribution.
 
-=head2 1. init
+=head2 1. initialize
 
     $ shipwright create -r svk://__shipwright/hello
 
 =head2 2. import
 
-    $ shipwright import -r svk://__shipwright/hello Acme::Hello
+    $ shipwright import -r svk://__shipwright/hello cpan:Acme::Hello
 
 Then shipwright will try to download and import L<Acme::Hello> and all its
-dependencies.
+dependencies from CPAN. (You can import from other types of sources as
+well; see C<shipwright help import> to find out about them.)
 
 If you want to skip some dependencies, e.g. L<Locale::Maketext> and
 L<Locale::Maketext::Lexicon>, just say C<--skip Locale::Maketext> and C<--skip
