@@ -26,8 +26,8 @@ dependencies from CPAN. (You can import from other types of sources as
 well; see C<shipwright help import> to find out about them.)
 
 If you want to skip some dependencies, e.g. L<Locale::Maketext> and
-L<Locale::Maketext::Lexicon>, just say C<--skip Locale::Maketext> and C<--skip
-Locale::Maketext::Lexicon>.
+L<Locale::Maketext::Lexicon>, just say C<--skip
+Locale::Maketext,Locale::Maketext::Lexicon>.
 
 Run C<shipwright help import> to see more options.
 
