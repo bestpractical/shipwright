@@ -1,12 +1,10 @@
-## no critic
-
 =head1 NAME
 
 Shipwright::Manual - Shipwright documentation
 
 =head1 DESCRIPTION
 
-The manual is divided into several parts, each covering a specific topic.
+This manual is divided into several parts, each covering a specific topic.
 
 =over 4
 
@@ -17,18 +15,17 @@ vessel.
 
 =item L<Shipwright::Manual::CustomizeBuild>
 
-A simple tutorial to help you know what shipwright generally is.
+A guide to customizing the build process of individual distributions in a
+Shipwright repository.
 
 =item L<Shipwright::Manual::UsingFlags>
 
-A simple tutorial to help you know what shipwright generally is.
+A guide to using Shipwright's flags feature.
 
 =item L<Shipwright::Glossary>
 
-Glossary for Shipwright
+A Glossary of terms relevant to Shipwright and its documentation.
 
 =back
 
 =cut
-
-1;
