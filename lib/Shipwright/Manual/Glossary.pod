@@ -4,10 +4,18 @@ Shipwright::Manual::Glossary - Glossary for Shipwright
 
 =head1 DESCRIPTION
 
+=head2 distribution
+
+What is imported into a Shipwright repository; e.g. a package from cpan.
+Normally, A Shipwright repository generally has more than one distribution, or
+dist for short, in it.
+
+=head2 repository
+
+The version control repository where you import your sources to. Currently, SVN
+and SVK are supported.
+
 =head2 vessel
 
-Shipwright's final product.
-
-What does the actual shipwright produce?
-Believe me, it's vessel! :)
-
+Shipwright's final product; i.e. what is produced after running C<shipwright
+build>.
