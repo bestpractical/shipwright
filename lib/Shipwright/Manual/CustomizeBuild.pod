@@ -31,7 +31,8 @@ e.g. C<--install-base '/tmp/test-xxxxxx/test'>
 
 =item --flags=s
 
-A list of flags, joined by comma.
+A list of flags, joined by comma. (See L<Shipwright::Manual::UsingFlags> for
+more information.)
 
 e.g. C<--flags default,mysql>
 
