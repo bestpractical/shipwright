@@ -22,8 +22,10 @@ There are three main steps to creating a shipwright vessel.
     $ shipwright import -r svk://__shipwright/hello cpan:Acme::Hello
 
 Then shipwright will try to download and import L<Acme::Hello> and all its
-dependencies from CPAN. (You can import from other types of sources as
-well; see C<shipwright help import> to find out about them.)
+dependencies from CPAN. (You can import from other types of sources as well;
+see C<shipwright help import> to find out about them.) In Shipwright terms,
+these imported sources are called I<distributions>, and are stored under
+F<dists/> in the repository.
 
 If you want to skip some dependencies, e.g. L<Locale::Maketext> and
 L<Locale::Maketext::Lexicon>, just say C<--skip
@@ -62,10 +64,11 @@ A log of the above commands can be found in F<docs/tutorial.log>.
 
 =head2 Updating distributions
 
-There are two commands we can use to update a distribution: C<update> and C<import>.
+There are two commands you can use to update a distribution: C<update> and
+C<import>.
 
 If you would like to just update the distribution source (files in F<dists/>),
-use C<update>. It will delete the directory in dists/ and add it again.
+use C<update>. It will delete the directory in F<dists/> and add it again.
 
 The other way is to C<import> the distribution again. This will delete the
 corresponding directories in F<dists/> and F<scripts/> and then add new ones. If
