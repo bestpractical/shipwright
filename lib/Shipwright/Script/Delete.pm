@@ -78,8 +78,8 @@ sub run {
     }
 
     my $flags = $shipwright->backend->flags;
-    for my $flag ( keys %$flags ) {
-        @{ $flags->{$flag} } = grep { $_ ne $name } @{ $flags->{$flag} };
+    for ( keys %$flags ) {
+        delete $flags->{$_} if $_ eq $name;
     }
 
     $shipwright->backend->version($version);
