@@ -27,9 +27,11 @@ sub run {
     my $self = shift;
     my $name = shift;
 
-    $self->name if $name && !$self->name;
+    $self->name($name) if $name && !$self->name;
 
     die "need name arg" unless $self->name();
+
+    $name = $self->name;
 
     my $shipwright = Shipwright->new(
         repository => $self->repository,
@@ -41,7 +43,7 @@ sub run {
 
     unless ( defined $self->add || defined $self->delete || defined $self->set )
     {
-        print join( ', ', @{ $flags->{ $self->name } || [] } ), "\n";
+        print join( ', ', @{ $flags->{$name} || [] } ), "\n";
         return;
     }
 
@@ -51,24 +53,25 @@ sub run {
 
     if ( defined $self->add ) {
         $self->add( [ grep { /^\w+$/ } split /,\s*/, $self->add ] );
-        $flags->{ $self->name } =
-          [ uniq @{ $self->add }, @{ $flags->{ $self->name } || [] } ];
+        $flags->{$name} = [ uniq @{ $self->add }, @{ $flags->{$name} || [] } ];
     }
     elsif ( defined $self->delete ) {
         $self->delete( [ split /,\s*/, $self->delete ] );
         my %seen;    # lookup table
         @seen{ @{ $self->delete } } = ();
 
-        @{ $flags->{ $self->name } } =
-          grep { exists $seen{$_} } @{ $flags->{ $self->name } || [] };
+        @{ $flags->{$name} } =
+          grep { exists $seen{$_} } @{ $flags->{$name} || [] };
 
     }
     elsif ( defined $self->set ) {
-        $flags->{ $self->name } = [ grep { /^\w+$/ } split /,\s*/, $self->set ];
+        $flags->{$name} = [ grep { /^\w+$/ } split /,\s*/, $self->set ];
     }
 
-    $shipwright->backend->flags( $flags );
+    $shipwright->backend->flags($flags);
 
+    print "set flags with success, current flags for $name is "
+      . join( ',', @{ $flags->{$name} } ) . "\n";
 }
 
 1;
