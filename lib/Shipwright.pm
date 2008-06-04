@@ -16,43 +16,6 @@ use Shipwright::Backend;
 use Shipwright::Source;
 use Shipwright::Build;
 
-=head2 new
-
-initialize all Shipwright's components if possible.
-args is a hash, supported keys: 
-
-general part:
-
-    repository: specify backend's path. e.g. svk:/t/test
-    log_level: specify log level. default is ERROR
-    log_file: specify log file. default is append to screen.
-
-source part:
-
-    source: source need to import
-    name: source's name
-    follow: follow dep chain or not. default is true
-    min_perl_version: minimal required perl version. 
-             default is the same as the perl which's running shipwright
-    skip: hashref of which the keys are the skipped modules when import
-          default is undefined
-    version: source's version, default is undefined
-
-build part:
-
-    perl: the path of perl that runs the cmds in scripts/foo/build(.pl)
-          default is $^X, the one that is running shipwright
-    skip: hashref of which the keys are the skipped dists when install
-          default is undefined
-    skip_test: skip test or not. default is false
-    install_base: install base path. default is a temp directory
-    force: force install even if tests fail. default is false
-    only_test: not install, just test. (used for already installed dists)
-                default is false
-    flags: flags for building. default is { default => 1 }
-
-=cut
-
 sub new {
     my $class = shift;
 
@@ -96,117 +59,123 @@ __END__
 
 Shipwright - Best Practical Builder
 
-
 =head1 SYNOPSIS
 
     use Shipwright;
 
 =head1 DESCRIPTION
 
-=head2 Summary
+=head2 Why use Shipwright?
 
-Shipwright's a tool to help you bundle dists.
+Shipwright is a tool to help you bundle distributions, or dists.
 
-We don't want to repeat ourselves, so when we write a dist, we'll try to use
-as many already created and great modules( sure, I bet most of them can be
-found on CPAN, though not all ) as we can.
+Most dists depend on other dists in order to avoid code repetition. This can
+result in pain and suffering when attempting to install the dist, due to having
+to untangle the maze of dependencies. First, non-CPAN dependencies must be
+found and installed. Then, CPAN:: or CPANPLUS:: can be used to install all
+dependencies available on CPAN with minimal pain.
 
-When we want to install it, we have to install all of its dependences to let
-it happy. Luckily, we have CPAN:: and CPANPLUS:: to help us install nearly
-all of them without much pain, then maybe we need to fix the left non-cpan 
-deps manually( usually, we'd fix the non-cpan deps first because some cpan
-modules depend on them ;)
+While this works, it has some drawbacks, especially for large dists which have
+many dependencies. Installation may take many iterations of trying to install
+from CPAN and then stopping to install other non-CPAN dependencies that the
+CPAN packages depend on. For example, SVK requires the non-CPAN dists
+subversion and rwig. In the end, installing large dists with many dependencies
+is not very friendly for users, especially since dependencies may change their
+functionality and kreak builds with untested versions.
 
-This surely works, but there're some drawbacks, especially for a large dist
-which uses many cpan modules and even requires other stuff.  The install cmds
-sometimes are too many to not be very friendly to end users, and it's not easy
-to do version control with all the dependent dists since most of them are from
-somewhere else we can't control.  If we need other non-perl dists( e.g.  we
-need subversion and swig for SVK ), things'll be worse.
-
-So we wrote Shipwright, a tool to help you bundle a dist with all of 
-dependences, no matter it's a CPAN module or a dist from other place.
-And it'll be very easy to install the bundle, usually with just one command:
+Enter Shipwright, a tool to help you bundle a dist with all of its
+dependencies, regardless of whether they are CPAN modules or non-Perl dists
+from elsewhere. Shipwright makes it easy to install a bundled dist, usually
+with just a single command:
 
 $ ./bin/shipwright-builder
 
-Follow the tutorial to feel how it's going :)
+=head2 Introduction
+
+If this is your first time using Shipwright, L<Shipwright::Manual::Tutorial> is
+probably a better place to start.
 
 =head2 Design
 
-The thought of shipwright is simple:
+The idea of Shipwright is simple:
 
-   raw material                   shipwright factory            
---------------------           ------------------------       
-|  all the seperate|  import   |  internal shipwright |  build
-|  dist sources    |  =====>   |  repository          |  ====> 
--------------------|            -----------------------
+   raw material                   shipwright factory
+---------------------           ------------------------
+|  all the separate |  import   |  internal shipwright |  build
+|  dist sources     |  =====>   |  repository          |  ====>
+---------------------           ------------------------
 
-     vessel(final product) 
------------------------------------------------
-|  all packages installed with smart wrappers |
------------------------------------------------
+     vessel (final product)
+----------------------------------------------
+| all packages installed with smart wrappers |
+----------------------------------------------
 
-So there're mainly two useful commands in shipwright: import and build, which
-can be invoked like this:
+There are two main commands in shipwright: import and build, which can be
+invoked like this:
 
 $ shipwright import ...
 
 $ shipwright build ...
 
-If you get a shipwright build repository, but don't have shipwright installed
-on your system, there's no problem to install at all: the repository has
-bin/shipwright-builder script.  ( in fact, we encourage you to build with
-bin/shipwright-builder, because you can hack the script freely without worrying
-about the changes maybe hurt other shipwright builds )
+If you receive a Shipwright repository but don't have Shipwright installed
+on your system, you can still build and install a vessel with the repository's
+included F<bin/shipwright-builder> script. It's recommended and even encouraged
+to build with this script, as you can change it freely without worrying that
+the changes might affect other shipwright builds.
 
-=head2 Details
+=head2 What's in a Shipwright repository or vessel
 
-=head3 after initialize
+=head3 repository after initialization
 
-After initialize a project, the files in the repo are:
+After initializing a project, the files in the repository are:
 
 =over 4
 
 bin/
-     shipwright-builder   # used for build, install or just test
-    
-    # builder's own utlity, you can use it to update build order
+     # used for building, installing and testing
+     shipwright-builder
+
+    # a utility for doing things such as updating the build order
      shipwright-utility
 
 etc/
-    # wrapper for installed bin files, mainly for optimizing env
+    # wrapper for installed bin files, mainly for optimizing the environment
      shipwright-script-wrapper
-    
-    # wrapper for installed perl scripts
-    shipwright-perl-wrapper         
-    
-    # source files you can `source', for tcsh and bash, respectively.
-    # both'll be installed to tools/
-    shipwright-source-tcsh, shipwright-source-bash
-    
-    shipwright-utility # utility which'll be installed to tools/
- 
-dists/ # all the sources of your dists live here
 
-scripts/ # all the build scripts and dependence hints live here
+    # wrapper for installed perl scripts
+    shipwright-perl-wrapper
+
+    # source files you can `source', for tcsh and bash, respectively.
+    # both will be installed to tools/
+    shipwright-source-tcsh, shipwright-source-bash
+
+    # utility which will be installed to tools/
+    shipwright-utility
+
+dists/      # all the sources of your dists live here
+
+scripts/    # all the build scripts and dependency hints live here
 
 shipwright/
-    order.yml # the actual build order
-    source.yml # non-cpan dists' name => url map
-    map.yml # cpan dists' module => name map
+    # the actual build order
+    order.yml
+    # non-cpan dists' name => url map
+    source.yml
+    # cpan dists' module => name map
+    map.yml
 
 t/
-    test # will run this if with --only-test when build
+    # will run this if with --only-test when build
+    test
 
 =back
 
-=head3 after import
+=head3 repository after import
 
-After import, e.g. Acme::Hello, both the dists and scripts directories will
-have `cpan-Acme-Hello' directory.
+After import, say of cpan:Acme::Hello, both the dists and scripts directories
+will have a `cpan-Acme-Hello' directory.
 
-Under scripts/cpan-Acme-Hello there're two files: 'build' and 'require.yml'.
+Under scripts/cpan-Acme-Hello there are two files: 'build' and 'require.yml'.
 
 =head4 build
 
@@ -220,10 +189,11 @@ clean: %%PERL%% Build realclean
 
 =back
 
-Each line is of `type: cmd' format, and the cmd is executed line by
-line(which's also true for t/test).
+Each line is of `type: command' format, and the command is executed line by
+line (which is also true for t/test).
 
-see L<Shipwright::Manual::CustomizeBuild> for more info.
+See L<Shipwright::Manual::CustomizeBuild> for more information on
+customizing the build process for dists.
 
 =head4 require.yml
 
@@ -233,49 +203,75 @@ build_requires: {}
 
 conflicts: {}
 
-recommends: 
+recommends:
   cpan-Locale-Maketext-Lexicon: 
     version: 0.15
 requires: {}
 
-This's the hint by which we can get right build order 
+This file details the hints needed in order for Shipwright to create the
+right build order.
 
 =back
 
-=head4 after install
+=head4 vessel
 
-Normally, there're bin, bin-wrapper, etc, tools and lib directories.
-One thing need to note is files below bin are for you to run, which are 
-wrappers to the files bellow bin-wrapper with same names.
+After the source repository is built, we have a new directory structure
+which we call a I<vessel>.
+
+Normally, the vessel contains bin/, bin-wrapper/, etc/, tools/ and lib/
+directories. One thing to note is that files below bin/ are for you to run,
+while the files below bin-wrapper/ are not. The bin/ directory contains links
+to a wrapper around the files in bin-wrapped/, and these programs will only
+work correctly if run through the wrapper.
+
+=head2 METHODS
+
+=head3 new PARAMHASH
+
+initialize all Shipwright's components if possible.
+args is a hash, supported keys: 
+
+general part:
+
+    repository: specify backend's path. e.g. svk:/t/test
+    log_level: specify log level. default is ERROR
+    log_file: specify log file. default is append to screen.
+
+source part:
+
+    source: source need to import
+    name: source's name
+    follow: follow dep chain or not. default is true
+    min_perl_version: minimal required perl version. 
+             default is the same as the perl which's running shipwright
+    skip: hashref of which the keys are the skipped modules when import
+          default is undefined
+    version: source's version, default is undefined
+
+build part:
+
+    perl: the path of perl that runs the cmds in scripts/foo/build(.pl)
+          default is $^X, the one that is running shipwright
+    skip: hashref of which the keys are the skipped dists when install
+          default is undefined
+    skip_test: skip test or not. default is false
+    install_base: install base path. default is a temp directory
+    force: force install even if tests fail. default is false
+    only_test: not install, just test. (used for already installed dists)
+                default is false
+    flags: flags for building. default is { default => 1 }
 
 =head1 SEE ALSO
 
-L<Shipwright::Manual::Tutorial>
-L<Shipwright::Manual::UsingFlags>
-L<Shipwright::Manual::CustomizeBuild>
+L<Shipwright::Manual>
 
-=head1 DEPENDENCIES
-
-None.
-
-
-=head1 INCOMPATIBILITIES
-
-None reported.
-
-
-=head1 BUGS AND LIMITATIONS
-
-No bugs have been reported.
-
-=head1 AUTHOR
+=head1 AUTHORS
 
 sunnavy  C<< <sunnavy@bestpractical.com> >>
 
-
 =head1 LICENCE AND COPYRIGHT
 
-Copyright 2007 Best Practical Solutions.
+Shipwright is Copyright 2007-2008 Best Practical Solutions, LLC.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
