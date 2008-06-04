@@ -47,7 +47,7 @@ sub run {
     my $order = $shipwright->backend->order;
 
     die "no such dist: $name" unless grep { $_ eq $name } @$order;
-        
+
     $shipwright->backend->delete( path => "dists/$name" );
     $shipwright->backend->delete( path => "scripts/$name" );
 
@@ -55,32 +55,17 @@ sub run {
     @$order = grep { $_ ne $name } @$order;
     $shipwright->backend->order($order);
 
-    # clean version.yml, map.yml, source.yml and flags.yml
-    my $version = $shipwright->backend->version;
-    for ( keys %$version ) {
-        if ( $_ eq $name ) {
-            delete $version->{$_};
-            last;
-        }
-    }
-
+    # clean map.yml
     for ( keys %$map ) {
         delete $map->{$_} if $map->{$_} eq $name;
     }
 
-    my $source = $shipwright->backend->source || {};
+    # clean version.yml, source.yml and flags.yml
+    my $version = $shipwright->backend->version || {};
+    my $source  = $shipwright->backend->source  || {};
+    my $flags   = $shipwright->backend->flags   || {};
 
-    for ( keys %$source ) {
-        if ( $_ eq $name ) {
-            delete $source->{$_} if $_ eq $name;
-            last;
-        }
-    }
-
-    my $flags = $shipwright->backend->flags;
-    for ( keys %$flags ) {
-        delete $flags->{$_} if $_ eq $name;
-    }
+    $self->_clean_hash( $source, $flags, $version );
 
     $shipwright->backend->version($version);
     $shipwright->backend->map($map);
@@ -88,6 +73,21 @@ sub run {
     $shipwright->backend->flags($flags);
 
     print "deleted $name with success\n";
+}
+
+sub _clean_hash {
+    my $self     = shift;
+    my @hashrefs = @_;
+    my $name     = $self->name;
+
+    for my $hashref (@hashrefs) {
+        for ( keys %$hashref ) {
+            if ( $_ eq $name ) {
+                delete $hashref->{$_} if $_ eq $name;
+                last;
+            }
+        }
+    }
 }
 
 1;
