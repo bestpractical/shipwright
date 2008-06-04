@@ -19,3 +19,8 @@ and SVK are supported.
 
 Shipwright's final product; i.e. what is produced after running C<shipwright
 build>.
+
+=head1 SEE ALSO
+
+L<Shipwright::Manual::Tutorial>, L<Shipwright::Manual::UsingFlags>, L<Shipwright::Manual::CustomizeBuild>,
+

@@ -75,4 +75,9 @@ corresponding directories in F<dists/> and F<scripts/> and then add new ones. If
 you want to update the dependency lists too, just add the C<--overwrite>
 option.
 
+=head1 SEE ALSO
+
+L<Shipwright::Manual::UsingFlags>, L<Shipwright::Manual::CustomizeBuild>,
+L<Shipwright::Manual::Glossary>
+
 =cut
