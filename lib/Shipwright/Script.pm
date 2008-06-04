@@ -8,7 +8,7 @@ use base qw/App::CLI/;
 =cut
 
 sub alias {
-    return ( ls => 'list' );
+    return ( ls => 'list', 'del' => 'delete' );
 }
 
 =head2 prepare

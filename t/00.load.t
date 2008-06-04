@@ -1,4 +1,4 @@
-use Test::More tests => 26;
+use Test::More tests => 27;
 
 BEGIN {
     use_ok('Shipwright');
@@ -25,6 +25,7 @@ BEGIN {
     use_ok('Shipwright::Script::Help');
     use_ok('Shipwright::Script::Maintain');
     use_ok('Shipwright::Script::Update');
+    use_ok('Shipwright::Script::Delete');
     use_ok('Shipwright::Test');
     use_ok('Shipwright::Util');
 }
