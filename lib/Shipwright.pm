@@ -228,38 +228,40 @@ work correctly if run through the wrapper.
 
 =head3 new PARAMHASH
 
-initialize all Shipwright's components if possible.
-args is a hash, supported keys: 
+This class method instantiates a new Shipwright object, which initializes
+all Shipwright components (if possible).
+
+=head4 Arguments
 
 general part:
 
-    repository: specify backend's path. e.g. svk:/t/test
-    log_level: specify log level. default is ERROR
-    log_file: specify log file. default is append to screen.
+    repository: specify backend's path, e.g. svk:/t/test
+    log_level: specify log level, default is ERROR
+    log_file: specify log file, default is append to screen
 
 source part:
 
-    source: source need to import
+    source: the source we need to import
     name: source's name
-    follow: follow dep chain or not. default is true
-    min_perl_version: minimal required perl version. 
-             default is the same as the perl which's running shipwright
-    skip: hashref of which the keys are the skipped modules when import
+    follow: follow dependency chain or not, default is true
+    min_perl_version: minimal required perl version,
+             default is the same as the perl which is running shipwright
+    skip: hashref where the keys are the skipped modules when importing,
           default is undefined
     version: source's version, default is undefined
 
 build part:
 
-    perl: the path of perl that runs the cmds in scripts/foo/build(.pl)
+    perl: the path of the perl that runs the commands in scripts/foo/build(.pl),
           default is $^X, the one that is running shipwright
-    skip: hashref of which the keys are the skipped dists when install
+    skip: hashref where the keys are the skipped dists when install,
           default is undefined
-    skip_test: skip test or not. default is false
-    install_base: install base path. default is a temp directory
-    force: force install even if tests fail. default is false
-    only_test: not install, just test. (used for already installed dists)
+    skip_test: skip test or not, default is false
+    install_base: install base path, default is a temp directory
+    force: force install even if tests fail, default is false
+    only_test: don't install, just test, (used for previously installed dists),
                 default is false
-    flags: flags for building. default is { default => 1 }
+    flags: flags for building, default is { default => 1 }
 
 =head1 SEE ALSO
 
