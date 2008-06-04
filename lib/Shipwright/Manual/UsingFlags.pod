@@ -4,42 +4,47 @@ Shipwright::Manual::UsingFlags - Using Flags
 
 =head1 DESCRIPTION
 
-B<Flags> is supported since 1.10.
+Shipwright B<flags> are a method for having a single repository support
+multiple variants of vessels.
 
-It's another way to skip some dists, and even more...
+Imagine you want to create a project which requires a database. There are
+several database types you want to support in the same repository, while you'd
+like each built vessel to only support one type. (Sometimes you have to choose
+one because some dists will be confused if provided with more than one type;
+e.g.  for RT, you have to supply the database type when running ./configure).
 
-Imagining you want to create a project, there're several database types
-you want to support, while for each B<vessel>, you'd like users to choose only 
-one type.( sometimes you have to choose one because some other dists
-will be confused if provided more than one type. e.g. for RT, you have to
-supply the database type when ./configure ).
+This is a task that you can use Shipwright flags to accomplish.
 
-Well, B<Flags> is right for this.
+For example, say you want to support both mysql and postgresql, and you've
+imported mysql, DBD::mysql, postgresql and DBD::Pg to the repository.
 
-e.g. you want to support both mysql and postgresql, and you've imported mysql, DBD::mysql( will be named as cpan-DBD-mysql), postgresql and DBD::Pg( cpan-DBD-Pg).
-
-then you need to mark dists with flags, let's say they are C<mysql> and
-C<postgresql>.
+The next step is to mark dists with flags; let's use C<mysql> and
+C<postgresql> for this example.
 
     $ shipwright flags set mysql mysql
     $ shipwright flags set cpan-DBD-mysql mysql
     $ shipwright flags set postgresql postgresql
     $ shipwright flags set cpan-DBD-Pg postgresql
 
-B<Flags> related things are stored in F<shipwright/flags.yml>
+B<Flags> data is stored in F<shipwright/flags.yml>
 
-So when building you can set C<--flags> arg to C<mysql> or C<postgresql> to
-install that type db and related stuff only.
+When building, you can then set C<--flags> to C<mysql> or C<postgresql> to
+install support for that database only.
 
-If a dist need this info to configure( RT in our example ), you'll need
-to customize the build script, see L<Shipwright::Manual::CustomizeBuild> for
-more info about that.
+If a dist needs this info to configure (like RT for example), you'll need
+to customize the build script; see L<Shipwright::Manual::CustomizeBuild> for
+information about how to do this.
+
+If no flags are specified during build, both mysql and postgresql would be
+installed to the vessel. Which one RT chooses to configure for depends on its
+build script.
 
 Note:
 
-Shipwright will automatically add C<default> to C<--flags> args, and if one dist isn't set flags at all( so no such item in F<shipwright/flags.yml> ), it'll be the same as C<default> so it can be installed by default. 
+Shipwright will automatically add C<default> to C<--flags>, and if a
+dist has no flags set (i.e. it does not appear in F<shipwright/flags.yml>),
+it will be given the C<default> flag and will be installed by default.
 
 =head1 SEE ALSO
 
 L<Shipwright::Manual::CustomizeBuild>
-
