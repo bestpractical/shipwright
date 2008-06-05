@@ -41,6 +41,13 @@ Shipwright::Backend - VCS repository backends
 use Shipwright::Backend;
 $backend = Shipwright::Backend->new (repository => $args{repository});
 
+=head1 CONSTRUCTOR
+
+The constructor returns the Backend object that corresponds to the type in
+$args{repository}.
+
+Currently, the only supported backends are SVN and SVK.
+
 =head1 INTERFACE
 
 A backend must support the following methods:
@@ -80,12 +87,5 @@ A backend must support the following methods:
 =head2 check_repository
 
 =head2 update
-
-=head1 CONSTRUCTOR
-
-The constructor returns the Backend object that corresponds to the type in
-$args{repository}.
-
-Currently, the only supported backends are SVN and SVK.
 
 =cut
