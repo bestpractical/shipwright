@@ -67,28 +67,34 @@ Shipwright - Best Practical Builder
 
 =head2 Why use Shipwright?
 
-Shipwright is a tool to help you bundle distributions, or dists.
+Shipwright is a tool to help you bundle your software.
 
-Most dists depend on other dists in order to avoid code repetition. This can
-result in pain and suffering when attempting to install the dist, due to having
-to untangle the maze of dependencies. First, non-CPAN dependencies must be
-found and installed. Then, CPAN:: or CPANPLUS:: can be used to install all
+Most software packages depend on other bits of software in order to avoid code
+repetition and repeating work that's already been done. This can result in pain
+and suffering when attempting to install the software, due to having to
+untangle the maze of dependencies. First, non-CPAN dependencies must be found
+and installed. Then, CPAN:: or CPANPLUS:: can be used to install all
 dependencies available on CPAN with minimal pain.
 
-While this works, it has some drawbacks, especially for large dists which have
-many dependencies. Installation may take many iterations of trying to install
-from CPAN and then stopping to install other non-CPAN dependencies that the
-CPAN packages depend on. For example, SVK requires the non-CPAN dists
-subversion and swig. In the end, installing large dists with many dependencies
-is not very friendly for users, especially since dependencies may change their
-functionality and kreak builds with untested versions.
+While this works, it has some drawbacks, especially for large projects which
+have many dependencies. Installation can take many iterations of trying to
+install from CPAN and then stopping to install other non-CPAN dependencies that
+the CPAN packages depend on. For example, SVK requires the non-CPAN packages
+subversion and swig. In the end, installing large projects with many
+dependencies is not very friendly for users, especially since dependencies may
+change their functionality and break builds with untested versions.
 
-Enter Shipwright, a tool to help you bundle a dist with all of its
-dependencies, regardless of whether they are CPAN modules or non-Perl dists
-from elsewhere. Shipwright makes it easy to install a bundled dist, usually
-with just a single command:
+Enter Shipwright, a tool to help you bundle your software with all of its
+dependencies, regardless of whether they are CPAN modules or non-Perl modules
+from elsewhere. Shipwright makes it easy to build and install a bundle of your
+software, usually with just a single command:
 
 $ ./bin/shipwright-builder
+
+As a general note when reading this and other Shipwright documentation: we
+will often call a piece of software that your software depends on and is
+distributed elsewhere a I<dist>, short for distribution. This and other
+Shipwright terminology are defined in L<Shipwright::Manual::Glossary>.
 
 =head2 Introduction
 
@@ -168,7 +174,7 @@ t/
 
 =head3 repository after import
 
-After import, say of cpan:Acme::Hello, both the dists and scripts directories
+After importing, say cpan:Acme::Hello, both the dists and scripts directories
 will have a `cpan-Acme-Hello' directory.
 
 Under scripts/cpan-Acme-Hello there are two files: 'build' and 'require.yml'.
