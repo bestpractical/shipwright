@@ -1,4 +1,6 @@
+# this is a test comment
 configure: /usr/bin/perl Build.PL --install_base=%%INSTALL_BASE%%
 make: ./Build
 test: ./Build test
+# and another
 install: ./Build install
