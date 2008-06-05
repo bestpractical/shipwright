@@ -24,7 +24,7 @@ sub new {
     my $log_file = $args{log_file};
 
     unless ($log_file) {
-        # a better named log_file, in the name of reposiotry
+        # a better named log_file, in the name of repository
         require File::Spec;
         my $info = join '', map { /\w/ ? $_ : '_' } split //, $args{repository};
         $log_file =
@@ -79,7 +79,7 @@ While this works, it has some drawbacks, especially for large dists which have
 many dependencies. Installation may take many iterations of trying to install
 from CPAN and then stopping to install other non-CPAN dependencies that the
 CPAN packages depend on. For example, SVK requires the non-CPAN dists
-subversion and rwig. In the end, installing large dists with many dependencies
+subversion and swig. In the end, installing large dists with many dependencies
 is not very friendly for users, especially since dependencies may change their
 functionality and kreak builds with untested versions.
 
@@ -129,8 +129,6 @@ the changes might affect other shipwright builds.
 
 After initializing a project, the files in the repository are:
 
-=over 4
-
 bin/
      # used for building, installing and testing
      shipwright-builder
@@ -168,8 +166,6 @@ t/
     # will run this if with --only-test when build
     test
 
-=back
-
 =head3 repository after import
 
 After import, say of cpan:Acme::Hello, both the dists and scripts directories
@@ -178,8 +174,6 @@ will have a `cpan-Acme-Hello' directory.
 Under scripts/cpan-Acme-Hello there are two files: 'build' and 'require.yml'.
 
 =head4 build
-
-=over 4
 
 configure: %%PERL%% Build.PL --install_base=%%INSTALL_BASE%%
 make: ./Build
@@ -196,8 +190,6 @@ See L<Shipwright::Manual::CustomizeBuild> for more information on
 customizing the build process for dists.
 
 =head4 require.yml
-
-=over 4
 
 build_requires: {}
 
