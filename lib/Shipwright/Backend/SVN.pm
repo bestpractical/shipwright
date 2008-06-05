@@ -14,7 +14,15 @@ our %REQUIRE_OPTIONS = ( import => [qw/source/], );
 use base qw/Class::Accessor::Fast/;
 __PACKAGE__->mk_accessors(qw/repository log/);
 
-=head2 new
+=head1 NAME
+
+Shipwright::Backend::SVN - SVN repository backend
+
+=head1 DESCRIPTION
+
+=head1 CONSTRUCTOR
+
+=head1 METHODS
 
 =cut
 
@@ -27,9 +35,9 @@ sub new {
     return $self;
 }
 
-=head2 initialize
+=item initialize
 
-initialize a project
+Initialize a project.
 
 =cut
 
@@ -56,9 +64,9 @@ sub initialize {
 
 }
 
-=head2 import
+=item import
 
-import a dist
+Import a dist.
 
 =cut
 
@@ -118,10 +126,9 @@ sub import {
     }
 }
 
-=head2 export
+=item export
 
-a wrapper of export cmd of svn
-export a project, partly or as a whole
+A wrapper around svn's export command. Export a project, partly or as a whole.
 
 =cut
 
@@ -134,10 +141,10 @@ sub export {
     Shipwright::Util->run( $self->_cmd( export => %args ) );
 }
 
-=head2 checkout
+=item checkout
 
-a wrapper of checkout cmd of svn
-checkout a project, partly or as a whole
+A wrapper around svn's checkout command. Checkout a project, partly or as a
+whole.
 
 =cut
 
@@ -150,9 +157,9 @@ sub checkout {
     Shipwright::Util->run( $self->_cmd( checkout => @_ ) );
 }
 
-=head2 commit
+=item commit
 
-a wrapper of commit cmd of svn
+A wrapper around svn's commit command.
 
 =cut
 
@@ -259,9 +266,9 @@ sub _add_to_order {
     }
 }
 
-=head2 update_order
+=item update_order
 
-regenate order
+Regenerate the dependency order.
 
 =cut
 
@@ -326,9 +333,9 @@ sub _fill_deps {
     }
 }
 
-=head2 order
+=item order
 
-get or set order
+Get or set the dependency order.
 
 =cut
 
@@ -355,9 +362,9 @@ sub order {
     }
 }
 
-=head2 map
+=item map
 
-get or set map
+Get or set the map.
 
 =cut
 
@@ -384,9 +391,9 @@ sub map {
     }
 }
 
-=head2 source
+=item source
 
-get or set source
+Get or set the sources map.
 
 =cut
 
@@ -413,9 +420,9 @@ sub source {
     }
 }
 
-=head2 delete
+=item delete
 
-wrapper of delete cmd of svn
+A wrapper around svn's delete command.
 
 =cut
 
@@ -430,9 +437,9 @@ sub delete {
     }
 }
 
-=head2 info
+=item info
 
-wrapper of info cmd of svn
+A wrapper around svn's info command.
 
 =cut
 
@@ -457,9 +464,9 @@ sub info {
     }
 }
 
-=head2 propset
+=item propset
 
-wrapper of propset cmd of svn
+A wrapper around svn's propset command.
 
 =cut
 
@@ -482,9 +489,9 @@ sub propset {
     );
 }
 
-=head2 test_script
+=item test_script
 
-set test_script for a project, aka. udpate t/test script
+Set test_script for a project, i.e. update the t/test script.
 
 =cut
 
@@ -507,8 +514,10 @@ sub test_script {
     $self->commit( path => $file, comment => "update test script" );
 }
 
-=head2 requires
-return hashref to require.yml for a dist
+=item requires
+
+Return the hashref of require.yml for a dist.
+
 =cut
 
 sub requires {
@@ -521,9 +530,9 @@ sub requires {
     return Shipwright::Util::Load($string) || {};
 }
 
-=head2 flags
+=item flags
 
-get or set flags
+Get or set flags.
 
 =cut
 
@@ -550,9 +559,9 @@ sub flags {
     }
 }
 
-=head2 version
+=item version
 
-get or set version
+Get or set version.
 
 =cut
 
@@ -583,7 +592,9 @@ sub version {
     }
 }
 
-=head2 check_repository
+=item check_repository
+
+Check if the given repository is valid.
 
 =cut
 
@@ -609,9 +620,9 @@ sub check_repository {
     return 0;
 }
 
-=head2 update
+=item update
 
-update shipwright's own files, e.g. bin/shipwright-builder
+Update shipwright's own files, e.g. bin/shipwright-builder.
 
 =cut
 
@@ -645,43 +656,7 @@ sub update {
         );
     }
 }
+=back
+=cut
 
 1;
-
-__END__
-
-=head1 NAME
-
-Shipwright::Backend::SVN - svn backend
-
-
-=head1 DESCRIPTION
-
-
-=head1 DEPENDENCIES
-
-
-None.
-
-
-=head1 INCOMPATIBILITIES
-
-None reported.
-
-
-=head1 BUGS AND LIMITATIONS
-
-No bugs have been reported.
-
-=head1 AUTHOR
-
-sunnavy  C<< <sunnavy@bestpractical.com> >>
-
-
-=head1 LICENCE AND COPYRIGHT
-
-Copyright 2007 Best Practical Solutions.
-
-This program is free software; you can redistribute it and/or modify it
-under the same terms as Perl itself.
-
