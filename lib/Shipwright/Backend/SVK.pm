@@ -20,11 +20,14 @@ Shipwright::Backend::SVK - SVK repository backend
 
 =head1 DESCRIPTION
 
+This module implements an SVK repository backend for Shipwright.
+
 =head1 CONSTRUCTOR
 
 =head1 METHODS
 
 =over
+
 =cut
 
 sub new {
@@ -660,6 +663,7 @@ sub update {
 }
 
 =back
+
 =cut
 
 1;

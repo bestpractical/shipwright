@@ -20,9 +20,13 @@ Shipwright::Backend::SVN - SVN repository backend
 
 =head1 DESCRIPTION
 
+This module implements a SVN repository backend for Shipwright.
+
 =head1 CONSTRUCTOR
 
 =head1 METHODS
+
+=over
 
 =cut
 
@@ -656,7 +660,9 @@ sub update {
         );
     }
 }
+
 =back
+
 =cut
 
 1;
