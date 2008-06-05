@@ -5,6 +5,28 @@ use strict;
 use Carp;
 use UNIVERSAL::require;
 
+=head1 NAME
+
+Shipwright::Backend - VCS repository backends
+
+=head1 SYNOPSIS
+
+use Shipwright::Backend;
+$backend = Shipwright::Backend->new (repository => $args{repository});
+
+=head1 METHODS
+
+=over
+
+=item new
+
+The constructor returns the Backend object that corresponds to the type in
+$args{repository}.
+
+Currently, the only supported backends are SVN and SVK.
+
+=cut
+
 sub new {
     my $class = shift;
     my %args  = @_;
@@ -32,21 +54,7 @@ sub new {
 
 __END__
 
-=head1 NAME
-
-Shipwright::Backend - VCS repository backends
-
-=head1 SYNOPSIS
-
-use Shipwright::Backend;
-$backend = Shipwright::Backend->new (repository => $args{repository});
-
-=head1 CONSTRUCTOR
-
-The constructor returns the Backend object that corresponds to the type in
-$args{repository}.
-
-Currently, the only supported backends are SVN and SVK.
+=back
 
 =head1 INTERFACE
 
