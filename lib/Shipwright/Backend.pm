@@ -5,13 +5,6 @@ use strict;
 use Carp;
 use UNIVERSAL::require;
 
-=head2 new
-
-returns the the corresponding Backend object by the type of $args{repository}.
-now only supports SVK and SVN
-
-=cut
-
 sub new {
     my $class = shift;
     my %args  = @_;
@@ -41,40 +34,58 @@ __END__
 
 =head1 NAME
 
-Shipwright::Backend - backend part
+Shipwright::Backend - VCS repository backends
 
-=head1 DESCRIPTION
+=head1 SYNOPSIS
 
-
+use Shipwright::Backend;
+$backend = Shipwright::Backend->new (repository => $args{repository});
 
 =head1 INTERFACE
 
+A backend must support the following methods:
 
+=head2 initialize
 
-=head1 DEPENDENCIES
+=head2 import
 
+=head2 export
 
-None.
+=head2 checkout
 
+=head2 commit
 
-=head1 INCOMPATIBILITIES
+=head2 update_order
 
-None reported.
+=head2 order
 
+=head2 map
 
-=head1 BUGS AND LIMITATIONS
+=head2 source
 
-No bugs have been reported.
+=head2 delete
 
-=head1 AUTHOR
+=head2 info
 
-sunnavy  C<< <sunnavy@bestpractical.com> >>
+=head2 propset
 
+=head2 test_script
 
-=head1 LICENCE AND COPYRIGHT
+=head2 requires
 
-Copyright 2007 Best Practical Solutions.
+=head2 flags
 
-This program is free software; you can redistribute it and/or modify it
-under the same terms as Perl itself.
+=head2 version
 
+=head2 check_repository
+
+=head2 update
+
+=head1 CONSTRUCTOR
+
+The constructor returns the Backend object that corresponds to the type in
+$args{repository}.
+
+Currently, the only supported backends are SVN and SVK.
+
+=cut
