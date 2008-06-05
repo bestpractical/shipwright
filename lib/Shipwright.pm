@@ -187,8 +187,6 @@ test: ./Build test
 install: ./Build install
 clean: %%PERL%% Build realclean
 
-=back
-
 Each line is of `type: command' format, and the command is executed line by
 line (which is also true for t/test).
 
@@ -208,8 +206,6 @@ requires: {}
 
 This file details the hints needed in order for Shipwright to create the
 right build order.
-
-=back
 
 =head4 vessel
 
