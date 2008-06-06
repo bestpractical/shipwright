@@ -52,7 +52,7 @@ sub run {
     }
 
     if ( defined $self->add ) {
-        $self->add( [ grep { /^\w+$/ } split /,\s*/, $self->add ] );
+        $self->add( [ grep { /^[-\w]+$/ } split /,\s*/, $self->add ] );
         $flags->{$name} = [ uniq @{ $self->add }, @{ $flags->{$name} || [] } ];
     }
     elsif ( defined $self->delete ) {
@@ -65,7 +65,7 @@ sub run {
 
     }
     elsif ( defined $self->set ) {
-        $flags->{$name} = [ grep { /^\w+$/ } split /,\s*/, $self->set ];
+        $flags->{$name} = [ grep { /^[-\w]+$/ } split /,\s*/, $self->set ];
     }
 
     $shipwright->backend->flags($flags);
