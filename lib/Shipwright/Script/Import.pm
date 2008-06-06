@@ -83,8 +83,8 @@ sub run {
             $name =~ s/::/-/g;
             $self->name($name);
         }
-        if ( $self->name !~ /^[-\w]+$/ ) {
-            die 'name can only have alphanumeric characters and -';
+        if ( $self->name !~ /^[-.\w]+$/ ) {
+            die 'name can only have alphanumeric characters, "." and "-"';
         }
     }
 
@@ -386,7 +386,7 @@ Shipwright::Script::Import - import a source(maybe with a lot of dependences)
    --log-file         specify the log file
    --comment(-m)      specify the comment
    --source(-s)       specify the source path
-   --name             specify the source name( only alphanumeric characters and - )
+   --name             specify the source name( only alphanumeric characters, . and - )
    --build-script     specify the build script
    --require-yml      specify the require.yml
    --follow           follow the dependent chain or not
