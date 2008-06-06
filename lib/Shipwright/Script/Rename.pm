@@ -116,5 +116,5 @@ Shipwright::Script::Rename - rename a dist
    --log-level(-l)    specify the log level
    --log-file         specify the log file
    --name             specify the dist name
-   --new_name         specify the new dist name
+   --new-name         specify the new dist name
 
