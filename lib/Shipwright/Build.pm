@@ -8,7 +8,7 @@ use base qw/Class::Accessor::Fast/;
 
 __PACKAGE__->mk_accessors(
     qw/install_base perl build_base skip_test commands log
-      skip only_test force order flags name/
+      skip only_test force order flags name only/
 );
 
 use File::Spec;
@@ -103,11 +103,14 @@ sub run {
               || []
         );
 
-
         if ( -e File::Spec->catfile( 'shipwright', 'flags.yml' ) ) {
 
-            $self->flags( Shipwright::Util::LoadFile(
-                File::Spec->catfile( 'shipwright', 'flags.yml' ) ) || {} );
+            $self->flags(
+                Shipwright::Util::LoadFile(
+                    File::Spec->catfile( 'shipwright', 'flags.yml' )
+                  )
+                  || {}
+            );
         }
 
         unless ( $self->perl && -e $self->perl ) {
@@ -118,7 +121,7 @@ sub run {
             if (
                 (
                     ( grep { $_ eq 'perl' } @{ $self->order } )
-                    && !$self->skip->{perl}
+                    && $self->only ? $self->only->{perl} : !$self->skip->{perl}
                 )
                 || -e $perl
               )
@@ -129,6 +132,7 @@ sub run {
                 $self->perl($^X);
             }
         }
+        die -e $self->perl;
 
         for my $dist ( @{ $self->order } ) {
 
@@ -137,8 +141,11 @@ sub run {
               if $self->flags->{$dist} && !grep { $self->flags->{$_} }
                   @{ $self->flags->{$dist} };
 
-            unless ( $self->skip && $self->skip->{$dist} ) {
-                $self->_install($dist);
+            if ( $self->only ) {
+                $self->_install($dist) if $self->only->{$dist};
+            }
+            else {
+                $self->_install($dist) unless $self->skip->{$dist};
             }
             chdir $self->build_base;
         }
@@ -183,7 +190,7 @@ sub _install {
 
         for (@cmds) {
             my ( $type, $cmd );
-            next unless /\S/ && /^(?!#)\w+/; # skip commented and blank lines
+            next unless /\S/ && /^(?!#)\w+/;    # skip commented and blank lines
 
             if (/^(\S+):\s*(.*)/) {
                 $type = $1;
@@ -272,7 +279,7 @@ sub _wrapper {
     # then link to it, else link to the normal one
         if (   $type
             && grep( { $_ eq $type } @{ $self->order } )
-            && !( $self->skip && $self->skip->{$type} )
+            && $self->only ? $self->only->{$type} : !$self->skip->{$type}
             && -e File::Spec->catfile( '..', 'etc', "shipwright-$type-wrapper" )
           )
         {

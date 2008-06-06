@@ -7,7 +7,7 @@ use Carp;
 use base qw/App::CLI::Command Class::Accessor::Fast Shipwright::Script/;
 __PACKAGE__->mk_accessors(
     qw/repository log_level install_base build_base skip skip_test only_test
-      force log_file flags name perl/
+      force log_file flags name perl only/
 );
 
 use Shipwright;
@@ -21,6 +21,7 @@ sub options {
         'install-base=s' => 'install_base',
         'name=s'         => 'name',
         'skip=s'         => 'skip',
+        'only=s'         => 'only',
         'flags=s'        => 'flags',
         'skip-test'      => 'skip_test',
         'only-test'      => 'only_test',
@@ -51,6 +52,11 @@ sub run {
     }
 
     $self->skip( { map { $_ => 1 } split /\s*,\s*/, $self->skip || '' } );
+
+    if ( $self->only ) {
+        $self->only( { map { $_ => 1 } split /\s*,\s*/, $self->only } );
+    }
+
     $self->flags(
         {
             default => 1,
@@ -61,7 +67,7 @@ sub run {
     my $shipwright = Shipwright->new(
         map { $_ => $self->$_ }
           qw/repository log_level log_file skip skip_test
-          flags name force only_test install_base perl/
+          flags name force only_test install_base perl only/
     );
 
     $shipwright->backend->export( target => $shipwright->build->build_base );
@@ -86,6 +92,7 @@ Shipwright::Script::Build - build the specified project
    --log-file         specify the log file
    --install-base     specify install base. default is an autocreated temp dir
    --skip             specify dists which'll be skipped
+   --only             specify dists which'll be installed only
    --skip-test        specify whether to skip test
    --only-test        just test(the running script is t/test)
    --flags            specify flags
