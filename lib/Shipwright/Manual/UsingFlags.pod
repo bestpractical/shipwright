@@ -21,10 +21,10 @@ imported mysql, DBD::mysql, postgresql and DBD::Pg to the repository.
 The next step is to mark dists with flags; let's use C<mysql> and
 C<postgresql> for this example.
 
-    $ shipwright flags set mysql mysql
-    $ shipwright flags set cpan-DBD-mysql mysql
-    $ shipwright flags set postgresql postgresql
-    $ shipwright flags set cpan-DBD-Pg postgresql
+    $ shipwright flags -r ... --name mysql --set mysql
+    $ shipwright flags -r ... --name cpan-DBD-mysql --set mysql
+    $ shipwright flags -r ... --name postgresql --set postgresql
+    $ shipwright flags -r ... --name cpan-DBD-Pg --set postgresql
 
 B<Flags> data is stored in F<shipwright/flags.yml>
 
