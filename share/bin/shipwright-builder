@@ -16,9 +16,15 @@ my $build_base = getcwd;
 my %args;
 
 die "unknown option"
-  unless GetOptions( \%args, 'install-base=s', 'perl=s', 'skip=s', 'flags=s',
-    'skip-test', 'skip-test-except-final', 'only-test', 'force', 'clean',
-    'name=s', 'help', 'noclean' );
+  unless GetOptions(
+    \%args,                   'install-base=s',
+    'perl=s',                 'skip=s',
+    'flags=s',                'skip-test',
+    'skip-test-except-final', 'only-test',
+    'force',                  'clean',
+    'name=s',                 'help',
+    'noclean',                'only=s'
+  );
 
 my $USAGE = <<'END'
 run: ./bin/shipwright-builder
@@ -42,6 +48,9 @@ perl: which perl to use for the to be installed dists
 
 skip: dists we don't want to install, comma-separated
     e.g. --skip perl,Module-Build
+
+only:  dists we want to install only, comma-separated
+    e.g. --only perl,Module-Build
 
 flags: set flags we need, comma-separated
     e.g.  --flags mysql,standalone
@@ -74,6 +83,10 @@ $args{flags} = {
     map { $_ => 1 } split /\s*,\s*/, $args{flags} || ''
 };
 
+if ( $args{only} ) {
+    $args{only} = { map { $_ => 1 } split /\s*,\s*/, $args{only} };
+}
+
 if ( $args{'install-base'} ) {
     $args{'install-base'} = abs_path( $args{'install-base'} );
 }
@@ -101,8 +114,11 @@ elsif ( $args{'clean'} ) {
         next
           if $flags->{$dist} && !grep { $args{flags}{$_} } @{ $flags->{$dist} };
 
-        unless ( $args{skip}{$dist} ) {
-            clean($dist);
+        if ( $args{only} ) {
+            clean($dist) if $args{only}{$dist};
+        }
+        else {
+            clean($dist) unless $args{skip}{$dist};
         }
         chdir $build_base;
     }
@@ -114,10 +130,17 @@ else {
     # for install
     open $log, '>', 'build.log' or die $!;
 
-    if ( -e '__need_clean' && ! $args{noclean} ) {
+    if ( -e '__need_clean' && !$args{noclean} ) {
         print "seems it has been built before, need to clean first\n";
         print $log "seems it has been built before, need to clean first\n";
-        system("$0 --clean") && die 'clean failed.';
+        system(
+            "$0 --clean "
+              . (
+                $args{only}
+                ? '--only ' . join( ',', keys %{ $args{only} } )
+                : '--skip ' . ( join( ',', keys %{ $args{skip} } || q{''} ) )
+              )
+        ) && die 'clean failed.';
     }
 
     # set clean flag again
@@ -163,8 +186,13 @@ else {
         my $perl = File::Spec->catfile( $args{'install-base'}, 'bin', 'perl' );
 
         # -e $perl makes sense when we install on to another vessel
-        if ( ( ( grep { $_ eq 'perl' } @$order ) && !$args{skip}{perl} )
-            || -e $perl )
+        if (
+            (
+                ( grep { $_ eq 'perl' } @$order )
+                && $args{only} ? $args{only}{perl} : !$args{skip}{perl}
+            )
+            || -e $perl
+          )
         {
             $args{perl} = $perl;
         }
@@ -220,8 +248,11 @@ else {
         next
           if $flags->{$dist} && !grep { $args{flags}{$_} } @{ $flags->{$dist} };
 
-        unless ( $args{skip}{$dist} ) {
-            install($dist);
+        if ( $args{only} ) {
+            install($dist) if $args{only}{$dist};
+        }
+        else {
+            install($dist) unless $args{skip}{$dist};
         }
         chdir $build_base;
     }
@@ -343,7 +374,7 @@ sub wrap_bin {
     # then link to it, else link to the normal one
         if (   $type
             && grep( { $_ eq $type } @$order )
-            && !$args{skip}{$type}
+            && $args{only} ? $args{only}{$type} : !$args{skip}{$type}
             && -e File::Spec->catfile( '..', 'etc', "shipwright-$type-wrapper" )
           )
         {
