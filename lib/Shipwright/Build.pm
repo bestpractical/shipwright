@@ -121,7 +121,7 @@ sub run {
             if (
                 (
                     ( grep { $_ eq 'perl' } @{ $self->order } )
-                    && $self->only ? $self->only->{perl} : !$self->skip->{perl}
+                    && ( $self->only ? $self->only->{perl} : !$self->skip->{perl} )
                 )
                 || -e $perl
               )
