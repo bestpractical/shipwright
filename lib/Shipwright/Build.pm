@@ -29,7 +29,7 @@ sub new {
 
     $self->log( Log::Log4perl->get_logger( ref $self ) );
 
-    $self->{build_base} =
+    $self->{build_base} ||=
       File::Spec->catfile( tempdir( CLEANUP => 0 ), 'build' );
 
     $self->name('vessel') unless $self->name;
@@ -132,7 +132,6 @@ sub run {
                 $self->perl($^X);
             }
         }
-        die -e $self->perl;
 
         for my $dist ( @{ $self->order } ) {
 

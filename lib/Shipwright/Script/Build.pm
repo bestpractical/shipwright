@@ -19,6 +19,7 @@ sub options {
         'l|log-level=s'  => 'log_level',
         'log-file=s'     => 'log_file',
         'install-base=s' => 'install_base',
+        'build-base=s'   => 'build_base',
         'name=s'         => 'name',
         'skip=s'         => 'skip',
         'only=s'         => 'only',
@@ -67,7 +68,7 @@ sub run {
     my $shipwright = Shipwright->new(
         map { $_ => $self->$_ }
           qw/repository log_level log_file skip skip_test
-          flags name force only_test install_base perl only/
+          flags name force only_test install_base build_base perl only/
     );
 
     $shipwright->backend->export( target => $shipwright->build->build_base );
