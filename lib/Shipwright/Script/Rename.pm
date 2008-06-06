@@ -105,16 +105,17 @@ __END__
 
 =head1 NAME
 
-Shipwright::Script::Rename - rename a dist
+Shipwright::Script::Rename - Rename a dist
 
 =head1 SYNOPSIS
 
   shipwright rename          rename a source
 
- Options:
-   --repository(-r)   specify the repository of our project
-   --log-level(-l)    specify the log level
-   --log-file         specify the log file
-   --name             specify the dist name
-   --new-name         specify the new dist name
+=head1 OPTIONS
 
+ -r [--repository] REPOSITORY : specify the repository of our project
+ -l [--log-level] LOGLEVEL    : specify the log level
+                                (info, debug, warn, error, or fatal)
+ --log-file FILENAME          : specify the log file
+ --name NAME                  : specify the dist to be renamed
+ --new-name NAME              : specify the new dist name

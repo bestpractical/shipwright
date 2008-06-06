@@ -374,33 +374,38 @@ __END__
 
 =head1 NAME
 
-Shipwright::Script::Import - import a source(maybe with a lot of dependences)
+Shipwright::Script::Import - import a source and its dependencies
 
 =head1 SYNOPSIS
 
-  shipwright import          import a source
+ import [source]
 
- Options:
-   --repository(-r)   specify the repository of our project
-   --log-level(-l)    specify the log level
-   --log-file         specify the log file
-   --comment(-m)      specify the comment
-   --source(-s)       specify the source path
-   --name             specify the source name( only alphanumeric characters, . and - )
-   --build-script     specify the build script
-   --require-yml      specify the require.yml
-   --follow           follow the dependent chain or not
-   --extra-test       specify the extra test source(for --only-test when build)
-   --test-script      specify the test script(for --only-test when build)
-   --min-perl-version minimal perl version( default is the same as the one
-                      which runs this cmd )
-   --overwrite        import anyway even if we have deps dists in repo already
-   --version          specify the source's version
+=head1 OPTIONS
 
-=head2 supported source types
+ -r [--repository] REPOSITORY   : specify the repository of our project
+ -l [--log-level] LOGLEVEL      : specify the log level
+ --log-file FILENAME            : specify the log file
+ -m [--comment] COMMENT         : specify the comment
+ -s [--source] PATH             : specify the source path
+ --name NAME                    : specify the source name (only alphanumeric
+                                  characters, . and -)
+ --build-script FILENAME        : specify the build script
+ --require-yml FILENAME         : specify the require.yml
+ --follow                       : follow the dependent chain or not
+ --extra-test FILENAME          : specify the extra test source
+                                  (for --only-test when building)
+ --test-script FILENAME         : specify the test script (for --only-test when
+                                  build)
+ --min-perl-version             : minimal perl version (default is the same as
+                                  the one which runs this command)
+ --overwrite                    : import dependency dists anyway even if they
+                                  are already in the repository
+ --version                      : specify the source's version
 
-Generally, the format is L<type:schema>, be careful, there is no blank between
-type and schema, just a colon there.
+=head1 SUPPORTED SOURCE TYPES
+
+Generally, the format is L<type:schema>; be careful, there is no blank between
+type and schema, just a colon.
 
 =over 4
 
@@ -423,7 +428,7 @@ L<dir:/home/sunnavy/foo-1.23>
 
 e.g. L<http:http://example/foo-1.23.tar.gz>
 
-yeah, two `http:' are not good, we can omit one like this: 
+You can also omit one `http', like this:
 
 L<http://example.com/foo-1.23.tar.gz>
 
@@ -446,4 +451,3 @@ e.g. L<svn:file:///home/public/foo-1.23>
 L<svn:http://svn.example.com/foo-1.23>
 
 =back
-

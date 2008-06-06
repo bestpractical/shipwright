@@ -59,15 +59,17 @@ __END__
 
 =head1 NAME
 
-Shipwright::Script::Maintain - maintain a project
+Shipwright::Script::Maintain - Maintain a project
 
 =head1 SYNOPSIS
 
-  shipwright maintain --update-order        update the build order
+ maintain --update-order
 
- Options:
-   --repository(-r)   specify the repository of our project
-   --log-level(-l)    specify the log level
-   --log-file         specify the log file
-   --update-order     update the build order
+=head1 OPTIONS
+
+ -r [--repository] REPOSITORY : specify the repository of our project
+ -l [--log-level] LOGLEVEL    : specify the log level
+                                (info, debug, warn, error, or fatal)
+ --log-file FILENAME          : specify the log file
+ --update-order               : update the build order
 

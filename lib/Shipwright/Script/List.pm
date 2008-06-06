@@ -159,17 +159,17 @@ __END__
 
 =head1 NAME
 
-Shipwright::Script::List - list dists of a project
+Shipwright::Script::List - List dists of a project
 
 =head1 SYNOPSIS
 
-  shipwright list         list dists of a project
+ list
 
- Options:
-   --repository(-r)   specify the repository of our project
-   --log-level(-l)    specify the log level
-   --log-file         specify the log file
-   --name             sepecify the dist name
-   --with-latest-version  show the latest version if possible
-   --only-update      only show the dists that can be updated
-
+=head1 OPTIONS
+   -r [--repository] REPOSITORY    : specify the repository of our project
+   -l [--log-level] LOGLEVEL       : specify the log level
+   --log-file FILENAME             : specify the log file
+                                     (info, debug, warn, error, or fatal)
+   --name NAME                     : sepecify the dist name
+   --with-latest-version           : show the latest version if possible
+   --only-update                   : only show the dists that can be updated

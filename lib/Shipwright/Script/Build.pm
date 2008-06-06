@@ -81,22 +81,26 @@ __END__
 
 =head1 NAME
 
-Shipwright::Script::Build - build the specified project
+Shipwright::Script::Build - Build the specified project
 
 =head1 SYNOPSIS
 
-  shipwright build           build a project
+ build -r [repository]
 
- Options:
-   --repository(-r)   specify the repository of our project
-   --log-level(-l)    specify the log level
-   --log-file         specify the log file
-   --install-base     specify install base. default is an autocreated temp dir
-   --skip             specify dists which'll be skipped
-   --only             specify dists which'll be installed only
-   --skip-test        specify whether to skip test
-   --only-test        just test(the running script is t/test)
-   --flags            specify flags
-   --name             specify the name of the project
-   --perl             specify the path of perl that run the cmds in scripts/
+=head1 OPTIONS
 
+ -r [--repository] REPOSITORY : specify the repository of our project
+ -l [--log-level] LOGLEVEL    : specify the log level
+                                (info, debug, warn, error, or fatal)
+ --log-file FILENAME          : specify the log file
+ --install-base PATH          : specify install base, default is an autocreated
+                                temp dir
+ --skip DISTS                 : specify dists which will be skipped
+ --only DISTS                 : specify dists to be installed (no others will
+                                be installed)
+ --skip-test                  : specify whether to skip tests
+ --only-test                  : just test (run t/test)
+ --flags FLAGS                : specify flags
+ --name NAME                  : specify the name of the project
+ --perl PATH                  : specify the path of perl that run the commands
+                                in scripts/

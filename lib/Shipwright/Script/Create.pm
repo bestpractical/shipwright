@@ -37,14 +37,15 @@ __END__
 
 =head1 NAME
 
-Shipwright::Script::Create - create a project
+Shipwright::Script::Create - Create a project
 
 =head1 SYNOPSIS
 
-  shipwright create          create a project
+ create -r [repository]
 
- Options:
-   --repository(-r)       specify the repository of our project
-   --log-level(-l)            specify the log level
-   --log-file         specify the log file
+=head1 OPTIONS
 
+ -r [--repository] REPOSITORY   : specify the repository of our project
+ -l [--log-level] LOGLEVEL      : specify the log level
+                                  (info, debug, warn, error, or fatal)
+ --log-file FILENAME            : specify the log file

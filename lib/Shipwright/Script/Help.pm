@@ -10,9 +10,9 @@ __END__
 
 =head1 NAME
 
-Shipwright::Script::Help - show help
+Shipwright::Script::Help - Show help
 
 =head1 SYNOPSIS
 
-  shipwright help COMMAND    show help
+ help COMMAND
 

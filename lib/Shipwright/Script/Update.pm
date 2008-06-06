@@ -161,19 +161,24 @@ __END__
 
 =head1 NAME
 
-Shipwright::Script::Update - update dist(s)
+Shipwright::Script::Update - Update dist(s) and scripts
 
 =head1 SYNOPSIS
 
-  shipwright update          update dist(s)
+ update --all
+ update --name [dist] [--follow]
+ update --builder
+ update --utility
 
- Options:
-   --repository(-r)   specify the repository of our project
-   --log-level(-l)    specify the log level
-   --log-file         specify the log file
-   --name             specify the source name( only alphanumeric characters and - )
-   --all              update all the dists
-   --follow           update one dist with all its deps(recursively)
-   --builder          update bin/shipwright-builder
-   --utility          update bin/shipwright-utility
+=head1 OPTIONS
+
+ -r [--repository] REPOSITORY : specify the repository of our project
+ -l [--log-level] LOGLEVEL    : specify the log level
+                                (info, debug, warn, error, or fatal)
+ --log-file FILENAME          : specify the log file
+ --name NAME                  : specify the name of the project
+ --all                        : update all dists
+ --follow                     : update one dist with all its dependencies
+ --builder                    : update bin/shipwright-builder
+ --utility                    : update bin/shipwright-utility
 

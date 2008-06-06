@@ -80,15 +80,17 @@ __END__
 
 =head1 NAME
 
-Shipwright::Script::Flags - maintain a dist's flags
+Shipwright::Script::Flags - Maintain a dist's flags
 
 =head1 SYNOPSIS
 
-  shipwright flags --name RT --add mysql 
+ flags --name [dist name] --add [flag name]
 
- Options:
-   --repository(-r)   specify the repository of our project
-   --log-level(-l)    specify the log level
-   --log-file         specify the log file
-   --name             specify the dist name
-   --add, --delete, --set  specify the flags split by comma
+=head1 OPTIONS
+
+ -r [--repository] REPOSITORY   : specify the repository of our project
+ -l [--log-level]               : specify the log level
+                                  (info, debug, warn, error, or fatal)
+ --log-file FILENAME            : specify the log file
+ --name NAME                    : specify the dist name
+ --add, --delete, --set FLAGS   : specify the flags, split by commas
