@@ -364,7 +364,7 @@ sub just_version {
     require CPAN::DistnameInfo;
     my $info    = CPAN::DistnameInfo->new($name);
     my $version = $info->version;
-    $version =~ s/^v//;
+    $version =~ s/^v// if $version;
     return $version;
 }
 
