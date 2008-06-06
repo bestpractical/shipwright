@@ -189,7 +189,7 @@ else {
         if (
             (
                 ( grep { $_ eq 'perl' } @$order )
-                && $args{only} ? $args{only}{perl} : !$args{skip}{perl}
+                && ( $args{only} ? $args{only}{perl} : !$args{skip}{perl} )
             )
             || -e $perl
           )
@@ -374,7 +374,7 @@ sub wrap_bin {
     # then link to it, else link to the normal one
         if (   $type
             && grep( { $_ eq $type } @$order )
-            && $args{only} ? $args{only}{$type} : !$args{skip}{$type}
+            && ( $args{only} ? $args{only}{$type} : !$args{skip}{$type} )
             && -e File::Spec->catfile( '..', 'etc', "shipwright-$type-wrapper" )
           )
         {
