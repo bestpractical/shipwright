@@ -6,7 +6,7 @@ use Carp;
 use File::Spec;
 use Shipwright::Util;
 use File::Temp qw/tempdir/;
-use File::Copy;
+use File::Copy qw/copy/;
 use File::Copy::Recursive qw/dircopy/;
 
 our %REQUIRE_OPTIONS = ( import => [qw/source/] );
@@ -243,6 +243,16 @@ sub _cmd {
             join '/', $self->repository, $args{path},
         ];
     }
+    elsif ( $type eq 'move' ) {
+        $cmd = [
+            'svk',
+            'move',
+            '-m',
+            q{'} . "move $args{path} to $args{new_path}" . q{'},
+            join( '/', $self->repository, $args{path} ),
+            join( '/', $self->repository, $args{new_path} )
+        ];
+    }
     elsif ( $type eq 'info' ) {
         $cmd = [ 'svk', 'info', join '/', $self->repository, $args{path} ];
     }
@@ -448,6 +458,29 @@ sub delete {
     }
 }
 
+=item move
+
+A wrapper around svk's move command.
+
+=cut
+
+sub move {
+    my $self     = shift;
+    my %args     = @_;
+    my $path     = $args{path} || '';
+    my $new_path = $args{new_path} || '';
+    if ( $self->info( path => $path ) ) {
+        $self->log->info(
+            "move " . $self->repository . "/$path to /$new_path" );
+        Shipwright::Util->run(
+            $self->_cmd(
+                move     => path => $path,
+                new_path => $new_path,
+            ),
+        );
+    }
+}
+
 =item info
 
 A wrapper around svk's info command.
@@ -643,7 +676,7 @@ sub update {
 
     croak "$args{path} seems not shipwright's own file"
       unless -e File::Spec->catfile( Shipwright::Util->share_root,
-              $args{path} );
+        $args{path} );
 
     $args{path} = '/' . $args{path} unless $args{path} =~ m{^/};
 
