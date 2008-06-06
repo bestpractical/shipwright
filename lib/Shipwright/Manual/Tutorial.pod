@@ -33,6 +33,13 @@ Locale::Maketext,Locale::Maketext::Lexicon>.
 
 Run C<shipwright help import> to see more options.
 
+As a side note, if you were importing from a source that doesn't use a build
+mechanism that Shipwright can automatically create a set of build instructions
+for (currently autoconf, MakeMaker, Module::Install, and Module::Build), you
+would now need to edit F<scripts/DISTNAME/build> to tell Shipwright how to build
+that source. For more information on build scripts, see
+L<Shipwright::Manual::CustomizeBuild>.
+
 =head2 3. build
 
     $ shipwright build -r svk://__shipwright/hello
