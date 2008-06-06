@@ -18,7 +18,7 @@ my %args;
 die "unknown option"
   unless GetOptions( \%args, 'install-base=s', 'perl=s', 'skip=s', 'flags=s',
     'skip-test', 'skip-test-except-final', 'only-test', 'force', 'clean',
-    'name=s', 'help', );
+    'name=s', 'help', 'noclean' );
 
 my $USAGE = <<'END'
 run: ./bin/shipwright-builder
@@ -57,6 +57,8 @@ only-test: test for the installed dists
     need to specify --install-base if nothing find in __install_base.
 
 clean: clean the source
+
+noclean: don't clean before build
 
 END
   ;
@@ -112,11 +114,10 @@ else {
     # for install
     open $log, '>', 'build.log' or die $!;
 
-    if ( -e '__need_clean' ) {
+    if ( -e '__need_clean' && ! $args{noclean} ) {
         print "seems it has been built before, need to clean first\n";
         print $log "seems it has been built before, need to clean first\n";
         system("$0 --clean") && die 'clean failed.';
-
     }
 
     # set clean flag again
