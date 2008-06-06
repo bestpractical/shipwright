@@ -93,7 +93,6 @@ sub import {
                 );
             }
             else {
-                $self->delete( path => "scripts/$name" );
                 $self->log->info(
                     "import $args{source}'s scripts to " . $self->repository );
                 Shipwright::Util->run(
@@ -108,7 +107,6 @@ sub import {
                 );
             }
             else {
-                $self->delete( path => "dists/$name" );
                 $self->log->info(
                     "import $args{source} to " . $self->repository );
                 $self->_add_to_order($name);
