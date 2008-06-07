@@ -103,14 +103,13 @@ sub run {
               || []
         );
 
+        my $flags;
         if ( -e File::Spec->catfile( 'shipwright', 'flags.yml' ) ) {
 
-            $self->flags(
-                Shipwright::Util::LoadFile(
-                    File::Spec->catfile( 'shipwright', 'flags.yml' )
-                  )
-                  || {}
-            );
+            $flags =
+              Shipwright::Util::LoadFile(
+                File::Spec->catfile( 'shipwright', 'flags.yml' ) )
+              || {};
         }
 
         unless ( $self->perl && -e $self->perl ) {
@@ -121,7 +120,9 @@ sub run {
             if (
                 (
                     ( grep { $_ eq 'perl' } @{ $self->order } )
-                    && ( $self->only ? $self->only->{perl} : !$self->skip->{perl} )
+                    && (  $self->only
+                        ? $self->only->{perl}
+                        : !$self->skip->{perl} )
                 )
                 || -e $perl
               )
@@ -135,10 +136,10 @@ sub run {
 
         for my $dist ( @{ $self->order } ) {
 
-            # $self->flags->{$dist} is undef means 'default', will be installed
+            # $flags->{$dist} is undef means 'default', will be installed
             next
               if $self->flags->{$dist} && !grep { $self->flags->{$_} }
-                  @{ $self->flags->{$dist} };
+                  @{ $flags->{$dist} };
 
             if ( $self->only ) {
                 $self->_install($dist) if $self->only->{$dist};
