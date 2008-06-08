@@ -96,12 +96,10 @@ sub run {
     else {
         dircopy( 'etc', File::Spec->catfile( $self->install_base, 'etc' ) );
 
-        $self->order(
-            Shipwright::Util::LoadFile(
-                File::Spec->catfile( 'shipwright', 'order.yml' )
-              )
-              || []
-        );
+        my $order =
+          Shipwright::Util::LoadFile(
+            File::Spec->catfile( 'shipwright', 'order.yml' ) )
+          || [];
 
         my $flags;
         if ( -e File::Spec->catfile( 'shipwright', 'flags.yml' ) ) {
@@ -112,21 +110,24 @@ sub run {
               || {};
         }
 
+        # calculate the real order
+        if ( $self->only ) {
+            @$order = grep { $self->only->{$_} } @$order;
+        }
+        else {
+            @$order =
+              grep {
+                ( $flags->{$_} ? $self->flags->{$_} : 1 )
+                  && !$self->skip->{$_}
+              } @$order;
+        }
+
         unless ( $self->perl && -e $self->perl ) {
             my $perl =
               File::Spec->catfile( $self->install_base, 'bin', 'perl' );
 
             # -e $perl makes sense when we install on to another vessel
-            if (
-                (
-                    ( grep { $_ eq 'perl' } @{ $self->order } )
-                    && (  $self->only
-                        ? $self->only->{perl}
-                        : !$self->skip->{perl} )
-                )
-                || -e $perl
-              )
-            {
+            if ( ( grep { /^perl/ } @{$order} ) || -e $perl ) {
                 $self->perl($perl);
             }
             else {
@@ -134,19 +135,8 @@ sub run {
             }
         }
 
-        for my $dist ( @{ $self->order } ) {
-
-            # $flags->{$dist} is undef means 'default', will be installed
-            next
-              if $self->flags->{$dist} && !grep { $self->flags->{$_} }
-                  @{ $flags->{$dist} };
-
-            if ( $self->only ) {
-                $self->_install($dist) if $self->only->{$dist};
-            }
-            else {
-                $self->_install($dist) unless $self->skip->{$dist};
-            }
+        for my $dist ( @$order ) {
+            $self->_install($dist);
             chdir $self->build_base;
         }
 
@@ -278,8 +268,7 @@ sub _wrapper {
     # if we have this $type(e.g. perl) installed and have that specific wrapper,
     # then link to it, else link to the normal one
         if (   $type
-            && grep( { $_ eq $type } @{ $self->order } )
-            && $self->only ? $self->only->{$type} : !$self->skip->{$type}
+            && -e File::Spec->catfile( '..', 'bin', $type )
             && -e File::Spec->catfile( '..', 'etc', "shipwright-$type-wrapper" )
           )
         {

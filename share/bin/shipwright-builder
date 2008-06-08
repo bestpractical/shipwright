@@ -97,6 +97,16 @@ my $order =
 my $flags =
   ( YAML::Tiny->read( File::Spec->catfile( 'shipwright', 'flags.yml' ) ) )->[0];
 
+# calculate the real order
+if ( $args{only} ) {
+    @$order = grep { $args{only}->{$_} } @$order;
+}
+else {
+    @$order =
+      grep { ( $flags->{$_} ? $args{flags}{$_} : 1 ) && !$args{skip}->{$_} }
+      @$order;
+}
+
 my $log;
 
 if ( $args{'only-test'} ) {
@@ -111,15 +121,7 @@ elsif ( $args{'clean'} ) {
     $args{'install-base'} = get_install_base() unless $args{'install-base'};
 
     for my $dist (@$order) {
-        next
-          if $flags->{$dist} && !grep { $args{flags}{$_} } @{ $flags->{$dist} };
-
-        if ( $args{only} ) {
-            clean($dist) if $args{only}{$dist};
-        }
-        else {
-            clean($dist) unless $args{skip}{$dist};
-        }
+        clean($dist);
         chdir $build_base;
     }
 
@@ -185,15 +187,8 @@ else {
     unless ( $args{perl} && -e $args{perl} ) {
         my $perl = File::Spec->catfile( $args{'install-base'}, 'bin', 'perl' );
 
-        # -e $perl makes sense when we install on to another vessel
-        if (
-            (
-                ( grep { $_ eq 'perl' } @$order )
-                && ( $args{only} ? $args{only}{perl} : !$args{skip}{perl} )
-            )
-            || -e $perl
-          )
-        {
+        # -e $perl makes sense when we install onto another vessel
+        if ( ( grep { /^perl/ } @$order ) || -e $perl ) {
             $args{perl} = $perl;
         }
     }
@@ -243,17 +238,7 @@ else {
         'shipwright-utility' );
 
     for my $dist (@$order) {
-
-        # $flags->{$dist} is undef means 'default', will be installed
-        next
-          if $flags->{$dist} && !grep { $args{flags}{$_} } @{ $flags->{$dist} };
-
-        if ( $args{only} ) {
-            install($dist) if $args{only}{$dist};
-        }
-        else {
-            install($dist) unless $args{skip}{$dist};
-        }
+        install($dist);
         chdir $build_base;
     }
 
@@ -373,8 +358,7 @@ sub wrap_bin {
     # if we have this $type(e.g. perl) installed and have that specific wrapper,
     # then link to it, else link to the normal one
         if (   $type
-            && grep( { $_ eq $type } @$order )
-            && ( $args{only} ? $args{only}{$type} : !$args{skip}{$type} )
+            && -e File::Spec->catfile( '..', 'bin', $type )
             && -e File::Spec->catfile( '..', 'etc', "shipwright-$type-wrapper" )
           )
         {
