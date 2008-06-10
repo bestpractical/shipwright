@@ -17,6 +17,14 @@ __PACKAGE__->mk_accessors(
       version_path version/
 );
 
+=head1 NAME
+
+Shipwright::Source::Base - base class for source
+
+=head1 SYNOPSIS
+
+=head1 METHODS
+
 =head2 new
 
 =cut
@@ -372,42 +380,4 @@ sub just_version {
 
 __END__
 
-=head1 NAME
-
-Shipwright::Source::Base - base class for source
-
-
-=head1 SYNOPSIS
-
-  
-=head1 DESCRIPTION
-
-
-=head1 INTERFACE 
-
-
-=head1 DEPENDENCIES
-
-None.
-
-
-=head1 INCOMPATIBILITIES
-
-None reported.
-
-
-=head1 BUGS AND LIMITATIONS
-
-No bugs have been reported.
-
-=head1 AUTHOR
-
-sunnavy  C<< <sunnavy@bestpractical.com> >>
-
-
-=head1 LICENCE AND COPYRIGHT
-
-Copyright 2007 Best Practical Solutions.
-
-This program is free software; you can redistribute it and/or modify it
-under the same terms as Perl itself.
+=head1 INTERFACE
