@@ -6,7 +6,7 @@ use Carp;
 
 use base qw/App::CLI::Command Class::Accessor::Fast Shipwright::Script/;
 __PACKAGE__->mk_accessors(
-    qw/repository log_level log_file name add delete set/);
+    qw/repository log_level log_file name add delete set mandatary/);
 
 use Shipwright;
 use List::MoreUtils qw/uniq/;
@@ -20,6 +20,7 @@ sub options {
         'd|delete=s'     => 'delete',
         's|set=s'        => 'set',
         'name=s'         => 'name',
+        'mandatary'      => 'mandatary',
     );
 }
 
@@ -43,7 +44,12 @@ sub run {
 
     unless ( defined $self->add || defined $self->delete || defined $self->set )
     {
-        print join( ', ', @{ $flags->{$name} || [] } ), "\n";
+        if ( $self->mandatary ) {
+            print join( ', ', @{ $flags->{__mandatary}{$name} || [] } ), "\n";
+        }
+        else {
+            print join( ', ', @{ $flags->{$name} || [] } ), "\n";
+        }
         return;
     }
 
@@ -51,27 +57,41 @@ sub run {
         die 'you should specify one and only one of add, delete and set';
     }
 
+    my $list;
+
     if ( defined $self->add ) {
         $self->add( [ grep { /^[-\w]+$/ } split /,\s*/, $self->add ] );
-        $flags->{$name} = [ uniq @{ $self->add }, @{ $flags->{$name} || [] } ];
+        $list = [ uniq @{ $self->add }, @{ $flags->{$name} || [] } ];
     }
     elsif ( defined $self->delete ) {
         $self->delete( [ split /,\s*/, $self->delete ] );
         my %seen;    # lookup table
         @seen{ @{ $self->delete } } = ();
 
-        @{ $flags->{$name} } =
-          grep { exists $seen{$_} } @{ $flags->{$name} || [] };
+        $list = [ grep { exists $seen{$_} } @{ $flags->{$name} || [] } ];
 
     }
     elsif ( defined $self->set ) {
-        $flags->{$name} = [ grep { /^[-\w]+$/ } split /,\s*/, $self->set ];
+        $list = [ grep { /^[-\w]+$/ } split /,\s*/, $self->set ];
+    }
+
+    if ( $self->mandatary ) {
+        $flags->{__mandatary}{$name} = $list;
+    }
+    else {
+        $flags->{$name} = $list;
     }
 
     $shipwright->backend->flags($flags);
 
-    print "set flags with success, current flags for $name is "
-      . join( ',', @{ $flags->{$name} } ) . "\n";
+    if ( $self->mandatary ) {
+        print "set mandatary flags with success, current flags for $name is "
+          . join( ',', @{ $flags->{__mandatary}{$name} } ) . "\n";
+    }
+    else {
+        print "set flags with success, current flags for $name is "
+          . join( ',', @{ $flags->{$name} } ) . "\n";
+    }
 }
 
 1;
