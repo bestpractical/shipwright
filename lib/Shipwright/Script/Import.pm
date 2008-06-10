@@ -279,6 +279,8 @@ sub _generate_build {
 
     my @commands;
     if ( -f 'configure' ) {
+        print
+          "detected autoconf build system; generating appropriate build script\n";
         @commands = (
             'configure: ./configure --prefix=%%INSTALL_BASE%%',
             'make: make',
@@ -287,6 +289,8 @@ sub _generate_build {
         );
     }
     elsif ( -f 'Build.PL' ) {
+        print "detected Module::Build build system; generating appropriate build\n";
+        print "script";
         push @commands,
           'configure: %%PERL%% Build.PL --install_base=%%INSTALL_BASE%%';
         push @commands, "make: ./Build";
@@ -298,6 +302,8 @@ sub _generate_build {
         push @commands, "clean: %%PERL%% Build realclean";
     }
     elsif ( -f 'Makefile.PL' ) {
+        print "detected ExtUtils::MakeMaker build system; generating appropriate\n";
+        print "build script\n";
         push @commands,
           'configure: %%PERL%% Makefile.PL INSTALL_BASE=%%INSTALL_BASE%%';
         push @commands, 'make: make';
@@ -306,7 +312,21 @@ sub _generate_build {
         push @commands, "clean: make clean";
     }
     else {
+        print "unknown build system for this dist; you MUST manually edit\n";
+        print "script/${shipwright->name}/build or provide a build.pl file\n";
+        print "or this dist will not be built\n";
         $self->log->warn("I have no idea how to build this distribution");
+        # stub build file to provide the user something to go from
+        push @commands,
+          '# Edit this file to specify commands for building this dist.';
+        push @commands,
+          '# See the perldoc for Shipwright::Manual::CustomizeBuild for more';
+        push @commands,
+          '# info.';
+        push @commands, 'make: ';
+        push @commands, 'test: ';
+        push @commands, 'install: ';
+        push @commands, 'clean: ';
     }
 
     open my $fh, '>', File::Spec->catfile( $script_dir, 'build' ) or die $@;
