@@ -108,6 +108,15 @@ sub run {
               Shipwright::Util::LoadFile(
                 File::Spec->catfile( 'shipwright', 'flags.yml' ) )
               || {};
+
+            # fill not specified but mandatary flags
+            if ( $flags->{__mandatary} ) {
+                for my $list ( values %{ $flags->{__mandatary} } ) {
+                    next unless @$list;
+                    next if grep { $self->flags->{$_} } @$list;
+                    $self->flags->{ $list->[0] }++;
+                }
+            }
         }
 
         # calculate the real order

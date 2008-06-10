@@ -97,6 +97,15 @@ my $order =
 my $flags =
   ( YAML::Tiny->read( File::Spec->catfile( 'shipwright', 'flags.yml' ) ) )->[0];
 
+# fill not specified but mandatary flags
+if ( $flags->{__mandatary} ) {
+    for my $list ( values %{$flags->{__mandatary}} ) {
+        next unless @$list;
+        next if grep { $args{flags}{$_} } @$list;
+        $args{flags}{$list->[0]}++;
+    }
+}
+
 # calculate the real order
 if ( $args{only} ) {
     @$order = grep { $args{only}->{$_} } @$order;
