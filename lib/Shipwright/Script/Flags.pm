@@ -34,6 +34,11 @@ sub run {
 
     $name = $self->name;
 
+    if ( $name =~ /^__/ ) {
+        print "$name can't start as __\n";
+        return;
+    }
+
     my $shipwright = Shipwright->new(
         repository => $self->repository,
         log_level  => $self->log_level,
