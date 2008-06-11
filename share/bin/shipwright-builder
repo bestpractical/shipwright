@@ -70,7 +70,7 @@ clean: clean the source
 
 noclean: don't clean before build
 
-with: don't build the dist in repo, use the one specified here instead.
+with: don't build the dist of the name in repo, use the one specified here instead.
     e.g. --with svn=dir:/home/foo/svn
     'svn' is the dist name, 'dir:/home/foo/svn' is its source, with the format of Shipwright::Source
 
@@ -147,6 +147,8 @@ else {
 
     # for install
     open $log, '>', 'build.log' or die $!;
+
+    process_tmp_dists() if keys %{$args{with}};
 
     if ( -e '__need_clean' && !$args{noclean} ) {
         print "seems it has been built before, need to clean first\n";
@@ -268,7 +270,13 @@ else {
 
 sub install {
     my $dir = shift;
-    chdir File::Spec->catfile( 'dists', $dir );
+
+    if ( $args{with}{$dir} && -e File::Spec->catfile( 'tmp_dists', $dir ) ) {
+        chdir File::Spec->catfile( 'tmp_dists', $dir );
+    }
+    else {
+        chdir File::Spec->catfile( 'dists', $dir );
+    }
 
     my $skip_test = $args{'skip-test'} || $args{'skip-test-except-final'};
 
@@ -521,3 +529,38 @@ sub get_install_base {
     }
 
 }
+
+sub process_tmp_dists {
+    system( 'rm -f tmp_dists' );
+    mkdir 'tmp_dists';
+
+    for my $name ( keys %{$args{with}} ) {
+        my $cmd = cmd( $name, $args{with}{$name} );
+        if ( $cmd ) {
+            system( $cmd ) && die "run $cmd with failure";
+        }
+    }
+}
+
+# this's a simpler version compared to shipwright's source part, only
+# dir, svn and svk are supported currently.
+# warn: dist in svn and svk must be a dir instead of a compressed file.
+
+sub cmd {
+    my ( $name, $source ) = @_;
+
+    if ( $source =~ s/^dir(ectory)?://i ) {
+        return "cp -r $source tmp_dists/$name";
+    }
+    elsif ( $source =~ /^svn:/i ) {
+        $source =~ s{^svn:(?!//)}{}i;
+        return "svn export $source tmp_dists/$name";
+    }
+    elsif ( $source =~ m{^(//|svk:)}i ) {
+        $source =~ s/^svk://i;
+        return "svk co $source tmp_dists/$name";
+    }
+
+    return;
+}
+
