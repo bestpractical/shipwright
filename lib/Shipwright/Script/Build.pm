@@ -68,6 +68,18 @@ sub run {
 
     $self->with( { map { split /=/ } split /\s*,\s*/, $self->with || '' } );
 
+    my %source;
+    for my $name ( keys %{ $self->with } ) {
+        my $shipwright = Shipwright->new(
+            name   => $name,
+            source => $self->with->{$name},
+            follow => 0,
+            map { $_ => $self->$_ }
+              qw/repository log_level log_file only_test perl/
+        );
+        $source{$name} = $shipwright->source->run;
+    }
+
     my $shipwright = Shipwright->new(
         map { $_ => $self->$_ }
           qw/repository log_level log_file skip skip_test
@@ -75,6 +87,13 @@ sub run {
     );
 
     $shipwright->backend->export( target => $shipwright->build->build_base );
+
+    my $dists_dir = $shipwright->build->build_base;
+    for my $name ( keys %source ) {
+        my $dir = File::Spec->catfile( $dists_dir, 'dists', $name );
+        system("rm -rf $dir");
+        system("cp -r $source{$name} $dir");
+    }
     $shipwright->build->run();
 }
 
