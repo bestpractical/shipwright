@@ -7,7 +7,7 @@ use Carp;
 use base qw/App::CLI::Command Class::Accessor::Fast Shipwright::Script/;
 __PACKAGE__->mk_accessors(
     qw/repository log_level install_base build_base skip skip_test only_test
-      force log_file flags name perl only/
+      force log_file flags name perl only with/
 );
 
 use Shipwright;
@@ -28,6 +28,7 @@ sub options {
         'only-test'      => 'only_test',
         'force'          => 'force',
         'perl'           => 'perl',
+        'with=s'         => 'with',
     );
 }
 
@@ -64,6 +65,8 @@ sub run {
             map { $_ => 1 } split /\s*,\s*/, $self->flags || ''
         }
     );
+
+    $self->with( { map { split /=/ } split /\s*,\s*/, $self->with || '' } );
 
     my $shipwright = Shipwright->new(
         map { $_ => $self->$_ }
@@ -104,3 +107,6 @@ Shipwright::Script::Build - Build the specified project
  --name NAME                  : specify the name of the project
  --perl PATH                  : specify the path of perl that run the commands
                                 in scripts/
+ --with name=source,...       : don't build the dist of the name in repo,
+                                use the one specified here instead.
+

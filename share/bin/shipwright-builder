@@ -23,7 +23,8 @@ die "unknown option"
     'skip-test-except-final', 'only-test',
     'force',                  'clean',
     'name=s',                 'help',
-    'noclean',                'only=s'
+    'noclean',                'only=s',
+    'with=s',
   );
 
 my $USAGE = <<'END'
@@ -69,6 +70,10 @@ clean: clean the source
 
 noclean: don't clean before build
 
+with: don't build the dist in repo, use the one specified here instead.
+    e.g. --with svn=dir:/home/foo/svn
+    'svn' is the dist name, 'dir:/home/foo/svn' is its source, with the format of Shipwright::Source
+
 END
   ;
 
@@ -82,6 +87,8 @@ $args{flags} = {
     default => 1,
     map { $_ => 1 } split /\s*,\s*/, $args{flags} || ''
 };
+
+$args{with} = { map { split /=/ } split /\s*,\s*/, $args{with} || '' };
 
 if ( $args{only} ) {
     $args{only} = { map { $_ => 1 } split /\s*,\s*/, $args{only} };
@@ -99,10 +106,10 @@ my $flags =
 
 # fill not specified but mandatary flags
 if ( $flags->{__mandatary} ) {
-    for my $list ( values %{$flags->{__mandatary}} ) {
+    for my $list ( values %{ $flags->{__mandatary} } ) {
         next unless @$list;
         next if grep { $args{flags}{$_} } @$list;
-        $args{flags}{$list->[0]}++;
+        $args{flags}{ $list->[0] }++;
     }
 }
 
