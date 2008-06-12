@@ -134,6 +134,10 @@ if ( $args{'only-test'} ) {
 elsif ( $args{'clean'} ) {
     open $log, '>', 'clean.log' or die $!;
 
+    system( 'rm -rf tmp_dists' ) && die "rm tmp_dists failed\n";
+
+    print $log "removed tmp_dists";
+
     $args{'install-base'} = get_install_base() unless $args{'install-base'};
 
     for my $dist (@$order) {
@@ -531,7 +535,6 @@ sub get_install_base {
 }
 
 sub process_tmp_dists {
-    system( 'rm -f tmp_dists' );
     mkdir 'tmp_dists';
 
     for my $name ( keys %{$args{with}} ) {
