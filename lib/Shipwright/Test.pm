@@ -9,6 +9,14 @@ use IPC::Cmd qw/can_run/;
 
 our @EXPORT_OK = qw/has_svk has_svn create_svk_repo create_svn_repo/;
 
+=head1 NAME
+
+Shipwright::Test - useful subs for tests are here
+
+=head1 SYNOPSIS
+
+    use Shipwright::Test;
+
 =head2 has_svk
 
 check to see if we have svk or not.
@@ -76,48 +84,4 @@ sub init {
 
 __END__
 
-=head1 NAME
-
-Shipwright::Test - useful subs for tests are here
-
-
-=head1 SYNOPSIS
-
-    use Shipwright::Test;
-
-=head1 DESCRIPTION
-
-
 =head1 INTERFACE
-
-
-
-=head1 DEPENDENCIES
-
-
-None.
-
-
-=head1 INCOMPATIBILITIES
-
-None reported.
-
-
-=head1 BUGS AND LIMITATIONS
-
-No bugs have been reported.
-
-=head1 AUTHOR
-
-sunnavy  C<< <sunnavy@bestpractical.com> >>
-
-
-=head1 LICENCE AND COPYRIGHT
-
-Copyright 2007 Best Practical Solutions.
-
-This program is free software; you can redistribute it and/or modify it
-under the same terms as Perl itself.
-
-
-
