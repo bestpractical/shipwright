@@ -1,11 +1,14 @@
 use strict;
 use warnings;
 
-use Test::More tests => 2;
+use Test::More tests => 3;
 
+use Shipwright::Test;
 use Shipwright::Util;
 use File::Spec;
 use Cwd;
+
+Shipwright::Test->init;
 
 my $cwd = getcwd;
 my ( $shipwright_root, $share_root );
@@ -29,3 +32,5 @@ is(
 );
 is( $share_root, Shipwright::Util->share_root, 'share_root works' );
 
+my ($out) = Shipwright::Util->run(['ls', 'lib']);
+like( $out, qr/Shipwright/, 'test run sub' );
