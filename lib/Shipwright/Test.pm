@@ -61,6 +61,19 @@ sub create_svn_repo {
 
 1;
 
+
+=head2 init
+
+init something, like log
+
+=cut
+
+sub init {
+    my $class = shift;
+    require Shipwright::Logger;
+    Shipwright::Logger->new( log_level => 'FATAL' );
+}
+
 __END__
 
 =head1 NAME
