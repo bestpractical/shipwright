@@ -134,7 +134,7 @@ if ( $args{'only-test'} ) {
 elsif ( $args{'clean'} ) {
     open $log, '>', 'clean.log' or die $!;
 
-    system( 'rm -rf tmp_dists' ) && die "rm tmp_dists failed\n";
+    system('rm -rf tmp_dists') && die "rm tmp_dists failed\n";
 
     print $log "removed tmp_dists";
 
@@ -152,7 +152,7 @@ else {
     # for install
     open $log, '>', 'build.log' or die $!;
 
-    process_tmp_dists() if keys %{$args{with}};
+    process_tmp_dists() if keys %{ $args{with} };
 
     if ( -e '__need_clean' && !$args{noclean} ) {
         print "seems it has been built before, need to clean first\n";
@@ -537,10 +537,10 @@ sub get_install_base {
 sub process_tmp_dists {
     mkdir 'tmp_dists';
 
-    for my $name ( keys %{$args{with}} ) {
+    for my $name ( keys %{ $args{with} } ) {
         my $cmd = cmd( $name, $args{with}{$name} );
-        if ( $cmd ) {
-            system( $cmd ) && die "run $cmd with failure";
+        if ($cmd) {
+            system($cmd) && die "run $cmd with failure";
         }
     }
 }
