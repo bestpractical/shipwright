@@ -126,7 +126,9 @@ sub run {
         else {
             @$order =
               grep {
-                ( $flags->{$_} ? $self->flags->{$_} : 1 )
+                ( $flags->{$_}
+                    ? ( grep { $self->flags->{$_} } @{ $flags->{$_} } )
+                    : 1 )
                   && !$self->skip->{$_}
               } @$order;
         }

@@ -88,6 +88,7 @@ $args{flags} = {
     map { $_ => 1 } split /\s*,\s*/, $args{flags} || ''
 };
 
+
 $args{with} = { map { split /=/ } split /\s*,\s*/, $args{with} || '' };
 
 if ( $args{only} ) {
@@ -119,9 +120,12 @@ if ( $args{only} ) {
 }
 else {
     @$order =
-      grep { ( $flags->{$_} ? $args{flags}{$_} : 1 ) && !$args{skip}->{$_} }
-      @$order;
+      grep {
+        ( $flags->{$_} ? ( grep { $args{flags}{$_} } @{ $flags->{$_} } ) : 1 )
+          && !$args{skip}->{$_}
+      } @$order;
 }
+
 
 my $log;
 
