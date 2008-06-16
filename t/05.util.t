@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 7;
+use Test::More tests => 14;
 
 use Shipwright::Test;
 use Shipwright::Util;
@@ -26,15 +26,29 @@ else {
     $share_root      = File::Spec->catfile( $cwd, 'share' );
 }
 
-is(
-    $shipwright_root,
-    Shipwright::Util->shipwright_root,
-    'shipwright_root works',
-);
-is( $share_root, Shipwright::Util->share_root, 'share_root works' );
+# we want to run shipwright_root and share_root twice to get codes covered.
+for ( 1 .. 2 ) {
+    is(
+        $shipwright_root,
+        Shipwright::Util->shipwright_root,
+        'shipwright_root works',
+    );
+    is( $share_root, Shipwright::Util->share_root, 'share_root works' );
+}
 
-my ($out) = Shipwright::Util->run( [ 'ls', 'lib' ] );
-like( $out, qr/Shipwright/, 'test run sub' );
+my ( $out, $err );
+$out = Shipwright::Util->run( [ 'ls', 'lib' ] );
+like( $out, qr/Shipwright/, "run 'ls lib' get right output" );
+
+eval { Shipwright::Util->run( [ 'ls', 'lalala' ] ) };
+like( $@, qr/something wrong/i, 'run "ls lalala" results in death' );
+
+( undef, $err ) = Shipwright::Util->run( [ 'ls', 'lalala' ], 1 );
+like(
+    $err,
+    qr/no such file/i,
+    "run 'ls lalala' get 'no file' warning if ignore_failure"
+);
 
 my $hashref = { foo => 'bar' };
 my $string = <<EOF;
@@ -58,3 +72,6 @@ my $string2;
 
 is( $string, $string2, 'DumpFile works' );
 
+ok( Shipwright::Util->select( 'null' ), 'selected null' );
+ok( Shipwright::Util->select( 'cpan' ), 'selected cpan' );
+ok( Shipwright::Util->select( 'stdout' ), 'selected stdout' );
