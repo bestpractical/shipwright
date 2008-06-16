@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 14;
+use Test::More tests => 15;
 
 use Shipwright::Test;
 use Shipwright::Util;
@@ -72,6 +72,9 @@ my $string2;
 
 is( $string, $string2, 'DumpFile works' );
 
-ok( Shipwright::Util->select( 'null' ), 'selected null' );
-ok( Shipwright::Util->select( 'cpan' ), 'selected cpan' );
-ok( Shipwright::Util->select( 'stdout' ), 'selected stdout' );
+ok( Shipwright::Util->select('null'), 'selected null' );
+ok( Shipwright::Util->select('cpan'), 'selected cpan' )
+  for 1 .. 2;    # for test coverage
+ok( Shipwright::Util->select('stdout'), 'selected stdout' );
+eval { Shipwright::Util->select('noexists') };
+like( $@, qr/unknown type/, 'unknown type results in death' );
