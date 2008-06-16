@@ -70,7 +70,7 @@ sub run {
         die "something wrong when execute @$cmd: $?" unless $ignore_failure;
     }
 
-    return ( $out, $err );
+    return wantarray ? ( $out, $err ) : $out;
 
 }
 
@@ -106,7 +106,7 @@ sub share_root {
     $SHARE_ROOT ||=
       eval { File::Spec->rel2abs( File::ShareDir::module_dir('Shipwright') ) };
 
-    unless ( $SHARE_ROOT && -d $SHARE_ROOT ) {
+    unless ( $SHARE_ROOT ) {
 
         # XXX TODO: This is a bloody hack
         # Module::Install::Share and File::ShareDir don't play nicely
