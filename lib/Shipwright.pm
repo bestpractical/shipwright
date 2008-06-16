@@ -32,7 +32,7 @@ sub new {
     }
 
     my $self = {
-        log_level => $args{log_level},
+        log_level => uc $args{log_level} || 'FATAL',
         log_file  => $log_file,
     };
     
@@ -40,13 +40,14 @@ sub new {
 
     Shipwright::Logger->new($self);
 
-    $self->backend( Shipwright::Backend->new(%args) );
+    if ( $args{repository} ) {
+        $self->backend( Shipwright::Backend->new(%args) );
+        $self->build( Shipwright::Build->new(%args) );
+    }
 
     if ( $args{source} ) {
         $self->source( Shipwright::Source->new(%args) );
     }
-
-    $self->build( Shipwright::Build->new(%args) );
 
     return $self;
 }
