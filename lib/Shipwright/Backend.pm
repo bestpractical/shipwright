@@ -33,6 +33,8 @@ sub new {
 
     my $module;
 
+    croak 'need repository arg' unless exists $args{repository};
+
     if ( $args{repository} =~ m{^\s*(svk:|//)} ) {
         $args{repository} =~ s{^\s*svk:}{};
         $module = 'Shipwright::Backend::SVK';
@@ -45,7 +47,7 @@ sub new {
         croak "invalid repository: $args{repository}\n";
     }
 
-    $module->require or die $@;
+    $module->require;
 
     return $module->new(%args);
 }
