@@ -61,12 +61,16 @@ sub type {
     my $source = shift;
 
     # prefix that can't be omitted
-    return 'Compressed' if $$source =~ s/^file:.*(tar\.gz|tar\.bz2|tgz)$//i;
-    return 'Directory'  if $$source =~ s/^dir(ectory)?://i;
+    if ( $$source =~ /^file:.*\.(tar\.gz|tgz|tar\.bz2)$/ ) {
+        $$source =~ s/^file://i;
+        return 'Compressed';
+    }
+
+    return 'Directory' if $$source =~ s/^dir(ectory)?://i;
 
     if ( $$source =~ s/^cpan://i ) {
 
-        # if it's not a distribution name, like 
+        # if it's not a distribution name, like
         # 'S/SU/SUNNAVY/IP-QQWry-v0.0.15.tar.gz', convert '-' to '::'.
         $$source =~ s/-/::/g unless $$source =~ /\.tar\.gz$/;
         return 'CPAN';
