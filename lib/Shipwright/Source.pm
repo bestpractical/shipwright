@@ -42,14 +42,14 @@ sub new {
     my $class = shift;
     my %args = %{ merge( \%DEFAULT, {@_} ) };
 
-    croak "need source option" unless $args{source};
+    croak "need source arg" unless exists $args{source};
 
     my $type = type( \$args{source} );
 
-    croak "invalid source $args{source}" unless $type;
+    croak "invalid source: $args{source}" unless $type;
 
     my $module = 'Shipwright::Source::' . $type;
-    $module->require or die $@;
+    $module->require;
     return $module->new(%args);
 }
 
@@ -61,7 +61,7 @@ sub type {
     my $source = shift;
 
     # prefix that can't be omitted
-    return 'Compressed' if $$source =~ s/^file://i;
+    return 'Compressed' if $$source =~ s/^file:.*(tar\.gz|tar\.bz2|tgz)$//i;
     return 'Directory'  if $$source =~ s/^dir(ectory)?://i;
 
     if ( $$source =~ s/^cpan://i ) {
