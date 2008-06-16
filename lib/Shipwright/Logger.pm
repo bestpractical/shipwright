@@ -55,7 +55,7 @@ sub _initialize_log4perl {
         $log_file  = $hash{log_file};
     }
 
-    $log_level = uc $log_level || 'ERROR';
+    $log_level = uc $log_level || 'FATAL';
     my %default;
 
     if ($log_file) {
