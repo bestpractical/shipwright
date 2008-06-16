@@ -153,6 +153,9 @@ sub select {
         $cpan_fh_flag = 1;
         select $cpan_fh;
     }
+    else {
+        die "unknown type: $type";
+    }
 }
 
 1;
