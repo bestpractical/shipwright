@@ -61,7 +61,11 @@ sub type {
     my $source = shift;
 
     # prefix that can't be omitted
-    return 'Compressed' if $$source =~ s/^file:.*(tar\.gz|tar\.bz2|tgz)$//i;
+    if ( $$source =~ /^file:.*\.(tar\.gz|tgz|tar\.bz2)$/ ) {
+        $$source =~ s/^file://i;
+        return 'Compressed';
+    }
+
     return 'Directory'  if $$source =~ s/^dir(ectory)?://i;
 
     if ( $$source =~ s/^cpan://i ) {

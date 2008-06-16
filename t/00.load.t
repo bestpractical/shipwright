@@ -3,7 +3,6 @@ use File::Spec;
 use File::Basename qw( dirname );
 
 my $manifest = File::Spec->catdir( dirname(__FILE__), '..', 'MANIFEST' );
-diag("Testing Shipwright $Shipwright::VERSION");
 plan skip_all => 'MANIFEST does not exist' unless -e $manifest;
 open FH, '<', $manifest;
 
