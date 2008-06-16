@@ -20,20 +20,19 @@ sub new {
     my $class = shift;
 
     my %args = @_;
+    $args{log_level} = uc $args{log_level} || 'FATAL';
 
-    my $log_file = $args{log_file};
-
-    unless ($log_file) {
+    unless ($args{log_file}) {
         # a better named log_file, in the name of repository
         require File::Spec;
         my $info = join '', map { /\w/ ? $_ : '_' } split //, $args{repository};
-        $log_file =
+        $args{log_file} =
           File::Spec->catfile( File::Spec->tmpdir, "shipwright_${info}.log" );
     }
 
     my $self = {
-        log_level => uc $args{log_level} || 'FATAL',
-        log_file  => $log_file,
+        log_level => $args{log_level},
+        log_file  => $args{log_file},
     };
     
     bless $self, $class;
