@@ -77,7 +77,6 @@ init something, like log
 =cut
 
 sub init {
-    my $class = shift;
     require Shipwright::Logger;
     Shipwright::Logger->new( log_level => 'FATAL' );
 }
