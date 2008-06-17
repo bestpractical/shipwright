@@ -28,9 +28,9 @@ sub prepare {
         # test some options in advance, so we can exit asap.
         my %args;
 
-        for ( my $i = 1 ; $i <= $#ARGV - 1 ; $i++ ) {
+        for ( my $i = 1 ; $i <= $#ARGV ; $i++ ) {
             if ( $ARGV[$i] eq '-r' || $ARGV[$i] eq '--repository' ) {
-                if ( $ARGV[ $i + 1 ] =~ /^-/ ) {
+                if ( $i == $#ARGV || $ARGV[ $i + 1 ] =~ /^-/ ) {
                     die 'option repository requires an argument';
                 }
                 else {
@@ -39,7 +39,7 @@ sub prepare {
                 $i++;    # skip the argument
             }
             elsif ( $ARGV[$i] eq '-l' || $ARGV[$i] eq '--log-level' ) {
-                if ( $ARGV[ $i + 1 ] =~ /^-/ ) {
+                if ( $i == $#ARGV || $ARGV[ $i + 1 ] =~ /^-/ ) {
                     die 'option log-level requires an argument';
                 }
                 else {
@@ -48,7 +48,7 @@ sub prepare {
                 $i++;    # skip the argument
             }
             elsif ( $ARGV[$i] eq '--log-file' ) {
-                if ( $ARGV[ $i + 1 ] =~ /^-/ ) {
+                if ( $i == $#ARGV || $ARGV[ $i + 1 ] =~ /^-/ ) {
                     die 'option log-file requires an argument';
                 }
                 else {
@@ -87,10 +87,8 @@ sub prepare {
 
 sub log {
     my $self = shift;
-    require Shipwright::Logger;
 
-    # only pass ref, or Logger will get confused
-    Shipwright::Logger->new( ref $self ? $self : () );
+    # init logging is done in prepare, no need to init here, just returns logger
     return Log::Log4perl->get_logger( ref $self );
 }
 
