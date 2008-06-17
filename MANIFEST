@@ -33,8 +33,8 @@ lib/Shipwright/Script/Flags.pm
 lib/Shipwright/Script/Help.pm
 lib/Shipwright/Script/Import.pm
 lib/Shipwright/Script/List.pm
-lib/Shipwright/Script/List.pm
 lib/Shipwright/Script/Maintain.pm
+lib/Shipwright/Script/Rename.pm
 lib/Shipwright/Script/Update.pm
 lib/Shipwright/Source.pm
 lib/Shipwright/Source/Base.pm
@@ -46,6 +46,7 @@ lib/Shipwright/Source/HTTP.pm
 lib/Shipwright/Source/SVK.pm
 lib/Shipwright/Source/SVN.pm
 lib/Shipwright/Test.pm
+lib/Shipwright/Test/Fake/App/CLI.pm
 lib/Shipwright/Util.pm
 Makefile.PL
 MANIFEST			This list of files
@@ -66,8 +67,13 @@ share/shipwright/source.yml
 share/shipwright/version.yml
 t/00.load.t
 t/01.repo_check.t
+t/02.shipwright.t
+t/03.backend.t
+t/04.source.t
+t/05.util.t
+t/06.logger.t
+t/07.script.t
 t/10.flags.t
-t/20.util.t
 t/21.perl_in_build.t
 t/hello/Acme-Hello-0.03.tar.gz
 t/hello/scripts/build
