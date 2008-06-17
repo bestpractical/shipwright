@@ -6,6 +6,7 @@ use File::Spec;
 use File::Temp qw/tempdir/;
 use File::Copy qw/move copy/;
 use File::Find qw/find/;
+use File::Path;
 use Config;
 use Getopt::Long;
 use Cwd qw/getcwd abs_path/;
@@ -240,7 +241,7 @@ else {
         $ENV{PERL_MM_USE_DEFAULT} = 1;
     }
 
-    mkdir $args{'install-base'} unless -e $args{'install-base'};
+    mkpath $args{'install-base'} unless -e $args{'install-base'};
 
     mkdir File::Spec->catfile( $args{'install-base'},       'etc' )
       unless -e File::Spec->catfile( $args{'install-base'}, 'etc' );

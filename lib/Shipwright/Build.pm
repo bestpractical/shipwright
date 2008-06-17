@@ -17,6 +17,7 @@ use File::Copy::Recursive qw/dircopy/;
 use File::Copy qw/move copy/;
 use File::Find qw/find/;
 use File::Slurp;
+use File::Path;
 
 =head2 new
 
@@ -86,7 +87,7 @@ sub run {
 
     $self->log->info( 'run build to install to ' . $self->install_base );
 
-    mkdir $self->install_base unless -e $self->install_base;
+    mkpath $self->install_base unless -e $self->install_base;
 
     chdir $self->build_base;
 
