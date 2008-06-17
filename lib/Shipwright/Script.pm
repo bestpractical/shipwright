@@ -59,7 +59,7 @@ sub prepare {
 
         }
 
-        if ($args{repository}) {
+        if ( $args{repository} ) {
 
             my $backend =
               Shipwright::Backend->new( repository => $args{repository} );
@@ -87,7 +87,10 @@ sub prepare {
 
 sub log {
     my $self = shift;
-    Shipwright::Logger->new($self);
+    require Shipwright::Logger;
+
+    # only pass ref, or Logger will get confused
+    Shipwright::Logger->new( ref $self ? $self : () );
     return Log::Log4perl->get_logger( ref $self );
 }
 
