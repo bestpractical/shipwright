@@ -6,8 +6,10 @@ use base qw/Exporter/;
 
 use File::Temp qw/tempdir/;
 use IPC::Cmd qw/can_run/;
+use File::Spec;
 
-our @EXPORT_OK = qw/has_svk has_svn create_svk_repo create_svn_repo/;
+our @EXPORT_OK =
+  qw/has_svk has_svn create_svk_repo create_svn_repo devel_cover_enabled/;
 
 =head1 NAME
 
@@ -25,7 +27,7 @@ in fact, it also checks svnadmin since we need that to create repo for svk
 =cut
 
 sub has_svk {
-   return can_run('svk') && can_run('svnadmin');
+    return can_run('svk') && can_run('svnadmin');
 }
 
 =head2 has_svn
@@ -36,7 +38,7 @@ in fact, it also checks svnadmin since we need that to create repo
 =cut
 
 sub has_svn {
-   return can_run('svn') && can_run('svnadmin');
+    return can_run('svn') && can_run('svnadmin');
 }
 
 =head2 create_svk_repo 
@@ -63,12 +65,9 @@ return the repo's uri, like file:///tmp/foo
 
 sub create_svn_repo {
     my $repo = tempdir;
-    system("svnadmin create $repo" ) && die "create repo failed: $!";
+    system("svnadmin create $repo") && die "create repo failed: $!";
     return "file://$repo";
 }
-
-1;
-
 
 =head2 init
 
@@ -80,6 +79,35 @@ sub init {
     require Shipwright::Logger;
     Shipwright::Logger->new( log_level => 'FATAL' );
 }
+
+=head2 shipwright_bin
+
+return the path of bin/shipwright
+
+=cut
+
+sub shipwright_bin {
+    no warnings 'uninitialized';
+
+    # so, we'd better add lib to PERL5LIB before run shipwright.
+    # what? you don't want to run shipwright?!!
+    # then what did you call this method for?
+
+    $ENV{PERL5LIB} = 'lib:' . $ENV{PERL5LIB} unless $ENV{PERL5LIB} =~ /^lib:/;
+    return File::Spec->catfile( 'bin', 'shipwright' );
+}
+
+=head2 devel_cover_enabled
+
+return true if -MDevel::Cover
+
+=cut
+
+sub devel_cover_enabled {
+    return $INC{'Devel/Cover.pm'};
+}
+
+1;
 
 __END__
 
