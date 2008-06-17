@@ -4,7 +4,7 @@ use warnings;
 use Test::More tests => 2;
 
 use Shipwright;
-use Shipwright::Test qw/has_svn has_svk create_svn_repo create_svk_repo devel_cover_enabled/;
+use Shipwright::Test;
 
 my $sw = Shipwright::Test->shipwright_bin;
 
