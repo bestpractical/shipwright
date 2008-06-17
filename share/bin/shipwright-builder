@@ -157,8 +157,6 @@ else {
     # for install
     open $log, '>', 'build.log' or die $!;
 
-    process_tmp_dists() if keys %{ $args{with} };
-
     if ( -e '__need_clean' && !$args{noclean} ) {
         print "seems it has been built before, need to clean first\n";
         print $log "seems it has been built before, need to clean first\n";
@@ -175,6 +173,8 @@ else {
     # set clean flag again
     open my $tmp_fh, '>', '__need_clean' or die $!;
     close $tmp_fh;
+
+    process_tmp_dists() if keys %{ $args{with} };
 
     # some perl distribution( e.g. on fedora ) doesn't have CPAN module
     # so we put it in eval block
