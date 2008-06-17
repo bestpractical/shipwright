@@ -41,7 +41,7 @@ sub run {
     if ( $self->install_base ) {
 
         # convert relative path to be absolute
-        $self->install_base( abs_path( $self->install_base ) );
+        $self->install_base( File::Spec->rel2abs( $self->install_base ) );
     }
 
     unless ( $self->name ) {

@@ -96,7 +96,7 @@ if ( $args{only} ) {
 }
 
 if ( $args{'install-base'} ) {
-    $args{'install-base'} = abs_path( $args{'install-base'} );
+    $args{'install-base'} = File::Spec->rel2abs( $args{'install-base'} );
 }
 
 # YAML::Tiny objects are array based.
