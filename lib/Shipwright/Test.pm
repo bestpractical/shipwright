@@ -8,7 +8,7 @@ use File::Temp qw/tempdir/;
 use IPC::Cmd qw/can_run/;
 use File::Spec;
 
-our @EXPORT_OK =
+our @EXPORT =
   qw/has_svk has_svn create_svk_repo create_svn_repo devel_cover_enabled/;
 
 =head1 NAME
