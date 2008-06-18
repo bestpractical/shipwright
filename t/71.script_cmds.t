@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 8;
+use Test::More tests => 20;
 
 use Shipwright;
 use Shipwright::Test;
@@ -11,7 +11,7 @@ my $sw = Shipwright::Test->shipwright_bin;
 Shipwright::Test->init;
 
 SKIP: {
-    skip "no svn found", 4
+    skip "no svn found", 10
       unless has_svn();
 
     my $repo = 'svn:' . create_svn_repo() . '/hello';
@@ -20,7 +20,7 @@ SKIP: {
 }
 
 SKIP: {
-    skip "no svk and svnadmin found", 4
+    skip "no svk and svnadmin found", 10
       unless has_svk();
 
     create_svk_repo();
@@ -32,12 +32,24 @@ SKIP: {
 
 sub start_test {
     my $repo = shift;
+
+    # test create
     test_cmd(
         $repo,
         [ $sw, 'create', '-r', $repo ],
         qr/created with success/,
         "create $repo"
     );
+
+    # test non exist cmd
+    test_cmd(
+        $repo, [ $sw, 'obra', '-r', $repo ],
+        undef, undef,
+        qr/Command not recognized/,
+        "non exist cmd",
+    );
+
+    # test list
     test_cmd( $repo, [ $sw, 'list', '-r', $repo ], '', "list null $repo" );
     test_cmd(
         $repo,
@@ -45,6 +57,53 @@ sub start_test {
         qr/foo doesn't exist/,
         "list non exist name $repo"
     );
-    test_cmd( $repo, [ $sw, 'import', '-r', $repo ], '', "list null $repo" );
+
+    # test import
+    test_cmd(
+        $repo, [ $sw, 'import', '-r', $repo ],
+        undef, undef,
+        qr/need source arg/,
+        'import without --source ...'
+    );
+
+    test_cmd(
+        $repo, [ $sw, 'import', '-r', $repo, '--source' ],
+        undef, undef,
+        qr/source requires an argument/,
+        'import with --source but no value'
+    );
+
+    test_cmd(
+        $repo, [ $sw, 'import', '-r', $repo, '--source', 'foo' ],
+        undef, undef,
+        qr/invalid source: foo/,
+        'import with invalid source'
+    );
+
+    test_cmd(
+        $repo, [ $sw, 'import', '-r', $repo, 'foo' ],
+        undef, undef,
+        qr/invalid source: foo/,
+        'import with invalid source'
+    );
+
+    test_cmd(
+        $repo,
+        [
+            $sw, 'import', '-r', $repo, 'file:t/hello/Acme-Hello-0.03.tar.gz',
+            '--follow', 0
+        ],
+        qr/imported with success/,
+        'import tar.gz file',
+    );
+
+    test_cmd(
+        $repo,
+        [ $sw, 'list', '-r', $repo, ],
+        qr{Acme-Hello:\s+
+        version:\s+0\.03\s+
+        from:\s+\Qfile:t/hello/Acme-Hello-0.03.tar.gz\E}mx,
+        'list the repo',
+    );
 }
 
