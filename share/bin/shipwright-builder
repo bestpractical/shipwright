@@ -325,7 +325,7 @@ sub install {
 
             print $log "build $type part in $dir with cmd: $cmd\n";
 
-            print "we'll run the cmd: $cmd\n";
+            print "running shipwright build command: $cmd\n";
             if ( system($cmd) ) {
                 print $log "build $dir $type part with failure.\n";
                 if ( $args{force} && $type eq 'test' ) {
@@ -472,7 +472,7 @@ sub cmds {
     my $return = [];
     for (@cmds) {
         my ( $type, $cmd );
-        next unless /\S/;
+        next unless /\S/ && /^(?!#)\w+/;    # skip commented and blank lines
 
         if (/^(\S+):\s*(.*)/) {
             $type = $1;
