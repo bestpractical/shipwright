@@ -26,17 +26,16 @@ sub run {
 
     my ( $name, $new_name ) = ( $self->name, $self->new_name );
 
-    unless ( $name && $new_name ) {
-        ( $name, $new_name ) = @_;
-    }
+    $name = shift unless $name;
+    $new_name = shift unless $new_name;
 
     $self->name( $name );
     $self->new_name( $new_name );
 
     die 'need name arg' unless $name;
-    die 'need new name' unless $new_name;
+    die 'need new-name arg' unless $new_name;
 
-    die "invalid new name $new_name, should only contain - and alphanumeric"
+    die "invalid new-name: $new_name, should only contain - and alphanumeric"
       unless $new_name =~ /^[-\w]+$/;
 
     my $shipwright = Shipwright->new(
