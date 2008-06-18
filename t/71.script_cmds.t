@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 20;
+use Test::More tests => 40;
 
 use Shipwright;
 use Shipwright::Test;
@@ -11,7 +11,7 @@ my $sw = Shipwright::Test->shipwright_bin;
 Shipwright::Test->init;
 
 SKIP: {
-    skip "no svn found", 10
+    skip "no svn found", 20
       unless has_svn();
 
     my $repo = 'svn:' . create_svn_repo() . '/hello';
@@ -20,7 +20,7 @@ SKIP: {
 }
 
 SKIP: {
-    skip "no svk and svnadmin found", 10
+    skip "no svk and svnadmin found", 20,
       unless has_svk();
 
     create_svk_repo();
@@ -104,6 +104,84 @@ sub start_test {
         version:\s+0\.03\s+
         from:\s+\Qfile:t/hello/Acme-Hello-0.03.tar.gz\E}mx,
         'list the repo',
+    );
+
+
+# test rename
+    test_cmd(
+        $repo,
+        [
+            $sw,      'rename',     '-r',         $repo,
+            '--name', 'Acme-Hello', '--new-name', 'foo'
+        ],
+        qr/renamed Acme-Hello to foo with success/,
+    );
+    test_cmd(
+        $repo,
+        [ $sw, 'list', '-r', $repo, ],
+        qr{foo:\s+
+        version:\s+0\.03\s+
+        from:\s+\Qfile:t/hello/Acme-Hello-0.03.tar.gz\E}mx,
+        'list the repo',
+    );
+
+    for ( [ '--name', 'foo', '--new-name' ], [ '--name' ], ) {
+        my $prefix = '';
+        $prefix = 'new-' if "@$_" =~ /foo/;
+        test_cmd(
+            $repo, [ $sw, 'rename', '-r', $repo, @$_, ],
+            undef, undef, qr/${prefix}name requires an argument/,
+        );
+    }
+
+    for ( [ '--name', 'foo' ], [ ], ) {
+        my $prefix = '';
+        $prefix = 'new-' if "@$_" =~ /foo/;
+        test_cmd(
+            $repo, [ $sw, 'rename', '-r', $repo, @$_, ],
+            undef, undef, qr/need ${prefix}name arg/,
+            "rename without ${prefix}name arg",
+        );
+    }
+
+    test_cmd(
+        $repo,
+        [
+            $sw,      'rename',     '-r',         $repo,
+            '--name', 'Acme-Hello', '--new-name', '@'
+        ],
+        undef, undef,
+        qr/invalid new-name: @/,
+        'rename with invalid new-name',
+    );
+
+    test_cmd(
+        $repo,
+        [
+            $sw,      'rename',     '-r',         $repo,
+            '--name', 'NonExist', '--new-name', 'foo'
+        ],
+        undef, undef,
+        qr/no such dist: NonExist/,
+        'rename nonexist dist',
+    );
+
+# now the dist is renamed to 'foo'
+
+    test_cmd(
+        $repo,
+        [
+            $sw,      'delete',     '-r',         $repo,
+            '--name', 'foo'
+        ],
+        qr/deleted foo with success/,
+        'deleted foo',
+    );
+
+    test_cmd(
+        $repo, [ $sw, 'list', '-r', $repo, '--name', 'foo' ],
+        qr/foo doesn't exist/,
+        "foo is deleted"
     );
 }
 
