@@ -289,8 +289,8 @@ sub _generate_build {
         );
     }
     elsif ( -f 'Build.PL' ) {
-        print "detected Module::Build build system; generating appropriate build\n";
-        print "script";
+        print
+"detected Module::Build build system; generating appropriate build script\n";
         push @commands,
           'configure: %%PERL%% Build.PL --install_base=%%INSTALL_BASE%%';
         push @commands, "make: ./Build";
@@ -302,8 +302,8 @@ sub _generate_build {
         push @commands, "clean: %%PERL%% Build realclean";
     }
     elsif ( -f 'Makefile.PL' ) {
-        print "detected ExtUtils::MakeMaker build system; generating appropriate\n";
-        print "build script\n";
+        print
+"detected ExtUtils::MakeMaker build system; generating appropriate build script\n";
         push @commands,
           'configure: %%PERL%% Makefile.PL INSTALL_BASE=%%INSTALL_BASE%%';
         push @commands, 'make: make';
