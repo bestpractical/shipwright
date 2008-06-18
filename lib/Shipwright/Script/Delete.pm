@@ -30,8 +30,6 @@ sub run {
 
     my $shipwright = Shipwright->new(
         repository => $self->repository,
-        log_level  => $self->log_level,
-        log_file   => $self->log_file,
     );
 
     my $map = $shipwright->backend->map || {};

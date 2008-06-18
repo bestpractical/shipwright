@@ -55,8 +55,6 @@ sub run {
         # don't have source specified, use the one in repo
         my $shipwright = Shipwright->new(
             repository => $self->repository,
-            log_level  => $self->log_level,
-            log_file   => $self->log_file,
         );
         my $map    = $shipwright->backend->map    || {};
         my $source = $shipwright->backend->source || {};
