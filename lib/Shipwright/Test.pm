@@ -9,7 +9,8 @@ use IPC::Cmd qw/can_run/;
 use File::Spec;
 
 our @EXPORT =
-  qw/has_svk has_svn create_svk_repo create_svn_repo devel_cover_enabled/;
+  qw/has_svk has_svn create_svk_repo create_svn_repo devel_cover_enabled
+  test_cmd/;
 
 =head1 NAME
 
@@ -105,6 +106,30 @@ return true if -MDevel::Cover
 
 sub devel_cover_enabled {
     return $INC{'Devel/Cover.pm'};
+}
+
+=head2 test_cmd
+
+a simple wrap for test cmd like create, list ...
+
+=cut
+
+sub test_cmd {
+    my $repo   = shift;
+    my $cmd    = shift;
+    my $exp = shift;
+    my $msg    = shift;
+
+    unshift @$cmd, $^X, '-MDevel::Cover' if devel_cover_enabled;
+
+    require Test::More;
+    my $out = Shipwright::Util->run($cmd, 1); # ingnore failure
+    if ( ref $exp eq 'Regexp' ) {
+        Test::More::like( $out, $exp, $msg );
+    }
+    else {
+        Test::More::is( $out, $exp, $msg );
+    }
 }
 
 1;
