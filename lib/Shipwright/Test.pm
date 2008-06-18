@@ -118,31 +118,29 @@ sub test_cmd {
     my $repo    = shift;
     my $cmd     = shift;
     my $exp     = shift;
-    my $msg     = shift;
+    my $msg     = shift || "@$cmd out";
     my $exp_err = shift;
-    my $msg_err = shift;
+    my $msg_err = shift || "@$cmd err";
 
     unshift @$cmd, $^X, '-MDevel::Cover' if devel_cover_enabled;
 
     require Test::More;
     my ( $out, $err ) = Shipwright::Util->run( $cmd, 1 );    # ingnore failure
 
-    if ( defined $exp ) {
-        if ( ref $exp eq 'Regexp' ) {
-            Test::More::like( $out, $exp, $msg );
-        }
-        else {
-            Test::More::is( $out, $exp, $msg );
-        }
-    }
+    _test_cmd( $out, $exp, $msg ) if defined $exp;
+    _test_cmd( $err, $exp_err, $msg_err ) if defined $exp_err;
+}
 
-    if ( defined $exp_err ) {
-        if ( ref $exp_err eq 'Regexp' ) {
-            Test::More::like( $err, $exp_err, $msg_err );
-        }
-        else {
-            Test::More::is( $err, $exp_err, $msg_err );
-        }
+sub _test_cmd {
+    my $out = shift;
+    my $exp = shift;
+    my $msg = shift;
+
+    if ( ref $exp eq 'Regexp' ) {
+        Test::More::like( $out, $exp, $msg );
+    }
+    else {
+        Test::More::is( $out, $exp, $msg );
     }
 }
 
