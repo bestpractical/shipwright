@@ -115,20 +115,34 @@ a simple wrap for test cmd like create, list ...
 =cut
 
 sub test_cmd {
-    my $repo = shift;
-    my $cmd  = shift;
-    my $exp  = shift;
-    my $msg  = shift;
+    my $repo    = shift;
+    my $cmd     = shift;
+    my $exp     = shift;
+    my $msg     = shift;
+    my $exp_err = shift;
+    my $msg_err = shift;
 
     unshift @$cmd, $^X, '-MDevel::Cover' if devel_cover_enabled;
 
     require Test::More;
-    my $out = Shipwright::Util->run( $cmd, 1 );    # ingnore failure
-    if ( ref $exp eq 'Regexp' ) {
-        Test::More::like( $out, $exp, $msg );
+    my ( $out, $err ) = Shipwright::Util->run( $cmd, 1 );    # ingnore failure
+
+    if ( defined $exp ) {
+        if ( ref $exp eq 'Regexp' ) {
+            Test::More::like( $out, $exp, $msg );
+        }
+        else {
+            Test::More::is( $out, $exp, $msg );
+        }
     }
-    else {
-        Test::More::is( $out, $exp, $msg );
+
+    if ( defined $exp_err ) {
+        if ( ref $exp_err eq 'Regexp' ) {
+            Test::More::like( $err, $exp_err, $msg_err );
+        }
+        else {
+            Test::More::is( $err, $exp_err, $msg_err );
+        }
     }
 }
 
