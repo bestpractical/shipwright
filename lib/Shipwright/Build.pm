@@ -192,7 +192,7 @@ sub _install {
 
         for (@cmds) {
             my ( $type, $cmd );
-            next unless /\S/ && /^(?!#)\w+/;    # skip commented and blank lines
+            next unless /\S/ && /^(?!#)/;    # skip commented and blank lines
 
             if (/^(\S+):\s*(.*)/) {
                 $type = $1;
