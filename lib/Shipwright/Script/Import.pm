@@ -310,8 +310,9 @@ sub _generate_build {
         push @commands, "clean: make clean";
     }
     else {
+        my ($name) = $source_dir =~ /([-\w.]+)$/;
         print "unknown build system for this dist; you MUST manually edit\n";
-        print "script/${shipwright->name}/build or provide a build.pl file\n";
+        print "scripts/$name/build or provide a build.pl file\n";
         print "or this dist will not be built\n";
         $self->log->warn("I have no idea how to build this distribution");
         # stub build file to provide the user something to go from
