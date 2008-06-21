@@ -35,9 +35,11 @@ sub start_test {
 
     # test create
     my @cmds = (
+
+        # create hello repo
         [ [ 'create', '-r', $repo ], qr/created with success/, "create $repo" ],
 
-        # test non exist cmd
+        # non exist cmd
         [
             [ 'obra', '-r', $repo ],
             undef,
@@ -46,7 +48,7 @@ sub start_test {
             "non exist cmd",
         ],
 
-        # test list
+        # list cmd
         [ [ 'list', '-r', $repo ], '', "list null $repo" ],
         [
             [ 'list', '-r', $repo, '--name', 'foo' ],
@@ -54,7 +56,7 @@ sub start_test {
             "list non exist name $repo"
         ],
 
-        # test import
+        # import cmd
         [
             [ 'import', '-r', $repo ],
             undef,
@@ -91,6 +93,8 @@ sub start_test {
             qr/imported with success/,
             'import tar.gz file',
         ],
+
+        # here we has a dist named Acme-Hello
         [
             [ 'list', '-r', $repo, ],
             qr{Acme-Hello:\s+
@@ -99,7 +103,7 @@ sub start_test {
             'list the repo'
         ],
 
-        # test rename
+        # rename cmd
         [
             [
                 'rename',     '-r',         $repo, '--name',
@@ -108,6 +112,7 @@ sub start_test {
             qr/renamed Acme-Hello to foo with success/
         ],
 
+        # now Acme-Hello is renamed to foo
         [
             [ 'list', '-r', $repo, ],
             qr{foo:\s+
@@ -116,6 +121,7 @@ sub start_test {
             'list the repo'
         ],
 
+        # invalid rename cmds
         [
             [ 'rename', '-r', $repo, '--name', 'foo', '--new-name' ],
             undef, undef, qr/new-name requires an argument/
@@ -154,12 +160,14 @@ sub start_test {
             'rename nonexist dist'
         ],
 
-        # now the dist is renamed to 'foo'
+        # delete cmd
         [
             [ 'delete', '-r', $repo, '--name', 'foo' ],
             qr/deleted foo with success/,
             'deleted foo'
         ],
+
+        # we don't have foo dist any more
         [
             [ 'list', '-r', $repo, '--name', 'foo' ],
             qr/foo doesn't exist/,
