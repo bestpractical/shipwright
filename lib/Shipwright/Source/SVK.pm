@@ -30,7 +30,7 @@ sub run {
     $self->log->info( "prepare to run source: " . $self->source );
     $self->_run;
     my $s;
-    if ( $self->_is_compressed ) {
+    if ( $self->is_compressed ) {
         require Shipwright::Source::Compressed;
         $s = Shipwright::Source::Compressed->new( %$self, _no_update_url => 1 );
     }
@@ -75,12 +75,6 @@ sub _run {
     $self->source(
         File::Spec->catfile( $self->download_directory, $self->name ) );
     Shipwright::Util->run($_) for @cmds;
-}
-
-sub _is_compressed {
-    my $self = shift;
-    return 1 if $self->source =~ m{.*/(.+)\.(tar.(gz|bz2)|tgz)$};
-    return;
 }
 
 1;
