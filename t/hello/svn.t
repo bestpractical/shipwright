@@ -11,7 +11,7 @@ use Test::More tests => 17;
 use Shipwright::Test qw/has_svn create_svn_repo/;
 
 SKIP: {
-    skip "no svn found", 17
+    skip "no svn found", Test::More->builder->expected_tests
       unless has_svn();
 
     my $cwd = getcwd;

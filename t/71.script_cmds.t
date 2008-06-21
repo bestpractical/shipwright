@@ -11,7 +11,7 @@ my $sw = Shipwright::Test->shipwright_bin;
 Shipwright::Test->init;
 
 SKIP: {
-    skip "no svn found", 20
+    skip "no svn found", Test::More->builder->expected_tests / 2
       unless has_svn();
 
     my $repo = 'svn:' . create_svn_repo() . '/hello';
@@ -20,7 +20,7 @@ SKIP: {
 }
 
 SKIP: {
-    skip "no svk and svnadmin found", 20,
+    skip "no svk and svnadmin found", Test::More->builder->expected_tests / 2,
       unless has_svk();
 
     create_svk_repo();
@@ -106,8 +106,7 @@ sub start_test {
         'list the repo',
     );
 
-
-# test rename
+    # test rename
     test_cmd(
         $repo,
         [
@@ -125,7 +124,7 @@ sub start_test {
         'list the repo',
     );
 
-    for ( [ '--name', 'foo', '--new-name' ], [ '--name' ], ) {
+    for ( [ '--name', 'foo', '--new-name' ], ['--name'], ) {
         my $prefix = '';
         $prefix = 'new-' if "@$_" =~ /foo/;
         test_cmd(
@@ -134,12 +133,13 @@ sub start_test {
         );
     }
 
-    for ( [ '--name', 'foo' ], [ ], ) {
+    for ( [ '--name', 'foo' ], [], ) {
         my $prefix = '';
         $prefix = 'new-' if "@$_" =~ /foo/;
         test_cmd(
             $repo, [ $sw, 'rename', '-r', $repo, @$_, ],
-            undef, undef, qr/need ${prefix}name arg/,
+            undef, undef,
+            qr/need ${prefix}name arg/,
             "rename without ${prefix}name arg",
         );
     }
@@ -158,7 +158,7 @@ sub start_test {
     test_cmd(
         $repo,
         [
-            $sw,      'rename',     '-r',         $repo,
+            $sw,      'rename',   '-r',         $repo,
             '--name', 'NonExist', '--new-name', 'foo'
         ],
         undef, undef,
@@ -166,20 +166,18 @@ sub start_test {
         'rename nonexist dist',
     );
 
-# now the dist is renamed to 'foo'
+    # now the dist is renamed to 'foo'
 
     test_cmd(
         $repo,
-        [
-            $sw,      'delete',     '-r',         $repo,
-            '--name', 'foo'
-        ],
+        [ $sw, 'delete', '-r', $repo, '--name', 'foo' ],
         qr/deleted foo with success/,
         'deleted foo',
     );
 
     test_cmd(
-        $repo, [ $sw, 'list', '-r', $repo, '--name', 'foo' ],
+        $repo,
+        [ $sw, 'list', '-r', $repo, '--name', 'foo' ],
         qr/foo doesn't exist/,
         "foo is deleted"
     );
