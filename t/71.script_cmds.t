@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 64;
+use Test::More tests => 78;
 
 use Shipwright;
 use Shipwright::Test;
@@ -16,7 +16,14 @@ SKIP: {
 
     my $repo = 'svn:' . create_svn_repo() . '/hello';
 
-    start_test($repo);
+    my $source = create_svn_repo() . '/foo';    # svn source we'll import
+
+    Shipwright::Util->run(
+        [ 'svn', 'import', '-m', q{''}, 't/dists/version1', $source ] );
+
+    my $update_cmd = [ 'svn', 'import', '-m', q{''}, 't/dists/version2',
+        $source . '/version2' ];
+    start_test( $repo, "svn:$source", $update_cmd );
 }
 
 SKIP: {
@@ -25,19 +32,25 @@ SKIP: {
 
     create_svk_repo();
 
-    my $repo = 'svk://__shipwright/hello';
-    start_test($repo);
+    my $repo   = 'svk://__shipwright/hello';
+    my $source = '//foo';
+    Shipwright::Util->run(
+        [ 'svk', 'import', '-m', q{''}, 't/dists/version1', $source ] );
+
+    start_test( $repo, "svk:$source" );
 
 }
 
 sub start_test {
-    my $repo = shift;
+    my $repo       = shift;
+    my $source     = shift;    # the svn or svk dist soruce
+    my $update_cmd = shift;
 
     # test create
     my @cmds = (
 
         # create hello repo
-        [ [ 'create', ], qr/created with success/, "create $repo" ],
+        [ [ 'create' ], qr/created with success/, "create $repo" ],
 
         # non exist cmd
         [
@@ -170,13 +183,15 @@ sub start_test {
             qr{dir_configure:\s+ 
               version:\s+3\.14\s+
               from:\s+ directory:t/dists/dir_configure}mx,
-            'list dir_configure, --version arg is works too',
+            'list dir_configure, --version arg works too',
         ],
 
         # import dists/tgz_build.tar.gz
         [
-            [ 'import', 'file:t/dists/tgz_build.tar.gz', '--version', 2.72, 
-        '--follow', 0 ],
+            [
+                'import', 'file:t/dists/tgz_build.tar.gz',
+                '--version', 2.72, '--follow', 0
+            ],
             qr/imported with success/,
             'imported tgz_build',
         ],
@@ -233,15 +248,64 @@ qr/set flags with success\s+flags of dir_configure is bar, configure, foo/,
 qr/set mandatary flags with success\s+mandatary flags of man1 is build/,
             'set mandatary flags to man1',
         ],
+        [
+            ['build'],
+            qr/run, run, Build\.PL.*run, run, Makefile\.PL/ms,
+            'Build.PL and Makefile.PL are run',
+        ],
+        [
+            [ 'build', '--flags', 'configure' ],
+            qr/run, run, configure/,
+            'configure is run',
+        ],
+
+        # import an svn or svk dist named foo
+        [
+            [ 'import', $source ],
+            qr/imported with success/,
+            "imported $source",
+        ],
+        [
+            [ 'list', 'foo' ],
+            $update_cmd ? qr/version:\s+1\s+/ : qr/version:\s+49\s+/m,
+            'list foo, version seems ok',
+        ],
+        $update_cmd,    # if the source dist is svk, $update_cmd is undef
+        [
+            [ 'list', 'foo', '--with-latest-version' ],
+            $update_cmd
+            ? qr/latest_version:\s+2\s+/
+            : qr/latest_version:\s+56\s+/,
+            'list foo, latest version seems ok',
+        ],
+
+        # update cmd
+        [ [ 'update', 'foo' ], qr/updated with success/, "updated foo", ],
+        [
+            [ 'list', 'foo' ],
+            $update_cmd
+            ? qr/version:\s+2\s+/
+            : qr/version:\s+56\s+/,
+            'list foo, latest version seems ok',
+        ],
+
     );
 
     for my $item (@cmds) {
-        my $cmd = shift @{ $item->[0] };
-        test_cmd(
-            $repo,
-            [ $sw, $cmd, '-r', $repo, @{ $item->[0] }, ],
-            @$item[ 1 .. $#$item ],
-        );
+        next unless $item; # update_cmd can be undef
+
+        if ( ref $item->[0] eq 'ARRAY' ) {
+            my $cmd = shift @{ $item->[0] };
+            test_cmd(
+                $repo,
+                [ $sw, $cmd, '-r', $repo, @{ $item->[0] }, ],
+                @$item[ 1 .. $#$item ],
+            );
+        }
+        else {
+            # for the update_cmd
+            Shipwright::Util->run( $item, 1 );
+        }
     }
 }
 
