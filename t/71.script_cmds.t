@@ -37,48 +37,47 @@ sub start_test {
     my @cmds = (
 
         # create hello repo
-        [ [ 'create', '-r', $repo ], qr/created with success/, "create $repo" ],
+        [ [ 'create', ], qr/created with success/, "create $repo" ],
 
         # non exist cmd
         [
-            [ 'obra', '-r', $repo ],
-            undef,
-            undef,
+            [ 'obra', ],
+            undef, undef,
             qr/Command not recognized/,
             "non exist cmd",
         ],
 
         # list cmd
-        [ [ 'list', '-r', $repo ], '', "list null $repo" ],
+        [ [ 'list', ], '', "list null $repo" ],
         [
-            [ 'list', '-r', $repo, '--name', 'foo' ],
+            [ 'list', '--name', 'foo' ],
             qr/foo doesn't exist/,
             "list non exist name $repo"
         ],
 
         # import cmd
         [
-            [ 'import', '-r', $repo ],
-            undef,
-            undef,
+            [ 'import', ],
+            undef, undef,
             qr/need source arg/,
             'import without --source ...'
         ],
         [
-            [ 'import', '-r', $repo, '--source' ],
+            [ 'import', '--source' ],
             undef,
             undef,
             qr/source requires an argument/,
             'import with --source but no value'
         ],
         [
-            [ 'import', '-r', $repo, '--source', 'foo' ],
-            undef, undef,
+            [ 'import', '--source', 'foo' ],
+            undef,
+            undef,
             qr/invalid source: foo/,
             'import with invalid source'
         ],
         [
-            [ 'import', '-r', $repo, 'foo' ],
+            [ 'import', 'foo' ],
             undef,
             undef,
             qr/invalid source: foo/,
@@ -86,17 +85,14 @@ sub start_test {
         ],
 
         [
-            [
-                'import', '-r', $repo, 'file:t/hello/Acme-Hello-0.03.tar.gz',
-                '--follow', 0
-            ],
+            [ 'import', 'file:t/hello/Acme-Hello-0.03.tar.gz', '--follow', 0 ],
             qr/imported with success/,
             'import tar.gz file',
         ],
 
         # here we has a dist named Acme-Hello
         [
-            [ 'list', '-r', $repo, ],
+            [ 'list', ],
             qr{Acme-Hello:\s+
         version:\s+0\.03\s+
         from:\s+\Qfile:t/hello/Acme-Hello-0.03.tar.gz\E}mx,
@@ -105,16 +101,13 @@ sub start_test {
 
         # rename cmd
         [
-            [
-                'rename',     '-r',         $repo, '--name',
-                'Acme-Hello', '--new-name', 'foo'
-            ],
+            [ 'rename', '--name', 'Acme-Hello', '--new-name', 'foo' ],
             qr/renamed Acme-Hello to foo with success/
         ],
 
         # now Acme-Hello is renamed to foo
         [
-            [ 'list', '-r', $repo, ],
+            [ 'list', ],
             qr{foo:\s+
         version:\s+0\.03\s+
         from:\s+\Qfile:t/hello/Acme-Hello-0.03.tar.gz\E}mx,
@@ -123,38 +116,31 @@ sub start_test {
 
         # invalid rename cmds
         [
-            [ 'rename', '-r', $repo, '--name', 'foo', '--new-name' ],
+            [ 'rename', '--name', 'foo', '--new-name' ],
             undef, undef, qr/new-name requires an argument/
         ],
+        [ [ 'rename', '--name' ], undef, undef, qr/name requires an argument/ ],
         [
-            [ 'rename', '-r', $repo, '--name' ],
-            undef, undef, qr/name requires an argument/
-        ],
-        [
-            [ 'rename', '-r', $repo, ],
-            undef,
-            undef,
+            [ 'rename', ],
+            undef, undef,
             qr/need name arg/,
             "rename without name arg"
         ],
         [
-            [ 'rename', '-r', $repo, '--name', 'foo' ],
-            undef, undef,
+            [ 'rename', '--name', 'foo' ],
+            undef,
+            undef,
             qr/need new-name arg/,
             "rename without new-name arg"
         ],
         [
-            [
-                'rename', '-r', $repo, '--name', 'Acme-Hello', '--new-name', '@'
-            ],
+            [ 'rename', '--name', 'Acme-Hello', '--new-name', '@' ],
             undef, undef,
             qr/invalid new-name: @/,
             'rename with invalid new-name'
         ],
         [
-            [
-                'rename', '-r', $repo, '--name', 'NonExist', '--new-name', 'foo'
-            ],
+            [ 'rename', '--name', 'NonExist', '--new-name', 'foo' ],
             undef, undef,
             qr/no such dist: NonExist/,
             'rename nonexist dist'
@@ -162,21 +148,27 @@ sub start_test {
 
         # delete cmd
         [
-            [ 'delete', '-r', $repo, '--name', 'foo' ],
+            [ 'delete', '--name', 'foo' ],
             qr/deleted foo with success/,
             'deleted foo'
         ],
 
         # we don't have foo dist any more
         [
-            [ 'list', '-r', $repo, '--name', 'foo' ],
-            qr/foo doesn't exist/,
-            "foo is deleted"
+            [ 'list', '--name', 'foo' ], qr/foo doesn't exist/, "foo is deleted"
         ],
     );
 
     for my $item (@cmds) {
-        test_cmd( $repo, [ $sw, @{ $item->[0] } ], @$item[ 1 .. $#$item ] );
+        my $cmd = shift @{$item->[0]};
+        test_cmd(
+            $repo,
+            [
+                $sw, $cmd, '-r', $repo,
+                @{ $item->[0] },
+            ],
+            @$item[ 1 .. $#$item ],
+        );
     }
 }
 
