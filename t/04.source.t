@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 12;
+use Test::More tests => 20;
 use Shipwright::Test;
 use Shipwright::Source;
 
@@ -22,6 +22,7 @@ my %source = (
 
 for ( keys %source ) {
     my $source = Shipwright::Source->new( source => $_ );
+    isa_ok( $source, 'Shipwright::Source::Base', $_ );
     isa_ok( $source, 'Shipwright::Source::' . $source{$_}, $_ );
 }
 
