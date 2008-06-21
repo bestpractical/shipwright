@@ -34,152 +34,141 @@ sub start_test {
     my $repo = shift;
 
     # test create
-    test_cmd(
-        $repo,
-        [ $sw, 'create', '-r', $repo ],
-        qr/created with success/,
-        "create $repo"
-    );
+    my @cmds = (
+        [ [ 'create', '-r', $repo ], qr/created with success/, "create $repo" ],
 
-    # test non exist cmd
-    test_cmd(
-        $repo, [ $sw, 'obra', '-r', $repo ],
-        undef, undef,
-        qr/Command not recognized/,
-        "non exist cmd",
-    );
-
-    # test list
-    test_cmd( $repo, [ $sw, 'list', '-r', $repo ], '', "list null $repo" );
-    test_cmd(
-        $repo,
-        [ $sw, 'list', '-r', $repo, '--name', 'foo' ],
-        qr/foo doesn't exist/,
-        "list non exist name $repo"
-    );
-
-    # test import
-    test_cmd(
-        $repo, [ $sw, 'import', '-r', $repo ],
-        undef, undef,
-        qr/need source arg/,
-        'import without --source ...'
-    );
-
-    test_cmd(
-        $repo, [ $sw, 'import', '-r', $repo, '--source' ],
-        undef, undef,
-        qr/source requires an argument/,
-        'import with --source but no value'
-    );
-
-    test_cmd(
-        $repo, [ $sw, 'import', '-r', $repo, '--source', 'foo' ],
-        undef, undef,
-        qr/invalid source: foo/,
-        'import with invalid source'
-    );
-
-    test_cmd(
-        $repo, [ $sw, 'import', '-r', $repo, 'foo' ],
-        undef, undef,
-        qr/invalid source: foo/,
-        'import with invalid source'
-    );
-
-    test_cmd(
-        $repo,
+        # test non exist cmd
         [
-            $sw, 'import', '-r', $repo, 'file:t/hello/Acme-Hello-0.03.tar.gz',
-            '--follow', 0
+            [ 'obra', '-r', $repo ],
+            undef,
+            undef,
+            qr/Command not recognized/,
+            "non exist cmd",
         ],
-        qr/imported with success/,
-        'import tar.gz file',
-    );
 
-    test_cmd(
-        $repo,
-        [ $sw, 'list', '-r', $repo, ],
-        qr{Acme-Hello:\s+
-        version:\s+0\.03\s+
-        from:\s+\Qfile:t/hello/Acme-Hello-0.03.tar.gz\E}mx,
-        'list the repo',
-    );
-
-    # test rename
-    test_cmd(
-        $repo,
+        # test list
+        [ [ 'list', '-r', $repo ], '', "list null $repo" ],
         [
-            $sw,      'rename',     '-r',         $repo,
-            '--name', 'Acme-Hello', '--new-name', 'foo'
+            [ 'list', '-r', $repo, '--name', 'foo' ],
+            qr/foo doesn't exist/,
+            "list non exist name $repo"
         ],
-        qr/renamed Acme-Hello to foo with success/,
-    );
-    test_cmd(
-        $repo,
-        [ $sw, 'list', '-r', $repo, ],
-        qr{foo:\s+
-        version:\s+0\.03\s+
-        from:\s+\Qfile:t/hello/Acme-Hello-0.03.tar.gz\E}mx,
-        'list the repo',
-    );
 
-    for ( [ '--name', 'foo', '--new-name' ], ['--name'], ) {
-        my $prefix = '';
-        $prefix = 'new-' if "@$_" =~ /foo/;
-        test_cmd(
-            $repo, [ $sw, 'rename', '-r', $repo, @$_, ],
-            undef, undef, qr/${prefix}name requires an argument/,
-        );
-    }
-
-    for ( [ '--name', 'foo' ], [], ) {
-        my $prefix = '';
-        $prefix = 'new-' if "@$_" =~ /foo/;
-        test_cmd(
-            $repo, [ $sw, 'rename', '-r', $repo, @$_, ],
+        # test import
+        [
+            [ 'import', '-r', $repo ],
+            undef,
+            undef,
+            qr/need source arg/,
+            'import without --source ...'
+        ],
+        [
+            [ 'import', '-r', $repo, '--source' ],
+            undef,
+            undef,
+            qr/source requires an argument/,
+            'import with --source but no value'
+        ],
+        [
+            [ 'import', '-r', $repo, '--source', 'foo' ],
             undef, undef,
-            qr/need ${prefix}name arg/,
-            "rename without ${prefix}name arg",
-        );
+            qr/invalid source: foo/,
+            'import with invalid source'
+        ],
+        [
+            [ 'import', '-r', $repo, 'foo' ],
+            undef,
+            undef,
+            qr/invalid source: foo/,
+            'import with invalid source'
+        ],
+
+        [
+            [
+                'import', '-r', $repo, 'file:t/hello/Acme-Hello-0.03.tar.gz',
+                '--follow', 0
+            ],
+            qr/imported with success/,
+            'import tar.gz file',
+        ],
+        [
+            [ 'list', '-r', $repo, ],
+            qr{Acme-Hello:\s+
+        version:\s+0\.03\s+
+        from:\s+\Qfile:t/hello/Acme-Hello-0.03.tar.gz\E}mx,
+            'list the repo'
+        ],
+
+        # test rename
+        [
+            [
+                'rename',     '-r',         $repo, '--name',
+                'Acme-Hello', '--new-name', 'foo'
+            ],
+            qr/renamed Acme-Hello to foo with success/
+        ],
+
+        [
+            [ 'list', '-r', $repo, ],
+            qr{foo:\s+
+        version:\s+0\.03\s+
+        from:\s+\Qfile:t/hello/Acme-Hello-0.03.tar.gz\E}mx,
+            'list the repo'
+        ],
+
+        [
+            [ 'rename', '-r', $repo, '--name', 'foo', '--new-name' ],
+            undef, undef, qr/new-name requires an argument/
+        ],
+        [
+            [ 'rename', '-r', $repo, '--name' ],
+            undef, undef, qr/name requires an argument/
+        ],
+        [
+            [ 'rename', '-r', $repo, ],
+            undef,
+            undef,
+            qr/need name arg/,
+            "rename without name arg"
+        ],
+        [
+            [ 'rename', '-r', $repo, '--name', 'foo' ],
+            undef, undef,
+            qr/need new-name arg/,
+            "rename without new-name arg"
+        ],
+        [
+            [
+                'rename', '-r', $repo, '--name', 'Acme-Hello', '--new-name', '@'
+            ],
+            undef, undef,
+            qr/invalid new-name: @/,
+            'rename with invalid new-name'
+        ],
+        [
+            [
+                'rename', '-r', $repo, '--name', 'NonExist', '--new-name', 'foo'
+            ],
+            undef, undef,
+            qr/no such dist: NonExist/,
+            'rename nonexist dist'
+        ],
+
+        # now the dist is renamed to 'foo'
+        [
+            [ 'delete', '-r', $repo, '--name', 'foo' ],
+            qr/deleted foo with success/,
+            'deleted foo'
+        ],
+        [
+            [ 'list', '-r', $repo, '--name', 'foo' ],
+            qr/foo doesn't exist/,
+            "foo is deleted"
+        ],
+    );
+
+    for my $item (@cmds) {
+        test_cmd( $repo, [ $sw, @{ $item->[0] } ], @$item[ 1 .. $#$item ] );
     }
-
-    test_cmd(
-        $repo,
-        [
-            $sw,      'rename',     '-r',         $repo,
-            '--name', 'Acme-Hello', '--new-name', '@'
-        ],
-        undef, undef,
-        qr/invalid new-name: @/,
-        'rename with invalid new-name',
-    );
-
-    test_cmd(
-        $repo,
-        [
-            $sw,      'rename',   '-r',         $repo,
-            '--name', 'NonExist', '--new-name', 'foo'
-        ],
-        undef, undef,
-        qr/no such dist: NonExist/,
-        'rename nonexist dist',
-    );
-
-    # now the dist is renamed to 'foo'
-
-    test_cmd(
-        $repo,
-        [ $sw, 'delete', '-r', $repo, '--name', 'foo' ],
-        qr/deleted foo with success/,
-        'deleted foo',
-    );
-
-    test_cmd(
-        $repo,
-        [ $sw, 'list', '-r', $repo, '--name', 'foo' ],
-        qr/foo doesn't exist/,
-        "foo is deleted"
-    );
 }
 
