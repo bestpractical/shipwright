@@ -89,14 +89,12 @@ sub _cmd {
         }
     }
     else {
-        push @cmds,
-          [
-            'mv',
-            File::Spec->catfile( $self->directory, $self->path ),
-            File::Spec->catfile(
-                $self->directory, $self->just_name( $self->path )
-            )
-          ];
+        my $from = File::Spec->catfile( $self->directory, $self->path );
+        my $to =
+          File::Spec->catfile( $self->directory,
+            $self->just_name( $self->path ) );
+        push @cmds, [ 'mv', $from, $to ]
+          unless $from eq $to;
     }
 
     return @cmds;
