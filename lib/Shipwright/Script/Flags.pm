@@ -81,7 +81,7 @@ sub run {
         my %seen;    # lookup table
         @seen{ @{ $self->delete } } = ();
 
-        $list = [ grep { exists $seen{$_} } @{ $flags->{$name} || [] } ];
+        $list = [ grep { !exists $seen{$_} } @{ $flags->{$name} || [] } ];
 
     }
     elsif ( defined $self->set ) {
