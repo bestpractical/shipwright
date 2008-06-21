@@ -48,10 +48,20 @@ sub run {
     unless ( defined $self->add || defined $self->delete || defined $self->set )
     {
         if ( $self->mandatary ) {
-            print join( ', ', @{ $flags->{__mandatary}{$name} || [] } ), "\n";
+            if ( $flags->{__mandatary}{$name} ) {
+                print join( ', ', @{ $flags->{__mandatary}{$name} } ), "\n";
+            }
+            else {
+                print "$name is not a valid mandatary name\n";
+            }
         }
         else {
-            print join( ', ', @{ $flags->{$name} || [] } ), "\n";
+            if ( $flags->{$name} ) {
+                print join( ', ', @{ $flags->{$name} } ), "\n";
+            }
+            else {
+                print "$name is not set flags\n";
+            }
         }
         return;
     }
@@ -89,11 +99,11 @@ sub run {
 
     if ( $self->mandatary ) {
         print "set mandatary flags with success, current flags for $name is "
-          . join( ',', @{ $flags->{__mandatary}{$name} } ) . "\n";
+          . join( ', ', @{ $flags->{__mandatary}{$name} } ) . "\n";
     }
     else {
         print "set flags with success, current flags for $name is "
-          . join( ',', @{ $flags->{$name} } ) . "\n";
+          . join( ', ', @{ $flags->{$name} } ) . "\n";
     }
 }
 
