@@ -47,22 +47,8 @@ sub run {
 
     unless ( defined $self->add || defined $self->delete || defined $self->set )
     {
-        if ( $self->mandatary ) {
-            if ( $flags->{__mandatary}{$name} ) {
-                print join( ', ', @{ $flags->{__mandatary}{$name} } ), "\n";
-            }
-            else {
-                print "$name is not a valid mandatary name\n";
-            }
-        }
-        else {
-            if ( $flags->{$name} ) {
-                print join( ', ', @{ $flags->{$name} } ), "\n";
-            }
-            else {
-                print "$name is not set flags\n";
-            }
-        }
+        # show without change
+        $self->_show_flags( $flags );
         return;
     }
 
@@ -96,15 +82,40 @@ sub run {
     }
 
     $shipwright->backend->flags($flags);
+    $self->_show_flags( $flags );
+}
+
+
+sub _show_flags {
+    my $self = shift;
+    my $flags = shift;
+    my $name = $self->name;
+
+    my $changed;
+    $changed = 1 if $self->add || $self->delete || $self->set;
 
     if ( $self->mandatary ) {
-        print "set mandatary flags with success, current flags for $name is "
-          . join( ', ', @{ $flags->{__mandatary}{$name} } ) . "\n";
+        print "set mandatary flags with success\n" if $changed;
+        print "mandatary flags of $name is ";
+        if ( @{$flags->{__mandatary}{$name} || [] } ) {
+            print join( ', ', @{ $flags->{__mandatary}{$name} } ) . "\n";
+        }
+        else {
+            print "*nothing*\n";
+        }
     }
     else {
-        print "set flags with success, current flags for $name is "
-          . join( ', ', @{ $flags->{$name} } ) . "\n";
+        print "set flags with success\n" if $changed;
+        print "flags of $name is ";
+        if ( @{$flags->{$name} || [] } ) {
+            print join( ', ', @{ $flags->{$name} } ) . "\n";
+        }
+        else {
+            print "*nothing*\n";
+        }
     }
+
+
 }
 
 1;
