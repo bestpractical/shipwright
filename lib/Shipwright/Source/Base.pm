@@ -382,7 +382,7 @@ return true if the source is compressed file, i.e. tar.gz(tgz) and tar.bz2
 
 =cut
 
-sub _is_compressed {
+sub is_compressed {
     my $self = shift;
     return 1 if $self->source =~ m{.*/.+\.(tar.(gz|bz2)|tgz)$};
     return;
