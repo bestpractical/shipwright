@@ -410,16 +410,26 @@ Shipwright::Script::Import - import a source and its dependencies
                                   characters, . and -)
  --build-script FILENAME        : specify the build script
  --require-yml FILENAME         : specify the require.yml
- --follow                       : follow the dependent chain or not
+ --follow                       : follow the dependency chain or not
  --extra-test FILENAME          : specify the extra test source
                                   (for --only-test when building)
  --test-script FILENAME         : specify the test script (for --only-test when
-                                  build)
+                                  building)
  --min-perl-version             : minimal perl version (default is the same as
                                   the one which runs this command)
  --overwrite                    : import dependency dists anyway even if they
                                   are already in the repository
  --version                      : specify the source's version
+
+=head1 DESCRIPTION
+
+The import command imports a new dist into a shipwright repository from any of
+a number of supported source types (enumerated below). If a dist of the name
+specified by C<--name> already exists in the repository, the old files for that
+dist in F<dists/> and F<scripts/> are deleted and new ones added. This is the
+recommended method for updating non-svn, svk, or CPAN dists to new versions
+(see L<Shipwright::Update for more information on the C<update> command, which
+is used for updating svn, svk, and CPAN dists).
 
 =head1 SUPPORTED SOURCE TYPES
 

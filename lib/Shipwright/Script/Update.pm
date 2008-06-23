@@ -183,7 +183,7 @@ Shipwright::Script::Update - Update dist(s) and scripts
 =head1 DESCRIPTION
 
 The update command updates one or multiple svk, svn, or CPAN dists in a
-shipwright repository to the latest version. Only the source in F<dists/>
+Shipwright repository to the latest version. Only the source in F<dists/>
 will be updated. To update other types of sources, you must re-import the new
 version, using the same name in order to overwrite. The C<import> command will
 also re-generate files in F<scripts/> (see L<Shipwright::Import> for more
