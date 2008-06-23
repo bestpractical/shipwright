@@ -180,3 +180,19 @@ Shipwright::Script::Update - Update dist(s) and scripts
  --builder                    : update bin/shipwright-builder
  --utility                    : update bin/shipwright-utility
 
+=head1 DESCRIPTION
+
+The update command updates one or multiple svk, svn, or CPAN dists in a
+shipwright repository to the latest version. Only the source in F<dists/>
+will be updated. To update other types of sources, you must re-import the new
+version, using the same name in order to overwrite. The C<import> command will
+also re-generate files in F<scripts/> (see L<Shipwright::Import> for more
+information).
+
+The update command can also be used to update a repository's builder or utility
+script to the version shipped with the Shipwright dist on your system, by
+specifying the C<--builder> or C<--utility> options.
+
+=head1 ALIASES
+
+up
