@@ -276,17 +276,7 @@ sub _generate_build {
     chdir $source_dir;
 
     my @commands;
-    if ( -f 'configure' ) {
-        print
-          "detected autoconf build system; generating appropriate build script\n";
-        @commands = (
-            'configure: ./configure --prefix=%%INSTALL_BASE%%',
-            'make: make',
-            'install: make install',
-            'clean: make clean'
-        );
-    }
-    elsif ( -f 'Build.PL' ) {
+    if ( -f 'Build.PL' ) {
         print
 "detected Module::Build build system; generating appropriate build script\n";
         push @commands,
@@ -308,6 +298,16 @@ sub _generate_build {
         push @commands, 'test: make test';
         push @commands, "install: make install";
         push @commands, "clean: make clean";
+    }
+    elsif ( -f 'configure' ) {
+        print
+          "detected autoconf build system; generating appropriate build script\n";
+        @commands = (
+            'configure: ./configure --prefix=%%INSTALL_BASE%%',
+            'make: make',
+            'install: make install',
+            'clean: make clean'
+        );
     }
     else {
         my ($name) = $source_dir =~ /([-\w.]+)$/;
