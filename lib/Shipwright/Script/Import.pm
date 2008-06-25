@@ -428,7 +428,7 @@ a number of supported source types (enumerated below). If a dist of the name
 specified by C<--name> already exists in the repository, the old files for that
 dist in F<dists/> and F<scripts/> are deleted and new ones added. This is the
 recommended method for updating non-svn, svk, or CPAN dists to new versions
-(see L<Shipwright::Update for more information on the C<update> command, which
+(see L<Shipwright::Update> for more information on the C<update> command, which
 is used for updating svn, svk, and CPAN dists).
 
 =head1 SUPPORTED SOURCE TYPES
