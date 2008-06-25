@@ -312,8 +312,8 @@ sub _generate_build {
     else {
         my ($name) = $source_dir =~ /([-\w.]+)$/;
         print "unknown build system for this dist; you MUST manually edit\n";
-        print "scripts/$name/build or provide a build.pl file\n";
-        print "or this dist will not be built\n";
+        print "scripts/$name/build or provide a build.pl file or this dist\n";
+        print "will not be built!\n";
         $self->log->warn("I have no idea how to build this distribution");
         # stub build file to provide the user something to go from
         push @commands,
