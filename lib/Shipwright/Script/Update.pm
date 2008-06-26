@@ -6,7 +6,7 @@ use Carp;
 
 use base qw/App::CLI::Command Class::Accessor::Fast Shipwright::Script/;
 __PACKAGE__->mk_accessors(
-    qw/repository log_level name all follow log_file builder utility/);
+    qw/repository log_level name all follow log_file builder utility version/);
 
 use Shipwright;
 use File::Spec;
@@ -28,6 +28,7 @@ sub options {
         'follow'         => 'follow',
         'builder'        => 'builder',
         'utility'        => 'utility',
+        'version=s'        => 'version',
     );
 }
 
@@ -37,9 +38,7 @@ sub run {
     my $self = shift;
     my $name = shift;
 
-    $shipwright = Shipwright->new(
-        repository => $self->repository,
-    );
+    $shipwright = Shipwright->new( repository => $self->repository, );
 
     if ( $self->builder ) {
         $shipwright->backend->update(
@@ -93,9 +92,8 @@ sub run {
                 $find_deps->( $self->name );
                 @dists = keys %checked;
             }
-            for ( @dists, $self->name ) {
-                $self->_update($_);
-            }
+            $self->_update($_) for @dists;
+            $self->_update( $self->name, $self->version );
         }
     }
 
@@ -103,15 +101,16 @@ sub run {
 }
 
 sub _update {
-    my $self = shift;
-    my $name = shift;
-
+    my $self    = shift;
+    my $name    = shift;
+    my $version = shift;
     if ( $source->{$name} ) {
         $shipwright->source(
             Shipwright::Source->new(
                 name   => $name,
                 source => $source->{$name},
                 follow => 0,
+                version => $version,
             )
         );
     }
@@ -135,13 +134,14 @@ sub _update {
             Shipwright::Source->new(
                 source => "cpan:$s",
                 follow => 0,
+                version => $version,
             )
         );
     }
 
     $shipwright->source->run;
 
-    my $version =
+    $version =
       Shipwright::Util::LoadFile( $shipwright->source->version_path );
 
     $shipwright->backend->import(
@@ -174,7 +174,8 @@ Shipwright::Script::Update - Update dist(s) and scripts
  -l [--log-level] LOGLEVEL    : specify the log level
                                 (info, debug, warn, error, or fatal)
  --log-file FILENAME          : specify the log file
- --name NAME                  : specify the name of the project
+ --name NAME                  : specify the dist name to be updated
+ --version                    : specify the version of the dist
  --all                        : update all dists
  --follow                     : update one dist with all its dependencies
  --builder                    : update bin/shipwright-builder
