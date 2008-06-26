@@ -21,7 +21,7 @@ sub run {
     my $self = shift;
     my $name = shift;
 
-    die "need name arg" unless $name();
+    die "need name arg" unless $name;
 
     my $shipwright = Shipwright->new( repository => $self->repository, );
 
