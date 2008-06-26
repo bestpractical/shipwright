@@ -6,7 +6,7 @@ use Carp;
 
 use base qw/App::CLI::Command Class::Accessor::Fast Shipwright::Script/;
 __PACKAGE__->mk_accessors(
-    qw/repository log_level comment source follow build_script require_yml
+    qw/repository log_level comment source no_follow build_script require_yml
       name test_script extra_tests overwrite min_perl_version skip log_file
       version/
 );
@@ -30,7 +30,7 @@ sub options {
         'm|comment=s'      => 'comment',
         's|source=s'       => 'source',
         'name=s'           => 'name',
-        'follow=s'         => 'follow',
+        'no-follow'        => 'no_follow',
         'build-script=s'   => 'build_script',
         'require-yml=s'    => 'require_yml',
         'test-script=s'    => 'test_script',
@@ -69,7 +69,6 @@ sub run {
 
     }
 
-    $self->follow(1) unless defined $self->follow;
     $self->skip( { map { $_ => 1 } split /\s*,\s*/, $self->skip || '' } );
 
     die "need source arg" unless $self->source();
@@ -92,7 +91,7 @@ sub run {
         log_file         => $self->log_file,
         source           => $self->source,
         name             => $self->name,
-        follow           => $self->follow,
+        follow           => !$self->no_follow,
         min_perl_version => $self->min_perl_version,
         skip             => $self->skip,
         version          => $self->version,
@@ -137,7 +136,7 @@ sub run {
             $self->_generate_build( $self->source, $script_dir, $shipwright );
         }
 
-        if ( $self->follow ) {
+        unless ( $self->no_follow ) {
             $self->_import_req( $self->source, $shipwright );
 
             move(
@@ -410,7 +409,7 @@ Shipwright::Script::Import - import a source and its dependencies
                                   characters, . and -)
  --build-script FILENAME        : specify the build script
  --require-yml FILENAME         : specify the require.yml
- --follow                       : follow the dependency chain or not
+ --no-follow                    : don't follow the dependency chain
  --extra-test FILENAME          : specify the extra test source
                                   (for --only-test when building)
  --test-script FILENAME         : specify the test script (for --only-test when
