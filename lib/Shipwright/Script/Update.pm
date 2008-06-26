@@ -47,7 +47,7 @@ sub run {
     }
     else {
 
-        die 'need name arg' unless $name || $self->all;
+        die "need name arg\n" unless $name || $self->all;
 
         $map    = $shipwright->backend->map    || {};
         $source = $shipwright->backend->source || {};
@@ -115,7 +115,7 @@ sub _update {
             $name = $map->{$name};
         }
         else {
-            die 'invalid name ' . $name;
+            die 'invalid name ' . $name . "\n";
         }
 
         $shipwright->source(

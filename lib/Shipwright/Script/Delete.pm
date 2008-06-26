@@ -14,7 +14,7 @@ sub run {
     my $self = shift;
     my $name = shift;
 
-    die "need name arg" unless $name;
+    die "need name arg\n" unless $name;
 
     my $shipwright = Shipwright->new( repository => $self->repository, );
 
@@ -28,7 +28,7 @@ sub run {
 
     my $order = $shipwright->backend->order;
 
-    die "no such dist: $name" unless grep { $_ eq $name } @$order;
+    die "no such dist: $name\n" unless grep { $_ eq $name } @$order;
 
     $shipwright->backend->delete( path => "dists/$name" );
     $shipwright->backend->delete( path => "scripts/$name" );
