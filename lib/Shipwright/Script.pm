@@ -11,6 +11,18 @@ sub alias {
     return ( ls => 'list', 'del' => 'delete', up => 'update' );
 }
 
+=head2 global_options
+
+=cut
+
+sub global_options {
+    (
+        'r|repository=s' => 'repository',
+        'l|log-level=s'  => 'log_level',
+        'log-file=s'     => 'log_file',
+    );
+}
+
 =head2 prepare
 =cut
 
@@ -22,64 +34,29 @@ sub prepare {
         $ARGV[0] = 'help';
     }
 
-    # all the cmds need --repository arg
-    if ( $ARGV[0] ne 'help' ) {
+    my $action = $ARGV[0];
 
-        # test some options in advance, so we can exit asap.
-        my %args;
+    my $cmd = $self->SUPER::prepare(@_);
 
-        for ( my $i = 1 ; $i <= $#ARGV ; $i++ ) {
-            if ( $ARGV[$i] eq '-r' || $ARGV[$i] eq '--repository' ) {
-                if ( $i == $#ARGV || $ARGV[ $i + 1 ] =~ /^-/ ) {
-                    die 'option repository requires an argument';
-                }
-                else {
-                    $args{repository} = $ARGV[ $i + 1 ];
-                }
-                $i++;    # skip the argument
-            }
-            elsif ( $ARGV[$i] eq '-l' || $ARGV[$i] eq '--log-level' ) {
-                if ( $i == $#ARGV || $ARGV[ $i + 1 ] =~ /^-/ ) {
-                    die 'option log-level requires an argument';
-                }
-                else {
-                    $args{log_level} = $ARGV[ $i + 1 ];
-                }
-                $i++;    # skip the argument
-            }
-            elsif ( $ARGV[$i] eq '--log-file' ) {
-                if ( $i == $#ARGV || $ARGV[ $i + 1 ] =~ /^-/ ) {
-                    die 'option log-file requires an argument';
-                }
-                else {
-                    $args{log_file} = $ARGV[ $i + 1 ];
-                }
-                $i++;    # skip the argument
-            }
-
-        }
-
-        if ( $args{repository} ) {
-
+    unless ( ref $cmd eq 'Shipwright::Script::Help' ) {
+        if ( $cmd->repository ) {
             my $backend =
-              Shipwright::Backend->new( repository => $args{repository} );
+              Shipwright::Backend->new( repository => $cmd->repository );
 
             # this $shipwright object will do nothing, except for init logging
             my $shipwright = Shipwright->new(
-                repository => $args{repository},
-                log_level  => $args{log_level},
-                log_file   => $args{log_file},
+                repository => $cmd->repository,
+                log_level  => $cmd->log_level,
+                log_file   => $cmd->log_file,
             );
-
-            die "invalid repository: $args{repository}"
-              unless $backend->check_repository( action => $ARGV[0] );
+            die 'invalid repository: ' . $cmd->repository
+              unless $backend->check_repository( action => $action );
         }
         else {
-            @ARGV = ( 'help', $ARGV[0] );
+            die "we need repository arg\n";
         }
     }
-
-    return $self->SUPER::prepare(@_);
+    return $cmd;
 }
 
 =head2 log
