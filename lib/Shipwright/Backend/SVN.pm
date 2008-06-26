@@ -8,6 +8,7 @@ use Shipwright::Util;
 use File::Temp qw/tempdir/;
 use File::Copy qw/copy/;
 use File::Copy::Recursive qw/dircopy/;
+use List::MoreUtils qw/uniq/;
 
 our %REQUIRE_OPTIONS = ( import => [qw/source/], );
 
@@ -326,6 +327,8 @@ sub _fill_deps {
     my $require = $args{require};
     my $name    = $args{name};
 
+    return if $require->{$name};
+
     my ($string) = Shipwright::Util->run(
         [ 'svn', 'cat', $self->repository . "/scripts/$_/require.yml" ], 1 );
 
@@ -336,6 +339,7 @@ sub _fill_deps {
             push @{ $require->{$name} }, keys %{ $req->{$_} }
               if $args{"keep_$_"};
         }
+        @{ $require->{$name} } = uniq @{$require->{$name}};
     }
     else {
 
@@ -345,7 +349,7 @@ sub _fill_deps {
 
     for my $dep ( @{ $require->{$name} } ) {
         next if $require->{$dep};
-        $self->_fill_deps( %args, name => $dep );
+        $self->_fill_deps( %args, name => $dep, require => $require );
     }
 }
 
