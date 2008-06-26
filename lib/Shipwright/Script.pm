@@ -55,7 +55,7 @@ sub prepare {
               unless $backend->check_repository( action => $action );
         }
         else {
-            die "we need repository arg\n";
+            die "need repository arg\n";
         }
     }
     return $cmd;
