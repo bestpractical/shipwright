@@ -48,6 +48,7 @@ sub run {
             ),
             for_dists => [ split /,\s*/, $self->for_dists || '' ],
         );
+        print "updated order with success\n";
     }
 }
 
