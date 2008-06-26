@@ -6,7 +6,7 @@ use Carp;
 
 use base qw/App::CLI::Command Class::Accessor::Fast Shipwright::Script/;
 __PACKAGE__->mk_accessors(
-    qw/repository log_level install_base build_base skip skip_test only_test
+    qw/build_base skip skip_test only_test
       force log_file flags name perl only with/
 );
 

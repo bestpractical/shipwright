@@ -6,7 +6,7 @@ use Carp;
 
 use base qw/App::CLI::Command Class::Accessor::Fast Shipwright::Script/;
 __PACKAGE__->mk_accessors(
-    qw/repository log_level name all follow log_file builder utility version/);
+    qw/name all follow builder utility version/);
 
 use Shipwright;
 use File::Spec;

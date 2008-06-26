@@ -6,9 +6,8 @@ use Carp;
 
 use base qw/App::CLI::Command Class::Accessor::Fast Shipwright::Script/;
 __PACKAGE__->mk_accessors(
-    qw/repository log_level comment source no_follow build_script require_yml
-      name test_script extra_tests overwrite min_perl_version skip log_file
-      version/
+    qw/comment source no_follow build_script require_yml
+      name test_script extra_tests overwrite min_perl_version skip version/
 );
 
 use Shipwright;

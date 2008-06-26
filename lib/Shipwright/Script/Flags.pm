@@ -6,7 +6,7 @@ use Carp;
 
 use base qw/App::CLI::Command Class::Accessor::Fast Shipwright::Script/;
 __PACKAGE__->mk_accessors(
-    qw/repository log_level log_file name add delete set mandatary/);
+    qw/name add delete set mandatary/);
 
 use Shipwright;
 use List::MoreUtils qw/uniq/;

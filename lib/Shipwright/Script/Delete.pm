@@ -5,7 +5,7 @@ use warnings;
 use Carp;
 
 use base qw/App::CLI::Command Class::Accessor::Fast Shipwright::Script/;
-__PACKAGE__->mk_accessors(qw/repository log_level log_file name/);
+__PACKAGE__->mk_accessors(qw/name/);
 
 use Shipwright;
 use File::Spec;

@@ -6,8 +6,8 @@ use Carp;
 
 use base qw/App::CLI::Command Class::Accessor::Fast Shipwright::Script/;
 __PACKAGE__->mk_accessors(
-    qw/repository log_level update_order keep_recommends
-      keep_build_requires keep_requires for_dists log_file/
+    qw/update_order keep_recommends
+      keep_build_requires keep_requires for_dists/
 );
 
 use Shipwright;

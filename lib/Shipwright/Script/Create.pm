@@ -4,8 +4,7 @@ use strict;
 use warnings;
 use Carp;
 
-use base qw/App::CLI::Command Class::Accessor::Fast Shipwright::Script/;
-__PACKAGE__->mk_accessors(qw/repository log_level log_file/);
+use base qw/App::CLI::Command Shipwright::Script/;
 
 use Shipwright;
 use File::Spec;
