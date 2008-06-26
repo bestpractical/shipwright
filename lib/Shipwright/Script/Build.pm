@@ -15,9 +15,6 @@ use Cwd 'abs_path';
 
 sub options {
     (
-        'r|repository=s' => 'repository',
-        'l|log-level=s'  => 'log_level',
-        'log-file=s'     => 'log_file',
         'install-base=s' => 'install_base',
         'build-base=s'   => 'build_base',
         'name=s'         => 'name',

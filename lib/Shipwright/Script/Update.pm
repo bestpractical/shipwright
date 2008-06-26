@@ -20,15 +20,12 @@ Hash::Merge::set_behavior('RIGHT_PRECEDENT');
 
 sub options {
     (
-        'r|repository=s' => 'repository',
-        'l|log-level=s'  => 'log_level',
-        'log-file=s'     => 'log_file',
-        'name=s'         => 'name',
-        'a|all'          => 'all',
-        'follow'         => 'follow',
-        'builder'        => 'builder',
-        'utility'        => 'utility',
-        'version=s'        => 'version',
+        'name=s'    => 'name',
+        'a|all'     => 'all',
+        'follow'    => 'follow',
+        'builder'   => 'builder',
+        'utility'   => 'utility',
+        'version=s' => 'version',
     );
 }
 
@@ -107,9 +104,9 @@ sub _update {
     if ( $source->{$name} ) {
         $shipwright->source(
             Shipwright::Source->new(
-                name   => $name,
-                source => $source->{$name},
-                follow => 0,
+                name    => $name,
+                source  => $source->{$name},
+                follow  => 0,
                 version => $version,
             )
         );
@@ -132,8 +129,8 @@ sub _update {
 
         $shipwright->source(
             Shipwright::Source->new(
-                source => "cpan:$s",
-                follow => 0,
+                source  => "cpan:$s",
+                follow  => 0,
                 version => $version,
             )
         );
@@ -141,8 +138,7 @@ sub _update {
 
     $shipwright->source->run;
 
-    $version =
-      Shipwright::Util::LoadFile( $shipwright->source->version_path );
+    $version = Shipwright::Util::LoadFile( $shipwright->source->version_path );
 
     $shipwright->backend->import(
         source  => File::Spec->catfile( $shipwright->source->directory, $name ),

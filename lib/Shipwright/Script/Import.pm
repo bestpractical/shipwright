@@ -24,9 +24,6 @@ Hash::Merge::set_behavior('RIGHT_PRECEDENT');
 
 sub options {
     (
-        'r|repository=s'   => 'repository',
-        'l|log-level=s'    => 'log_level',
-        'log-file=s'       => 'log_file',
         'm|comment=s'      => 'comment',
         's|source=s'       => 'source',
         'name=s'           => 'name',

@@ -13,9 +13,6 @@ use List::MoreUtils qw/uniq/;
 
 sub options {
     (
-        'r|repository=s' => 'repository',
-        'l|log-level=s'  => 'log_level',
-        'log-file=s'     => 'log_file',
         'a|add=s'        => 'add',
         'd|delete=s'     => 'delete',
         's|set=s'        => 'set',

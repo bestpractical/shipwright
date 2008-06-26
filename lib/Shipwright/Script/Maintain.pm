@@ -14,9 +14,6 @@ use Shipwright;
 
 sub options {
     (
-        'r|repository=s'        => 'repository',
-        'l|log-level=s'         => 'log_level',
-        'log-file=s'            => 'log_file',
         'update-order'          => 'update_order',
         'keep-recommends=s'     => 'keep_recommends',
         'keep-requires=s'       => 'keep_requires',

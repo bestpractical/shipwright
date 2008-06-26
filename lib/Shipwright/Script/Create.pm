@@ -11,14 +11,6 @@ use Shipwright;
 use File::Spec;
 use Shipwright::Util;
 
-sub options {
-    (
-        'r|repository=s' => 'repository',
-        'l|log-level=s'  => 'log_level',
-        'log-file=s'     => 'log_file',
-    );
-}
-
 sub run {
     my $self       = shift;
     

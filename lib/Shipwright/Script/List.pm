@@ -12,9 +12,6 @@ use Shipwright;
 
 sub options {
     (
-        'r|repository=s'      => 'repository',
-        'l|log-level=s'       => 'log_level',
-        'log-file=s'          => 'log_file',
         'name=s'              => 'name',
         'with-latest-version' => 'with_latest_version',
         'only-update'         => 'only_update',
