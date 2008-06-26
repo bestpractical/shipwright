@@ -213,7 +213,7 @@ sub _install {
 
             if ( system($cmd) ) {
                 $self->log->error("build $dir with failure when run $type: $!");
-                if ( $self->force && $type eq 'error' ) {
+                if ( $self->force && $type eq 'test' ) {
                     $self->log->error(
 "although tests failed, will install anyway since we have force arg\n"
                     );
