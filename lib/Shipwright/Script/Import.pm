@@ -6,7 +6,7 @@ use Carp;
 
 use base qw/App::CLI::Command Class::Accessor::Fast Shipwright::Script/;
 __PACKAGE__->mk_accessors(
-    qw/comment source no_follow build_script require_yml
+    qw/comment no_follow build_script require_yml
       name test_script extra_tests overwrite min_perl_version skip version/
 );
 
@@ -24,7 +24,6 @@ Hash::Merge::set_behavior('RIGHT_PRECEDENT');
 sub options {
     (
         'm|comment=s'      => 'comment',
-        's|source=s'       => 'source',
         'name=s'           => 'name',
         'no-follow'        => 'no_follow',
         'build-script=s'   => 'build_script',
@@ -44,30 +43,29 @@ sub run {
     my $self   = shift;
     my $source = shift;
 
-    $self->source($source) if $source && !$self->source;
-
-    if ( $self->name && !$self->source ) {
+    if ( $self->name && !$source ) {
 
         # don't have source specified, use the one in repo
         my $shipwright = Shipwright->new(
             repository => $self->repository,
         );
         my $map    = $shipwright->backend->map    || {};
-        my $source = $shipwright->backend->source || {};
+        my $source_yml = $shipwright->backend->source || {};
 
         my $r_map = { reverse %$map };
         if ( $r_map->{ $self->name } ) {
-            $self->source( 'cpan:' . $r_map->{ $self->name } );
+            $source = 'cpan:' . $r_map->{ $self->name };
         }
-        elsif ( $source->{ $self->name } ) {
-            $self->source( $source->{ $self->name } );
+        elsif ( $source_yml->{ $self->name } ) {
+            $source = $source_yml->{$self->name};
         }
 
     }
 
+    die "we need source arg\n" unless $source;
+
     $self->skip( { map { $_ => 1 } split /\s*,\s*/, $self->skip || '' } );
 
-    die "need source arg" unless $self->source();
 
     if ( $self->name ) {
         if ( $self->name =~ /::/ ) {
@@ -77,7 +75,7 @@ sub run {
             $self->name($name);
         }
         if ( $self->name !~ /^[-.\w]+$/ ) {
-            die 'name can only have alphanumeric characters, "." and "-"';
+            die qq{name can only have alphanumeric characters, "." and "-"\n};
         }
     }
 
@@ -85,7 +83,7 @@ sub run {
         repository       => $self->repository,
         log_level        => $self->log_level,
         log_file         => $self->log_file,
-        source           => $self->source,
+        source           => $source,
         name             => $self->name,
         follow           => !$self->no_follow,
         min_perl_version => $self->min_perl_version,
@@ -93,7 +91,7 @@ sub run {
         version          => $self->version,
     );
 
-    if ( $self->source ) {
+    if ( $source ) {
 
         unless ( $self->overwrite ) {
 
@@ -110,16 +108,15 @@ sub run {
             $shipwright->backend->map || {},
         );
 
-        $self->source(
+        $source =
             $shipwright->source->run(
                 copy => { '__require.yml' => $self->require_yml },
-            )
-        );
+            );
 
         $version =
           Shipwright::Util::LoadFile( $shipwright->source->version_path );
 
-        my ($name) = $self->source =~ m{.*/(.*)$};
+        my ($name) = $source =~ m{.*/(.*)$};
         $imported{$name}++;
 
         my $script_dir = tempdir( CLEANUP => 1 );
@@ -129,27 +126,27 @@ sub run {
                 File::Spec->catfile( $script_dir, 'build' ) );
         }
         else {
-            $self->_generate_build( $self->source, $script_dir, $shipwright );
+            $self->_generate_build( $source, $script_dir, $shipwright );
         }
 
         unless ( $self->no_follow ) {
-            $self->_import_req( $self->source, $shipwright );
+            $self->_import_req( $source, $shipwright );
 
             move(
-                File::Spec->catfile( $self->source, '__require.yml' ),
+                File::Spec->catfile( $source, '__require.yml' ),
                 File::Spec->catfile( $script_dir,   'require.yml' )
-            ) or die "move __require.yml failed: $!";
+            ) or die "move __require.yml failed: $!\n";
         }
 
         $shipwright->backend->import(
-            source  => $self->source,
-            comment => $self->comment || 'import ' . $self->source,
+            source  => $source,
+            comment => $self->comment || 'import ' . $source,
             overwrite => 1,                   # import anyway for the main dist
             version   => $version->{$name},
         );
         $shipwright->backend->import(
-            source       => $self->source,
-            comment      => 'import scripts for' . $self->source,
+            source       => $source,
+            comment      => 'import scripts for' . $source,
             build_script => $script_dir,
             overwrite    => 1,
         );
@@ -224,7 +221,7 @@ sub _import_req {
                     unless ($s) {
                         $self->log->warn(
                             "we don't have $dist in source which is for "
-                              . $self->source );
+                              . $source );
                         next;
                     }
 
@@ -236,7 +233,7 @@ sub _import_req {
                     move(
                         File::Spec->catfile( $s,          '__require.yml' ),
                         File::Spec->catfile( $script_dir, 'require.yml' )
-                    ) or die "move $s/__require.yml failed: $!";
+                    ) or die "move $s/__require.yml failed: $!\n";
 
                     $self->_generate_build( $s, $script_dir, $shipwright );
 
@@ -392,7 +389,7 @@ Shipwright::Script::Import - import a source and its dependencies
 
 =head1 SYNOPSIS
 
- import [source]
+ import SOURCE
 
 =head1 OPTIONS
 
@@ -400,7 +397,6 @@ Shipwright::Script::Import - import a source and its dependencies
  -l [--log-level] LOGLEVEL      : specify the log level
  --log-file FILENAME            : specify the log file
  -m [--comment] COMMENT         : specify the comment
- -s [--source] PATH             : specify the source path
  --name NAME                    : specify the source name (only alphanumeric
                                   characters, . and -)
  --build-script FILENAME        : specify the build script

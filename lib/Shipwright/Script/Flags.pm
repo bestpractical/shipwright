@@ -5,19 +5,17 @@ use warnings;
 use Carp;
 
 use base qw/App::CLI::Command Class::Accessor::Fast Shipwright::Script/;
-__PACKAGE__->mk_accessors(
-    qw/name add delete set mandatary/);
+__PACKAGE__->mk_accessors(qw/add delete set mandatary/);
 
 use Shipwright;
 use List::MoreUtils qw/uniq/;
 
 sub options {
     (
-        'a|add=s'        => 'add',
-        'd|delete=s'     => 'delete',
-        's|set=s'        => 'set',
-        'name=s'         => 'name',
-        'mandatary'      => 'mandatary',
+        'a|add=s'    => 'add',
+        'd|delete=s' => 'delete',
+        's|set=s'    => 'set',
+        'mandatary'  => 'mandatary',
     );
 }
 
@@ -25,27 +23,22 @@ sub run {
     my $self = shift;
     my $name = shift;
 
-    $self->name($name) if $name && !$self->name;
-
-    die "need name arg" unless $self->name();
-
-    $name = $self->name;
+    die "need name arg" unless $name;
 
     if ( $name =~ /^__/ ) {
         print "$name can't start as __\n";
         return;
     }
 
-    my $shipwright = Shipwright->new(
-        repository => $self->repository,
-    );
+    my $shipwright = Shipwright->new( repository => $self->repository, );
 
     my $flags = $shipwright->backend->flags;
 
     unless ( defined $self->add || defined $self->delete || defined $self->set )
     {
+
         # show without change
-        $self->_show_flags( $flags );
+        $self->_show_flags($flags);
         return;
     }
 
@@ -79,14 +72,13 @@ sub run {
     }
 
     $shipwright->backend->flags($flags);
-    $self->_show_flags( $flags );
+    $self->_show_flags( $flags, $name );
 }
 
-
 sub _show_flags {
-    my $self = shift;
+    my $self  = shift;
     my $flags = shift;
-    my $name = $self->name;
+    my $name  = shift;
 
     my $changed;
     $changed = 1 if $self->add || $self->delete || $self->set;
@@ -94,7 +86,7 @@ sub _show_flags {
     if ( $self->mandatary ) {
         print "set mandatary flags with success\n" if $changed;
         print "mandatary flags of $name is ";
-        if ( @{$flags->{__mandatary}{$name} || [] } ) {
+        if ( @{ $flags->{__mandatary}{$name} || [] } ) {
             print join( ', ', @{ $flags->{__mandatary}{$name} } ) . "\n";
         }
         else {
@@ -104,14 +96,13 @@ sub _show_flags {
     else {
         print "set flags with success\n" if $changed;
         print "flags of $name is ";
-        if ( @{$flags->{$name} || [] } ) {
+        if ( @{ $flags->{$name} || [] } ) {
             print join( ', ', @{ $flags->{$name} } ) . "\n";
         }
         else {
             print "*nothing*\n";
         }
     }
-
 
 }
 
@@ -125,7 +116,7 @@ Shipwright::Script::Flags - Maintain a dist's flags
 
 =head1 SYNOPSIS
 
- flags --name [dist name] --add [flag name]
+ flags NAME --add [flag name]
 
 =head1 OPTIONS
 
@@ -133,5 +124,4 @@ Shipwright::Script::Flags - Maintain a dist's flags
  -l [--log-level]               : specify the log level
                                   (info, debug, warn, error, or fatal)
  --log-file FILENAME            : specify the log file
- --name NAME                    : specify the dist name
  --add, --delete, --set FLAGS   : specify the flags, split by commas

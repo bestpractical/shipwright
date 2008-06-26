@@ -6,7 +6,7 @@ use Carp;
 
 use base qw/App::CLI::Command Class::Accessor::Fast Shipwright::Script/;
 __PACKAGE__->mk_accessors(
-    qw/name all follow builder utility version/);
+    qw/all follow builder utility version/);
 
 use Shipwright;
 use File::Spec;
@@ -20,7 +20,6 @@ Hash::Merge::set_behavior('RIGHT_PRECEDENT');
 
 sub options {
     (
-        'name=s'    => 'name',
         'a|all'     => 'all',
         'follow'    => 'follow',
         'builder'   => 'builder',
@@ -48,9 +47,7 @@ sub run {
     }
     else {
 
-        $self->name($name) if $name && !$self->name;
-
-        die 'need name arg' unless $self->name || $self->all;
+        die 'need name arg' unless $name || $self->all;
 
         $map    = $shipwright->backend->map    || {};
         $source = $shipwright->backend->source || {};
@@ -62,12 +59,6 @@ sub run {
             }
         }
         else {
-            if ( !$source->{ $self->name } && $map->{ $self->name } ) {
-
-                # in case the name is module name
-                $self->name( $map->{ $self->name } );
-            }
-
             my @dists;
             if ( $self->follow ) {
                 my (%checked);
@@ -86,11 +77,11 @@ sub run {
                     }
                 };
 
-                $find_deps->( $self->name );
+                $find_deps->( $name );
                 @dists = keys %checked;
             }
             $self->_update($_) for @dists;
-            $self->_update( $self->name, $self->version );
+            $self->_update( $name, $self->version );
         }
     }
 

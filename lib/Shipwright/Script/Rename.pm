@@ -4,30 +4,16 @@ use strict;
 use warnings;
 use Carp;
 
-use base qw/App::CLI::Command Class::Accessor::Fast Shipwright::Script/;
-__PACKAGE__->mk_accessors(qw/name new_name/);
+use base qw/App::CLI::Command Shipwright::Script/;
 
 use Shipwright;
 use File::Spec;
 use Shipwright::Util;
 
-sub options {
-    (
-        'name=s'         => 'name',
-        'new-name=s'     => 'new_name',
-    );
-}
-
 sub run {
     my $self = shift;
 
-    my ( $name, $new_name ) = ( $self->name, $self->new_name );
-
-    $name = shift unless $name;
-    $new_name = shift unless $new_name;
-
-    $self->name( $name );
-    $self->new_name( $new_name );
+    my ( $name, $new_name ) = @_;
 
     die 'need name arg' unless $name;
     die 'need new-name arg' unless $new_name;
@@ -68,22 +54,7 @@ sub run {
     my $source  = $shipwright->backend->source  || {};
     my $flags   = $shipwright->backend->flags   || {};
 
-    $self->_update_hash( $source, $flags, $version );
-
-    $shipwright->backend->version($version);
-    $shipwright->backend->source($source);
-    $shipwright->backend->flags($flags);
-
-    print "renamed $name to $new_name with success\n";
-}
-
-sub _update_hash {
-    my $self     = shift;
-    my @hashrefs = @_;
-    my $name     = $self->name;
-    my $new_name = $self->new_name;
-
-    for my $hashref (@hashrefs) {
+    for my $hashref ( $source, $flags, $version ) {
         for ( keys %$hashref ) {
             if ( $_ eq $name ) {
                 $hashref->{$new_name} = delete $hashref->{$_};
@@ -91,6 +62,12 @@ sub _update_hash {
             }
         }
     }
+
+    $shipwright->backend->version($version);
+    $shipwright->backend->source($source);
+    $shipwright->backend->flags($flags);
+
+    print "renamed $name to $new_name with success\n";
 }
 
 1;
@@ -103,7 +80,7 @@ Shipwright::Script::Rename - Rename a dist
 
 =head1 SYNOPSIS
 
-  shipwright rename          rename a source
+  shipwright rename NAME NEWNAME          rename a dist
 
 =head1 OPTIONS
 
@@ -111,5 +88,3 @@ Shipwright::Script::Rename - Rename a dist
  -l [--log-level] LOGLEVEL    : specify the log level
                                 (info, debug, warn, error, or fatal)
  --log-file FILENAME          : specify the log file
- --name NAME                  : specify the dist to be renamed
- --new-name NAME              : specify the new dist name

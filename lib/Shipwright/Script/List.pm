@@ -12,7 +12,6 @@ use Shipwright;
 
 sub options {
     (
-        'name=s'              => 'name',
         'with-latest-version' => 'with_latest_version',
         'only-update'         => 'only_update',
     );
@@ -21,8 +20,6 @@ sub options {
 sub run {
     my $self = shift;
     my $name = shift;
-
-    $self->name($name) if $name && !$self->name;
 
     my $shipwright = Shipwright->new(
         repository => $self->repository,
@@ -39,16 +36,16 @@ sub run {
     if ( $self->with_latest_version ) {
         my $map = $shipwright->backend->map;
 
-        if ( $self->name ) {
-            if ( $self->name =~ /^cpan-/ ) {
+        if ( $name ) {
+            if ( $name =~ /^cpan-/ ) {
                 my %reversed = reverse %$map;
-                my $module   = $reversed{ $self->name };
-                $latest_version->{ $self->name } =
+                my $module   = $reversed{ $name };
+                $latest_version->{ $name } =
                   $self->_latest_version( name => $module );
             }
             else {
-                $latest_version->{ $self->name } =
-                  $self->_latest_version( url => $source->{ $self->name } );
+                $latest_version->{ $name } =
+                  $self->_latest_version( url => $source->{ $name } );
             }
         }
         else {
@@ -69,10 +66,10 @@ sub run {
         }
     }
 
-    if ( $self->name ) {
+    if ( $name ) {
         my $new_versions = {};
-        $new_versions->{ $self->name } = $versions->{ $self->name }
-          if exists $versions->{ $self->name };
+        $new_versions->{ $name } = $versions->{ $name }
+          if exists $versions->{ $name };
         $versions = $new_versions;
     }
     for my $name ( sort keys %$versions ) {
@@ -101,8 +98,8 @@ sub run {
         }
     }
 
-    if ( $self->name && keys %$versions == 0 ) {
-        print $self->name, " doesn't exist\n";
+    if ( $name && keys %$versions == 0 ) {
+        print $name, " doesn't exist\n";
     }
 }
 
@@ -158,13 +155,12 @@ Shipwright::Script::List - List dists of a project
 
 =head1 SYNOPSIS
 
- list
+ list NAME
 
 =head1 OPTIONS
    -r [--repository] REPOSITORY    : specify the repository of our project
    -l [--log-level] LOGLEVEL       : specify the log level
    --log-file FILENAME             : specify the log file
                                      (info, debug, warn, error, or fatal)
-   --name NAME                     : sepecify the dist name
    --with-latest-version           : show the latest version if possible
    --only-update                   : only show the dists that can be updated

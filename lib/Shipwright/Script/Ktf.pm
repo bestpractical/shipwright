@@ -5,7 +5,7 @@ use warnings;
 use Carp;
 
 use base qw/App::CLI::Command Class::Accessor::Fast Shipwright::Script/;
-__PACKAGE__->mk_accessors(qw/name set delete/);
+__PACKAGE__->mk_accessors(qw/set delete/);
 
 use Shipwright;
 use List::MoreUtils qw/uniq/;
@@ -14,7 +14,6 @@ sub options {
     (
         'd|delete'       => 'delete',
         's|set=s'        => 'set',
-        'name=s'         => 'name',
     );
 }
 
@@ -22,11 +21,7 @@ sub run {
     my $self = shift;
     my $name = shift;
 
-    $self->name($name) if $name && !$self->name;
-
-    die "need name arg" unless $self->name();
-
-    $name = $self->name;
+    die "need name arg" unless $name();
 
     my $shipwright = Shipwright->new( repository => $self->repository, );
 
@@ -42,13 +37,13 @@ sub run {
         $shipwright->backend->ktf($ktf);
     }
 
-    $self->_show_ktf($ktf);
+    $self->_show_ktf($ktf, $name);
 }
 
 sub _show_ktf {
     my $self = shift;
     my $ktf  = shift;
-    my $name = $self->name;
+    my $name = shift;
 
     if ( $self->delete ) {
         print "deleted known test failure for $name\n";
@@ -72,7 +67,7 @@ Shipwright::Script::Ktf - Maintain a dist's known test failure conditions
 
 =head1 SYNOPSIS
 
- ktf --name [dist name] --set '$^O eq "darwin"'
+ ktf NAME --set '$^O eq "darwin"'
 
 =head1 OPTIONS
 
@@ -80,6 +75,5 @@ Shipwright::Script::Ktf - Maintain a dist's known test failure conditions
  -l [--log-level]               : specify the log level
                                   (info, debug, warn, error, or fatal)
  --log-file FILENAME            : specify the log file
- --name NAME                    : specify the dist name
  --delete conditions            : delete conditions
  --set conditions               : set conditions

@@ -4,40 +4,27 @@ use strict;
 use warnings;
 use Carp;
 
-use base qw/App::CLI::Command Class::Accessor::Fast Shipwright::Script/;
-__PACKAGE__->mk_accessors(qw/name/);
+use base qw/App::CLI::Command Shipwright::Script/;
 
 use Shipwright;
 use File::Spec;
 use Shipwright::Util;
 
-sub options {
-    (
-        'name=s'         => 'name',
-    );
-}
-
 sub run {
     my $self = shift;
     my $name = shift;
 
-    $self->name($name) if $name && !$self->name;
+    die "need name arg" unless $name;
 
-    die "need name arg" unless $self->name();
-
-    my $shipwright = Shipwright->new(
-        repository => $self->repository,
-    );
+    my $shipwright = Shipwright->new( repository => $self->repository, );
 
     my $map = $shipwright->backend->map || {};
 
-    if ( $map->{ $self->name } ) {
+    if ( $map->{$name} ) {
 
         # it's a cpan module
-        $self->name( $map->{ $self->name } );
+        $name = $map->{$name};
     }
-
-    $name = $self->name;
 
     my $order = $shipwright->backend->order;
 
@@ -60,7 +47,14 @@ sub run {
     my $source  = $shipwright->backend->source  || {};
     my $flags   = $shipwright->backend->flags   || {};
 
-    $self->_clean_hash( $source, $flags, $version );
+    for my $hashref ( $source, $flags, $version ) {
+        for ( keys %$hashref ) {
+            if ( $_ eq $name ) {
+                delete $hashref->{$_};
+                last;
+            }
+        }
+    }
 
     $shipwright->backend->version($version);
     $shipwright->backend->map($map);
@@ -68,21 +62,6 @@ sub run {
     $shipwright->backend->flags($flags);
 
     print "deleted $name with success\n";
-}
-
-sub _clean_hash {
-    my $self     = shift;
-    my @hashrefs = @_;
-    my $name     = $self->name;
-
-    for my $hashref (@hashrefs) {
-        for ( keys %$hashref ) {
-            if ( $_ eq $name ) {
-                delete $hashref->{$_} if $_ eq $name;
-                last;
-            }
-        }
-    }
 }
 
 1;
@@ -95,11 +74,10 @@ Shipwright::Script::Delete - Delete a dist
 
 =head1 SYNOPSIS
 
- delete -r [repository] --name [dist name]
+ delete NAME
 
 =head1 OPTIONS
  -r [--repository] REPOSITORY   : specify the repository of our project
  -l [--log-level] LOGLEVEL      : specify the log level
                                   (info, debug, warn, error, or fatal)
  --log-file FILENAME            : specify the log file
- --name NAME                    : specify the dist name
