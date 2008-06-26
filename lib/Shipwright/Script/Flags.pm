@@ -5,7 +5,7 @@ use warnings;
 use Carp;
 
 use base qw/App::CLI::Command Class::Accessor::Fast Shipwright::Script/;
-__PACKAGE__->mk_accessors(qw/add delete set mandatary/);
+__PACKAGE__->mk_accessors(qw/add delete set mandatory/);
 
 use Shipwright;
 use List::MoreUtils qw/uniq/;
@@ -15,7 +15,7 @@ sub options {
         'a|add=s'    => 'add',
         'd|delete=s' => 'delete',
         's|set=s'    => 'set',
-        'mandatary'  => 'mandatary',
+        'mandatory'  => 'mandatory',
     );
 }
 
@@ -64,8 +64,8 @@ sub run {
         $list = [ grep { /^[-\w]+$/ } split /,\s*/, $self->set ];
     }
 
-    if ( $self->mandatary ) {
-        $flags->{__mandatary}{$name} = $list;
+    if ( $self->mandatory ) {
+        $flags->{__mandatory}{$name} = $list;
     }
     else {
         $flags->{$name} = $list;
@@ -83,11 +83,11 @@ sub _show_flags {
     my $changed;
     $changed = 1 if $self->add || $self->delete || $self->set;
 
-    if ( $self->mandatary ) {
-        print "set mandatary flags with success\n" if $changed;
-        print "mandatary flags of $name is ";
-        if ( @{ $flags->{__mandatary}{$name} || [] } ) {
-            print join( ', ', @{ $flags->{__mandatary}{$name} } ) . "\n";
+    if ( $self->mandatory ) {
+        print "set mandatory flags with success\n" if $changed;
+        print "mandatory flags of $name is ";
+        if ( @{ $flags->{__mandatory}{$name} || [] } ) {
+            print join( ', ', @{ $flags->{__mandatory}{$name} } ) . "\n";
         }
         else {
             print "*nothing*\n";
