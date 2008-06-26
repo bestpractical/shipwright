@@ -700,6 +700,39 @@ sub update {
     }
 }
 
+=item ktf
+
+Get or set known failure conditions.
+
+=cut
+
+sub ktf {
+    my $self    = shift;
+    my $failure = shift;
+
+    if ($failure) {
+        my $dir = tempdir( CLEANUP => 1 );
+        my $file = File::Spec->catfile( $dir, 'ktf.yml' );
+
+        $self->checkout(
+            path   => '/shipwright',
+            target => $dir,
+        );
+
+        Shipwright::Util::DumpFile( $file, $failure );
+
+        $self->commit(
+            path    => $file,
+            comment => 'set known failure',
+        );
+    }
+    else {
+        my ($out) = Shipwright::Util->run(
+            [ 'svn', 'cat', $self->repository . '/shipwright/ktf.yml' ] );
+        return Shipwright::Util::Load($out) || {};
+    }
+}
+
 =back
 
 =cut
