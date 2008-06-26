@@ -40,13 +40,13 @@ sub run {
               ( defined $self->keep_requires ? $self->keep_requires : 1 ),
 
             keep_recommends =>
-              ( defined $self->keep_recommends ? $self->keep_recommends : 1 ),
+              ( defined $self->keep_recommends ? $self->keep_recommends : 0 ),
             keep_build_requires => (
                 defined $self->keep_build_requires
                 ? $self->keep_build_requires
                 : 1
             ),
-            for_dists => [ split /,\s*/, $self->for_dists ],
+            for_dists => [ split /,\s*/, $self->for_dists || '' ],
         );
     }
 }
