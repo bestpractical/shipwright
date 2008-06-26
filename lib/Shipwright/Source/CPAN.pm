@@ -18,6 +18,12 @@ use base qw/Shipwright::Source::Base/;
 my $cpan_dir = tempdir( CLEANUP => 0 );
 unshift @INC, $cpan_dir;
 
+=head1 NAME
+
+Shipwright::Source::CPAN - CPAN source
+
+=head1 DESCRIPTION
+
 =head2 new
 
 =cut
@@ -145,39 +151,3 @@ sub _run {
 }
 
 1;
-
-__END__
-
-=head1 NAME
-
-Shipwright::Source::CPAN - CPAN source
-
-
-=head1 DESCRIPTION
-
-
-=head1 DEPENDENCIES
-
-None.
-
-
-=head1 INCOMPATIBILITIES
-
-None reported.
-
-
-=head1 BUGS AND LIMITATIONS
-
-No bugs have been reported.
-
-=head1 AUTHOR
-
-sunnavy  C<< <sunnavy@bestpractical.com> >>
-
-
-=head1 LICENCE AND COPYRIGHT
-
-Copyright 2007 Best Practical Solutions.
-
-This program is free software; you can redistribute it and/or modify it
-under the same terms as Perl itself.

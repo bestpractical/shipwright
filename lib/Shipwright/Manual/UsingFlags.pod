@@ -25,6 +25,7 @@ C<postgresql> for this example.
     $ shipwright flags -r ... --name cpan-DBD-mysql --set mysql
     $ shipwright flags -r ... --name postgresql --set postgresql
     $ shipwright flags -r ... --name cpan-DBD-Pg --set postgresql
+    $ shipwright flags -r ... --mandatory --set mysql,postgresql --name db
 
 B<Flags> data is stored in F<shipwright/flags.yml>
 
@@ -38,6 +39,13 @@ information about how to do this.
 If no flags are specified during build, both mysql and postgresql would be
 installed to the vessel. Which one RT chooses to configure for depends on its
 build script.
+
+If necessary, you can also specify certain flags as being mandatory. For
+example, you can specify that a database flag is mandatory; if no flag labelled
+C<db> is specified when invoking the build script, the first one is used as a
+default (mysql in this case) rather than the repository being built with no
+flags. This allows repositories to support different variants or versions of a
+program.
 
 Note:
 
