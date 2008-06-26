@@ -228,7 +228,8 @@ sub _install {
                         );
                         next;
                     }
-                    elsif ( eval "$ktf->{$dir}" ) {
+                    ## no critic
+                    elsif ( eval "$ktf->{$dir}" ) { 
                         $self->log->error(
 "although tests failed, will install anyway since it's a known failure\n"
                         );

@@ -334,6 +334,7 @@ sub install {
 "although tests failed, will install anyway since we have force arg\n";
                         next;
                     }
+                    ## no critic
                     elsif ( eval "$ktf->{$dir}" ) {
                         print $log
 "although tests failed, will install anyway since it's a known failure\n";
