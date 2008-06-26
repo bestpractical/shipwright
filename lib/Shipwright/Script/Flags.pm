@@ -116,12 +116,26 @@ Shipwright::Script::Flags - Maintain a dist's flags
 
 =head1 SYNOPSIS
 
- flags NAME --add [flag name]
+ flags -r ... DIST --add FLAG
+ flags -r ... DIST --delete FLAG
+ flags -r ... --mandatory --set FLAGS --name LABEL
 
 =head1 OPTIONS
 
  -r [--repository] REPOSITORY   : specify the repository of our project
- -l [--log-level]               : specify the log level
+ -l [--log-level] LOGLEVEL      : specify the log level
                                   (info, debug, warn, error, or fatal)
  --log-file FILENAME            : specify the log file
  --add, --delete, --set FLAGS   : specify the flags, split by commas
+ --mandatory                    : set these flags as being required
+ --name LABEL                   : set the label of a group of mandatory flags
+
+=head1 DESCRIPTION
+
+The flags command is used for managing the flags feature of Shipwright. Flags
+can be used to group dists in ways which allow a single Shipwright repository
+to support multiple variants of binary vessels. For example, if you are
+shipping some software that requires a database, your repository can use flags
+to allow binary vessels to be built for both MySQL and PostgreSQL from it.
+
+For more information on using flags, see L<Shipwright::Manual::UsingFlags>.
