@@ -89,7 +89,6 @@ $args{flags} = {
     map { $_ => 1 } split /\s*,\s*/, $args{flags} || ''
 };
 
-
 $args{with} = { map { split /=/ } split /\s*,\s*/, $args{with} || '' };
 
 if ( $args{only} ) {
@@ -105,6 +104,8 @@ my $order =
   ( YAML::Tiny->read( File::Spec->catfile( 'shipwright', 'order.yml' ) ) )->[0];
 my $flags =
   ( YAML::Tiny->read( File::Spec->catfile( 'shipwright', 'flags.yml' ) ) )->[0];
+my $ktf =
+  ( YAML::Tiny->read( File::Spec->catfile( 'shipwright', 'ktf.yml' ) ) )->[0];
 
 # fill not specified but mandatary flags
 if ( $flags->{__mandatary} ) {
@@ -126,7 +127,6 @@ else {
           && !$args{skip}->{$_}
       } @$order;
 }
-
 
 my $log;
 
@@ -328,13 +328,19 @@ sub install {
             print "running shipwright build command: $cmd\n";
             if ( system($cmd) ) {
                 print $log "build $dir $type part with failure.\n";
-                if ( $args{force} && $type eq 'test' ) {
-                    print $log
+                if ( $type eq 'test' ) {
+                    if ( $args{force} ) {
+                        print $log
 "although tests failed, will install anyway since we have force arg\n";
+                        next;
+                    }
+                    elsif ( eval "$ktf->{$dir}" ) {
+                        print $log
+"although tests failed, will install anyway since it's a known failure\n";
+                        next;
+                    }
                 }
-                else {
-                    die "build $dir $type part with failure.\n";
-                }
+                die "build $dir $type part with failure.\n";
             }
             else {
                 print $log "build $dir $type part with success!\n";

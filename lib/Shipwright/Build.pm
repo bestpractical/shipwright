@@ -120,6 +120,11 @@ sub run {
             }
         }
 
+        my $ktf =
+          Shipwright::Util::LoadFile(
+            File::Spec->catfile( 'shipwright', 'ktf.yml' ) )
+          || {};
+
         # calculate the real order
         if ( $self->only ) {
             @$order = grep { $self->only->{$_} } @$order;
@@ -127,9 +132,11 @@ sub run {
         else {
             @$order =
               grep {
-                ( $flags->{$_}
+                (
+                    $flags->{$_}
                     ? ( grep { $self->flags->{$_} } @{ $flags->{$_} } )
-                    : 1 )
+                    : 1
+                  )
                   && !$self->skip->{$_}
               } @$order;
         }
@@ -147,8 +154,8 @@ sub run {
             }
         }
 
-        for my $dist ( @$order ) {
-            $self->_install($dist);
+        for my $dist (@$order) {
+            $self->_install( $dist, $ktf );
             chdir $self->build_base;
         }
 
@@ -165,6 +172,7 @@ sub run {
 sub _install {
     my $self = shift;
     my $dir  = shift;
+    my $ktf  = shift;
 
     chdir File::Spec->catfile( 'dists', $dir );
 
@@ -203,7 +211,7 @@ sub _install {
                 $cmd  = $_;
             }
 
-            next if $type eq 'clean';    # don't need to clean when install
+            next if $type eq 'clean';        # don't need to clean when install
             if ( $self->skip_test && $type eq 'test' ) {
                 $self->log->info("skip build $type part in $dir");
                 next;
@@ -213,17 +221,23 @@ sub _install {
 
             if ( system($cmd) ) {
                 $self->log->error("build $dir with failure when run $type: $!");
-                if ( $self->force && $type eq 'test' ) {
-                    $self->log->error(
+                if ( $type eq 'test' ) {
+                    if ( $self->force ) {
+                        $self->log->error(
 "although tests failed, will install anyway since we have force arg\n"
-                    );
+                        );
+                        next;
+                    }
+                    elsif ( eval "$ktf->{$dir}" ) {
+                        $self->log->error(
+"although tests failed, will install anyway since it's a known failure\n"
+                        );
+                        next;
+                    }
                 }
-                else {
-                    die "install failed";
-                }
+                die "install failed";
             }
         }
-
     }
     $self->log->info("build $dir with success!");
 }
