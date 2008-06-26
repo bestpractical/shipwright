@@ -32,6 +32,7 @@ lib/Shipwright/Script/Delete.pm
 lib/Shipwright/Script/Flags.pm
 lib/Shipwright/Script/Help.pm
 lib/Shipwright/Script/Import.pm
+lib/Shipwright/Script/Ktf.pm
 lib/Shipwright/Script/List.pm
 lib/Shipwright/Script/Maintain.pm
 lib/Shipwright/Script/Rename.pm
@@ -61,6 +62,7 @@ share/etc/shipwright-source-tcsh
 share/etc/shipwright-utility
 share/inc/YAML/Tiny.pm
 share/shipwright/flags.yml
+share/shipwright/ktf.yml
 share/shipwright/map.yml
 share/shipwright/order.yml
 share/shipwright/source.yml
@@ -75,6 +77,12 @@ t/06.logger.t
 t/07.script.t
 t/10.flags.t
 t/21.perl_in_build.t
+t/71.script_cmds.t
+t/dists/dir_configure/configure
+t/dists/tbz_make.tar.bz2
+t/dists/tgz_build.tar.gz
+t/dists/version1/info
+t/dists/version2/info
 t/hello/Acme-Hello-0.03.tar.gz
 t/hello/scripts/build
 t/hello/scripts/howdy_require.yml
