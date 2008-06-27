@@ -21,11 +21,11 @@ SKIP: {
     my %map = (
         create => {
             '//__shipwright/foo' => 1,
-            'svk:/noexists/'     => 0,
+            'svk:/noexists/'     => undef,
         },
         list => {
-            '//__shipwright/foo' => 0,
-            'svk:/noexists/'     => 0,
+            '//__shipwright/foo' => undef,
+            'svk:/noexists/'     => undef,
             '//bar'              => 1,
         },
     );
@@ -59,11 +59,11 @@ SKIP: {
     my %map = (
         create => {
             "svn:$valid" => 1,
-            $invalid         => 0,
+            $invalid         => undef,
         },
         list => {
-            "svn:$valid"     => 0,
-            $invalid         => 0,
+            "svn:$valid"     => undef,
+            $invalid         => undef,
             "svn:$valid/bar" => 1,
         },
     );
