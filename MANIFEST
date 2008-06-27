@@ -16,6 +16,8 @@ inc/Module/Install/Win32.pm
 inc/Module/Install/WriteAll.pm
 lib/Shipwright.pm
 lib/Shipwright/Backend.pm
+lib/Shipwright/Backend/Base.pm
+lib/Shipwright/Backend/FS.pm
 lib/Shipwright/Backend/SVK.pm
 lib/Shipwright/Backend/SVN.pm
 lib/Shipwright/Build.pm
@@ -35,6 +37,7 @@ lib/Shipwright/Script/Import.pm
 lib/Shipwright/Script/Ktf.pm
 lib/Shipwright/Script/List.pm
 lib/Shipwright/Script/Maintain.pm
+lib/Shipwright/Script/Relocate.pm
 lib/Shipwright/Script/Rename.pm
 lib/Shipwright/Script/Update.pm
 lib/Shipwright/Source.pm
