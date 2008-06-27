@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 74;
+use Test::More tests => 106;
 
 use Shipwright;
 use Shipwright::Test;
@@ -9,6 +9,9 @@ use Shipwright::Test;
 my $sw = Shipwright::Test->shipwright_bin;
 
 Shipwright::Test->init;
+
+my $repo = 'fs:' . create_fs_repo();
+start_test($repo);
 
 SKIP: {
     skip "no svn found", Test::More->builder->expected_tests / 2
@@ -21,8 +24,9 @@ SKIP: {
     Shipwright::Util->run(
         [ 'svn', 'import', '-m', q{''}, 't/dists/version1', $source ] );
 
-    my $update_cmd = [ 'svn', 'import', '-m', q{''}, 't/dists/version2',
-        $source . '/version2' ];
+    my $update_cmd = [
+        'svn', 'import', '-m', q{''}, 't/dists/version2', $source . '/version2'
+    ];
     start_test( $repo, "svn:$source", $update_cmd );
 }
 
@@ -43,14 +47,14 @@ SKIP: {
 
 sub start_test {
     my $repo       = shift;
-    my $source     = shift;    # the svn or svk dist soruce
+    my $source     = shift;    # the svn or svk dist source
     my $update_cmd = shift;
 
     # test create
     my @cmds = (
 
         # create hello repo
-        [ [ 'create' ], qr/created with success/, "create $repo" ],
+        [ ['create'], qr/created with success/, "create $repo" ],
 
         # non exist cmd
         [
@@ -121,48 +125,38 @@ sub start_test {
         ],
 
         # invalid rename cmds
+        [ [ 'rename', 'foo' ], undef, undef, qr/need new-name arg/ ],
         [
-            [ 'rename', 'foo' ],
-            undef, undef, qr/need new-name arg/
-        ],
-        [
-            [ 'rename' ],
-            undef,
-            undef,
-            qr/need name arg/,
+            ['rename'], undef,
+            undef,      qr/need name arg/,
             "rename without name arg"
         ],
         [
             [ 'rename', 'foo' ],
-            undef,
-            undef,
+            undef, undef,
             qr/need new-name arg/,
             "rename without new-name arg"
         ],
         [
-            [ 'rename',  'Acme-Hello', '@' ],
-            undef, undef,
+            [ 'rename', 'Acme-Hello', '@' ],
+            undef,
+            undef,
             qr/invalid new-name: @/,
             'rename with invalid new-name'
         ],
         [
             [ 'rename', 'NonExist', 'foo' ],
-            undef, undef,
+            undef,
+            undef,
             qr/no such dist: NonExist/,
             'rename nonexist dist'
         ],
 
         # delete cmd
-        [
-            [ 'delete', 'foo' ],
-            qr/deleted foo with success/,
-            'deleted foo'
-        ],
+        [ [ 'delete', 'foo' ], qr/deleted foo with success/, 'deleted foo' ],
 
         # we don't have foo dist any more
-        [
-            [ 'list', 'foo' ], qr/foo doesn't exist/, "foo is deleted"
-        ],
+        [ [ 'list', 'foo' ], qr/foo doesn't exist/, "foo is deleted" ],
 
         # import dists/dir_configure
         [
@@ -182,8 +176,9 @@ sub start_test {
         # import dists/tgz_build.tar.gz
         [
             [
-                'import', 'file:t/dists/tgz_build.tar.gz',
-                '--version', 2.72, '--no-follow',
+                'import',    'file:t/dists/tgz_build.tar.gz',
+                '--version', 2.72,
+                '--no-follow',
             ],
             qr/imported with success/,
             'imported tgz_build',
@@ -252,40 +247,44 @@ qr/set mandatory flags with success\s+mandatory flags of man1 is build/,
             'configure is run',
         ],
 
-        # import an svn or svk dist named foo
-        [
-            [ 'import', $source ],
-            qr/imported with success/,
-            "imported $source",
-        ],
-        [
-            [ 'list', 'foo' ],
-            $update_cmd ? qr/version:\s+1\s+/ : qr/version:\s+49\s+/m,
-            'list foo, version seems ok',
-        ],
-        $update_cmd,    # if the source dist is svk, $update_cmd is undef
-        [
-            [ 'list', 'foo', '--with-latest-version' ],
-            $update_cmd
-            ? qr/latest_version:\s+2\s+/
-            : qr/latest_version:\s+56\s+/,
-            'list foo, latest version seems ok',
-        ],
+        $source
+        ? (
 
-        # update cmd
-        [ [ 'update', 'foo' ], qr/updated with success/, "updated foo", ],
-        [
-            [ 'list', 'foo' ],
-            $update_cmd
-            ? qr/version:\s+2\s+/
-            : qr/version:\s+56\s+/,
-            'list foo, latest version seems ok',
-        ],
+            # import an svn or svk dist named foo
+            [
+                [ 'import', $source ],
+                qr/imported with success/,
+                "imported $source",
+            ],
+            [
+                [ 'list', 'foo' ],
+                $update_cmd ? qr/version:\s+1\s+/ : qr/version:\s+49\s+/m,
+                'list foo, version seems ok',
+            ],
+            $update_cmd,    # if the source dist is svk, $update_cmd is undef
+            [
+                [ 'list', 'foo', '--with-latest-version' ],
+                $update_cmd
+                ? qr/latest_version:\s+2\s+/
+                : qr/latest_version:\s+56\s+/,
+                'list foo, latest version seems ok',
+            ],
 
+            # update cmd
+            [ [ 'update', 'foo' ], qr/updated with success/, "updated foo", ],
+            [
+                [ 'list', 'foo' ],
+                $update_cmd
+                ? qr/version:\s+2\s+/
+                : qr/version:\s+56\s+/,
+                'list foo, latest version seems ok',
+            ],
+          )
+        : (),
     );
 
     for my $item (@cmds) {
-        next unless $item; # update_cmd can be undef
+        next unless $item;    # update_cmd can be undef
 
         if ( ref $item->[0] eq 'ARRAY' ) {
             my $cmd = shift @{ $item->[0] };
@@ -296,6 +295,7 @@ qr/set mandatory flags with success\s+mandatory flags of man1 is build/,
             );
         }
         else {
+
             # for the update_cmd
             Shipwright::Util->run( $item, 1 );
         }
