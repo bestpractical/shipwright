@@ -262,6 +262,7 @@ sub check_repository {
     else {
         return $self->SUPER::check_repository(@_);
     }
+    return;
 }
 
 =item update

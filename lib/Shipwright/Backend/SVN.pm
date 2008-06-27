@@ -49,6 +49,7 @@ sub initialize {
 
 sub import {
     my $self = shift;
+    return unless @_;
     return $self->SUPER::import( @_, delete => 1 );
 }
 
@@ -271,6 +272,7 @@ sub check_repository {
     else {
         return $self->SUPER::check_repository(@_);
     }
+    return;
 }
 
 =item update

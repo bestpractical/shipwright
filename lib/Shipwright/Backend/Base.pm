@@ -472,11 +472,10 @@ sub check_repository {
 
         return 1 if $info;
     }
-
     return;
 }
 
-=head2 update
+=item update
 
 you should subclass this method, and run this to get the file path with latest version
 
@@ -497,7 +496,8 @@ sub update {
     return File::Spec->catfile( Shipwright::Util->share_root, $args{path} ),;
 }
 
-*_cmd = *update = *test_script = *propset = *_subclass_method;
+#*_cmd = *update = *test_script = *propset = *_subclass_method;
+*_cmd = *update = *_subclass_method;
 
 =back
 
