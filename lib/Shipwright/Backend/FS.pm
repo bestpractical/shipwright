@@ -9,6 +9,7 @@ use File::Temp qw/tempdir/;
 use File::Copy qw/copy/;
 use File::Copy::Recursive qw/dircopy/;
 use List::MoreUtils qw/uniq/;
+use File::Path;
 
 our %REQUIRE_OPTIONS = ( import => [qw/source/] );
 
@@ -52,6 +53,8 @@ sub initialize {
     my $self = shift;
 
     $self->delete;    # clean repository in case it exists
+    mkpath $self->repository unless -e $self->repository;
+
     dircopy( Shipwright::Util->share_root, $self->repository );
 
     # share_root can't keep empty dirs, we have to create them manually
