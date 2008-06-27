@@ -43,6 +43,10 @@ sub new {
         $args{repository} =~ s{^\s*svn:(?!//)}{};
         $module = 'Shipwright::Backend::SVN';
     }
+    elsif ( $args{repository} =~ m{^\s*fs:} ) {
+        $args{repository} =~ s{^\s*fs:}{};
+        $module = 'Shipwright::Backend::FS';
+    }
     else {
         croak "invalid repository: $args{repository}\n";
     }
