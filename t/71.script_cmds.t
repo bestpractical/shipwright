@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 78;
+use Test::More tests => 74;
 
 use Shipwright;
 use Shipwright::Test;
@@ -63,7 +63,7 @@ sub start_test {
         # list cmd
         [ [ 'list', ], '', "list null $repo" ],
         [
-            [ 'list', '--name', 'foo' ],
+            [ 'list', 'foo' ],
             qr/foo doesn't exist/,
             "list non exist name $repo"
         ],
@@ -73,17 +73,10 @@ sub start_test {
             [ 'import', ],
             undef, undef,
             qr/need source arg/,
-            'import without --source ...'
+            'import without source ...'
         ],
         [
-            [ 'import', '--source' ],
-            undef,
-            undef,
-            qr/source requires an argument/,
-            'import with --source but no value'
-        ],
-        [
-            [ 'import', '--source', 'foo' ],
+            [ 'import', 'foo' ],
             undef,
             undef,
             qr/invalid source: foo/,
@@ -98,7 +91,7 @@ sub start_test {
         ],
 
         [
-            [ 'import', 'file:t/hello/Acme-Hello-0.03.tar.gz', '--follow', 0 ],
+            [ 'import', 'file:t/hello/Acme-Hello-0.03.tar.gz', '--no-follow' ],
             qr/imported with success/,
             'import tar.gz file',
         ],
@@ -114,7 +107,7 @@ sub start_test {
 
         # rename cmd
         [
-            [ 'rename', '--name', 'Acme-Hello', '--new-name', 'foo' ],
+            [ 'rename', 'Acme-Hello', 'foo' ],
             qr/renamed Acme-Hello to foo with success/
         ],
 
@@ -129,31 +122,31 @@ sub start_test {
 
         # invalid rename cmds
         [
-            [ 'rename', '--name', 'foo', '--new-name' ],
-            undef, undef, qr/new-name requires an argument/
+            [ 'rename', 'foo' ],
+            undef, undef, qr/need new-name arg/
         ],
-        [ [ 'rename', '--name' ], undef, undef, qr/name requires an argument/ ],
         [
-            [ 'rename', ],
-            undef, undef,
+            [ 'rename' ],
+            undef,
+            undef,
             qr/need name arg/,
             "rename without name arg"
         ],
         [
-            [ 'rename', '--name', 'foo' ],
+            [ 'rename', 'foo' ],
             undef,
             undef,
             qr/need new-name arg/,
             "rename without new-name arg"
         ],
         [
-            [ 'rename', '--name', 'Acme-Hello', '--new-name', '@' ],
+            [ 'rename',  'Acme-Hello', '@' ],
             undef, undef,
             qr/invalid new-name: @/,
             'rename with invalid new-name'
         ],
         [
-            [ 'rename', '--name', 'NonExist', '--new-name', 'foo' ],
+            [ 'rename', 'NonExist', 'foo' ],
             undef, undef,
             qr/no such dist: NonExist/,
             'rename nonexist dist'
@@ -161,14 +154,14 @@ sub start_test {
 
         # delete cmd
         [
-            [ 'delete', '--name', 'foo' ],
+            [ 'delete', 'foo' ],
             qr/deleted foo with success/,
             'deleted foo'
         ],
 
         # we don't have foo dist any more
         [
-            [ 'list', '--name', 'foo' ], qr/foo doesn't exist/, "foo is deleted"
+            [ 'list', 'foo' ], qr/foo doesn't exist/, "foo is deleted"
         ],
 
         # import dists/dir_configure
@@ -178,7 +171,7 @@ sub start_test {
             'imported dists_dir_configure',
         ],
         [
-            [ 'ls', '--name', 'dir_configure' ],
+            [ 'ls', 'dir_configure' ],
 
             qr{dir_configure:\s+ 
               version:\s+3\.14\s+
@@ -190,13 +183,13 @@ sub start_test {
         [
             [
                 'import', 'file:t/dists/tgz_build.tar.gz',
-                '--version', 2.72, '--follow', 0
+                '--version', 2.72, '--no-follow',
             ],
             qr/imported with success/,
             'imported tgz_build',
         ],
         [
-            [ 'ls', '--name', 'tgz_build' ],
+            [ 'ls', 'tgz_build' ],
             qr{tgz_build:\s+ 
               version:\s+2\.72\s+
               from:\s+ file:t/dists/tgz_build.tar.gz}mx,
@@ -205,12 +198,12 @@ sub start_test {
 
         # import dists/tbz_make.tar.bz
         [
-            [ 'import', 'file:t/dists/tbz_make.tar.bz2', '--follow', 0 ],
+            [ 'import', 'file:t/dists/tbz_make.tar.bz2', '--no-follow' ],
             qr/imported with success/,
             'imported tbz_make',
         ],
         [
-            [ 'ls', '--name', 'tbz_make' ],
+            [ 'ls', 'tbz_make' ],
             qr{tbz_make:\s+ 
               version:\s+
               from:\s+ file:t/dists/tbz_make.tar.bz2}mx,
@@ -219,12 +212,12 @@ sub start_test {
 
         # set flags dir_configure to 'configure'
         [
-            [ 'flags', '--name', 'dir_configure', ],
+            [ 'flags', 'dir_configure', ],
             qr/flags of dir_configure is \*nothing\*/,
             'default is no flags',
         ],
         [
-            [ 'flags', '--name', 'dir_configure', '--set', 'configure,foo', ],
+            [ 'flags', 'dir_configure', '--set', 'configure,foo', ],
 qr/set flags with success\s+flags of dir_configure is configure, foo/,
             'set flags with success',
         ],
@@ -234,7 +227,7 @@ qr/set flags with success\s+flags of dir_configure is bar, configure, foo/,
             'add flags to dir_configure',
         ],
         [
-            [ 'flags', 'dir_configure', '--del', 'foo,bar', ],
+            [ 'flags', 'dir_configure', '--delete', 'foo,bar', ],
             qr/set flags with success\s+flags of dir_configure is configure/,
             'delete flags to dir_configure',
         ],
@@ -244,9 +237,9 @@ qr/set flags with success\s+flags of dir_configure is bar, configure, foo/,
             'set flags to tgz_build',
         ],
         [
-            [ 'flags', 'man1', '--set', 'build', '--mandatary' ],
-qr/set mandatary flags with success\s+mandatary flags of man1 is build/,
-            'set mandatary flags to man1',
+            [ 'flags', 'man1', '--set', 'build', '--mandatory' ],
+qr/set mandatory flags with success\s+mandatory flags of man1 is build/,
+            'set mandatory flag man1',
         ],
         [
             ['build'],
