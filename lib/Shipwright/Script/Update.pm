@@ -151,7 +151,7 @@ Shipwright::Script::Update - Update dist(s) and scripts
 =head1 SYNOPSIS
 
  update --all
- update --name [dist] [--follow]
+ update NAME [--follow]
  update --builder
  update --utility
 
@@ -161,7 +161,6 @@ Shipwright::Script::Update - Update dist(s) and scripts
  -l [--log-level] LOGLEVEL    : specify the log level
                                 (info, debug, warn, error, or fatal)
  --log-file FILENAME          : specify the log file
- --name NAME                  : specify the dist name to be updated
  --version                    : specify the version of the dist
  --all                        : update all dists
  --follow                     : update one dist with all its dependencies

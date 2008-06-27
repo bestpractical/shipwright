@@ -118,7 +118,7 @@ Shipwright::Script::Flags - Maintain a dist's flags
 
  flags -r ... DIST --add FLAG
  flags -r ... DIST --delete FLAG
- flags -r ... --mandatory --set FLAGS --name LABEL
+ flags -r ... --mandatory --set FLAGS LABEL
 
 =head1 OPTIONS
 
@@ -128,7 +128,6 @@ Shipwright::Script::Flags - Maintain a dist's flags
  --log-file FILENAME            : specify the log file
  --add, --delete, --set FLAGS   : specify the flags, split by commas
  --mandatory                    : set these flags as being required
- --name LABEL                   : set the label of a group of mandatory flags
 
 =head1 DESCRIPTION
 
