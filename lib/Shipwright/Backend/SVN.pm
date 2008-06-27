@@ -133,6 +133,9 @@ sub _cmd {
     elsif ( $type eq 'info' ) {
         $cmd = [ 'svn', 'info', join '/', $self->repository, $args{path} ];
     }
+    elsif ( $type eq 'cat' ) {
+        $cmd = [ 'svn', 'cat', join '/', $self->repository, $args{path} ];
+    }
     elsif ( $type eq 'propset' ) {
         $cmd = [
             'svn',       'propset',

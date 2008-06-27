@@ -131,6 +131,9 @@ sub _cmd {
     elsif ( $type eq 'info' ) {
         $cmd = [ 'svk', 'info', join '/', $self->repository, $args{path} ];
     }
+    elsif ( $type eq 'cat' ) {
+        $cmd = [ 'svk', 'cat', join '/', $self->repository, $args{path} ];
+    }
     elsif ( $type eq 'propset' ) {
         $cmd = [
             'svk',                                'propset',

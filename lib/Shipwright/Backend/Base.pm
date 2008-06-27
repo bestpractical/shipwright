@@ -209,6 +209,8 @@ sub update_order {
         @dists = $self->dists;
     }
 
+    s{/$}{} for @dists;
+
     my $require = {};
 
     for (@dists) {
@@ -234,8 +236,10 @@ sub _fill_deps {
     my $name    = $args{name};
 
     return if $require->{$name};
-    my $req = Shipwright::Util::LoadFile(
-        $self->repository . "/scripts/$name/require.yml" );
+    my $out = Shipwright::Util->run(
+        $self->_cmd( 'cat', path => "/scripts/$name/require.yml" ), 1 );
+
+    my $req = Shipwright::Util::Load( $out ) || {};
 
     if ( $req->{requires} ) {
         for (qw/requires recommends build_requires/) {
@@ -391,7 +395,7 @@ sub list {
 sub dists {
     my $self = shift;
     my %args = @_;
-    my $out  = $self->list( path => 'scripts' );
+    my $out  = $self->list( path => '/scripts' );
     return split /\s+/, $out;
 }
 
