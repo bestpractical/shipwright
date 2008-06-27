@@ -107,9 +107,9 @@ my $flags =
 my $ktf =
   ( YAML::Tiny->read( File::Spec->catfile( 'shipwright', 'ktf.yml' ) ) )->[0];
 
-# fill not specified but mandatary flags
-if ( $flags->{__mandatary} ) {
-    for my $list ( values %{ $flags->{__mandatary} } ) {
+# fill not specified but mandatory flags
+if ( $flags->{__mandatory} ) {
+    for my $list ( values %{ $flags->{__mandatory} } ) {
         next unless @$list;
         next if grep { $args{flags}{$_} } @$list;
         $args{flags}{ $list->[0] }++;
