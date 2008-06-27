@@ -9,8 +9,7 @@ use IPC::Cmd qw/can_run/;
 use File::Spec;
 
 our @EXPORT =
-  qw/has_svk has_svn create_svk_repo create_svn_repo devel_cover_enabled
-  test_cmd/;
+  qw/has_svk has_svn create_fs_repo create_svk_repo create_svn_repo devel_cover_enabled test_cmd/;
 
 =head1 NAME
 
@@ -40,6 +39,16 @@ in fact, it also checks svnadmin since we need that to create repo
 
 sub has_svn {
     return can_run('svn') && can_run('svnadmin');
+}
+
+=head2 create_fs_repo 
+
+create a repo for fs
+
+=cut
+
+sub create_fs_repo {
+    return tempdir;
 }
 
 =head2 create_svk_repo 
