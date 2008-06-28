@@ -139,23 +139,6 @@ sub info {
     }
 }
 
-=item test_script
-
-Set test_script for a project, i.e. update the t/test script.
-
-=cut
-
-sub test_script {
-    my $self   = shift;
-    my %args   = @_;
-    my $script = $args{source};
-    croak 'need source option' unless $script;
-
-    my $file = File::Spec->catfile( $self->repository, 't', 'test' );
-
-    copy( $args{source}, $file );
-}
-
 =item check_repository
 
 Check if the given repository is valid.

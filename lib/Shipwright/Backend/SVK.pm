@@ -209,31 +209,6 @@ sub propset {
     $self->log->warn($err) if $err;
 }
 
-=item test_script
-
-Set test_script for a project, i.e. update the t/test script.
-
-=cut
-
-sub test_script {
-    my $self   = shift;
-    my %args   = @_;
-    my $script = $args{source};
-    croak 'need source option' unless $script;
-
-    my $dir = tempdir( CLEANUP => 1 );
-    my $file = File::Spec->catfile( $dir, 'test' );
-
-    $self->checkout(
-        path   => '/t/test',
-        target => $file,
-    );
-
-    copy( $args{source}, $file );
-    $self->commit( path => $file, comment => "update test script" );
-    $self->checkout( detach => 1, target => $file );
-}
-
 =item check_repository
 
 Check if the given repository is valid.

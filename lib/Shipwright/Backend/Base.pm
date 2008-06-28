@@ -501,7 +501,25 @@ sub update {
         File::Spec->catfile( Shipwright::Util->share_root, $args{path} ) );
 }
 
-#*_cmd = *test_script = *propset = *_subclass_method;
+=item test_script
+
+get or set test_script for a project, i.e. /t/test
+
+=cut
+
+sub test_script {
+    my $self = shift;
+    my %args = @_;
+
+    if ( $args{source} ) {
+        $self->_update_file( '/t/test', $args{source} );
+    }
+    else {
+        return $self->cat( path => '/t/test' );
+    }
+}
+
+#*_cmd = *propset = *_subclass_method;
 *_cmd = *_update_file = *_subclass_method;
 
 =back

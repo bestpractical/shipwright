@@ -230,31 +230,6 @@ sub propset {
     );
 }
 
-=item test_script
-
-Set test_script for a project, i.e. update the t/test script.
-
-=cut
-
-sub test_script {
-    my $self   = shift;
-    my %args   = @_;
-    my $script = $args{source};
-    croak 'need source option' unless $script;
-
-    my $dir = tempdir( CLEANUP => 1 );
-
-    $self->checkout(
-        path   => '/t',
-        target => $dir,
-    );
-
-    my $file = File::Spec->catfile( $dir, 'test' );
-
-    copy( $args{source}, $file );
-    $self->commit( path => $file, comment => "update test script" );
-}
-
 =item check_repository
 
 Check if the given repository is valid.
@@ -283,9 +258,9 @@ sub _update_file {
     my $path   = shift;
     my $latest = shift;
 
-    if ( $path =~ m{(.*)/} ) {
-        my $dir = tempdir( CLEANUP => 1 );
-        my $file = File::Spec->catfile( $dir, $path );
+    if ( $path =~ m{(.*)/(.*)$} ) {
+        my $dir = tempdir( CLEANUP => 0 );
+        my $file = File::Spec->catfile( $dir, $2 );
 
         $self->checkout(
             path   => $1,
