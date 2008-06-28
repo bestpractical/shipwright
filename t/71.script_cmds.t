@@ -258,7 +258,9 @@ qr/set mandatory flags with success\s+mandatory flags of man1 is build/,
             ],
             [
                 [ 'list', 'foo' ],
-                $update_cmd ? qr/version:\s+1\s+/ : qr/version:\s+45\s+/m,
+                $update_cmd
+                ? qr/version:\s+1\s+/
+                : qr/version:\s+45\s+/m,    # magic number, got it from practice
                 'list foo, version seems ok',
             ],
             $update_cmd,    # if the source dist is svk, $update_cmd is undef
@@ -266,7 +268,7 @@ qr/set mandatory flags with success\s+mandatory flags of man1 is build/,
                 [ 'list', 'foo', '--with-latest-version' ],
                 $update_cmd
                 ? qr/latest_version:\s+2\s+/
-                : qr/latest_version:\s+52\s+/,
+                : qr/latest_version:\s+52\s+/,    # magic number ;)
                 'list foo, latest version seems ok',
             ],
 
