@@ -268,29 +268,23 @@ sub check_repository {
     return;
 }
 
-=item update
-
-Update shipwright's own files, e.g. bin/shipwright-builder.
-
-=cut
-
-sub update {
+sub _update_file {
     my $self   = shift;
-    my %args   = @_;
-    my $latest = $self->SUPER::update(@_);
+    my $path   = shift;
+    my $latest = shift;
 
     my $dir = tempdir( CLEANUP => 1 );
-    my $file = File::Spec->catfile( $dir, $args{path} );
+    my $file = File::Spec->catfile( $dir, $path );
 
     $self->checkout(
-        path   => $args{path},
+        path   => $path,
         target => $file,
     );
 
     copy( $latest, $file );
     $self->commit(
         path    => $file,
-        comment => "update $args{path}",
+        comment => "updated $path",
     );
     $self->checkout( detach => 1, target => $file );
 }

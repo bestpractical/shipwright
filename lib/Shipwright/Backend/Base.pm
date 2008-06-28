@@ -497,11 +497,12 @@ sub update {
 
     $args{path} = '/' . $args{path} unless $args{path} =~ m{^/};
 
-    return File::Spec->catfile( Shipwright::Util->share_root, $args{path} ),;
+    return $self->_update_file( $args{path},
+        File::Spec->catfile( Shipwright::Util->share_root, $args{path} ) );
 }
 
-#*_cmd = *update = *test_script = *propset = *_subclass_method;
-*_cmd = *update = *_subclass_method;
+#*_cmd = *test_script = *propset = *_subclass_method;
+*_cmd = *_update_file = *_subclass_method;
 
 =back
 

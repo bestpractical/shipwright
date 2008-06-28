@@ -167,19 +167,12 @@ sub check_repository {
     return $self->SUPER::check_repository(@_);
 }
 
-=item update
-
-Update shipwright's own files, e.g. bin/shipwright-builder.
-
-=cut
-
-sub update {
+sub _update_file {
     my $self   = shift;
-    my %args   = @_;
-    my $latest = $self->SUPER::update(@_);
+    my $path   = shift;
+    my $latest = shift;
 
-    my $file =
-      File::Spec->catfile( $self->repository, 'shipwright', $args{path} );
+    my $file = File::Spec->catfile( $self->repository, $path );
 
     copy( $latest, $file );
 }
