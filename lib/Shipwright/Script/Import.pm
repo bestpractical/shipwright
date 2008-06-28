@@ -28,8 +28,8 @@ sub options {
         'no-follow'        => 'no_follow',
         'build-script=s'   => 'build_script',
         'require-yml=s'    => 'require_yml',
-        'test-script=s'    => 'test_script',
-        'extra-tests=s'    => 'extra_tests',
+        'test-script'      => 'test_script',
+        'extra-tests'      => 'extra_tests',
         'overwrite'        => 'overwrite',
         'min-perl-version' => 'min_perl_version',
         'skip=s'           => 'skip',
@@ -43,13 +43,12 @@ sub run {
     my $self   = shift;
     my $source = shift;
 
+    my $shipwright = Shipwright->new( repository => $self->repository, );
+
     if ( $self->name && !$source ) {
 
         # don't have source specified, use the one in repo
-        my $shipwright = Shipwright->new(
-            repository => $self->repository,
-        );
-        my $map    = $shipwright->backend->map    || {};
+        my $map        = $shipwright->backend->map    || {};
         my $source_yml = $shipwright->backend->source || {};
 
         my $r_map = { reverse %$map };
@@ -57,41 +56,49 @@ sub run {
             $source = 'cpan:' . $r_map->{ $self->name };
         }
         elsif ( $source_yml->{ $self->name } ) {
-            $source = $source_yml->{$self->name};
+            $source = $source_yml->{ $self->name };
         }
 
     }
 
     die "we need source arg\n" unless $source;
 
-    $self->skip( { map { $_ => 1 } split /\s*,\s*/, $self->skip || '' } );
-
-
-    if ( $self->name ) {
-        if ( $self->name =~ /::/ ) {
-            $self->log->warn("we saw '::' in the name, will treat it as '-'");
-            my $name = $self->name;
-            $name =~ s/::/-/g;
-            $self->name($name);
-        }
-        if ( $self->name !~ /^[-.\w]+$/ ) {
-            die qq{name can only have alphanumeric characters, "." and "-"\n};
-        }
+    if ( $self->extra_tests ) {
+        $shipwright->backend->import(
+            source       => $source,
+            comment      => 'import extra tests',
+            _extra_tests => 1,
+        );
     }
+    elsif ( $self->test_script ) {
+        $shipwright->backend->test_script( source => $source );
+    }
+    else {
+        $self->skip( { map { $_ => 1 } split /\s*,\s*/, $self->skip || '' } );
 
-    my $shipwright = Shipwright->new(
-        repository       => $self->repository,
-        log_level        => $self->log_level,
-        log_file         => $self->log_file,
-        source           => $source,
-        name             => $self->name,
-        follow           => !$self->no_follow,
-        min_perl_version => $self->min_perl_version,
-        skip             => $self->skip,
-        version          => $self->version,
-    );
+        if ( $self->name ) {
+            if ( $self->name =~ /::/ ) {
+                $self->log->warn(
+                    "we saw '::' in the name, will treat it as '-'");
+                my $name = $self->name;
+                $name =~ s/::/-/g;
+                $self->name($name);
+            }
+            if ( $self->name !~ /^[-.\w]+$/ ) {
+                die
+                  qq{name can only have alphanumeric characters, "." and "-"\n};
+            }
+        }
 
-    if ( $source ) {
+        my $shipwright = Shipwright->new(
+            repository       => $self->repository,
+            source           => $source,
+            name             => $self->name,
+            follow           => !$self->no_follow,
+            min_perl_version => $self->min_perl_version,
+            skip             => $self->skip,
+            version          => $self->version,
+        );
 
         unless ( $self->overwrite ) {
 
@@ -108,10 +115,8 @@ sub run {
             $shipwright->backend->map || {},
         );
 
-        $source =
-            $shipwright->source->run(
-                copy => { '__require.yml' => $self->require_yml },
-            );
+        $source = $shipwright->source->run(
+            copy => { '__require.yml' => $self->require_yml }, );
 
         $version =
           Shipwright::Util::LoadFile( $shipwright->source->version_path );
@@ -133,8 +138,8 @@ sub run {
             $self->_import_req( $source, $shipwright );
 
             move(
-                File::Spec->catfile( $source, '__require.yml' ),
-                File::Spec->catfile( $script_dir,   'require.yml' )
+                File::Spec->catfile( $source,     '__require.yml' ),
+                File::Spec->catfile( $script_dir, 'require.yml' )
             ) or die "move __require.yml failed: $!\n";
         }
 
@@ -166,19 +171,6 @@ sub run {
         );
 
         $self->_reorder($shipwright);
-    }
-
-    # import tests
-    if ( $self->extra_tests ) {
-        $shipwright->backend->import(
-            source       => $self->extra_tests,
-            comment      => 'import extra tests',
-            _extra_tests => 1,
-        );
-    }
-
-    if ( $self->test_script ) {
-        $shipwright->backend->test_script( source => $self->test_script );
     }
 
     print "imported with success\n";
@@ -293,7 +285,7 @@ sub _generate_build {
     }
     elsif ( -f 'configure' ) {
         print
-          "detected autoconf build system; generating appropriate build script\n";
+"detected autoconf build system; generating appropriate build script\n";
         @commands = (
             'configure: ./configure --prefix=%%INSTALL_BASE%%',
             'make: make',
@@ -307,13 +299,13 @@ sub _generate_build {
         print "scripts/$name/build or provide a build.pl file or this dist\n";
         print "will not be built!\n";
         $self->log->warn("I have no idea how to build this distribution");
+
         # stub build file to provide the user something to go from
         push @commands,
           '# Edit this file to specify commands for building this dist.';
         push @commands,
           '# See the perldoc for Shipwright::Manual::CustomizeBuild for more';
-        push @commands,
-          '# info.';
+        push @commands, '# info.';
         push @commands, 'make: ';
         push @commands, 'test: ';
         push @commands, 'install: ';
