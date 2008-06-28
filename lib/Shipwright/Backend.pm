@@ -88,8 +88,6 @@ A backend must support the following methods:
 
 =head2 info
 
-=head2 propset
-
 =head2 test_script
 
 =head2 requires

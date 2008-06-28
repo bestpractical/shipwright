@@ -86,14 +86,14 @@ sub import {
 
     unless ( $args{_initialize} || $args{_extra_tests} ) {
         if ( $args{_extra_tests} ) {
-            $self->delete( path => "t/extra" ) if $args{delete};
+            $self->delete( path => "/t/extra" ) if $args{delete};
 
             $self->log->info( "import extra tests to " . $self->repository );
             Shipwright::Util->run(
                 $self->_cmd( import => %args, name => $name ) );
         }
         elsif ( $args{build_script} ) {
-            if ( $self->info( path => "scripts/$name" )
+            if ( $self->info( path => "/scripts/$name" )
                 && not $args{overwrite} )
             {
                 $self->log->warn(
@@ -101,7 +101,7 @@ sub import {
                 );
             }
             else {
-                $self->delete( path =>  "scripts/$name" ) if $args{delete};
+                $self->delete( path =>  "/scripts/$name" ) if $args{delete};
 
                 $self->log->info(
                     "import $args{source}'s scripts to " . $self->repository );
@@ -110,14 +110,14 @@ sub import {
             }
         }
         else {
-            if ( $self->info( path => "dists/$name" ) && not $args{overwrite} )
+            if ( $self->info( path => "/dists/$name" ) && not $args{overwrite} )
             {
                 $self->log->warn(
 "path dists/$name alreay exists, need to set overwrite arg to overwrite"
                 );
             }
             else {
-                $self->delete( path =>  "dists/$name" ) if $args{delete};
+                $self->delete( path =>  "/dists/$name" ) if $args{delete};
                 $self->log->info(
                     "import $args{source} to " . $self->repository );
                 $self->_add_to_order($name);
@@ -176,8 +176,6 @@ sub commit {
     Shipwright::Util->run( $self->_cmd( commit => @_ ), 1 );
 }
 
-
-# add a dist to order
 
 sub _add_to_order {
     my $self = shift;
@@ -284,7 +282,7 @@ Get or set the dependency order.
 sub order {
     my $self  = shift;
     my $order = shift;
-    my $path  = File::Spec->catfile( 'shipwright', 'order.yml' );
+    my $path  = '/shipwright/order.yml';
     return $self->_yml( $path, $order );
 }
 
@@ -298,7 +296,7 @@ sub map {
     my $self = shift;
     my $map  = shift;
 
-    my $path = File::Spec->catfile( 'shipwright', 'map.yml' );
+    my $path = '/shipwright/map.yml';
     return $self->_yml( $path, $map );
 }
 
@@ -311,7 +309,7 @@ Get or set the sources map.
 sub source {
     my $self   = shift;
     my $source = shift;
-    my $path   = File::Spec->catfile( 'shipwright', 'source.yml' );
+    my $path = '/shipwright/source.yml';
     return $self->_yml( $path, $source );
 }
 
@@ -325,7 +323,7 @@ sub flags {
     my $self  = shift;
     my $flags = shift;
 
-    my $path = File::Spec->catfile( 'shipwright', 'flags.yml' );
+    my $path = '/shipwright/flags.yml';
     return $self->_yml( $path, $flags );
 }
 
@@ -339,7 +337,7 @@ sub version {
     my $self    = shift;
     my $version = shift;
 
-    my $path = File::Spec->catfile( 'shipwright', 'version.yml' );
+    my $path = '/shipwright/version.yml';
     return $self->_yml( $path, $version );
 }
 
@@ -352,7 +350,7 @@ Get or set known failure conditions.
 sub ktf {
     my $self = shift;
     my $ktf  = shift;
-    my $path = File::Spec->catfile( 'shipwright', 'ktf.yml' );
+    my $path = '/shipwright/ktf.yml';
 
     return $self->_yml( $path, $ktf );
 }
@@ -367,7 +365,7 @@ sub delete {
     my %args = @_;
     my $path = $args{path} || '';
     if ( $self->info( path => $path ) ) {
-        $self->log->info( "delete " . $self->repository . "/$path" );
+        $self->log->info( "delete " . $self->repository . $path );
         Shipwright::Util->run( $self->_cmd( delete => path => $path ), 1 );
     }
 }
@@ -471,8 +469,8 @@ sub check_repository {
     }
     else {
 
-        # every valid shipwright repo has 'shipwright' subdir;
-        my $info = $self->info( path => 'shipwright' );
+        # every valid shipwright repo has '/shipwright' subdir;
+        my $info = $self->info( path => '/shipwright' );
 
         return 1 if $info;
     }
@@ -494,8 +492,6 @@ sub update {
     croak "$args{path} seems not shipwright's own file"
       unless -e File::Spec->catfile( Shipwright::Util->share_root,
         $args{path} );
-
-    $args{path} = '/' . $args{path} unless $args{path} =~ m{^/};
 
     return $self->_update_file( $args{path},
         File::Spec->catfile( Shipwright::Util->share_root, $args{path} ) );
@@ -519,7 +515,6 @@ sub test_script {
     }
 }
 
-#*_cmd = *propset = *_subclass_method;
 *_cmd = *_update_file = *_subclass_method;
 
 =back

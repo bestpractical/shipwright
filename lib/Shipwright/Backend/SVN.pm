@@ -86,7 +86,7 @@ sub _cmd {
         elsif ( $args{_extra_tests} ) {
             $cmd = [
                 'svn', 'import',
-                $args{source}, join( '/', $self->repository, 't', 'extra' ),
+                $args{source}, $self->repository . 't/extra',
                 '-m', q{'} . $args{comment} . q{'},
             ];
         }
@@ -117,7 +117,7 @@ sub _cmd {
     elsif ( $type eq 'delete' ) {
         $cmd = [
             'svn', 'delete', '-m', q{'} . 'delete' . $args{path} . q{'},
-            join '/', $self->repository, $args{path}
+            $self->repository . $args{path}
         ];
     }
     elsif ( $type eq 'move' ) {
@@ -126,22 +126,15 @@ sub _cmd {
             'move',
             '-m',
             q{'} . "move $args{path} to $args{new_path}" . q{'},
-            join( '/', $self->repository, $args{path} ),
-            join( '/', $self->repository, $args{new_path} )
+            $self->repository . $args{path},
+            $self->repository . $args{new_path}
         ];
     }
     elsif ( $type eq 'info' ) {
-        $cmd = [ 'svn', 'info', join '/', $self->repository, $args{path} ];
+        $cmd = [ 'svn', 'info', $self->repository . $args{path} ];
     }
     elsif ( $type eq 'cat' ) {
-        $cmd = [ 'svn', 'cat', join '/', $self->repository, $args{path} ];
-    }
-    elsif ( $type eq 'propset' ) {
-        $cmd = [
-            'svn',       'propset',
-            $args{type}, q{'} . $args{value} . q{'},
-            $args{path}
-        ];
+        $cmd = [ 'svn', 'cat', $self->repository . $args{path} ];
     }
     else {
         croak "invalid command: $type";
@@ -203,31 +196,6 @@ sub info {
         }
         return $info;
     }
-}
-
-=item propset
-
-A wrapper around svn's propset command.
-
-=cut
-
-sub propset {
-    my $self = shift;
-    my %args = @_;
-    my $dir  = tempdir( CLEANUP => 1 );
-
-    $self->checkout( target => $dir, );
-    Shipwright::Util->run(
-        $self->_cmd(
-            propset => %args,
-            path => File::Spec->catfile( $dir, $args{path} )
-        )
-    );
-
-    $self->commit(
-        path    => File::Spec->catfile( $dir, $args{path} ),
-        comment => "set prop $args{type}"
-    );
 }
 
 =item check_repository

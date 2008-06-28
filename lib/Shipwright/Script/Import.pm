@@ -296,7 +296,7 @@ sub _generate_build {
     else {
         my ($name) = $source_dir =~ /([-\w.]+)$/;
         print "unknown build system for this dist; you MUST manually edit\n";
-        print "scripts/$name/build or provide a build.pl file or this dist\n";
+        print "/scripts/$name/build or provide a build.pl file or this dist\n";
         print "will not be built!\n";
         $self->log->warn("I have no idea how to build this distribution");
 
@@ -409,7 +409,7 @@ Shipwright::Script::Import - import a source and its dependencies
 The import command imports a new dist into a shipwright repository from any of
 a number of supported source types (enumerated below). If a dist of the name
 specified by C<--name> already exists in the repository, the old files for that
-dist in F<dists/> and F<scripts/> are deleted and new ones added. This is the
+dist in F</dists> and F</scripts> are deleted and new ones added. This is the
 recommended method for updating non-svn, svk, or CPAN dists to new versions
 (see L<Shipwright::Update> for more information on the C<update> command, which
 is used for updating svn, svk, and CPAN dists).

@@ -60,7 +60,7 @@ sub _cmd {
         if ( $args{_extra_tests} ) {
             $cmd = [
                 'cp', '-r',
-                $args{source}, join( '/', $self->repository, 't', 'extra' ),
+                $args{source}, $self->repository . '/t/extra'
             ];
         }
         else {
@@ -79,17 +79,17 @@ sub _cmd {
         }
     }
     elsif ( $type eq 'delete' ) {
-        $cmd = [ 'rm', '-rf', join '/', $self->repository, $args{path}, ];
+        $cmd = [ 'rm', '-rf', $self->repository . $args{path}, ];
     }
     elsif ( $type eq 'move' ) {
         $cmd = [
             'mv',
-            join( '/', $self->repository, $args{path} ),
-            join( '/', $self->repository, $args{new_path} )
+            $self->repository . $args{path},
+            $self->repository . $args{new_path}
         ];
     }
     elsif ( $type eq 'info' || $type eq 'list' ) {
-        $cmd = [ 'ls', join '/', $self->repository, $args{path} ];
+        $cmd = [ 'ls', $self->repository . $args{path} ];
     }
     else {
         croak "invalid command: $type";

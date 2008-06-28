@@ -87,7 +87,7 @@ sub _cmd {
         elsif ( $args{_extra_tests} ) {
             $cmd = [
                 'svk', 'import',
-                $args{source}, join( '/', $self->repository, 't', 'extra' ),
+                $args{source}, $self->repository . '/t/extra',
                 '-m', q{'} . $args{comment} . q{'},
             ];
         }
@@ -115,7 +115,7 @@ sub _cmd {
     elsif ( $type eq 'delete' ) {
         $cmd = [
             'svk', 'delete', '-m', q{'} . 'delete repository' . q{'},
-            join '/', $self->repository, $args{path},
+            $self->repository . $args{path},
         ];
     }
     elsif ( $type eq 'move' ) {
@@ -124,24 +124,15 @@ sub _cmd {
             'move',
             '-m',
             q{'} . "move $args{path} to $args{new_path}" . q{'},
-            join( '/', $self->repository, $args{path} ),
-            join( '/', $self->repository, $args{new_path} )
+            $self->repository . $args{path},
+            $self->repository . $args{new_path}
         ];
     }
     elsif ( $type eq 'info' ) {
-        $cmd = [ 'svk', 'info', join '/', $self->repository, $args{path} ];
+        $cmd = [ 'svk', 'info', $self->repository . $args{path} ];
     }
     elsif ( $type eq 'cat' ) {
-        $cmd = [ 'svk', 'cat', join '/', $self->repository, $args{path} ];
-    }
-    elsif ( $type eq 'propset' ) {
-        $cmd = [
-            'svk',                                'propset',
-            $args{type},                          '-m',
-            q{'} . "set prop $args{type}" . q{'}, q{'} . $args{value} . q{'},
-            join '/',                             $self->repository,
-            $args{path}
-        ];
+        $cmd = [ 'svk', 'cat', $self->repository . $args{path} ];
     }
     else {
         croak "invalid command: $type";
@@ -193,20 +184,6 @@ sub info {
         return if $info =~ /not exist|not a checkout path/;
         return $info;
     }
-}
-
-=item propset
-
-A wrapper around svk's propset command.
-
-=cut
-
-sub propset {
-    my $self = shift;
-    my %args = @_;
-    my ( $info, $err ) =
-      Shipwright::Util->run( $self->_cmd( propset => %args ) );
-    $self->log->warn($err) if $err;
 }
 
 =item check_repository
