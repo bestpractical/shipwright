@@ -50,7 +50,6 @@ lib/Shipwright/Source/HTTP.pm
 lib/Shipwright/Source/SVK.pm
 lib/Shipwright/Source/SVN.pm
 lib/Shipwright/Test.pm
-lib/Shipwright/Test/Fake/App/CLI.pm
 lib/Shipwright/Util.pm
 Makefile.PL
 MANIFEST			This list of files
@@ -70,6 +69,7 @@ share/shipwright/map.yml
 share/shipwright/order.yml
 share/shipwright/source.yml
 share/shipwright/version.yml
+share/t/test
 t/00.load.t
 t/01.repo_check.t
 t/02.shipwright.t
