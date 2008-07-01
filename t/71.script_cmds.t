@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 106;
+use Test::More tests => 112;
 
 use Shipwright;
 use Shipwright::Test;
@@ -246,6 +246,16 @@ qr/set mandatory flags with success\s+mandatory flags of man1 is build/,
             qr/run, run, configure/,
             'configure is run',
         ],
+        [
+            [ 'update', '--builder' ],
+            qr/updated with success/,
+            "updated builder",
+        ],
+        [
+            [ 'update', '--utility' ],
+            qr/updated with success/,
+            "updated utility",
+        ],
 
         $source
         ? (
@@ -268,7 +278,7 @@ qr/set mandatory flags with success\s+mandatory flags of man1 is build/,
                 [ 'list', 'foo', '--with-latest-version' ],
                 $update_cmd
                 ? qr/latest_version:\s+2\s+/
-                : qr/latest_version:\s+52\s+/,    # magic number ;)
+                : qr/latest_version:\s+52\s+/,    # magic number
                 'list foo, latest version seems ok',
             ],
 
