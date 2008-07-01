@@ -102,10 +102,24 @@ if ( $args{'install-base'} ) {
 # YAML::Tiny objects are array based.
 my $order =
   ( YAML::Tiny->read( File::Spec->catfile( 'shipwright', 'order.yml' ) ) )->[0];
-my $flags =
-  ( YAML::Tiny->read( File::Spec->catfile( 'shipwright', 'flags.yml' ) ) )->[0];
-my $ktf =
-  ( YAML::Tiny->read( File::Spec->catfile( 'shipwright', 'ktf.yml' ) ) )->[0];
+
+my ( $flags, $ktf );
+
+if ( -e File::Spec->catfile( 'shipwright', 'flags.yml' ) ) {
+    $flags =
+      ( YAML::Tiny->read( File::Spec->catfile( 'shipwright', 'flags.yml' ) ) )->[0];
+}
+else {
+    $flags = {};
+}
+
+if ( -e File::Spec->catfile( 'shipwright', 'ktf.yml' ) ) {
+    $ktf =
+      ( YAML::Tiny->read( File::Spec->catfile( 'shipwright', 'ktf.yml' ) ) )->[0];
+}
+else {
+    $ktf = {};
+}
 
 # fill not specified but mandatory flags
 if ( $flags->{__mandatory} ) {
