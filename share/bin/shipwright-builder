@@ -116,6 +116,20 @@ if ( $flags->{__mandatory} ) {
     }
 }
 
+my $installed;
+my $installed_hash = {};
+my $installed_file =
+  File::Spec->catfile( $args{'install-base'}, 'installed.yml' );
+if ( -e $installed_file ) {
+    $installed =
+      YAML::Tiny->read(
+        File::Spec->catfile( $args{'install-base'}, 'installed.yml' ) );
+    $installed_hash = { map { $_ => 1 } @{ $installed->[0] } };
+}
+else {
+    $installed = YAML::Tiny->new;
+}
+
 # calculate the real order
 if ( $args{only} ) {
     @$order = grep { $args{only}->{$_} } @$order;
@@ -127,6 +141,9 @@ else {
           && !$args{skip}->{$_}
       } @$order;
 }
+
+# remove the already installed ones
+@$order = grep { !$installed_hash->{$_} } @$order;
 
 my $log;
 
@@ -266,6 +283,7 @@ else {
 
     for my $dist (@$order) {
         install($dist);
+        record($dist);
         chdir $build_base;
     }
 
@@ -577,5 +595,11 @@ sub cmd {
     }
 
     return;
+}
+
+sub record {
+    my $dist = shift;
+    push @{ $installed->[0] }, $dist;
+    $installed->write($installed_file);
 }
 
