@@ -5,8 +5,7 @@ use warnings;
 use Carp;
 
 use base qw/App::CLI::Command Class::Accessor::Fast Shipwright::Script/;
-__PACKAGE__->mk_accessors(
-    qw/all follow builder utility version/);
+__PACKAGE__->mk_accessors(qw/all follow builder utility version/);
 
 use Shipwright;
 use File::Spec;
@@ -37,12 +36,10 @@ sub run {
     $shipwright = Shipwright->new( repository => $self->repository, );
 
     if ( $self->builder ) {
-        $shipwright->backend->update(
-            path => File::Spec->catfile( 'bin', 'shipwright-builder' ) );
+        $shipwright->backend->update( path => '/bin/shipwright-builder' );
     }
     elsif ( $self->utility ) {
-        $shipwright->backend->update(
-            path => File::Spec->catfile( 'bin', 'shipwright-utility' ) );
+        $shipwright->backend->update( path => '/bin/shipwright-utility' );
 
     }
     else {
@@ -77,7 +74,7 @@ sub run {
                     }
                 };
 
-                $find_deps->( $name );
+                $find_deps->($name);
                 @dists = keys %checked;
             }
             $self->_update($_) for @dists;
