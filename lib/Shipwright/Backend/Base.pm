@@ -350,7 +350,7 @@ Get or set known failure conditions.
 sub ktf {
     my $self = shift;
     my $ktf  = shift;
-    my $path = '/shipwright/ktf.yml';
+    my $path = '/shipwright/known_test_failures.yml';
 
     return $self->_yml( $path, $ktf );
 }

@@ -135,10 +135,10 @@ sub run {
             $flags = {};
         }
 
-        if ( -e File::Spec->catfile( 'shipwright', 'ktf.yml' ) ) {
+        if ( -e File::Spec->catfile( 'shipwright', 'known_test_failures.yml' ) ) {
 
             $ktf = Shipwright::Util::LoadFile(
-                File::Spec->catfile( 'shipwright', 'ktf.yml' ) );
+                File::Spec->catfile( 'shipwright', 'known_test_failures.yml' ) );
         }
         else {
             $ktf = {};

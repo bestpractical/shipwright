@@ -113,9 +113,13 @@ else {
     $flags = {};
 }
 
-if ( -e File::Spec->catfile( 'shipwright', 'ktf.yml' ) ) {
+if ( -e File::Spec->catfile( 'shipwright', 'known_test_failures.yml' ) ) {
     $ktf =
-      ( YAML::Tiny->read( File::Spec->catfile( 'shipwright', 'ktf.yml' ) ) )->[0];
+    (
+        YAML::Tiny->read(
+            File::Spec->catfile( 'shipwright', 'known_test_failures.yml' )
+        )
+    )->[0];
 }
 else {
     $ktf = {};

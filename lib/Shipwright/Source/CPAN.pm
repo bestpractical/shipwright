@@ -32,26 +32,26 @@ sub new {
     my $class = shift;
     my $self  = $class->SUPER::new(@_);
 
-    CPAN::Config->use;
-
-    mkdir File::Spec->catfile( $cpan_dir, 'CPAN' );
-    my $config_file = File::Spec->catfile( $cpan_dir, 'CPAN', 'MyConfig.pm' );
-
-    unless ( -f $config_file ) {
-        $CPAN::Config->{cpan_home} = File::Spec->catfile($cpan_dir);
-        $CPAN::Config->{build_dir} = File::Spec->catfile( $cpan_dir, 'build' );
-        $CPAN::Config->{histfile} =
-          File::Spec->catfile( $cpan_dir, 'histfile' );
-        $CPAN::Config->{keep_source_where} =
-          File::Spec->catfile( $cpan_dir, 'sources' );
-        $CPAN::Config->{prefs_dir} = File::Spec->catfile( $cpan_dir, 'prefs' );
-        $CPAN::Config->{prerequisites_policy} = 'follow';
-        $CPAN::Config->{urllist}              = [];
-        write_file( $config_file,
-            Data::Dumper->Dump( [$CPAN::Config], ['$CPAN::Config'] ) );
-
-    }
-    require CPAN::MyConfig;
+#    CPAN::Config->use;
+#
+#    mkdir File::Spec->catfile( $cpan_dir, 'CPAN' );
+#    my $config_file = File::Spec->catfile( $cpan_dir, 'CPAN', 'MyConfig.pm' );
+#
+#    unless ( -f $config_file ) {
+#        $CPAN::Config->{cpan_home} = File::Spec->catfile($cpan_dir);
+#        $CPAN::Config->{build_dir} = File::Spec->catfile( $cpan_dir, 'build' );
+#        $CPAN::Config->{histfile} =
+#          File::Spec->catfile( $cpan_dir, 'histfile' );
+#        $CPAN::Config->{keep_source_where} =
+#          File::Spec->catfile( $cpan_dir, 'sources' );
+#        $CPAN::Config->{prefs_dir} = File::Spec->catfile( $cpan_dir, 'prefs' );
+#        $CPAN::Config->{prerequisites_policy} = 'follow';
+#        $CPAN::Config->{urllist}              = [];
+#        write_file( $config_file,
+#            Data::Dumper->Dump( [$CPAN::Config], ['$CPAN::Config'] ) );
+#
+#    }
+#    require CPAN::MyConfig;
     return $self;
 }
 
