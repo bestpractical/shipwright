@@ -104,7 +104,7 @@ sub run {
         $installed_file =
           File::Spec->catfile( $self->install_base, 'installed.yml' );
         if ( -e $installed_file ) {
-            $installed = Shipwright::Util::LoadFile( $installed_file );
+            $installed = Shipwright::Util::LoadFile($installed_file);
             $installed_hash = { map { $_ => 1 } @$installed };
         }
         else {
@@ -116,13 +116,11 @@ sub run {
             File::Spec->catfile( 'shipwright', 'order.yml' ) )
           || [];
 
-        my $flags;
+        my ( $flags, $ktf );
         if ( -e File::Spec->catfile( 'shipwright', 'flags.yml' ) ) {
 
-            $flags =
-              Shipwright::Util::LoadFile(
-                File::Spec->catfile( 'shipwright', 'flags.yml' ) )
-              || {};
+            $flags = Shipwright::Util::LoadFile(
+                File::Spec->catfile( 'shipwright', 'flags.yml' ) );
 
             # fill not specified but mandatory flags
             if ( $flags->{__mandatory} ) {
@@ -133,11 +131,18 @@ sub run {
                 }
             }
         }
+        else {
+            $flags = {};
+        }
 
-        my $ktf =
-          Shipwright::Util::LoadFile(
-            File::Spec->catfile( 'shipwright', 'ktf.yml' ) )
-          || {};
+        if ( -e File::Spec->catfile( 'shipwright', 'ktf.yml' ) ) {
+
+            $ktf = Shipwright::Util::LoadFile(
+                File::Spec->catfile( 'shipwright', 'ktf.yml' ) );
+        }
+        else {
+            $ktf = {};
+        }
 
         # calculate the real order
         if ( $self->only ) {
@@ -173,7 +178,7 @@ sub run {
 
         for my $dist (@$order) {
             $self->_install( $dist, $ktf );
-            $self->_record( $dist );
+            $self->_record($dist);
             chdir $self->build_base;
         }
 
@@ -387,8 +392,7 @@ sub test {
     }
 }
 
-
-# record the installed dist, so we don't need to installed it later 
+# record the installed dist, so we don't need to installed it later
 # if at the same install_base
 
 sub _record {
