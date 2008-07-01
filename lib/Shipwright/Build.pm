@@ -23,6 +23,9 @@ use File::Path;
 
 =cut
 
+# keeps the info of the already installed dists
+my ( $installed, $installed_file );
+
 sub new {
     my $class = shift;
     my $self  = {@_};
@@ -97,6 +100,17 @@ sub run {
     else {
         dircopy( 'etc', File::Spec->catfile( $self->install_base, 'etc' ) );
 
+        my $installed_hash = {};
+        $installed_file =
+          File::Spec->catfile( $self->install_base, 'installed.yml' );
+        if ( -e $installed_file ) {
+            $installed = Shipwright::Util::LoadFile( $installed_file );
+            $installed_hash = { map { $_ => 1 } @$installed };
+        }
+        else {
+            $installed = [];
+        }
+
         my $order =
           Shipwright::Util::LoadFile(
             File::Spec->catfile( 'shipwright', 'order.yml' ) )
@@ -141,6 +155,9 @@ sub run {
               } @$order;
         }
 
+        # remove the already installed ones
+        @$order = grep { !$installed_hash->{$_} } @$order;
+
         unless ( $self->perl && -e $self->perl ) {
             my $perl =
               File::Spec->catfile( $self->install_base, 'bin', 'perl' );
@@ -156,6 +173,7 @@ sub run {
 
         for my $dist (@$order) {
             $self->_install( $dist, $ktf );
+            $self->_record( $dist );
             chdir $self->build_base;
         }
 
@@ -229,7 +247,7 @@ sub _install {
                         next;
                     }
                     ## no critic
-                    elsif ( eval "$ktf->{$dir}" ) { 
+                    elsif ( eval "$ktf->{$dir}" ) {
                         $self->log->error(
 "although tests failed, will install anyway since it's a known failure\n"
                         );
@@ -367,6 +385,18 @@ sub test {
             die;
         }
     }
+}
+
+
+# record the installed dist, so we don't need to installed it later 
+# if at the same install_base
+
+sub _record {
+    my $self = shift;
+    my $dist = shift;
+
+    push @$installed, $dist;
+    Shipwright::Util::DumpFile( $installed_file, $installed );
 }
 
 1;
