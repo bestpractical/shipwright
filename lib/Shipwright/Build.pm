@@ -273,22 +273,30 @@ sub _wrapper {
     my $sub = sub {
         my $file = $_;
         return unless $file and -f $file;
+
+        # return if it's been wrapped already
+        if ( -l $file ) {
+            $self->log->warn(
+                "seems $file has been already wrapped, skipping\n");
+            return;
+        }
+
         my $dir = ( File::Spec->splitdir($File::Find::dir) )[-1];
         mkdir File::Spec->catfile( $self->install_base,       "$dir-wrapped" )
           unless -d File::Spec->catfile( $self->install_base, "$dir-wrapped" );
 
-        # return if it's been wrapped already
         if (
             -e File::Spec->catfile( $self->install_base, "$dir-wrapped", $file )
           )
         {
             $self->log->warn(
-                'found '
+                'found old '
                   . File::Spec->catfile( $self->install_base, "$dir-wrapped",
                     $file )
-                  . ', skipping' . "\n"
+                  . ', deleting' . "\n"
             );
-            return;
+            unlink File::Spec->catfile( $self->install_base, "$dir-wrapped",
+                $file );
         }
 
         my $type;

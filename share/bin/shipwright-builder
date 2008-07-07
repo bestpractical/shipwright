@@ -394,22 +394,30 @@ sub wrap_bin {
 
     my $sub = sub {
         my $file = $_;
+
         return unless -f $file;
+
+        # return if it's been wrapped already
+        if ( -l $file ) {
+            print $log "seems $file has been already wrapped, skipping\n";
+            return;
+        }
+
         my $dir = ( File::Spec->splitdir($File::Find::dir) )[-1];
         mkdir File::Spec->catfile( $args{'install-base'}, "$dir-wrapped" )
           unless -d File::Spec->catfile( $args{'install-base'},
             "$dir-wrapped" );
 
-        # return if it's been wrapped already
         if (
             -e File::Spec->catfile( $args{'install-base'}, "$dir-wrapped",
                 $file ) )
         {
-            print $log 'found '
+            print $log 'found old '
               . File::Spec->catfile( $args{'install-base'}, "$dir-wrapped",
                 $file )
-              . ', skipping' . "\n";
-            return;
+              . ', deleting' . "\n";
+            unlink File::Spec->catfile( $args{'install-base'}, "$dir-wrapped",
+                $file );
         }
 
         my $type;
