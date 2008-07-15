@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 if [ $# = 1 ]; then
     export PATH=$1/bin:$PATH
-    export PERL5LIB=$1/lib/perl5/site_perl:$1/lib/perl5:${PERL5LIB}
+    export PERL5LIB=$1/lib/perl5/site_perl:$1/lib/perl5:$1/lib:$1/etc:${PERL5LIB}
     export LD_LIBRARY_PATH=$1/lib:${LD_LIBRARY_PATH}
     export DYLD_LIBRARY_PATH=$1/lib:${DYLD_LIBRARY_PATH}
 else
