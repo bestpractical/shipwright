@@ -513,7 +513,7 @@ sub cmds {
     my @cmds;
 
     {
-        open my $fh, '<', $file or die $!;
+        open my $fh, '<', $file or die "$!: $file";
         @cmds = <$fh>;
         close $fh;
         chomp @cmds;
