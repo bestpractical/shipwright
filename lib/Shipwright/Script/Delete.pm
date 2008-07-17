@@ -30,8 +30,8 @@ sub run {
 
     die "no such dist: $name\n" unless grep { $_ eq $name } @$order;
 
-    $shipwright->backend->delete( path => "dists/$name" );
-    $shipwright->backend->delete( path => "scripts/$name" );
+    $shipwright->backend->delete( path => "/dists/$name" );
+    $shipwright->backend->delete( path => "/scripts/$name" );
 
     # clean order.yml
     @$order = grep { $_ ne $name } @$order;
