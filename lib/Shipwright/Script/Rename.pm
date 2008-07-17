@@ -30,12 +30,12 @@ sub run {
     die "no such dist: $name\n" unless grep { $_ eq $name } @$order;
 
     $shipwright->backend->move(
-        path     => "dists/$name",
-        new_path => "dists/$new_name",
+        path     => "/dists/$name",
+        new_path => "/dists/$new_name",
     );
     $shipwright->backend->move(
-        path     => "scripts/$name",
-        new_path => "scripts/$new_name",
+        path     => "/scripts/$name",
+        new_path => "/scripts/$new_name",
     );
 
     # update order.yml
