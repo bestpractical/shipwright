@@ -12,6 +12,7 @@ if [ "$LINK" = '' ] || [ $LINK = '../etc/shipwright-script-wrapper' ]; then
     BASE_DIR=` (cd "$BASE_DIR"; pwd) `
     FILENAME=`basename "$BASE"`
     WRAPPED_DIR=`basename "$BASE_DIR"`
+    PATH=${BASE_DIR}/../sbin:${BASE_DIR}/../bin:$PATH \
     PERL5LIB=${BASE_DIR}/../lib/perl5/site_perl:${BASE_DIR}/../lib/perl5:${PERL5LIB}\
         LD_LIBRARY_PATH=${BASE_DIR}/../lib:${LD_LIBRARY_PATH}\
         DYLD_LIBRARY_PATH=${BASE_DIR}/../lib:${DYLD_LIBRARY_PATH}\
