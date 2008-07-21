@@ -8,6 +8,8 @@ use Shipwright::Source::Compressed;
 
 use base qw/Shipwright::Source::Base/;
 
+$ENV{'FTP_PASSIVE'} = 1; # force enable passive mode, seems safe nowadays
+
 =head2 run
 
 =cut
