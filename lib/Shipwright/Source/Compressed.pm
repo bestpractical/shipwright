@@ -23,9 +23,12 @@ sub run {
     $self->_update_url( $self->name, 'file:' . $self->source )
       unless $self->{_no_update_url};
 
+    my $newer = $self->_cmd; # if we really get something new
+
     my $ret = $self->SUPER::run(@_);
+    # follow only if --follow and we really added new stuff.
     $self->_follow( File::Spec->catfile( $self->directory, $self->name ) )
-      if $self->follow;
+      if $self->follow && $newer;
     return File::Spec->catfile( $self->directory, $self->name );
 }
 
@@ -67,34 +70,25 @@ sub _cmd {
         croak "I've no idea what the cmd is";
     }
 
+
+    my ( $from, $to );
+    $from = File::Spec->catfile( $self->directory, $self->path );
+    $to = File::Spec->catfile( $self->directory, $self->name );
+
+# if it already exists, assuming we have processed it already, don't do it
+# again
+    return if -e $to; 
+
     my @cmds;
     push @cmds, [ 'tar', $arg, $self->source, '-C', $self->directory ];
-
-    if ( $self->name && $self->name ne $self->path ) {
-        if ( -e File::Spec->catfile( $self->directory, $self->name ) ) {
-            push @cmds,
-              [
-                'rm', '-rf',
-                File::Spec->catfile( $self->directory, $self->path )
-              ],
-
-        }
-        else {
-            push @cmds,
-              [
-                'mv',
-                File::Spec->catfile( $self->directory, $self->path ),
-                File::Spec->catfile( $self->directory, $self->name )
-              ];
-        }
-    }
-    else {
-        my $from = File::Spec->catfile( $self->directory, $self->path );
-        my $to =
-          File::Spec->catfile( $self->directory,
-            $self->just_name( $self->path ) );
-        push @cmds, [ 'mv', $from, $to ]
-          unless $from eq $to;
+    
+    if ( $from ne $to ) {
+        push @cmds,
+          [
+            'mv',
+            $from,
+            $to,
+          ];
     }
 
     return @cmds;

@@ -35,12 +35,15 @@ sub run {
     $self->_update_url( $self->name || $self->just_name( $self->path ),
         'directory:' . $self->source ) unless $self->{_no_update_url};
 
+    my $newer = $self->_cmd; # if we really get something new
+
     $self->SUPER::run(@_);
+    # follow only if --follow and we really added new stuff.
     $self->_follow(
         File::Spec->catfile(
             $self->directory, $self->name || $self->just_name( $self->path )
         )
-    ) if $self->follow;
+    ) if $self->follow && $newer;
     return File::Spec->catfile( $self->directory,
         $self->name || $self->just_name( $self->path ) );
 }
@@ -58,12 +61,12 @@ sub path {
 
 sub _cmd {
     my $self = shift;
-    return [
-        'cp', '-r',
-        $self->source,
-        File::Spec->catfile( $self->directory,
-            $self->name || $self->just_name( $self->path ) )
-    ];
+    my $to =
+      File::Spec->catfile( $self->directory,
+        $self->name || $self->just_name( $self->path ) );
+    return if -e $to;
+
+    return [ 'cp', '-r', $self->source, $to ];
 }
 
 1;
