@@ -58,7 +58,7 @@ sub run {
 
             for my $name ( keys %$source ) {
                 next if exists $latest_version->{$name};
-                if ( $source->{$name} =~ s{^sv[nk]:}{}g ) {
+                if ( $source->{$name} =~ m{^sv[nk]:} ) {
                     $latest_version->{$name} =
                       $self->_latest_version( url => $source->{$name} );
                 }
