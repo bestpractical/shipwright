@@ -18,7 +18,6 @@ SKIP: {
       unless has_svn();
 
     my $repo = 'svn:' . create_svn_repo() . '/hello';
-    warn $repo, "\n";
 
     my $source = create_svn_repo() . '/foo';    # svn source we'll import
 
