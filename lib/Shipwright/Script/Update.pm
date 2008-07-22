@@ -62,8 +62,7 @@ sub run {
                 my $find_deps;
                 $find_deps = sub {
                     my $name = shift;
-
-                    return if $checked{$name}++;    # we've checked this $name
+                    return if $checked{$name}++;
 
                     my ($require) =
                       $shipwright->backend->requires( name => $name );
@@ -77,8 +76,14 @@ sub run {
                 $find_deps->($name);
                 @dists = keys %checked;
             }
-            $self->_update($_) for @dists;
-            $self->_update( $name, $self->version );
+            for ( @dists ) {
+                if ( $_ eq $name ) {
+                    $self->_update( $_, $self->version );
+                }
+                else {
+                    $self->_update( $_ );
+                }
+            }
         }
     }
 
