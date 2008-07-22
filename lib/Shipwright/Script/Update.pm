@@ -76,6 +76,10 @@ sub run {
                 $find_deps->($name);
                 @dists = keys %checked;
             }
+            else {
+                @dists = $name;
+            }
+
             for ( @dists ) {
                 if ( $_ eq $name ) {
                     $self->_update( $_, $self->version );
