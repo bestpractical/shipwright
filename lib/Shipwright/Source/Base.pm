@@ -186,9 +186,15 @@ sub _follow {
                 }
 
                 my $name = $module;
+
                 if ( $self->_is_skipped($module) ) {
-                    delete $require->{$type}{$module}
-                      unless defined $map->{$module};
+                    unless ( defined $map->{$module} ) {
+
+                # not in the map, meaning it's not been imported before,
+                # so it's safe to erase it
+                        delete $require->{$type}{$module};
+                        next;
+                    }
                 }
                 else {
 
