@@ -16,8 +16,6 @@ sub new {
     my $self  = $class->SUPER::new(@_);
 
     $self->name( $self->just_name( $self->source ) ) unless $self->name;
-    $self->_update_url( $self->name, 'svk:' . $self->source );
-
     return $self;
 }
 
@@ -28,6 +26,9 @@ sub new {
 sub run {
     my $self = shift;
     $self->log->info( "prepare to run source: " . $self->source );
+
+    $self->_update_url( $self->name, 'svk:' . $self->source );
+
     $self->_run;
     my $s;
     if ( $self->is_compressed ) {
