@@ -95,9 +95,38 @@ if ( $args{only} ) {
     $args{only} = { map { $_ => 1 } split /\s*,\s*/, $args{only} };
 }
 
-if ( $args{'install-base'} ) {
-    $args{'install-base'} = File::Spec->rel2abs( $args{'install-base'} );
+$args{'install-base'} = get_install_base() unless $args{'install-base'};
+
+unless ( $args{name} ) {
+    if ( $build_base =~ m{([-.\w]+)[\\/]([.\d]+)$} ) {
+        $args{name} = "$1-$2";
+    }
+    elsif ( $build_base =~ m{([-.\w]+)$} ) {
+        $args{name} = $1;
+    }
 }
+
+unless ( $args{'install-base'} ) {
+    my $dir = tempdir( $args{name} . '-XXXXXX', DIR => File::Spec->tmpdir );
+    $args{'install-base'} = File::Spec->catfile( $dir, $args{name} );
+    print "no default install-base, will set it to $args{'install-base'}\n";
+}
+
+my $installed;
+my $installed_hash = {};
+my $installed_file =
+  File::Spec->catfile( $args{'install-base'}, 'installed.yml' );
+if ( -e $installed_file ) {
+    $installed =
+      YAML::Tiny->read(
+        File::Spec->catfile( $args{'install-base'}, 'installed.yml' ) );
+    $installed_hash = { map { $_ => 1 } @{ $installed->[0] } };
+}
+else {
+    $installed = YAML::Tiny->new;
+}
+
+$args{'install-base'} = File::Spec->rel2abs( $args{'install-base'} );
 
 # YAML::Tiny objects are array based.
 my $order =
@@ -107,15 +136,15 @@ my ( $flags, $ktf );
 
 if ( -e File::Spec->catfile( 'shipwright', 'flags.yml' ) ) {
     $flags =
-      ( YAML::Tiny->read( File::Spec->catfile( 'shipwright', 'flags.yml' ) ) )->[0];
+      ( YAML::Tiny->read( File::Spec->catfile( 'shipwright', 'flags.yml' ) ) )
+      ->[0];
 }
 else {
     $flags = {};
 }
 
 if ( -e File::Spec->catfile( 'shipwright', 'known_test_failures.yml' ) ) {
-    $ktf =
-    (
+    $ktf = (
         YAML::Tiny->read(
             File::Spec->catfile( 'shipwright', 'known_test_failures.yml' )
         )
@@ -132,20 +161,6 @@ if ( $flags->{__mandatory} ) {
         next if grep { $args{flags}{$_} } @$list;
         $args{flags}{ $list->[0] }++;
     }
-}
-
-my $installed;
-my $installed_hash = {};
-my $installed_file =
-  File::Spec->catfile( $args{'install-base'}, 'installed.yml' );
-if ( -e $installed_file ) {
-    $installed =
-      YAML::Tiny->read(
-        File::Spec->catfile( $args{'install-base'}, 'installed.yml' ) );
-    $installed_hash = { map { $_ => 1 } @{ $installed->[0] } };
-}
-else {
-    $installed = YAML::Tiny->new;
 }
 
 # calculate the real order
@@ -168,7 +183,6 @@ my $log;
 if ( $args{'only-test'} ) {
     open $log, '>', 'test.log' or die $!;
 
-    $args{'install-base'} = get_install_base() unless $args{'install-base'};
     test();
 }
 elsif ( $args{'clean'} ) {
@@ -177,8 +191,6 @@ elsif ( $args{'clean'} ) {
     system('rm -rf tmp_dists') && die "rm tmp_dists failed\n";
 
     print $log "removed tmp_dists";
-
-    $args{'install-base'} = get_install_base() unless $args{'install-base'};
 
     for my $dist (@$order) {
         clean($dist);
@@ -223,23 +235,6 @@ else {
         no warnings 'once';
         $CPAN::Config->{prerequisites_policy} = 'ignore';
     };
-
-    unless ( $args{name} ) {
-        if ( $build_base =~ m{([-.\w]+)[\\/]([.\d]+)$} ) {
-            $args{name} = "$1-$2";
-        }
-        elsif ( $build_base =~ m{([-.\w]+)$} ) {
-            $args{name} = $1;
-        }
-    }
-
-    unless ( $args{'install-base'} ) {
-        my $dir = tempdir( $args{name} . '-XXXXXX', DIR => File::Spec->tmpdir );
-        $args{'install-base'} = File::Spec->catfile( $dir, $args{name} );
-
-        print $log
-          "no default install-base, will set it to $args{'install-base'}\n";
-    }
 
     open my $fh, '>', '__install_base'
       or die "can't write to __install_base: $!";
@@ -583,11 +578,6 @@ sub get_install_base {
         chomp $install_base;
         return $install_base;
     }
-    else {
-        warn
-"can't find install-base automatically, you need to specify it manually.\n";
-    }
-
 }
 
 sub process_tmp_dists {
