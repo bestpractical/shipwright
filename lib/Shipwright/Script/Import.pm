@@ -115,6 +115,11 @@ sub run {
             $shipwright->backend->map || {},
         );
 
+        Shipwright::Util::DumpFile(
+            $shipwright->source->url_path,
+            $shipwright->backend->source || {},
+        );
+
         $source = $shipwright->source->run(
             copy => { '__require.yml' => $self->require_yml }, );
 

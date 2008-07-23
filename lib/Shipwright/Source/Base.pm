@@ -59,6 +59,7 @@ sub _follow {
     my $cwd          = getcwd;
     my $require_path = File::Spec->catfile( $path, '__require.yml' );
     my $map          = {};
+    my $url          = {};
 
     unless ( $self->min_perl_version ) {
         no warnings 'once';
@@ -70,6 +71,10 @@ sub _follow {
 
     if ( -e $self->map_path ) {
         $map = Shipwright::Util::LoadFile( $self->map_path );
+    }
+
+    if ( -e $self->url_path ) {
+        $url = Shipwright::Util::LoadFile( $self->url_path );
     }
 
     if ( !-e $require_path ) {
@@ -188,7 +193,7 @@ sub _follow {
                 my $name = $module;
 
                 if ( $self->_is_skipped($module) ) {
-                    unless ( defined $map->{$module} ) {
+                    unless ( defined $map->{$module} || defined $url->{$module} ) {
 
                 # not in the map, meaning it's not been imported before,
                 # so it's safe to erase it
@@ -248,6 +253,7 @@ sub _follow {
                     if ( -e $self->map_path ) {
                         $map = Shipwright::Util::LoadFile( $self->map_path );
                     }
+
                 }
 
                 # convert required module name to dist name like cpan-Jifty-DBI
