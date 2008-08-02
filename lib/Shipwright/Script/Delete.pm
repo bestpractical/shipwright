@@ -17,49 +17,13 @@ sub run {
     die "need name arg\n" unless $name;
 
     my $shipwright = Shipwright->new( repository => $self->repository, );
-
     my $map = $shipwright->backend->map || {};
-
     if ( $map->{$name} ) {
-
         # it's a cpan module
         $name = $map->{$name};
     }
 
-    my $order = $shipwright->backend->order;
-
-    die "no such dist: $name\n" unless grep { $_ eq $name } @$order;
-
-    $shipwright->backend->delete( path => "/dists/$name" );
-    $shipwright->backend->delete( path => "/scripts/$name" );
-
-    # clean order.yml
-    @$order = grep { $_ ne $name } @$order;
-    $shipwright->backend->order($order);
-
-    # clean map.yml
-    for ( keys %$map ) {
-        delete $map->{$_} if $map->{$_} eq $name;
-    }
-
-    # clean version.yml, source.yml and flags.yml
-    my $version = $shipwright->backend->version || {};
-    my $source  = $shipwright->backend->source  || {};
-    my $flags   = $shipwright->backend->flags   || {};
-
-    for my $hashref ( $source, $flags, $version ) {
-        for ( keys %$hashref ) {
-            if ( $_ eq $name ) {
-                delete $hashref->{$_};
-                last;
-            }
-        }
-    }
-
-    $shipwright->backend->version($version);
-    $shipwright->backend->map($map);
-    $shipwright->backend->source($source);
-    $shipwright->backend->flags($flags);
+    $shipwright->backend->trim( name => $name );
 
     print "deleted $name with success\n";
 }

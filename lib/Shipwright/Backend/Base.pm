@@ -515,7 +515,63 @@ sub test_script {
     }
 }
 
+=item trim
+
+trim dists
+
+=cut
+
+sub trim {
+    my $self = shift;
+    my %args = @_;
+    my @names_to_trim;
+
+    if ( ref $args{name} ) {
+        @names_to_trim = @{ $args{name} };
+    }
+    else {
+        @names_to_trim = $args{name};
+    }
+
+    my $order = $self->order;
+    my $map = $self->map;
+    my $version = $self->version || {};
+    my $source  = $self->source  || {};
+    my $flags   = $self->flags   || {};
+
+    for my $name (@names_to_trim) {
+        $self->delete( path => "/dists/$name" );
+        $self->delete( path => "/scripts/$name" );
+
+        # clean order.yml
+        @$order = grep { $_ ne $name } @$order;
+
+        # clean map.yml
+        for ( keys %$map ) {
+            delete $map->{$_} if $map->{$_} eq $name;
+        }
+
+        # clean version.yml, source.yml and flags.yml
+
+        for my $hashref ( $source, $flags, $version ) {
+            for ( keys %$hashref ) {
+                if ( $_ eq $name ) {
+                    delete $hashref->{$_};
+                    last;
+                }
+            }
+        }
+
+    }
+    $self->version($version);
+    $self->map($map);
+    $self->source($source);
+    $self->flags($flags);
+    $self->order($order);
+}
+
 *_cmd = *_update_file = *_subclass_method;
+
 
 =back
 
