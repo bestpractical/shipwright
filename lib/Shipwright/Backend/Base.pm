@@ -126,6 +126,8 @@ sub import {
                 $version->{$name} = $args{version};
                 $self->version($version);
 
+                $self->update_refs;
+
                 Shipwright::Util->run(
                     $self->_cmd( import => %args, name => $name ) );
             }
@@ -355,6 +357,20 @@ sub ktf {
     return $self->_yml( $path, $ktf );
 }
 
+=item refs
+
+Get or set refs
+
+=cut
+
+sub refs {
+    my $self = shift;
+    my $refs  = shift;
+    my $path = '/shipwright/refs.yml';
+
+    return $self->_yml( $path, $refs );
+}
+
 =item delete
 
 
@@ -568,7 +584,52 @@ sub trim {
     $self->source($source);
     $self->flags($flags);
     $self->order($order);
+    $self->update_refs;
 }
+
+=item update_refs
+
+update refs.
+
+we need update this after import and trim
+
+=cut
+
+sub update_refs {
+    my $self = shift;
+    my $order = $self->order;
+    my $refs = {};
+
+    for my $name (@$order) {
+        # initialize here, in case we don't have $name entry in $refs
+        $refs->{$name} ||= 0;
+
+        my $out = Shipwright::Util->run(
+            $self->_cmd( 'cat', path => "/scripts/$name/require.yml" ), 1 );
+
+        my $req = Shipwright::Util::Load($out) || {};
+
+        my @deps;
+        if ( $req->{requires} ) {
+            @deps = ( keys %{ $req->{requires} }, keys %{ $req->{recommends} },
+              keys %{ $req->{build_requires} } );
+        }
+        else {
+
+            #for back compatbility
+            @deps = keys %$req;
+        }
+
+        @deps = uniq @deps;
+
+        for (@deps) {
+            $refs->{$_}++;
+        }
+    }
+
+    $self->refs( $refs );
+}
+
 
 *_cmd = *_update_file = *_subclass_method;
 
