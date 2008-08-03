@@ -10,7 +10,6 @@ inc/Module/Install/Fetch.pm
 inc/Module/Install/Include.pm
 inc/Module/Install/Makefile.pm
 inc/Module/Install/Metadata.pm
-inc/Module/Install/Scripts.pm
 inc/Module/Install/Share.pm
 inc/Module/Install/Win32.pm
 inc/Module/Install/WriteAll.pm
@@ -64,9 +63,10 @@ share/etc/shipwright-source-tcsh
 share/etc/shipwright-utility
 share/inc/YAML/Tiny.pm
 share/shipwright/flags.yml
-share/shipwright/ktf.yml
+share/shipwright/known_test_failures.yml
 share/shipwright/map.yml
 share/shipwright/order.yml
+share/shipwright/refs.yml
 share/shipwright/source.yml
 share/shipwright/version.yml
 share/t/test
@@ -81,6 +81,7 @@ t/07.script.t
 t/10.flags.t
 t/21.perl_in_build.t
 t/71.script_cmds.t
+t/99.kwalitee.t
 t/dists/dir_configure/configure
 t/dists/tbz_make.tar.bz2
 t/dists/tgz_build.tar.gz
