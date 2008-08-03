@@ -6,7 +6,7 @@ use Carp;
 
 use base qw/App::CLI::Command Class::Accessor::Fast Shipwright::Script/;
 __PACKAGE__->mk_accessors(
-    qw/name with_latest_version only_update/);
+    qw/with_latest_version only_update/);
 
 use Shipwright;
 
