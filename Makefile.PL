@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use inc::Module::Install 0.46;
+use inc::Module::Install 0.76;
 name 'Shipwright';
 all_from 'lib/Shipwright.pm';
 build_requires 'Module::Build' => 0;
