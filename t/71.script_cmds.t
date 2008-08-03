@@ -105,7 +105,9 @@ sub start_test {
             [ 'list', ],
             qr{Acme-Hello:\s+
         version:\s+0\.03\s+
-        from:\s+\Qfile:t/hello/Acme-Hello-0.03.tar.gz\E}mx,
+        from:\s+\Qfile:t/hello/Acme-Hello-0.03.tar.gz\E\s+
+        references:\s+0\s+
+            }mx,
             'list the repo'
         ],
 
@@ -120,7 +122,9 @@ sub start_test {
             [ 'list', ],
             qr{foo:\s+
         version:\s+0\.03\s+
-        from:\s+\Qfile:t/hello/Acme-Hello-0.03.tar.gz\E}mx,
+        from:\s+\Qfile:t/hello/Acme-Hello-0.03.tar.gz\E\s+
+        references:\s+0\s+
+            }mx,
             'list the repo'
         ],
 
@@ -169,7 +173,9 @@ sub start_test {
 
             qr{dir_configure:\s+ 
               version:\s+3\.14\s+
-              from:\s+ directory:t/dists/dir_configure}mx,
+              from:\s+\Qdirectory:t/dists/dir_configure\E\s+
+              references:\s+0\s+
+            }mx,
             'list dir_configure, --version arg works too',
         ],
 
@@ -187,7 +193,9 @@ sub start_test {
             [ 'ls', 'tgz_build' ],
             qr{tgz_build:\s+ 
               version:\s+2\.72\s+
-              from:\s+ file:t/dists/tgz_build.tar.gz}mx,
+              from:\s+\Qfile:t/dists/tgz_build.tar.gz\E\s+
+              references:\s+0\s+
+            }mx,
             'list tgz_build, --version arg works too',
         ],
 
@@ -201,7 +209,9 @@ sub start_test {
             [ 'ls', 'tbz_make' ],
             qr{tbz_make:\s+ 
               version:\s+
-              from:\s+ file:t/dists/tbz_make.tar.bz2}mx,
+              from:\s+\Qfile:t/dists/tbz_make.tar.bz2\E\s+
+              references:\s+0\s+
+            }mx,
             'list tgz_make',
         ],
 
@@ -270,7 +280,7 @@ qr/set mandatory flags with success\s+mandatory flags of man1 is build/,
                 [ 'list', 'foo' ],
                 $update_cmd
                 ? qr/version:\s+1\s+/
-                : qr/version:\s+49\s+/m, # the magic number is from practice ;)
+                : qr/version:\s+55\s+/m, # the magic number is from practice ;)
                 'list foo, version seems ok',
             ],
             $update_cmd,    # if the source dist is svk, $update_cmd is undef
@@ -278,7 +288,7 @@ qr/set mandatory flags with success\s+mandatory flags of man1 is build/,
                 [ 'list', 'foo', '--with-latest-version' ],
                 $update_cmd
                 ? qr/latest_version:\s+([^1]|\d{2,})\s+/
-                : qr/latest_version:\s+(?!49)\d+\s+/,
+                : qr/latest_version:\s+(?!55)\d+\s+/,
                 'list foo, latest version seems ok',
             ],
 
