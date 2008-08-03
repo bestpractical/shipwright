@@ -15,15 +15,13 @@ sub run {
 
     my ( $name, $new_name ) = @_;
 
-    die "need name arg\n" unless $name;
+    die "need name arg\n"     unless $name;
     die "need new-name arg\n" unless $new_name;
 
     die "invalid new-name: $new_name, should only contain - and alphanumeric\n"
       unless $new_name =~ /^[-\w]+$/;
 
-    my $shipwright = Shipwright->new(
-        repository => $self->repository,
-    );
+    my $shipwright = Shipwright->new( repository => $self->repository, );
 
     my $order = $shipwright->backend->order;
 
@@ -53,8 +51,9 @@ sub run {
     my $version = $shipwright->backend->version || {};
     my $source  = $shipwright->backend->source  || {};
     my $flags   = $shipwright->backend->flags   || {};
+    my $refs    = $shipwright->backend->refs    || {};
 
-    for my $hashref ( $source, $flags, $version ) {
+    for my $hashref ( $source, $flags, $version, $refs ) {
         for ( keys %$hashref ) {
             if ( $_ eq $name ) {
                 $hashref->{$new_name} = delete $hashref->{$_};
@@ -66,6 +65,7 @@ sub run {
     $shipwright->backend->version($version);
     $shipwright->backend->source($source);
     $shipwright->backend->flags($flags);
+    $shipwright->backend->refs($refs);
 
     print "renamed $name to $new_name with success\n";
 }
