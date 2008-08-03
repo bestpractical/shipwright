@@ -91,6 +91,9 @@ sub _cmd {
     elsif ( $type eq 'info' || $type eq 'list' ) {
         $cmd = [ 'ls', $self->repository . $args{path} ];
     }
+    elsif ( $type eq 'cat' ) {
+        $cmd = [ 'cat', $self->repository . $args{path} ];
+    }
     else {
         croak "invalid command: $type";
     }
