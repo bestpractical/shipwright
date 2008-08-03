@@ -27,6 +27,7 @@ sub run {
 
     my $versions = $shipwright->backend->version;
     my $source   = $shipwright->backend->source;
+    my $refs = $shipwright->backend->refs || {};
 
     my $latest_version = {};
 
@@ -91,6 +92,7 @@ sub run {
             print $name, ': ', "\n";
             print ' ' x 4 . 'version: ', $versions->{$name} || '',     "\n";
             print ' ' x 4 . 'from: ',    $source->{$name}   || 'CPAN', "\n";
+            print ' ' x 4 . 'references: ', $refs->{$name} || '', "\n";
             if ( $self->with_latest_version ) {
                 print ' ' x 4 . 'latest_version: ', $latest_version->{$name}
                   || 'unknown', "\n";
