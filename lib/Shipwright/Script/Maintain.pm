@@ -6,7 +6,7 @@ use Carp;
 
 use base qw/App::CLI::Command Class::Accessor::Fast Shipwright::Script/;
 __PACKAGE__->mk_accessors(
-    qw/update_order keep_recommends
+    qw/update_order keep_recommends update_refs
       keep_build_requires keep_requires for_dists/
 );
 
@@ -15,6 +15,7 @@ use Shipwright;
 sub options {
     (
         'update-order'          => 'update_order',
+        'update-refs'           => 'update_refs',
         'keep-recommends=s'     => 'keep_recommends',
         'keep-requires=s'       => 'keep_requires',
         'keep-build-requires=s' => 'keep_build_requires',
@@ -47,6 +48,11 @@ sub run {
         );
         print "updated order with success\n";
     }
+
+    if ( $self->update_refs ) {
+        $shipwright->backend->update_refs;
+        print "updated refs with success\n";
+    }
 }
 
 1;
@@ -68,4 +74,5 @@ Shipwright::Script::Maintain - Maintain a project
                                 (info, debug, warn, error, or fatal)
  --log-file FILENAME          : specify the log file
  --update-order               : update the build order
+ --update-refs                : update refs( times a dist shows in all the require.yml )
 
