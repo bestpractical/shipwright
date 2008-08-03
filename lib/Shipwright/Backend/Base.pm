@@ -107,6 +107,8 @@ sub import {
                     "import $args{source}'s scripts to " . $self->repository );
                 Shipwright::Util->run(
                     $self->_cmd( import => %args, name => $name ) );
+                $self->update_refs;
+
             }
         }
         else {
@@ -125,8 +127,6 @@ sub import {
                 my $version = $self->version;
                 $version->{$name} = $args{version};
                 $self->version($version);
-
-                $self->update_refs;
 
                 Shipwright::Util->run(
                     $self->_cmd( import => %args, name => $name ) );
