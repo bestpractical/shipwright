@@ -115,6 +115,13 @@ sub share_root {
         $root[-1] = 'share';                       # replace 'lib' to 'share'
         $SHARE_ROOT = File::Spec->catdir(@root);
     }
+
+    if ( $SHARE_ROOT !~ m{([/\\])auto\1share\1}
+            && $SHARE_ROOT =~ m{([/\\])blib\1lib\1} ) {
+        my $sep = $1;
+        $SHARE_ROOT =~ s!${sep}auto$sep!${sep}auto${sep}share${sep}dist${sep}!;
+    }
+
     return ($SHARE_ROOT);
 
 }
