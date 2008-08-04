@@ -132,6 +132,28 @@ sub shipwright_features {
                 next;
             }
 
+            if ( ref $mods->[$i] eq 'ARRAY' ) {
+# this happends when
+# features(
+#     'Date loading' => [
+#         -default => 0,
+#        recommends( 'DateTime' )
+#     ],
+# );
+               for ( my $j = 0; $j < @{$mods->[$i]}; $j++ ) {
+                    if ( $mods->[$i][$j+1] =~ /^[\d\.]+$/ ) {
+                        $shipwright_req->{recommends}{$mods->[$i][$j]} 
+                            = $mods->[$i][$j+1];
+                        $j++;
+                    }
+                    else {
+                        $shipwright_req->{recommends}{$mods->[$i][$j]} = 0;
+                    }
+                }
+                
+                next;
+            }
+
             if ( $mods->[$i+1] =~ /^[\d\.]+$/ ) {
                 # index $i+1 is a version
                 $shipwright_req->{recommends}{$mods->[$i]} = $mods->[$i+1];
