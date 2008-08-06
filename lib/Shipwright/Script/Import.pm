@@ -129,23 +129,35 @@ sub run {
         my ($name) = $source =~ m{.*/(.*)$};
         $imported{$name}++;
 
-        my $script_dir = tempdir( CLEANUP => 1 );
+        my $base = $self->_parent_dir($source);
 
-        if ( my $script = $self->build_script ) {
-            copy( $self->build_script,
-                File::Spec->catfile( $script_dir, 'build' ) );
+        my $script_dir;
+        if ( -e File::Spec->catdir( $base, '__scripts', $name ) ) {
+            $script_dir = File::Spec->catdir( $base, '__scripts', $name );
         }
         else {
-            $self->_generate_build( $source, $script_dir, $shipwright );
+     # Source part doesn't have script stuff, so we need to create by ourselves.
+            $script_dir = tempdir( CLEANUP => 1 );
+
+            if ( my $script = $self->build_script ) {
+                copy( $self->build_script,
+                    File::Spec->catfile( $script_dir, 'build' ) );
+            }
+            else {
+                $self->_generate_build( $source, $script_dir, $shipwright );
+            }
+
         }
 
         unless ( $self->no_follow ) {
-            $self->_import_req( $source, $shipwright );
+            $self->_import_req( $source, $shipwright, $script_dir );
 
-            move(
-                File::Spec->catfile( $source,     '__require.yml' ),
-                File::Spec->catfile( $script_dir, 'require.yml' )
-            ) or die "move __require.yml failed: $!\n";
+            if ( -e File::Spec->catfile( $source, '__require.yml' ) ) {
+                move(
+                    File::Spec->catfile( $source,     '__require.yml' ),
+                    File::Spec->catfile( $script_dir, 'require.yml' )
+                ) or die "move __require.yml failed: $!\n";
+            }
         }
 
         $shipwright->backend->import(
@@ -188,7 +200,11 @@ sub _import_req {
     my $self         = shift;
     my $source       = shift;
     my $shipwright   = shift;
+    my $script_dir   = shift;
+
     my $require_file = File::Spec->catfile( $source, '__require.yml' );
+    $require_file = File::Spec->catfile( $script_dir, 'require.yml' )
+      unless -e File::Spec->catfile( $source, '__require.yml' );
 
     my $dir = $self->_parent_dir($source);
 
@@ -224,15 +240,26 @@ sub _import_req {
 
                     $s = File::Spec->catfile( $dir, $s );
 
-                    $self->_import_req( $s, $shipwright );
+                    my $script_dir;
+                    if ( -e File::Spec->catdir( $dir, '__scripts', $dist ) ) {
+                        $script_dir =
+                          File::Spec->catdir( $dir, '__scripts', $dist );
+                    }
+                    else {
+                        $script_dir = tempdir( CLEANUP => 1 );
+                        if ( -e File::Spec->catfile( $s, '__require.yml' ) ) {
+                            move(
+                                File::Spec->catfile( $s, '__require.yml' ),
+                                File::Spec->catfile(
+                                    $script_dir, 'require.yml'
+                                )
+                            ) or die "move $s/__require.yml failed: $!\n";
+                        }
 
-                    my $script_dir = tempdir( CLEANUP => 1 );
-                    move(
-                        File::Spec->catfile( $s,          '__require.yml' ),
-                        File::Spec->catfile( $script_dir, 'require.yml' )
-                    ) or die "move $s/__require.yml failed: $!\n";
+                        $self->_generate_build( $s, $script_dir, $shipwright );
+                    }
 
-                    $self->_generate_build( $s, $script_dir, $shipwright );
+                    $self->_import_req( $s, $shipwright, $script_dir );
 
                     $shipwright->backend->import(
                         comment   => 'deps for ' . $source,
