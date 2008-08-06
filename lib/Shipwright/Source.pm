@@ -12,6 +12,8 @@ Hash::Merge::set_behavior('RIGHT_PRECEDENT');
 our %DEFAULT = ( follow => 1, );
 
 $DEFAULT{directory} = tempdir( CLEANUP => 0 );
+$DEFAULT{scripts_directory} = 
+  File::Spec->catfile( $DEFAULT{directory}, '__scripts' );
 $DEFAULT{download_directory} =
   File::Spec->catfile( $DEFAULT{directory}, 'download' );
 $DEFAULT{map_path} = File::Spec->catfile( $DEFAULT{directory}, 'map.yml' );

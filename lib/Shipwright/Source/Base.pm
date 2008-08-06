@@ -12,9 +12,9 @@ use Cwd qw/getcwd/;
 
 use base qw/Class::Accessor::Fast/;
 __PACKAGE__->mk_accessors(
-    qw/source directory download_directory follow min_perl_version map_path
-      skip map keep_recommends keep_build_requires name log url_path
-      version_path version/
+    qw/source directory scripts_directory download_directory follow 
+    min_perl_version map_path skip map keep_recommends keep_build_requires 
+    name log url_path version_path version/
 );
 
 =head1 NAME
