@@ -67,13 +67,13 @@ sub _cmd {
             if ( my $script_dir = $args{build_script} ) {
                 $cmd = [
                     'cp',        '-r',
-                    $script_dir, $self->repository . "/scripts/$args{name}/",
+                    "$script_dir/", $self->repository . "/scripts/$args{name}",
                 ];
             }
             else {
                 $cmd = [
                     'cp',          '-r',
-                    $args{source}, $self->repository . "/dists/$args{name}",
+                    "$args{source}/", $self->repository . "/dists/$args{name}",
                 ];
             }
         }
