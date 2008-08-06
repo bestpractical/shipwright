@@ -73,6 +73,7 @@ sub type {
     }
 
     return 'Directory' if $$source =~ s/^dir(ectory)?://i;
+    return 'Shipwright' if $$source =~ s/^shipwright://i;
 
     if ( $$source =~ s/^cpan://i ) {
 
