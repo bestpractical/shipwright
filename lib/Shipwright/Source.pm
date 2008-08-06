@@ -15,7 +15,7 @@ $DEFAULT{directory} = tempdir( CLEANUP => 0 );
 $DEFAULT{scripts_directory} = 
   File::Spec->catfile( $DEFAULT{directory}, '__scripts' );
 $DEFAULT{download_directory} =
-  File::Spec->catfile( $DEFAULT{directory}, 'download' );
+  File::Spec->catfile( $DEFAULT{directory}, '__download' );
 $DEFAULT{map_path} = File::Spec->catfile( $DEFAULT{directory}, 'map.yml' );
 $DEFAULT{url_path} = File::Spec->catfile( $DEFAULT{directory}, 'url.yml' );
 $DEFAULT{version_path} =
