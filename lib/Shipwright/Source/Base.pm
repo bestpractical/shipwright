@@ -106,11 +106,15 @@ sub _follow {
             my $makefile = read_file('Makefile.PL')
               or die "can't read Makefile.PL: $!";
 
-            $makefile =~ s/^\s*requires(?!\w)/shipwright_requires/mg;
-            $makefile =~
-              s/^\s*build_requires(?!\w)/shipwright_build_requires/mg;
-            $makefile =~ s/^\s*features(?!\w)/shipwright_features/mg;
-            my $shipwright_makefile = <<'EOF';
+            if ( $makefile =~ /inc::Module::Install/ ) {
+# PREREQ_PM in Makefile is not good enough for inc::Module::Install, which
+# will omit features(..). we'll put deps in features(...) into recommends part
+
+                $makefile =~ s/^\s*requires(?!\w)/shipwright_requires/mg;
+                $makefile =~
+                  s/^\s*build_requires(?!\w)/shipwright_build_requires/mg;
+                $makefile =~ s/^\s*features(?!\w)/shipwright_features/mg;
+                my $shipwright_makefile = <<'EOF';
 my $shipwright_req = {};
 
 sub shipwright_requires {
@@ -175,30 +179,47 @@ print $tmp_fh Data::Dumper->Dump( [$shipwright_req], [qw/require/] );
 }
 
 EOF
-            
-            $shipwright_makefile .= $makefile;
-            write_file( 'shipwright_makefile.pl', $shipwright_makefile );
 
-            Shipwright::Util->run( [ $^X, 'shipwright_makefile.pl' ] );
-            my $prereqs = read_file( File::Spec->catfile('shipwright_prereqs') )
-              or die "can't read prereqs: $!";
-            eval $prereqs or die "eval error: $@";    ## no critic
+                $shipwright_makefile .= $makefile;
+                write_file( 'shipwright_makefile.pl', $shipwright_makefile );
 
-            if (   $makefile =~ /ExtUtils::/
-                && $self->name ne 'cpan-ExtUtils-MakeMaker' )
-            {
-                unless ( defined $require->{requires}{'ExtUtils::MakeMaker'}
-                    && $require->{requires}{'ExtUtils::MakeMaker'} >= 6.31 )
+                Shipwright::Util->run( [ $^X, 'shipwright_makefile.pl' ] );
+                my $prereqs =
+                  read_file( File::Spec->catfile('shipwright_prereqs') )
+                  or die "can't read prereqs: $!";
+                eval $prereqs or die "eval error: $@";    ## no critic
+
+                Shipwright::Util->run( [ 'rm',   'shipwright_makefile.pl' ] );
+                Shipwright::Util->run( [ 'rm',   'shipwright_prereqs' ] );
+            }
+            else {
+
+                # we extract the deps from Makefile
+                Shipwright::Util->run( [ $^X, 'Makefile.PL' ] );
+                my ($source) = grep { /PREREQ_PM/ } read_file('Makefile');
+                if ( $source && $source =~ /({.*})/ ) {
+                    my $eval .= '$require = ' . $1;
+                    $eval =~ s/([\w:]+)=>/'$1'=>/g;
+                    eval $eval or die "eval error: $@";    ## no critic
+                }
+
+                for ( keys %$require ) {
+                    $require->{requires}{$_} = delete $require->{$_};
+                }
+                
+                if (   $makefile =~ /ExtUtils::/
+                    && $self->name ne 'cpan-ExtUtils-MakeMaker' )
                 {
-                    $require->{build_requires} =
-                      { 'ExtUtils::MakeMaker' => 6.31 };
+                    unless ( $require->{requires}{'ExtUtils::MakeMaker'}
+                        && $require->{requires}{'ExtUtils::MakeMaker'} >= 6.31 )
+                    {
+                        $require->{build_requires}{'ExtUtils::MakeMaker'} =
+                          6.31;
+                    }
                 }
             }
-
             Shipwright::Util->run( [ 'make', 'clean' ] );
             Shipwright::Util->run( [ 'rm',   'Makefile.old' ] );
-            Shipwright::Util->run( [ 'rm',   'shipwright_makefile.pl' ] );
-            Shipwright::Util->run( [ 'rm',   'shipwright_prereqs' ] );
         }
 
         for my $type (qw/requires recommends build_requires/) {
