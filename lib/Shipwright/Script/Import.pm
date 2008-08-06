@@ -238,7 +238,7 @@ sub _import_req {
                         next;
                     }
 
-                    $s = File::Spec->catfile( $dir, $s );
+                    $s = File::Spec->catdir( $dir, $s );
 
                     my $script_dir;
                     if ( -e File::Spec->catdir( $dir, '__scripts', $dist ) ) {
