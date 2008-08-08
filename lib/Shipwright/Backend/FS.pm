@@ -71,7 +71,12 @@ sub _cmd {
                 ];
             }
             else {
-                @cmd = [
+                unless ( -e $self->repository . "/sources/$args{name}/" ) {
+                    push @cmd,
+                      [ 'mkdir', $self->repository . "/sources/$args{name}/" ];
+                }
+
+                push @cmd, [
                     'cp',          '-r',
                     "$args{source}/", $self->repository .
                         "/sources/$args{name}/$args{as}",
