@@ -47,7 +47,7 @@ sub new {
     croak "need source arg" unless exists $args{source};
 
     for my $dir ( qw/directory download_directory scripts_directory/ ) {
-        mkdir $dir unless -e $args{$dir};
+        mkdir $args{$dir} unless -e $args{$dir};
     }
 
     my $type = type( \$args{source} );
