@@ -61,7 +61,7 @@ sub initialize {
     dircopy( Shipwright::Util->share_root, $dir );
 
     # share_root can't keep empty dirs, we have to create them manually
-    for (qw/dists scripts t/) {
+    for (qw/dists scripts t sources/) {
         mkdir File::Spec->catfile( $dir, $_ );
     }
 
@@ -83,6 +83,7 @@ sub import {
     my %args = @_;
     my $name = $args{source};
     $name =~ s{.*/}{};
+    $args{as} ||= 'vendor';
 
     unless ( $args{_initialize} || $args{_extra_tests} ) {
         if ( $args{_extra_tests} ) {
@@ -112,14 +113,14 @@ sub import {
             }
         }
         else {
-            if ( $self->info( path => "/dists/$name" ) && not $args{overwrite} )
+            if ( $self->info( path => "/sources/$name/$args{as}" ) && not $args{overwrite} )
             {
                 $self->log->warn(
-"path dists/$name alreay exists, need to set overwrite arg to overwrite"
+"path sources/$name/$args{as} alreay exists, need to set overwrite arg to overwrite"
                 );
             }
             else {
-                $self->delete( path =>  "/dists/$name" ) if $args{delete};
+                $self->delete( path =>  "/sources/$name/$args{as}" ) if $args{delete};
                 $self->log->info(
                     "import $args{source} to " . $self->repository );
                 $self->_add_to_order($name);
@@ -556,7 +557,7 @@ sub trim {
     my $flags   = $self->flags   || {};
 
     for my $name (@names_to_trim) {
-        $self->delete( path => "/dists/$name" );
+        $self->delete( path => "/sources/$name" );
         $self->delete( path => "/scripts/$name" );
 
         # clean order.yml

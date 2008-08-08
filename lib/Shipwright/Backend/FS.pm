@@ -73,7 +73,8 @@ sub _cmd {
             else {
                 $cmd = [
                     'cp',          '-r',
-                    "$args{source}/", $self->repository . "/dists/$args{name}",
+                    "$args{source}/", $self->repository .
+                        "/sources/$args{name}/$args{as}",
                 ];
             }
         }

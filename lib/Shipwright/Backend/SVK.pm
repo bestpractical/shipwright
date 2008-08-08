@@ -102,7 +102,8 @@ sub _cmd {
             else {
                 $cmd = [
                     'svk',         'import',
-                    $args{source}, $self->repository . "/dists/$args{name}",
+                    $args{source}, $self->repository .
+                        "/sources/$args{name}/$args{as}",
                     '-m',          q{'} . $args{comment} . q{'},
                 ];
             }
