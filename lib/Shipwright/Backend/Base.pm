@@ -90,8 +90,9 @@ sub import {
             $self->delete( path => "/t/extra" ) if $args{delete};
 
             $self->log->info( "import extra tests to " . $self->repository );
-            Shipwright::Util->run(
-                $self->_cmd( import => %args, name => $name ) );
+            for my $cmd ( $self->_cmd( import => %args, name => $name ) ) {
+                Shipwright::Util->run($cmd);
+            }
         }
         elsif ( $args{build_script} ) {
             if ( $self->info( path => "/scripts/$name" )
@@ -106,8 +107,9 @@ sub import {
 
                 $self->log->info(
                     "import $args{source}'s scripts to " . $self->repository );
-                Shipwright::Util->run(
-                    $self->_cmd( import => %args, name => $name ) );
+                for my $cmd ( $self->_cmd( import => %args, name => $name ) ) {
+                    Shipwright::Util->run($cmd);
+                }
                 $self->update_refs;
 
             }
@@ -129,13 +131,16 @@ sub import {
                 $version->{$name} = $args{version};
                 $self->version($version);
 
-                Shipwright::Util->run(
-                    $self->_cmd( import => %args, name => $name ) );
+                for my $cmd ( $self->_cmd( import => %args, name => $name ) ) {
+                    Shipwright::Util->run($cmd);
+                }
             }
         }
     }
     else {
-        Shipwright::Util->run( $self->_cmd( import => %args, name => $name ) );
+        for my $cmd ( $self->_cmd( import => %args, name => $name ) ) {
+            Shipwright::Util->run($cmd);
+        }
     }
 }
 
@@ -150,7 +155,9 @@ sub export {
     my $path = $args{path} || '';
     $self->log->info(
         'export ' . $self->repository . "/$path to $args{target}" );
-    Shipwright::Util->run( $self->_cmd( export => %args ) );
+    for my $cmd ( $self->_cmd( export => %args ) ) {
+        Shipwright::Util->run( $cmd );
+    }
 }
 
 =item checkout
@@ -163,7 +170,9 @@ sub checkout {
     my $path = $args{path} || '';
     $self->log->info(
         'export ' . $self->repository . "/$path to $args{target}" );
-    Shipwright::Util->run( $self->_cmd( checkout => %args ) );
+    for my $cmd ( $self->_cmd( checkout => %args ) ) {
+        Shipwright::Util->run( $cmd );
+    }
 }
 
 =item commit
@@ -176,7 +185,9 @@ sub commit {
     my $self = shift;
     my %args = @_;
     $self->log->info( 'commit ' . $args{path} );
-    Shipwright::Util->run( $self->_cmd( commit => @_ ), 1 );
+    for my $cmd (  $self->_cmd( commit => @_ ) ) {
+        Shipwright::Util->run( $cmd, 1 );
+    }
 }
 
 
@@ -237,8 +248,8 @@ sub _fill_deps {
     my $name    = $args{name};
 
     return if $require->{$name};
-    my $out = Shipwright::Util->run(
-        $self->_cmd( 'cat', path => "/scripts/$name/require.yml" ), 1 );
+    my $out = Shipwright::Util->run( $self->_cmd( 'cat', path =>
+                "/scripts/$name/require.yml" ), 1 );
 
     my $req = Shipwright::Util::Load( $out ) || {};
 
@@ -383,7 +394,9 @@ sub delete {
     my $path = $args{path} || '';
     if ( $self->info( path => $path ) ) {
         $self->log->info( "delete " . $self->repository . $path );
-        Shipwright::Util->run( $self->_cmd( delete => path => $path ), 1 );
+        for my $cmd ( $self->_cmd( delete => path => $path ) ) {
+            Shipwright::Util->run( $cmd, 1 );
+        }
     }
 }
 
@@ -426,12 +439,15 @@ sub move {
     if ( $self->info( path => $path ) ) {
         $self->log->info(
             "move " . $self->repository . "/$path to /$new_path" );
-        Shipwright::Util->run(
+        for my $cmd (
             $self->_cmd(
                 move     => path => $path,
                 new_path => $new_path,
-            ),
-        );
+            )
+          )
+        {
+            Shipwright::Util->run($cmd);
+        }
     }
 }
 
@@ -605,8 +621,8 @@ sub update_refs {
         # initialize here, in case we don't have $name entry in $refs
         $refs->{$name} ||= 0;
 
-        my $out = Shipwright::Util->run(
-            $self->_cmd( 'cat', path => "/scripts/$name/require.yml" ), 1 );
+        my $out = Shipwright::Util->run( $self->_cmd( 'cat', path =>
+                    "/scripts/$name/require.yml"), 1 );
 
         my $req = Shipwright::Util::Load($out) || {};
 

@@ -65,26 +65,26 @@ sub _cmd {
         croak "$type need option $_" unless $args{$_};
     }
 
-    my $cmd;
+    my @cmd;
 
     if ( $type eq 'checkout' ) {
-        $cmd =
+        @cmd =
           [ 'svn', 'checkout', $self->repository . $args{path}, $args{target} ];
     }
     elsif ( $type eq 'export' ) {
-        $cmd =
+        @cmd =
           [ 'svn', 'export', $self->repository . $args{path}, $args{target} ];
     }
     elsif ( $type eq 'import' ) {
         if ( $args{_initialize} ) {
-            $cmd = [
+            @cmd = [
                 'svn',         'import',
                 $args{source}, $self->repository,
                 '-m',          q{'} . $args{comment} . q{'}
             ];
         }
         elsif ( $args{_extra_tests} ) {
-            $cmd = [
+            @cmd = [
                 'svn', 'import',
                 $args{source}, $self->repository . 't/extra',
                 '-m', q{'} . $args{comment} . q{'},
@@ -92,14 +92,14 @@ sub _cmd {
         }
         else {
             if ( my $script_dir = $args{build_script} ) {
-                $cmd = [
+                @cmd = [
                     'svn',       'import',
                     $script_dir, $self->repository . "/scripts/$args{name}/",
                     '-m',        q{'} . $args{comment} || '' . q{'},
                 ];
             }
             else {
-                $cmd = [
+                @cmd = [
                     'svn',         'import',
                     $args{source}, $self->repository .
                         "/sources/$args{name}/$args{as}",
@@ -109,20 +109,20 @@ sub _cmd {
         }
     }
     elsif ( $type eq 'list' ) {
-        $cmd = [ 'svn', 'list', $self->repository . $args{path} ];
+        @cmd = [ 'svn', 'list', $self->repository . $args{path} ];
     }
     elsif ( $type eq 'commit' ) {
-        $cmd =
+        @cmd =
           [ 'svn', 'commit', '-m', q{'} . $args{comment} . q{'}, $args{path} ];
     }
     elsif ( $type eq 'delete' ) {
-        $cmd = [
+        @cmd = [
             'svn', 'delete', '-m', q{'} . 'delete' . $args{path} . q{'},
             $self->repository . $args{path}
         ];
     }
     elsif ( $type eq 'move' ) {
-        $cmd = [
+        @cmd = [
             'svn',
             'move',
             '-m',
@@ -132,16 +132,16 @@ sub _cmd {
         ];
     }
     elsif ( $type eq 'info' ) {
-        $cmd = [ 'svn', 'info', $self->repository . $args{path} ];
+        @cmd = [ 'svn', 'info', $self->repository . $args{path} ];
     }
     elsif ( $type eq 'cat' ) {
-        $cmd = [ 'svn', 'cat', $self->repository . $args{path} ];
+        @cmd = [ 'svn', 'cat', $self->repository . $args{path} ];
     }
     else {
         croak "invalid command: $type";
     }
 
-    return $cmd;
+    return @cmd;
 }
 
 sub _yml {

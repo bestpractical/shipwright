@@ -38,7 +38,8 @@ sub run {
     if ( $self->follow ) {
         my $out = Shipwright::Util->run(
             $source_shipwright->backend->_cmd(
-                'cat', path => "/scripts/$dist/require.yml"
+                'cat',
+                path => "/scripts/$dist/require.yml",
             ),
             1
         );

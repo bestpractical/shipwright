@@ -51,27 +51,27 @@ sub _cmd {
         croak "$type need option $_" unless $args{$_};
     }
 
-    my $cmd;
+    my @cmd;
 
     if ( $type eq 'checkout' || $type eq 'export' ) {
-        $cmd = [ 'cp', '-r', $self->repository . $args{path}, $args{target} ];
+        @cmd = [ 'cp', '-r', $self->repository . $args{path}, $args{target} ];
     }
     elsif ( $type eq 'import' ) {
         if ( $args{_extra_tests} ) {
-            $cmd = [
+            @cmd = [
                 'cp', '-r',
                 $args{source}, $self->repository . '/t/extra'
             ];
         }
         else {
             if ( my $script_dir = $args{build_script} ) {
-                $cmd = [
+                @cmd = [
                     'cp',        '-r',
                     "$script_dir/", $self->repository . "/scripts/$args{name}",
                 ];
             }
             else {
-                $cmd = [
+                @cmd = [
                     'cp',          '-r',
                     "$args{source}/", $self->repository .
                         "/sources/$args{name}/$args{as}",
@@ -80,26 +80,26 @@ sub _cmd {
         }
     }
     elsif ( $type eq 'delete' ) {
-        $cmd = [ 'rm', '-rf', $self->repository . $args{path}, ];
+        @cmd = [ 'rm', '-rf', $self->repository . $args{path}, ];
     }
     elsif ( $type eq 'move' ) {
-        $cmd = [
+        @cmd = [
             'mv',
             $self->repository . $args{path},
             $self->repository . $args{new_path}
         ];
     }
     elsif ( $type eq 'info' || $type eq 'list' ) {
-        $cmd = [ 'ls', $self->repository . $args{path} ];
+        @cmd = [ 'ls', $self->repository . $args{path} ];
     }
     elsif ( $type eq 'cat' ) {
-        $cmd = [ 'cat', $self->repository . $args{path} ];
+        @cmd = [ 'cat', $self->repository . $args{path} ];
     }
     else {
         croak "invalid command: $type";
     }
 
-    return $cmd;
+    return @cmd;
 }
 
 =item _yml
