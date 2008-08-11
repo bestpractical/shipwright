@@ -182,6 +182,7 @@ sub run {
             }
         }
 
+        mkdir 'dists' unless -e 'dists';
         for my $dist (@$order) {
             $self->_install( $dist, $ktf, $branches );
             $self->_record($dist);
