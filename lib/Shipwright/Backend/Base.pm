@@ -131,6 +131,15 @@ sub import {
                 $version->{$name} = $args{version};
                 $self->version($version);
 
+                my $branches = $self->branches;
+                unless ( $branches->{$name} && grep { $args{as} eq $_ }
+                    @{ $branches->{$name} } )
+                {
+                    $branches->{$name} =
+                      [ @{$branches->{$name} || [] }, $args{as} ];
+                    $self->branches($branches);
+                }
+
                 for my $cmd ( $self->_cmd( import => %args, name => $name ) ) {
                     Shipwright::Util->run($cmd);
                 }
@@ -353,6 +362,20 @@ sub version {
 
     my $path = '/shipwright/version.yml';
     return $self->_yml( $path, $version );
+}
+
+=item branches
+
+Get or set branches.
+
+=cut
+
+sub branches {
+    my $self    = shift;
+    my $branches = shift;
+
+    my $path = '/shipwright/branches.yml';
+    return $self->_yml( $path, $branches );
 }
 
 =item ktf
