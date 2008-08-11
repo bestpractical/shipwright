@@ -257,18 +257,6 @@ sub _update_file {
     $self->checkout( detach => 1, target => $file );
 }
 
-=item has_branch_support
-
-return true if has branch support 
-
-=cut
-
-sub has_branch_support {
-    my $self = shift;
-    return 1 if $self->info( path => '/sources' );
-    return;
-}
-
 =back
 
 =cut

@@ -647,11 +647,20 @@ sub update_refs {
     $self->refs( $refs );
 }
 
+=item has_branch_support
 
-{
-    no warnings 'once';
-    *_cmd = *_update_file = *_subclass_method = *has_branch_support;
+return true if has branch support 
+
+=cut
+
+sub has_branch_support {
+    my $self = shift;
+    return 1 if $self->info( path => '/shipwright/branches.yml' );
+    return;
 }
+
+
+*_cmd = *_update_file = *_subclass_method;
 
 
 =back

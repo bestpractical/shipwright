@@ -184,19 +184,6 @@ sub _update_file {
     copy( $latest, $file );
 }
 
-=item has_branch_support
-
-return true if has branch support 
-
-=cut
-
-sub has_branch_support {
-    my $self = shift;
-    my $out = $self->info( path => '/' );
-    return 1 if $out =~ /sources/;
-    return;
-}
-
 =back
 
 =cut
