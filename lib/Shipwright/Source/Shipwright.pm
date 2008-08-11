@@ -39,8 +39,10 @@ sub run {
     );
     
     my $source_version = $source_shipwright->backend->version->{$dist};
+    my $branches = $source_shipwright->backend->branches;
     $self->_update_version( $self->name || $dist, $source_version );
-    $self->_update_url( $self->name || $dist, $self->source );
+    $self->_update_url( $self->name || $dist, 'shipwright:' . $self->source );
+    $self->_update_branches( $self->name || $dist, $branches->{$dist} );
 
 # follow
     if ( $self->follow ) {

@@ -20,8 +20,10 @@ $DEFAULT{map_path} = File::Spec->catfile( $DEFAULT{directory}, 'map.yml' );
 $DEFAULT{url_path} = File::Spec->catfile( $DEFAULT{directory}, 'url.yml' );
 $DEFAULT{version_path} =
   File::Spec->catfile( $DEFAULT{directory}, 'version.yml' );
+$DEFAULT{branches_path} =
+  File::Spec->catfile( $DEFAULT{directory}, 'branches.yml' );
 
-for (qw/map_path url_path version_path/) {
+for (qw/map_path url_path version_path branches_path/) {
     open my $fh, '>', $DEFAULT{$_} or die "can't write to $DEFAULT{$_}: $!";
     close $fh;
 }
