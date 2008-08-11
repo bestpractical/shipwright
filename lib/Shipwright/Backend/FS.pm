@@ -72,10 +72,13 @@ sub _cmd {
             }
             else {
                 if ( $self->has_branch_support ) {
-                    unless ( -e $self->repository . "/sources/$args{name}/" ) {
+                    unless ( -e $self->repository
+                        . "/sources/$args{name}/$args{as}" )
+                    {
                         push @cmd,
                           [
-                            'mkdir', $self->repository . "/sources/$args{name}/"
+                            'mkdir', '-p',
+                            $self->repository . "/sources/$args{name}/$args{as}"
                           ];
                     }
 
