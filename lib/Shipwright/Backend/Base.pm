@@ -648,7 +648,10 @@ sub update_refs {
 }
 
 
-*_cmd = *_update_file = *_subclass_method = *has_branch_support;
+{
+    no warnings 'once';
+    *_cmd = *_update_file = *_subclass_method = *has_branch_support;
+}
 
 
 =back
