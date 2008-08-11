@@ -83,7 +83,13 @@ sub import {
     my %args = @_;
     my $name = $args{source};
     $name =~ s{.*/}{};
-    $args{as} ||= 'vendor';
+
+    if ( $args{branches} ) {
+        $args{as} = '';
+    }
+    else {
+        $args{as} ||= 'vendor';
+    }
 
     unless ( $args{_initialize} || $args{_extra_tests} ) {
         if ( $args{_extra_tests} ) {
@@ -132,11 +138,20 @@ sub import {
                 $self->version($version);
 
                 my $branches = $self->branches;
-                unless ( $branches->{$name} && grep { $args{as} eq $_ }
-                    @{ $branches->{$name} } )
+                if ( $args{branches} ) {
+            # mostly this happens when import from another shipwright repo
+                    $branches->{$name} = $args{branches};
+                    $self->branches($branches);
+                }
+                elsif (
+                    !(
+                        $branches->{$name} && grep { $args{as} eq $_ }
+                        @{ $branches->{$name} }
+                    )
+                  )
                 {
                     $branches->{$name} =
-                      [ @{$branches->{$name} || [] }, $args{as} ];
+                      [ @{ $branches->{$name} || [] }, $args{as} ];
                     $self->branches($branches);
                 }
 
