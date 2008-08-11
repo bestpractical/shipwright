@@ -7,7 +7,7 @@ use Carp;
 use base qw/App::CLI::Command Class::Accessor::Fast Shipwright::Script/;
 __PACKAGE__->mk_accessors(
     qw/comment no_follow build_script require_yml
-      name test_script extra_tests overwrite min_perl_version skip version/
+      name test_script extra_tests overwrite min_perl_version skip version as/
 );
 
 use Shipwright;
@@ -34,6 +34,7 @@ sub options {
         'min-perl-version' => 'min_perl_version',
         'skip=s'           => 'skip',
         'version=s'        => 'version',
+        'as=s'             => 'as',
     );
 }
 
@@ -165,6 +166,7 @@ sub run {
             comment => $self->comment || 'import ' . $source,
             overwrite => 1,                   # import anyway for the main dist
             version   => $version->{$name},
+            as        => $self->as,
         );
         $shipwright->backend->import(
             source       => $source,
