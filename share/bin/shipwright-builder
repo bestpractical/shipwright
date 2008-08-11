@@ -307,7 +307,7 @@ else {
       File::Spec->catfile( $args{'install-base'}, 'tools',
         'shipwright-utility' );
 
-    mkpath 'dists';
+    mkdir 'dists' unless -e 'dists';
     for my $dist (@$order) {
         install($dist);
         record($dist);
