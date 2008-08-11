@@ -97,35 +97,40 @@ sub _cmd {
             ];
         }
         else {
-            if ( my $script_dir = $args{build_script} ) {
-                @cmd = [
-                    'svk',       'import',
-                    $script_dir, $self->repository . "/scripts/$args{name}/",
-                    '-m',        q{'} . $args{comment} . q{'},
-                ];
+            my ( $path, $source );
+            if ( $args{build_script} ) {
+                $path   = "/scripts/$args{name}";
+                $source = $args{build_script};
             }
             else {
-                if ( $self->has_branch_support ) {
-                    @cmd = [
-                        'svk',
-                        'import',
-                        $args{source},
-                        $self->repository . "/sources/$args{name}/$args{as}",
-                        '-m',
-                        q{'} . $args{comment} . q{'},
-                    ];
-                }
-                else {
-                    @cmd = [
-                        'svk',
-                        'import',
-                        $args{source},
-                        $self->repository . "/dists/$args{name}",
-                        '-m',
-                        q{'} . $args{comment} . q{'},
-                    ];
+                $path =
+                  $self->has_branch_support
+                  ? "/sources/$args{name}/$args{as}"
+                  : "/dists/$args{name}";
+                $source = $args{source};
+            }
 
-                }
+            if ( $self->info( path => $path ) ) {
+                my $tmp_dir = tempdir( CLEANUP => 1 );
+                @cmd = (
+                    [ 'rm',  '-rf', "$tmp_dir" ],
+                    [ 'svk', 'checkout', $self->repository . $path, $tmp_dir ],
+                    [ 'rm',  '-rf', "$tmp_dir" ],
+                    [ 'cp',  '-r',  $source,                   "$tmp_dir" ],
+                    [
+                        'svk',      'commit',
+                        '--import', $tmp_dir,
+                        '-m',       q{'} . $args{comment} . q{'}
+                    ],
+                    [ 'svk', 'checkout', '-d', $tmp_dir ],
+                );
+            }
+            else {
+                @cmd = [
+                    'svk',   'import',
+                    $source, $self->repository . $path,
+                    '-m',    q{'} . $args{comment} . q{'},
+                ];
             }
         }
     }
