@@ -20,10 +20,18 @@ sub run {
     my $source_shipwright = Shipwright->new( repository => $base );
     $self->name( $dist ) unless $self->name;
 
-    $source_shipwright->backend->export(
-        target => File::Spec->catfile( $self->directory, $self->name ),
-        path   => "/dists/$dist",
-    );
+    if ( $source_shipwright->backend->has_branch_support ) {
+        $source_shipwright->backend->export(
+            target => File::Spec->catfile( $self->directory, $self->name ),
+            path   => "/sources/$dist",
+        );
+    }
+    else {
+        $source_shipwright->backend->export(
+            target => File::Spec->catfile( $self->directory, $self->name ),
+            path   => "/dists/$dist",
+        );
+    }
 
     $source_shipwright->backend->export(
         target => File::Spec->catfile( $self->scripts_directory, $self->name ),
