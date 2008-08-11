@@ -61,7 +61,7 @@ sub initialize {
     dircopy( Shipwright::Util->share_root, $dir );
 
     # share_root can't keep empty dirs, we have to create them manually
-    for (qw/dists scripts t sources/) {
+    for (qw/scripts t sources/) {
         mkdir File::Spec->catfile( $dir, $_ );
     }
 
