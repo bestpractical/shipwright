@@ -99,12 +99,28 @@ sub _cmd {
                 ];
             }
             else {
-                @cmd = [
-                    'svn',         'import',
-                    $args{source}, $self->repository .
-                        "/sources/$args{name}/$args{as}",
-                    '-m',          q{'} . $args{comment} . q{'},
-                ];
+                if ( $self->info( path => '/sources' ) ) {
+
+                    @cmd = [
+                        'svn',
+                        'import',
+                        $args{source},
+                        $self->repository . "/sources/$args{name}/$args{as}",
+                        '-m',
+                        q{'} . $args{comment} . q{'},
+                    ];
+                }
+                else {
+                    @cmd = [
+                        'svn',
+                        'import',
+                        $args{source},
+                        $self->repository . "/dists/$args{name}",
+                        '-m',
+                        q{'} . $args{comment} . q{'},
+                    ];
+
+                }
             }
         }
     }
