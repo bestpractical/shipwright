@@ -137,6 +137,7 @@ sub run {
             $script_dir = File::Spec->catdir( $base, '__scripts', $name );
         }
         else {
+
      # Source part doesn't have script stuff, so we need to create by ourselves.
             $script_dir = tempdir( CLEANUP => 1 );
 
@@ -161,13 +162,18 @@ sub run {
             }
         }
 
+        my $branches =
+          Shipwright::Util::LoadFile( $shipwright->source->branches_path );
+
         $shipwright->backend->import(
             source  => $source,
             comment => $self->comment || 'import ' . $source,
-            overwrite => 1,                   # import anyway for the main dist
+            overwrite => 1,                    # import anyway for the main dist
             version   => $version->{$name},
             as        => $self->as,
+            branches  => $branches->{$name},
         );
+
         $shipwright->backend->import(
             source       => $source,
             comment      => 'import scripts for' . $source,
@@ -199,10 +205,10 @@ sub run {
 # _import_req: import required dists for a dist
 
 sub _import_req {
-    my $self         = shift;
-    my $source       = shift;
-    my $shipwright   = shift;
-    my $script_dir   = shift;
+    my $self       = shift;
+    my $source     = shift;
+    my $shipwright = shift;
+    my $script_dir = shift;
 
     my $require_file = File::Spec->catfile( $source, '__require.yml' );
     $require_file = File::Spec->catfile( $script_dir, 'require.yml' )
@@ -263,11 +269,14 @@ sub _import_req {
 
                     $self->_import_req( $s, $shipwright, $script_dir );
 
+                    my $branches = Shipwright::Util::LoadFile(
+                        $shipwright->source->branches_path );
                     $shipwright->backend->import(
                         comment   => 'deps for ' . $source,
                         source    => $s,
                         overwrite => $self->overwrite,
                         version   => $version->{$dist},
+                        branches  => $branches->{$dist},
                     );
                     $shipwright->backend->import(
                         source       => $s,
