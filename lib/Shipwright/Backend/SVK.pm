@@ -68,10 +68,15 @@ sub _cmd {
         }
     }
     elsif ( $type eq 'export' ) {
-        @cmd =
-          [ 'svk', 'checkout', $self->repository . $args{path}, $args{target} ];
-
-        #            @cmd = [ 'svk', 'checkout', '-d', $args{target} ];
+        @cmd = (
+            [
+                'svk',                           'checkout',
+                $self->repository . $args{path}, $args{target}
+            ],
+            [
+                'svk', 'checkout', '-d', $args{target}
+            ]
+        );
     }
     elsif ( $type eq 'list' ) {
         @cmd = [ 'svk', 'list', $self->repository . $args{path} ];
