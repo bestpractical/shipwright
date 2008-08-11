@@ -99,8 +99,7 @@ sub _cmd {
                 ];
             }
             else {
-                if ( $self->info( path => '/sources' ) ) {
-
+                if ( $self->has_branch_support ) {
                     @cmd = [
                         'svn',
                         'import',
@@ -258,6 +257,18 @@ sub _update_file {
             comment => "updated $path",
         );
     }
+}
+
+=item has_branch_support
+
+return true if has branch support 
+
+=cut
+
+sub has_branch_support {
+    my $self = shift;
+    return 1 if $self->info( path => '/sources' );
+    return;
 }
 
 =back

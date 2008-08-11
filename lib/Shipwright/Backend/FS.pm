@@ -71,7 +71,7 @@ sub _cmd {
                 ];
             }
             else {
-                if ( -e $self->repository . '/sources/' ) {
+                if ( $self->has_branch_support ) {
                     unless ( -e $self->repository . "/sources/$args{name}/" ) {
                         push @cmd,
                           [
@@ -179,6 +179,19 @@ sub _update_file {
     my $file = File::Spec->catfile( $self->repository, $path );
 
     copy( $latest, $file );
+}
+
+=item has_branch_support
+
+return true if has branch support 
+
+=cut
+
+sub has_branch_support {
+    my $self = shift;
+    my $out = $self->info( path => '/' );
+    return 1 if $out =~ /sources/;
+    return;
 }
 
 =back
