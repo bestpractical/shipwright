@@ -13,7 +13,11 @@ Revision history for Shipwright
   Added more doc
   Fixed a few cpantesters-reported issues
 
-1.10 Mon Mar 24 03:51:45 CST 2008
+1.10 Tue Aug 12 19:42:52 CST 2008
 
 * added flags support
 * added build.pl support
+* added refs support
+* more tests
+* more docs
+* a lot of bug fixes
