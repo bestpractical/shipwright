@@ -54,72 +54,98 @@ sub _cmd {
         croak "$type need option $_" unless $args{$_};
     }
 
-    my $cmd;
+    my @cmd;
 
     if ( $type eq 'checkout' ) {
         if ( $args{detach} ) {
-            $cmd = [ 'svk', 'checkout', '-d', $args{target} ];
+            @cmd = [ 'svk', 'checkout', '-d', $args{target} ];
         }
         else {
-            $cmd = [
+            @cmd = [
                 'svk',                           'checkout',
                 $self->repository . $args{path}, $args{target}
             ];
         }
     }
     elsif ( $type eq 'export' ) {
-        $cmd =
-          [ 'svk', 'checkout', $self->repository . $args{path}, $args{target} ];
-
-        #            $cmd = [ 'svk', 'checkout', '-d', $args{target} ];
+        @cmd = (
+            [
+                'svk',                           'checkout',
+                $self->repository . $args{path}, $args{target}
+            ],
+            [
+                'svk', 'checkout', '-d', $args{target}
+            ]
+        );
     }
     elsif ( $type eq 'list' ) {
-        $cmd = [ 'svk', 'list', $self->repository . $args{path} ];
+        @cmd = [ 'svk', 'list', $self->repository . $args{path} ];
     }
     elsif ( $type eq 'import' ) {
         if ( $args{_initialize} ) {
-            $cmd = [
+            @cmd = [
                 'svk',         'import',
                 $args{source}, $self->repository,
                 '-m',          q{'} . $args{comment} . q{'},
             ];
         }
         elsif ( $args{_extra_tests} ) {
-            $cmd = [
+            @cmd = [
                 'svk', 'import',
                 $args{source}, $self->repository . '/t/extra',
                 '-m', q{'} . $args{comment} . q{'},
             ];
         }
         else {
-            if ( my $script_dir = $args{build_script} ) {
-                $cmd = [
-                    'svk',       'import',
-                    $script_dir, $self->repository . "/scripts/$args{name}/",
-                    '-m',        q{'} . $args{comment} . q{'},
-                ];
+            my ( $path, $source );
+            if ( $args{build_script} ) {
+                $path   = "/scripts/$args{name}";
+                $source = $args{build_script};
             }
             else {
-                $cmd = [
-                    'svk',         'import',
-                    $args{source}, $self->repository . "/dists/$args{name}",
-                    '-m',          q{'} . $args{comment} . q{'},
+                $path =
+                  $self->has_branch_support
+                  ? "/sources/$args{name}/$args{as}"
+                  : "/dists/$args{name}";
+                $source = $args{source};
+            }
+
+            if ( $self->info( path => $path ) ) {
+                my $tmp_dir = tempdir( CLEANUP => 1 );
+                @cmd = (
+                    [ 'rm',  '-rf', "$tmp_dir" ],
+                    [ 'svk', 'checkout', $self->repository . $path, $tmp_dir ],
+                    [ 'rm',  '-rf', "$tmp_dir" ],
+                    [ 'cp',  '-r',  $source,                   "$tmp_dir" ],
+                    [
+                        'svk',      'commit',
+                        '--import', $tmp_dir,
+                        '-m',       q{'} . $args{comment} . q{'}
+                    ],
+                    [ 'svk', 'checkout', '-d', $tmp_dir ],
+                );
+            }
+            else {
+                @cmd = [
+                    'svk',   'import',
+                    $source, $self->repository . $path,
+                    '-m',    q{'} . $args{comment} . q{'},
                 ];
             }
         }
     }
     elsif ( $type eq 'commit' ) {
-        $cmd =
+        @cmd =
           [ 'svk', 'commit', '-m', q{'} . $args{comment} . q{'}, $args{path} ];
     }
     elsif ( $type eq 'delete' ) {
-        $cmd = [
+        @cmd = [
             'svk', 'delete', '-m', q{'} . 'delete repository' . q{'},
             $self->repository . $args{path},
         ];
     }
     elsif ( $type eq 'move' ) {
-        $cmd = [
+        @cmd = [
             'svk',
             'move',
             '-m',
@@ -129,16 +155,16 @@ sub _cmd {
         ];
     }
     elsif ( $type eq 'info' ) {
-        $cmd = [ 'svk', 'info', $self->repository . $args{path} ];
+        @cmd = [ 'svk', 'info', $self->repository . $args{path} ];
     }
     elsif ( $type eq 'cat' ) {
-        $cmd = [ 'svk', 'cat', $self->repository . $args{path} ];
+        @cmd = [ 'svk', 'cat', $self->repository . $args{path} ];
     }
     else {
         croak "invalid command: $type";
     }
 
-    return $cmd;
+    return @cmd;
 }
 
 sub _yml {
