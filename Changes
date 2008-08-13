@@ -21,3 +21,7 @@ Revision history for Shipwright
 * more tests
 * more docs
 * a lot of bug fixes
+
+1.12 Thu Aug 14 00:30:16 CST 2008
+* clean some test failures
+
