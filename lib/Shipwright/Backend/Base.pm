@@ -61,7 +61,7 @@ sub initialize {
     dircopy( Shipwright::Util->share_root, $dir );
 
     # share_root can't keep empty dirs, we have to create them manually
-    for (qw/scripts t sources/) {
+    for (qw/dists scripts t/) {
         mkdir File::Spec->catfile( $dir, $_ );
     }
 
@@ -84,21 +84,13 @@ sub import {
     my $name = $args{source};
     $name =~ s{.*/}{};
 
-    if ( $args{branches} ) {
-        $args{as} = '';
-    }
-    else {
-        $args{as} ||= 'vendor';
-    }
-
     unless ( $args{_initialize} || $args{_extra_tests} ) {
         if ( $args{_extra_tests} ) {
             $self->delete( path => "/t/extra" ) if $args{delete};
 
             $self->log->info( "import extra tests to " . $self->repository );
-            for my $cmd ( $self->_cmd( import => %args, name => $name ) ) {
-                Shipwright::Util->run($cmd);
-            }
+            Shipwright::Util->run(
+                $self->_cmd( import => %args, name => $name ) );
         }
         elsif ( $args{build_script} ) {
             if ( $self->info( path => "/scripts/$name" )
@@ -113,22 +105,21 @@ sub import {
 
                 $self->log->info(
                     "import $args{source}'s scripts to " . $self->repository );
-                for my $cmd ( $self->_cmd( import => %args, name => $name ) ) {
-                    Shipwright::Util->run($cmd);
-                }
+                Shipwright::Util->run(
+                    $self->_cmd( import => %args, name => $name ) );
                 $self->update_refs;
 
             }
         }
         else {
-            if ( $self->info( path => "/sources/$name/$args{as}" ) && not $args{overwrite} )
+            if ( $self->info( path => "/dists/$name" ) && not $args{overwrite} )
             {
                 $self->log->warn(
-"path sources/$name/$args{as} alreay exists, need to set overwrite arg to overwrite"
+"path dists/$name alreay exists, need to set overwrite arg to overwrite"
                 );
             }
             else {
-                $self->delete( path =>  "/sources/$name/$args{as}" ) if $args{delete};
+                $self->delete( path =>  "/dists/$name" ) if $args{delete};
                 $self->log->info(
                     "import $args{source} to " . $self->repository );
                 $self->_add_to_order($name);
@@ -137,34 +128,13 @@ sub import {
                 $version->{$name} = $args{version};
                 $self->version($version);
 
-                my $branches = $self->branches;
-                if ( $args{branches} ) {
-            # mostly this happens when import from another shipwright repo
-                    $branches->{$name} = $args{branches};
-                    $self->branches($branches);
-                }
-                elsif (
-                    !(
-                        $branches->{$name} && grep { $args{as} eq $_ }
-                        @{ $branches->{$name} }
-                    )
-                  )
-                {
-                    $branches->{$name} =
-                      [ @{ $branches->{$name} || [] }, $args{as} ];
-                    $self->branches($branches);
-                }
-
-                for my $cmd ( $self->_cmd( import => %args, name => $name ) ) {
-                    Shipwright::Util->run($cmd);
-                }
+                Shipwright::Util->run(
+                    $self->_cmd( import => %args, name => $name ) );
             }
         }
     }
     else {
-        for my $cmd ( $self->_cmd( import => %args, name => $name ) ) {
-            Shipwright::Util->run($cmd);
-        }
+        Shipwright::Util->run( $self->_cmd( import => %args, name => $name ) );
     }
 }
 
@@ -179,9 +149,7 @@ sub export {
     my $path = $args{path} || '';
     $self->log->info(
         'export ' . $self->repository . "/$path to $args{target}" );
-    for my $cmd ( $self->_cmd( export => %args ) ) {
-        Shipwright::Util->run( $cmd );
-    }
+    Shipwright::Util->run( $self->_cmd( export => %args ) );
 }
 
 =item checkout
@@ -194,9 +162,7 @@ sub checkout {
     my $path = $args{path} || '';
     $self->log->info(
         'export ' . $self->repository . "/$path to $args{target}" );
-    for my $cmd ( $self->_cmd( checkout => %args ) ) {
-        Shipwright::Util->run( $cmd );
-    }
+    Shipwright::Util->run( $self->_cmd( checkout => %args ) );
 }
 
 =item commit
@@ -209,9 +175,7 @@ sub commit {
     my $self = shift;
     my %args = @_;
     $self->log->info( 'commit ' . $args{path} );
-    for my $cmd (  $self->_cmd( commit => @_ ) ) {
-        Shipwright::Util->run( $cmd, 1 );
-    }
+    Shipwright::Util->run( $self->_cmd( commit => @_ ), 1 );
 }
 
 
@@ -272,8 +236,8 @@ sub _fill_deps {
     my $name    = $args{name};
 
     return if $require->{$name};
-    my $out = Shipwright::Util->run( $self->_cmd( 'cat', path =>
-                "/scripts/$name/require.yml" ), 1 );
+    my $out = Shipwright::Util->run(
+        $self->_cmd( 'cat', path => "/scripts/$name/require.yml" ), 1 );
 
     my $req = Shipwright::Util::Load( $out ) || {};
 
@@ -379,20 +343,6 @@ sub version {
     return $self->_yml( $path, $version );
 }
 
-=item branches
-
-Get or set branches.
-
-=cut
-
-sub branches {
-    my $self    = shift;
-    my $branches = shift;
-
-    my $path = '/shipwright/branches.yml';
-    return $self->_yml( $path, $branches );
-}
-
 =item ktf
 
 Get or set known failure conditions.
@@ -432,9 +382,7 @@ sub delete {
     my $path = $args{path} || '';
     if ( $self->info( path => $path ) ) {
         $self->log->info( "delete " . $self->repository . $path );
-        for my $cmd ( $self->_cmd( delete => path => $path ) ) {
-            Shipwright::Util->run( $cmd, 1 );
-        }
+        Shipwright::Util->run( $self->_cmd( delete => path => $path ), 1 );
     }
 }
 
@@ -477,15 +425,12 @@ sub move {
     if ( $self->info( path => $path ) ) {
         $self->log->info(
             "move " . $self->repository . "/$path to /$new_path" );
-        for my $cmd (
+        Shipwright::Util->run(
             $self->_cmd(
                 move     => path => $path,
                 new_path => $new_path,
-            )
-          )
-        {
-            Shipwright::Util->run($cmd);
-        }
+            ),
+        );
     }
 }
 
@@ -611,7 +556,7 @@ sub trim {
     my $flags   = $self->flags   || {};
 
     for my $name (@names_to_trim) {
-        $self->delete( path => "/sources/$name" );
+        $self->delete( path => "/dists/$name" );
         $self->delete( path => "/scripts/$name" );
 
         # clean order.yml
@@ -659,8 +604,8 @@ sub update_refs {
         # initialize here, in case we don't have $name entry in $refs
         $refs->{$name} ||= 0;
 
-        my $out = Shipwright::Util->run( $self->_cmd( 'cat', path =>
-                    "/scripts/$name/require.yml"), 1 );
+        my $out = Shipwright::Util->run(
+            $self->_cmd( 'cat', path => "/scripts/$name/require.yml" ), 1 );
 
         my $req = Shipwright::Util::Load($out) || {};
 
@@ -683,18 +628,6 @@ sub update_refs {
     }
 
     $self->refs( $refs );
-}
-
-=item has_branch_support
-
-return true if has branch support 
-
-=cut
-
-sub has_branch_support {
-    my $self = shift;
-    return 1 if $self->info( path => '/shipwright/branches.yml' );
-    return;
 }
 
 

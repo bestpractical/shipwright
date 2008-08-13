@@ -29,7 +29,6 @@ lib/Shipwright/Manual/UsingFlags.pod
 lib/Shipwright/Script.pm
 lib/Shipwright/Script/Build.pm
 lib/Shipwright/Script/Create.pm
-lib/Shipwright/Script/Defaultbranch.pm
 lib/Shipwright/Script/Delete.pm
 lib/Shipwright/Script/Flags.pm
 lib/Shipwright/Script/Help.pm
@@ -47,7 +46,6 @@ lib/Shipwright/Source/CPAN.pm
 lib/Shipwright/Source/Directory.pm
 lib/Shipwright/Source/FTP.pm
 lib/Shipwright/Source/HTTP.pm
-lib/Shipwright/Source/Shipwright.pm
 lib/Shipwright/Source/SVK.pm
 lib/Shipwright/Source/SVN.pm
 lib/Shipwright/Test.pm
@@ -64,7 +62,6 @@ share/etc/shipwright-source-bash
 share/etc/shipwright-source-tcsh
 share/etc/shipwright-utility
 share/inc/YAML/Tiny.pm
-share/shipwright/branches.yml
 share/shipwright/flags.yml
 share/shipwright/known_test_failures.yml
 share/shipwright/map.yml

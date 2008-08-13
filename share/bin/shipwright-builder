@@ -132,7 +132,7 @@ $args{'install-base'} = File::Spec->rel2abs( $args{'install-base'} );
 my $order =
   ( YAML::Tiny->read( File::Spec->catfile( 'shipwright', 'order.yml' ) ) )->[0];
 
-my ( $flags, $ktf, $branches );
+my ( $flags, $ktf );
 
 if ( -e File::Spec->catfile( 'shipwright', 'flags.yml' ) ) {
     $flags =
@@ -152,14 +152,6 @@ if ( -e File::Spec->catfile( 'shipwright', 'known_test_failures.yml' ) ) {
 }
 else {
     $ktf = {};
-}
-
-if ( -e File::Spec->catfile( 'shipwright', 'branches.yml' ) ) {
-    $branches = (
-        YAML::Tiny->read(
-            File::Spec->catfile( 'shipwright', 'branches.yml' )
-        )
-    )->[0];
 }
 
 # fill not specified but mandatory flags
@@ -197,17 +189,12 @@ elsif ( $args{'clean'} ) {
     open $log, '>', 'clean.log' or die $!;
 
     system('rm -rf tmp_dists') && die "rm tmp_dists failed\n";
+
     print $log "removed tmp_dists";
 
-    if ($branches) {
-        system('rm -rf dists') && die "rm dists failed\n";
-        print $log "removed dists";
-    }
-    else {
-        for my $dist (@$order) {
-            clean($dist);
-            chdir $build_base;
-        }
+    for my $dist (@$order) {
+        clean($dist);
+        chdir $build_base;
     }
 
     unlink '__need_clean';
@@ -307,7 +294,6 @@ else {
       File::Spec->catfile( $args{'install-base'}, 'tools',
         'shipwright-utility' );
 
-    mkdir 'dists' unless -e 'dists';
     for my $dist (@$order) {
         install($dist);
         record($dist);
@@ -329,18 +315,7 @@ sub install {
         chdir File::Spec->catfile( 'tmp_dists', $dir );
     }
     else {
-        if ($branches) {
-            system(
-                "cp -r "
-                  . File::Spec->catdir( 'sources', $dir, split /\//,
-                    $branches->{$dir}[0] )
-                  . ' '
-                  . File::Spec->catdir( 'dists', $dir )
-              )
-              && die
-              "cp sources/$dir/$branches->{$dir}[0] to dists/$dir failed";
-        }
-        chdir File::Spec->catdir( 'dists', $dir );
+        chdir File::Spec->catfile( 'dists', $dir );
     }
 
     my $skip_test = $args{'skip-test'} || $args{'skip-test-except-final'};

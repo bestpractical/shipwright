@@ -1,7 +1,7 @@
 ---
 abstract: 'Best Practical Builder'
 author:
-  - 'sunnavy  C<< <sunnavy@bestpractical.com> >>'
+  - 'sunnavy <sunnavy@bestpractical.com>'
 build_requires:
   ExtUtils::MakeMaker: 6.11
   IPC::Cmd: 0
@@ -18,9 +18,7 @@ no_index:
     - t
     - docs
     - share
-    - share
     - inc
-    - t
 requires:
   Algorithm::Dependency::Ordered: 0
   Algorithm::Dependency::Source::HoA: 0
@@ -45,4 +43,4 @@ requires:
   version: 0
 resources:
   license: http://dev.perl.org/licenses/
-version: 2.0
+version: 1.11

@@ -116,7 +116,7 @@ sub run {
             File::Spec->catfile( 'shipwright', 'order.yml' ) )
           || [];
 
-        my ( $flags, $ktf, $branches );
+        my ( $flags, $ktf );
         if ( -e File::Spec->catfile( 'shipwright', 'flags.yml' ) ) {
 
             $flags = Shipwright::Util::LoadFile(
@@ -142,12 +142,6 @@ sub run {
         }
         else {
             $ktf = {};
-        }
-
-        if ( -e File::Spec->catfile( 'shipwright', 'branches.yml' ) ) {
-
-            $branches = Shipwright::Util::LoadFile(
-                File::Spec->catfile( 'shipwright', 'branches.yml' ) );
         }
 
         # calculate the real order
@@ -182,9 +176,8 @@ sub run {
             }
         }
 
-        mkdir 'dists' unless -e 'dists';
         for my $dist (@$order) {
-            $self->_install( $dist, $ktf, $branches );
+            $self->_install( $dist, $ktf );
             $self->_record($dist);
             chdir $self->build_base;
         }
@@ -203,19 +196,6 @@ sub _install {
     my $self = shift;
     my $dir  = shift;
     my $ktf  = shift;
-    my $branches = shift;
-
-    if ( $branches ) {
-            system(
-                "cp -r "
-                  . File::Spec->catdir( 'sources', $dir, split /\//,
-                    $branches->{$dir}[0] )
-                  . ' '
-                  . File::Spec->catdir( 'dists', $dir )
-              )
-              && die
-              "cp sources/$dir/$branches->{$dir}[0] to dists/$dir failed";
-    }
 
     chdir File::Spec->catfile( 'dists', $dir );
 

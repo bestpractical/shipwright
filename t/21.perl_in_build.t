@@ -66,6 +66,7 @@ SKIP: {
         build_script => $script_dir,
     );
     $sw->backend->export( target => $sw->build->build_base );
+    $sw->build->build_base;
     $sw->build->run;
     is( $sw->build->perl, $perl,
 'set $build->perl to the one that will be in installed_dir if there is a dist with name perl'

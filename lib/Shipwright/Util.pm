@@ -61,18 +61,13 @@ sub run {
     Shipwright::Util->select('stdout');
 
     $log->info("run output:\n$out") if $out;
-    $log->error("run err:\n$err")    if $err;
+    $log->warn("run err:\n$err")    if $err;
 
     if ($?) {
         $log->error(
             'failed to run ' . join( ' ', @$cmd ) . " with exit number $?" );
-        unless ($ignore_failure) {
-            die <<"EOF";
-something wrong when execute @$cmd: $?
-the output is: $out
-the error is: $err
-EOF
-        }
+
+        die "something wrong when execute @$cmd: $?" unless $ignore_failure;
     }
 
     return wantarray ? ( $out, $err ) : $out;

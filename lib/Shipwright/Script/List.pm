@@ -28,11 +28,6 @@ sub run {
     my $versions = $shipwright->backend->version;
     my $source   = $shipwright->backend->source;
     my $refs = $shipwright->backend->refs || {};
-    my $branches;
-
-    if ( $shipwright->backend->has_branch_support ) {
-        $branches = $shipwright->backend->branches;
-    }
 
     my $latest_version = {};
 
@@ -43,7 +38,7 @@ sub run {
         my $map = $shipwright->backend->map;
 
         if ( $name ) {
-            if ( $name =~ /^cpan-/ && ! $source->{$name} ) {
+            if ( $name =~ /^cpan-/ ) {
                 my %reversed = reverse %$map;
                 my $module   = $reversed{ $name };
                 $latest_version->{ $name } =
@@ -64,7 +59,7 @@ sub run {
 
             for my $name ( keys %$source ) {
                 next if exists $latest_version->{$name};
-                if ( $source->{$name} =~ m{^(sv[nk]|shipwright):} ) {
+                if ( $source->{$name} =~ m{^sv[nk]:} ) {
                     $latest_version->{$name} =
                       $self->_latest_version( url => $source->{$name} );
                 }
@@ -103,10 +98,6 @@ sub run {
                 print ' ' x 4 . 'latest_version: ', $latest_version->{$name}
                   || 'unknown', "\n";
             }
-            if ($branches) {
-                print ' ' x 4 . 'branches: ',
-                  join( ', ', @{ $branches->{$name} } ), "\n";
-            }
         }
     }
 
@@ -121,11 +112,6 @@ sub _latest_version {
     if ( $args{url} ) {
 
         my ( $cmd, $out );
-
-# XXX TODO we need a better latest_version for shipwright source
-# using the source shipwright repo's whole version seems lame
-        $args{url} =~ s/^shipwright://;
-        $args{url} =~ s!/[^/]+$!!;
 
         # has url, meaning svn or svk
         if ( $args{url} =~ /^svn[:+]/ ) {
