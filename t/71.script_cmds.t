@@ -14,8 +14,7 @@ my $repo = 'fs:' . create_fs_repo();
 start_test($repo);
 
 SKIP: {
-    skip "no svn found", Test::More->builder->expected_tests / 2
-      unless has_svn();
+    skip "no svn found", 39 unless has_svn();
 
     my $repo = 'svn:' . create_svn_repo() . '/hello';
 
@@ -31,8 +30,7 @@ SKIP: {
 }
 
 SKIP: {
-    skip "no svk and svnadmin found", Test::More->builder->expected_tests / 2,
-      unless has_svk();
+    skip "no svk and svnadmin found", 39 unless has_svk();
 
     create_svk_repo();
 
