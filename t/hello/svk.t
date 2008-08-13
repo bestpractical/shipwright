@@ -62,7 +62,7 @@ SKIP: {
     chomp @dirs;
     is_deeply(
         [@dirs],
-        [ 'bin/', 'dists/', 'etc/', 'inc/', 'scripts/', 'shipwright/', 't/' ],
+        [ 'bin/', 'etc/', 'inc/', 'scripts/', 'shipwright/', 'sources/', 't/' ],
         'initialize works'
     );
 
@@ -82,7 +82,8 @@ SKIP: {
     # import
 
     $shipwright->backend->import( name => 'hello', source => $source_dir );
-    ok( grep( {/Build\.PL/} `svk ls $repo/dists/Acme-Hello` ), 'imported ok' );
+    ok( grep( {/Build\.PL/} `svk ls $repo/sources/Acme-Hello/vendor` ),
+        'imported ok' );
 
     my $script_dir = tempdir( CLEANUP => 1 );
     copy( File::Spec->catfile( 't', 'hello', 'scripts', 'build' ),
@@ -111,12 +112,13 @@ SKIP: {
             'shipwright-script-wrapper'
         ),
         File::Spec->catfile(
-            $shipwright->build->build_base,
-            'dists', 'Acme-Hello',
+            $shipwright->build->build_base, 'sources',
+            'Acme-Hello',                   'vendor',
         ),
         File::Spec->catfile(
-            $shipwright->build->build_base, 'dists',
-            'Acme-Hello',                   'MANIFEST',
+            $shipwright->build->build_base, 'sources',
+            'Acme-Hello',                   'vendor',
+            'MANIFEST',
         ),
         File::Spec->catfile(
             $shipwright->build->build_base, 'scripts',
@@ -144,16 +146,18 @@ SKIP: {
     chdir $cwd;
     $shipwright = Shipwright->new(
         repository => "svk:$repo",
-        source => 'file:' . File::Spec->catfile( 't', 'hello', 'Acme-Hello-0.03.tar.gz' ),
-        name   => 'howdy',
-        follow => 0,
+        source     => 'file:'
+          . File::Spec->catfile( 't', 'hello', 'Acme-Hello-0.03.tar.gz' ),
+        name      => 'howdy',
+        follow    => 0,
         log_level => 'FATAL',
     );
 
     $source_dir = $shipwright->source->run();
     like( $source_dir, qr/\bhowdy\b/, 'source name looks ok' );
     $shipwright->backend->import( name => 'hello', source => $source_dir );
-    ok( grep( {/Build\.PL/} `svk ls $repo/dists/howdy` ), 'imported ok' );
+    ok( grep( {/Build\.PL/} `svk ls $repo/sources/howdy/vendor` ),
+        'imported ok' );
     $script_dir = tempdir( CLEANUP => 1 );
     copy( File::Spec->catfile( 't', 'hello', 'scripts', 'build' ),
         $script_dir );

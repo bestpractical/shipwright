@@ -14,7 +14,7 @@ use base qw/Class::Accessor::Fast/;
 __PACKAGE__->mk_accessors(
     qw/source directory scripts_directory download_directory follow 
     min_perl_version map_path skip map keep_recommends keep_build_requires 
-    name log url_path version_path version/
+    name log url_path version_path branches_path version/
 );
 
 =head1 NAME
@@ -392,6 +392,19 @@ sub _update_version {
     }
     $map->{$name} = $version;
     Shipwright::Util::DumpFile( $self->version_path, $map );
+}
+
+sub _update_branches {
+    my $self    = shift;
+    my $name    = shift;
+    my $branches = shift;
+
+    my $map = {};
+    if ( -e $self->version_path && !-z $self->branches_path ) {
+        $map = Shipwright::Util::LoadFile( $self->branches_path );
+    }
+    $map->{$name} = $branches;
+    Shipwright::Util::DumpFile( $self->branches_path, $map );
 }
 
 sub _is_skipped {
