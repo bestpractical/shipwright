@@ -227,7 +227,7 @@ sub _update_file {
     my $latest = shift;
 
     if ( $path =~ m{(.*)/(.*)$} ) {
-        my $dir = tempdir( CLEANUP => 0 );
+        my $dir = tempdir( CLEANUP => 1 );
         my $file = File::Spec->catfile( $dir, $2 );
 
         $self->checkout(

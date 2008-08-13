@@ -15,7 +15,7 @@ use CPAN::DistnameInfo;
 
 use base qw/Shipwright::Source::Base/;
 
-my $cpan_dir = tempdir( CLEANUP => 0 );
+my $cpan_dir = tempdir( CLEANUP => 1 );
 unshift @INC, $cpan_dir;
 
 =head1 NAME
