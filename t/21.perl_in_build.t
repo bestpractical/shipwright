@@ -9,7 +9,7 @@ use File::Temp qw/tempdir/;
 use Test::More tests => 8;
 
 SKIP: {
-    skip "no svk and svnadmin found", 3
+    skip "no svk and svnadmin found", 8
       unless has_svk();
 
     create_svk_repo();
