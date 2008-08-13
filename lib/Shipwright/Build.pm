@@ -18,6 +18,7 @@ use File::Copy qw/move copy/;
 use File::Find qw/find/;
 use File::Slurp;
 use File::Path;
+use Cwd qw/getcwd/;
 
 =head2 new
 
@@ -34,7 +35,8 @@ sub new {
     $self->log( Log::Log4perl->get_logger( ref $self ) );
 
     $self->{build_base} ||=
-      File::Spec->catfile( tempdir( CLEANUP => 0 ), 'build' );
+      File::Spec->catfile( tempdir( CLEANUP => 1 ) );
+    rmdir $self->{build_base};
 
     $self->name('vessel') unless $self->name;
     $self->skip( {} ) unless $self->skip;
@@ -92,6 +94,7 @@ sub run {
 
     mkpath $self->install_base unless -e $self->install_base;
 
+    my $orig_cwd = getcwd;
     chdir $self->build_base;
 
     if ( $self->only_test ) {
@@ -195,6 +198,7 @@ sub run {
             "install finished. the dists are at " . $self->install_base );
     }
 
+    chdir $orig_cwd;
 }
 
 # install one dist, the install methods are in scripts/distname/build
