@@ -3,7 +3,7 @@ package Shipwright::Source::SVK;
 use warnings;
 use strict;
 use Carp;
-use File::Spec;
+use File::Spec::Functions qw/catfile catdir/;
 
 use base qw/Shipwright::Source::Base/;
 
@@ -55,13 +55,13 @@ sub _run {
     push @cmds,
       [
         'svk', 'co', $self->source,
-        File::Spec->catfile( $self->download_directory, $self->name ),
+        catfile( $self->download_directory, $self->name ),
         $self->version ? ( '-r', $self->version ) : ()
       ];
     push @cmds,
       [
         'svk', 'co', '-d',
-        File::Spec->catfile( $self->download_directory, $self->name ),
+        catfile( $self->download_directory, $self->name ),
       ];
 
     unless ( $self->version ) {
@@ -74,7 +74,7 @@ sub _run {
 
 
     $self->source(
-        File::Spec->catfile( $self->download_directory, $self->name ) );
+        catfile( $self->download_directory, $self->name ) );
     Shipwright::Util->run($_) for @cmds;
 }
 

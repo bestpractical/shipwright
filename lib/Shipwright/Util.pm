@@ -4,7 +4,9 @@ use warnings;
 use strict;
 use Carp;
 use IPC::Run3;
-use File::Spec;
+use File::Spec::Functions qw/catfile catdir splitpath splitdir rel2abs/;
+use File::Temp qw/tempdir/;
+
 use Shipwright;    # we need this to find where Shipwright.pm lives
 
 our ( $SHIPWRIGHT_ROOT, $SHARE_ROOT );
@@ -85,8 +87,8 @@ sub shipwright_root {
     my $self = shift;
 
     unless ($SHIPWRIGHT_ROOT) {
-        my $dir = ( File::Spec->splitpath( $INC{"Shipwright.pm"} ) )[1];
-        $SHIPWRIGHT_ROOT = File::Spec->rel2abs($dir);
+        my $dir = ( splitpath( $INC{"Shipwright.pm"} ) )[1];
+        $SHIPWRIGHT_ROOT = rel2abs($dir);
     }
 
     return ($SHIPWRIGHT_ROOT);
@@ -104,16 +106,16 @@ sub share_root {
 
     require File::ShareDir;
     $SHARE_ROOT ||=
-      eval { File::Spec->rel2abs( File::ShareDir::module_dir('Shipwright') ) };
+      eval { rel2abs( File::ShareDir::module_dir('Shipwright') ) };
 
     unless ( $SHARE_ROOT ) {
 
         # XXX TODO: This is a bloody hack
         # Module::Install::Share and File::ShareDir don't play nicely
         # together
-        my @root = File::Spec->splitdir( $self->shipwright_root );
+        my @root = splitdir( $self->shipwright_root );
         $root[-1] = 'share';                       # replace 'lib' to 'share'
-        $SHARE_ROOT = File::Spec->catdir(@root);
+        $SHARE_ROOT = catdir(@root);
     }
 
     if ( $SHARE_ROOT !~ m{([/\\])auto\1share\1}
@@ -140,7 +142,7 @@ my ( $null_fh, $stdout_fh, $cpan_fh, $cpan_log_path, $cpan_fh_flag );
 open $null_fh, '>', '/dev/null';
 
 $cpan_log_path =
-  File::Spec->catfile( File::Spec->tmpdir, 'shipwright_cpan.log' );
+  catfile( tempdir( 'shipwright_XXXXXX',  CLEANUP => 1, TMPDIR => 1 ), 'shipwright_cpan.log' );
 open $cpan_fh, '>>', $cpan_log_path;
 $stdout_fh = select;
 

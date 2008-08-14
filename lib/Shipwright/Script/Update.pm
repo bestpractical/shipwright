@@ -8,7 +8,7 @@ use base qw/App::CLI::Command Class::Accessor::Fast Shipwright::Script/;
 __PACKAGE__->mk_accessors(qw/all follow builder utility version/);
 
 use Shipwright;
-use File::Spec;
+use File::Spec::Functions qw/catfile catdir/;
 use Shipwright::Util;
 use File::Copy qw/copy move/;
 use File::Temp qw/tempdir/;
@@ -138,7 +138,7 @@ sub _update {
     $version = Shipwright::Util::LoadFile( $shipwright->source->version_path );
 
     $shipwright->backend->import(
-        source  => File::Spec->catfile( $shipwright->source->directory, $name ),
+        source  => catfile( $shipwright->source->directory, $name ),
         comment => "update $name",
         overwrite => 1,
         version   => $version->{$name},

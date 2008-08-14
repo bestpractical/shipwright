@@ -3,7 +3,7 @@ use warnings;
 
 use Shipwright;
 use Shipwright::Test qw/has_svk create_svk_repo has_svn create_svn_repo/;
-use File::Spec;
+use File::Spec::Functions qw/catfile catdir/;
 
 use Test::More tests => 6;
 

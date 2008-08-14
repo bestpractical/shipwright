@@ -3,7 +3,7 @@ package Shipwright::Backend::Base;
 use warnings;
 use strict;
 use Carp;
-use File::Spec;
+use File::Spec::Functions qw/catfile catdir/;
 use Shipwright::Util;
 use File::Temp qw/tempdir/;
 use File::Copy qw/copy/;
@@ -56,17 +56,17 @@ you should subclass this method, and call this to get the dir with content initi
 
 sub initialize {
     my $self = shift;
-    my $dir = tempdir( CLEANUP => 1 );
+    my $dir = tempdir( 'shipwright_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
 
     dircopy( Shipwright::Util->share_root, $dir );
 
     # share_root can't keep empty dirs, we have to create them manually
     for (qw/dists scripts t/) {
-        mkdir File::Spec->catfile( $dir, $_ );
+        mkdir catfile( $dir, $_ );
     }
 
     # hack for share_root living under blib/
-    unlink( File::Spec->catfile( $dir, '.exists' ) );
+    unlink( catfile( $dir, '.exists' ) );
 
     return $dir;
 }
@@ -265,7 +265,7 @@ sub _yml {
     my $path = shift;
     my $yml  = shift;
 
-    my $file = File::Spec->catfile( $self->repository, $path );
+    my $file = catfile( $self->repository, $path );
     if ($yml) {
 
         Shipwright::Util::DumpFile( $file, $yml );
@@ -467,7 +467,7 @@ sub requires {
     my $name = $args{name};
 
     return $self->_yml(
-        File::Spec->catfile( 'scripts', $name, 'require.yml' ) );
+        catfile( 'scripts', $name, 'require.yml' ) );
 }
 
 =item check_repository
@@ -506,11 +506,11 @@ sub update {
     croak "need path option" unless $args{path};
 
     croak "$args{path} seems not shipwright's own file"
-      unless -e File::Spec->catfile( Shipwright::Util->share_root,
+      unless -e catfile( Shipwright::Util->share_root,
         $args{path} );
 
     return $self->_update_file( $args{path},
-        File::Spec->catfile( Shipwright::Util->share_root, $args{path} ) );
+        catfile( Shipwright::Util->share_root, $args{path} ) );
 }
 
 =item test_script

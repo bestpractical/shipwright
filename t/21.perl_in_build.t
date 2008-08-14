@@ -3,7 +3,7 @@ use warnings;
 
 use Shipwright;
 use Shipwright::Test qw/has_svk create_svk_repo has_svn create_svn_repo/;
-use File::Spec::Functions qw/catfile/;
+use File::Spec::Functions qw/catfile catdir/;
 use File::Temp qw/tempdir/;
 
 use Test::More tests => 8;
@@ -16,7 +16,7 @@ SKIP: {
 
     my $repo = '//__shipwright/foo';
 
-    my $install_base = tempdir;
+    my $install_base = tempdir( 'shipwright_XXXXXX',  CLEANUP => 1 , TMPDIR => 1);
 
     my $sw = Shipwright->new(
         repository   => "svk:$repo",
@@ -47,15 +47,16 @@ SKIP: {
     is( $sw->build->perl, $perl,
         'set $build->perl to the one in install_base if that exists' );
 
-    $sw->build->build_base( catfile( tempdir, 'build' ) );
-
     $sw->build->perl(undef);
     ok( !defined $sw->build->perl, 'make sure perl is undef' );
 
+    $sw->build->build_base(
+        catdir( tempdir( CLEANUP => 1, TMPDIR => 1 ), 'build' ) );
+
     # import a fake perl dist
-    my $source = catfile( tempdir, 'perl' );
+    my $source = catfile( tempdir( CLEANUP => 1, TMPDIR => 1 ), 'perl' );
     mkdir $source;
-    my $script_dir = tempdir;
+    my $script_dir = tempdir( 'shipwright_XXXXXX',  CLEANUP => 1 , TMPDIR => 1);
     my $build_script = catfile( $script_dir, 'build' );
     open $fh, '>', $build_script;
     close $fh;
@@ -75,7 +76,8 @@ SKIP: {
     $sw->build->perl(undef);
     ok( !defined $sw->build->perl, 'make sure perl is undef' );
     $sw->build->skip( { perl => 1 } );
-    $sw->build->install_base(tempdir);
+    $sw->build->install_base(
+        catdir( tempdir( CLEANUP => 1, TMPDIR => 1 ), 'install' ) );
     $sw->build->run;
     is( $sw->build->perl, $^X,
         'install with --skip perl will not change $build->perl' );

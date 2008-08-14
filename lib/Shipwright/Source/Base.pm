@@ -3,7 +3,7 @@ package Shipwright::Source::Base;
 use warnings;
 use strict;
 use Carp;
-use File::Spec;
+use File::Spec::Functions qw/catfile catdir/;
 use File::Slurp;
 use Module::CoreList;
 use Shipwright::Source;
@@ -57,7 +57,7 @@ sub _follow {
     my $self         = shift;
     my $path         = shift;
     my $cwd          = getcwd;
-    my $require_path = File::Spec->catfile( $path, '__require.yml' );
+    my $require_path = catfile( $path, '__require.yml' );
     my $map          = {};
     my $url          = {};
 
@@ -81,16 +81,16 @@ sub _follow {
 
         # if not found, we'll create one according to Build.PL or Makefile.PL
         my $require = {};
-        chdir File::Spec->catfile($path);
+        chdir catfile($path);
 
         if ( -e 'Build.PL' ) {
             Shipwright::Util->run( [ $^X, 'Build.PL' ] );
-            my $source = read_file( File::Spec->catfile( '_build', 'prereqs' ) )
+            my $source = read_file( catfile( '_build', 'prereqs' ) )
               or die "can't read _build/prereqs: $!";
             my $eval = '$require = ' . $source;
             eval $eval or die "eval error: $@";    ## no critic
 
-            $source = read_file( File::Spec->catfile('Build.PL') )
+            $source = read_file( catfile('Build.PL') )
               or die "can't read Build.PL: $!";
             if (   $source =~ /Module::Build/
                 && $self->name ne 'cpan-Module-Build' )
@@ -185,7 +185,7 @@ EOF
 
                 Shipwright::Util->run( [ $^X, 'shipwright_makefile.pl' ] );
                 my $prereqs =
-                  read_file( File::Spec->catfile('shipwright_prereqs') )
+                  read_file( catfile('shipwright_prereqs') )
                   or die "can't read prereqs: $!";
                 eval $prereqs or die "eval error: $@";    ## no critic
 
@@ -415,7 +415,7 @@ sub _copy {
             my $cmd = [
                 'cp',
                 $file{$_},
-                File::Spec->catfile(
+                catfile(
                     $self->directory,
                     $self->name || $self->just_name( $self->path ), $_
                 )

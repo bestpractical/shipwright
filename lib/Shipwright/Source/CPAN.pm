@@ -3,19 +3,19 @@ package Shipwright::Source::CPAN;
 use warnings;
 use strict;
 use Carp;
-use File::Spec;
+use File::Spec::Functions qw/catfile catdir/;
 use Shipwright::Source::Compressed;
 use CPAN;
 use Data::Dumper;
 use File::Temp qw/tempdir/;
-use File::Spec;
+use File::Spec::Functions qw/catfile catdir/;
 use File::Slurp;
 use UNIVERSAL::require;
 use CPAN::DistnameInfo;
 
 use base qw/Shipwright::Source::Base/;
 
-my $cpan_dir = tempdir( CLEANUP => 1 );
+my $cpan_dir = tempdir( 'shipwright_XXXXXX',  CLEANUP => 1 , TMPDIR => 1);
 unshift @INC, $cpan_dir;
 
 =head1 NAME
@@ -34,17 +34,17 @@ sub new {
 
     CPAN::Config->use;
 
-    mkdir File::Spec->catfile( $cpan_dir, 'CPAN' );
-    my $config_file = File::Spec->catfile( $cpan_dir, 'CPAN', 'MyConfig.pm' );
+    mkdir catfile( $cpan_dir, 'CPAN' );
+    my $config_file = catfile( $cpan_dir, 'CPAN', 'MyConfig.pm' );
 
     unless ( -f $config_file ) {
-        $CPAN::Config->{cpan_home} = File::Spec->catfile($cpan_dir);
-        $CPAN::Config->{build_dir} = File::Spec->catfile( $cpan_dir, 'build' );
+        $CPAN::Config->{cpan_home} = catfile($cpan_dir);
+        $CPAN::Config->{build_dir} = catfile( $cpan_dir, 'build' );
         $CPAN::Config->{histfile} =
-          File::Spec->catfile( $cpan_dir, 'histfile' );
+          catfile( $cpan_dir, 'histfile' );
         $CPAN::Config->{keep_source_where} =
-          File::Spec->catfile( $cpan_dir, 'sources' );
-        $CPAN::Config->{prefs_dir} = File::Spec->catfile( $cpan_dir, 'prefs' );
+          catfile( $cpan_dir, 'sources' );
+        $CPAN::Config->{prefs_dir} = catfile( $cpan_dir, 'prefs' );
         $CPAN::Config->{prerequisites_policy} = 'follow';
         $CPAN::Config->{urllist}              = [];
         write_file( $config_file,
@@ -142,7 +142,7 @@ sub _run {
     $self->_update_map( $self->source, 'cpan-' . $name );
 
     $self->source(
-        File::Spec->catfile(
+        catfile(
             $CPAN::Config->{keep_source_where},
             'authors', 'id', $source
         )

@@ -2,7 +2,7 @@
 use warnings;
 use strict;
 
-use File::Spec;
+use File::Spec::Functions qw/catfile catdir splitdir rel2abs/;
 use File::Temp qw/tempdir/;
 use File::Copy qw/move copy/;
 use File::Find qw/find/;
@@ -107,46 +107,47 @@ unless ( $args{name} ) {
 }
 
 unless ( $args{'install-base'} ) {
-    my $dir = tempdir( $args{name} . '-XXXXXX', DIR => File::Spec->tmpdir );
-    $args{'install-base'} = File::Spec->catfile( $dir, $args{name} );
+    my $dir =
+      tempdir( 'shipwright_XXXXXX', $args{name} . '-XXXXXX', TMPDIR => 1 );
+    $args{'install-base'} = catfile( $dir, $args{name} );
     print "no default install-base, will set it to $args{'install-base'}\n";
 }
 
 my $installed;
 my $installed_hash = {};
 my $installed_file =
-  File::Spec->catfile( $args{'install-base'}, 'installed.yml' );
+  catfile( $args{'install-base'}, 'installed.yml' );
 if ( -e $installed_file ) {
     $installed =
       YAML::Tiny->read(
-        File::Spec->catfile( $args{'install-base'}, 'installed.yml' ) );
+        catfile( $args{'install-base'}, 'installed.yml' ) );
     $installed_hash = { map { $_ => 1 } @{ $installed->[0] } };
 }
 else {
     $installed = YAML::Tiny->new;
 }
 
-$args{'install-base'} = File::Spec->rel2abs( $args{'install-base'} );
+$args{'install-base'} = rel2abs( $args{'install-base'} );
 
 # YAML::Tiny objects are array based.
 my $order =
-  ( YAML::Tiny->read( File::Spec->catfile( 'shipwright', 'order.yml' ) ) )->[0];
+  ( YAML::Tiny->read( catfile( 'shipwright', 'order.yml' ) ) )->[0];
 
 my ( $flags, $ktf );
 
-if ( -e File::Spec->catfile( 'shipwright', 'flags.yml' ) ) {
+if ( -e catfile( 'shipwright', 'flags.yml' ) ) {
     $flags =
-      ( YAML::Tiny->read( File::Spec->catfile( 'shipwright', 'flags.yml' ) ) )
+      ( YAML::Tiny->read( catfile( 'shipwright', 'flags.yml' ) ) )
       ->[0];
 }
 else {
     $flags = {};
 }
 
-if ( -e File::Spec->catfile( 'shipwright', 'known_test_failures.yml' ) ) {
+if ( -e catfile( 'shipwright', 'known_test_failures.yml' ) ) {
     $ktf = (
         YAML::Tiny->read(
-            File::Spec->catfile( 'shipwright', 'known_test_failures.yml' )
+            catfile( 'shipwright', 'known_test_failures.yml' )
         )
     )->[0];
 }
@@ -242,7 +243,7 @@ else {
     close $fh;
 
     unless ( $args{perl} && -e $args{perl} ) {
-        my $perl = File::Spec->catfile( $args{'install-base'}, 'bin', 'perl' );
+        my $perl = catfile( $args{'install-base'}, 'bin', 'perl' );
 
         # -e $perl makes sense when we install onto another vessel
         if ( ( grep { /^perl/ } @$order ) || -e $perl ) {
@@ -253,45 +254,45 @@ else {
     {
         no warnings 'uninitialized';
         $ENV{DYLD_LIBRARY_PATH} =
-          File::Spec->catfile( $args{'install-base'}, 'lib' ) . ':'
+          catfile( $args{'install-base'}, 'lib' ) . ':'
           . $ENV{DYLD_LIBRARY_PATH};
         $ENV{LD_LIBRARY_PATH} =
-          File::Spec->catfile( $args{'install-base'}, 'lib' ) . ':'
+          catfile( $args{'install-base'}, 'lib' ) . ':'
           . $ENV{LD_LIBRARY_PATH};
         $ENV{PERL5LIB} =
-          File::Spec->catfile( $args{'install-base'}, 'lib', 'perl5',
+          catfile( $args{'install-base'}, 'lib', 'perl5',
             'site_perl' )
           . ':'
-          . File::Spec->catfile( $args{'install-base'}, 'lib', 'perl5' ) . ':'
+          . catfile( $args{'install-base'}, 'lib', 'perl5' ) . ':'
           . $ENV{PERL5LIB};
         $ENV{PATH} =
-            File::Spec->catfile( $args{'install-base'}, 'bin' ) . ':'
-          . File::Spec->catfile( $args{'install-base'}, 'sbin' ) . ':'
+            catfile( $args{'install-base'}, 'bin' ) . ':'
+          . catfile( $args{'install-base'}, 'sbin' ) . ':'
           . $ENV{PATH};
         $ENV{PERL_MM_USE_DEFAULT} = 1;
     }
 
     mkpath $args{'install-base'} unless -e $args{'install-base'};
 
-    mkdir File::Spec->catfile( $args{'install-base'},       'etc' )
-      unless -e File::Spec->catfile( $args{'install-base'}, 'etc' );
-    mkdir File::Spec->catfile( $args{'install-base'},       'tools' )
-      unless -e File::Spec->catfile( $args{'install-base'}, 'tools' );
+    mkdir catfile( $args{'install-base'},       'etc' )
+      unless -e catfile( $args{'install-base'}, 'etc' );
+    mkdir catfile( $args{'install-base'},       'tools' )
+      unless -e catfile( $args{'install-base'}, 'tools' );
 
     for ( 'shipwright-script-wrapper', 'shipwright-perl-wrapper' ) {
-        copy( File::Spec->catfile( 'etc', $_ ),
-            File::Spec->catfile( $args{'install-base'}, 'etc', $_ ) );
+        copy( catfile( 'etc', $_ ),
+            catfile( $args{'install-base'}, 'etc', $_ ) );
     }
 
     for ( 'shipwright-utility', 'shipwright-source-bash',
         'shipwright-source-tcsh' )
     {
-        copy( File::Spec->catfile( 'etc', $_ ),
-            File::Spec->catfile( $args{'install-base'}, 'tools', $_ ) );
+        copy( catfile( 'etc', $_ ),
+            catfile( $args{'install-base'}, 'tools', $_ ) );
     }
 
     chmod oct 755,
-      File::Spec->catfile( $args{'install-base'}, 'tools',
+      catfile( $args{'install-base'}, 'tools',
         'shipwright-utility' );
 
     for my $dist (@$order) {
@@ -300,8 +301,8 @@ else {
         chdir $build_base;
     }
 
-    mkdir File::Spec->catfile( $args{'install-base'},       'bin' )
-      unless -e File::Spec->catfile( $args{'install-base'}, 'bin' );
+    mkdir catfile( $args{'install-base'},       'bin' )
+      unless -e catfile( $args{'install-base'}, 'bin' );
 
     wrap_bin();
     print "install finished, the dists are at $args{'install-base'}\n";
@@ -311,11 +312,11 @@ else {
 sub install {
     my $dir = shift;
 
-    if ( $args{with}{$dir} && -e File::Spec->catfile( 'tmp_dists', $dir ) ) {
-        chdir File::Spec->catfile( 'tmp_dists', $dir );
+    if ( $args{with}{$dir} && -e catfile( 'tmp_dists', $dir ) ) {
+        chdir catfile( 'tmp_dists', $dir );
     }
     else {
-        chdir File::Spec->catfile( 'dists', $dir );
+        chdir catfile( 'dists', $dir );
     }
 
     my $skip_test = $args{'skip-test'} || $args{'skip-test-except-final'};
@@ -328,10 +329,10 @@ sub install {
 
     print "start to build and install $dir\n";
 
-    if ( -e File::Spec->catfile( '..', '..', 'scripts', $dir, 'build.pl' ) ) {
+    if ( -e catfile( '..', '..', 'scripts', $dir, 'build.pl' ) ) {
         print $log "found build.pl for $dir, will install $dir using that\n";
         my $cmd = join ' ', $args{perl} || $^X,
-          File::Spec->catfile( '..', '..', 'scripts', $dir, 'build.pl' ),
+          catfile( '..', '..', 'scripts', $dir, 'build.pl' ),
           '--install-base' => $args{'install-base'},
           '--flags'        => join( ',', keys %{ $args{flags} } ),
           $skip_test ? '--skip-test' : (), $args{'force'} ? '--force' : (),
@@ -343,7 +344,7 @@ sub install {
     }
     else {
         my $cmds =
-          cmds( File::Spec->catfile( '..', '..', 'scripts', $dir, 'build' ) );
+          cmds( catfile( '..', '..', 'scripts', $dir, 'build' ) );
 
         for (@$cmds) {
             my ( $type, $cmd ) = @$_;
@@ -398,20 +399,20 @@ sub wrap_bin {
             return;
         }
 
-        my $dir = ( File::Spec->splitdir($File::Find::dir) )[-1];
-        mkdir File::Spec->catfile( $args{'install-base'}, "$dir-wrapped" )
-          unless -d File::Spec->catfile( $args{'install-base'},
+        my $dir = ( splitdir($File::Find::dir) )[-1];
+        mkdir catfile( $args{'install-base'}, "$dir-wrapped" )
+          unless -d catfile( $args{'install-base'},
             "$dir-wrapped" );
 
         if (
-            -e File::Spec->catfile( $args{'install-base'}, "$dir-wrapped",
+            -e catfile( $args{'install-base'}, "$dir-wrapped",
                 $file ) )
         {
             print $log 'found old '
-              . File::Spec->catfile( $args{'install-base'}, "$dir-wrapped",
+              . catfile( $args{'install-base'}, "$dir-wrapped",
                 $file )
               . ', deleting' . "\n";
-            unlink File::Spec->catfile( $args{'install-base'}, "$dir-wrapped",
+            unlink catfile( $args{'install-base'}, "$dir-wrapped",
                 $file );
         }
 
@@ -431,23 +432,23 @@ sub wrap_bin {
         }
 
         move( $file =>
-              File::Spec->catfile( $args{'install-base'}, "$dir-wrapped" ) )
+              catfile( $args{'install-base'}, "$dir-wrapped" ) )
           or die $!;
 
     # if we have this $type(e.g. perl) installed and have that specific wrapper,
     # then link to it, else link to the normal one
         if (   $type
-            && -e File::Spec->catfile( '..', 'bin', $type )
-            && -e File::Spec->catfile( '..', 'etc', "shipwright-$type-wrapper" )
+            && -e catfile( '..', 'bin', $type )
+            && -e catfile( '..', 'etc', "shipwright-$type-wrapper" )
           )
         {
-            symlink File::Spec->catfile( '..', 'etc',
+            symlink catfile( '..', 'etc',
                 "shipwright-$type-wrapper" ) => $file
               or die $!;
         }
         else {
 
-            symlink File::Spec->catfile( '..', 'etc',
+            symlink catfile( '..', 'etc',
                 'shipwright-script-wrapper' ) => $file
               or die $!;
         }
@@ -456,7 +457,7 @@ sub wrap_bin {
 
     my @dirs =
       grep { -d $_ }
-      map { File::Spec->catfile( $args{'install-base'}, $_ ) }
+      map { catfile( $args{'install-base'}, $_ ) }
       qw/bin sbin libexec/;
     find( $sub, @dirs ) if @dirs;
 
@@ -487,7 +488,7 @@ sub substitute {
 
 sub test {
 
-    my $cmds = cmds( File::Spec->catfile( 't', 'test' ) );
+    my $cmds = cmds( catfile( 't', 'test' ) );
 
     for (@$cmds) {
         my ( $type, $cmd ) = @$_;
@@ -538,19 +539,19 @@ sub clean {
     my $dir = shift;
 
     my $cmd;
-    chdir File::Spec->catfile( 'dists', $dir );
+    chdir catfile( 'dists', $dir );
 
-    if ( -e File::Spec->catfile( '..', '..', 'scripts', $dir, 'build.pl' ) ) {
+    if ( -e catfile( '..', '..', 'scripts', $dir, 'build.pl' ) ) {
         print $log "found build.pl for $dir, will clean $dir using that\n";
         $cmd = join ' ', $args{perl} || $^X,
-          File::Spec->catfile( '..', '..', 'scripts', $dir, 'build.pl' ),
+          catfile( '..', '..', 'scripts', $dir, 'build.pl' ),
           '--install-base' => $args{'install-base'},
           '--flags'        => join( ',', keys %{ $args{flags} } ),
           '--clean';
     }
     else {
         my $cmds =
-          cmds( File::Spec->catfile( '..', '..', 'scripts', $dir, 'build' ) );
+          cmds( catfile( '..', '..', 'scripts', $dir, 'build' ) );
 
         for (@$cmds) {
             my ( $type, $c ) = @$_;

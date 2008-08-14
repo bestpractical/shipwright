@@ -11,7 +11,7 @@ __PACKAGE__->mk_accessors(
 );
 
 use Shipwright;
-use File::Spec;
+use File::Spec::Functions qw/catfile catdir splitdir/;
 use Shipwright::Util;
 use File::Copy qw/copy move/;
 use File::Temp qw/tempdir/;
@@ -132,8 +132,8 @@ sub run {
         my $base = $self->_parent_dir($source);
 
         my $script_dir;
-        if ( -e File::Spec->catdir( $base, '__scripts', $name ) ) {
-            $script_dir = File::Spec->catdir( $base, '__scripts', $name );
+        if ( -e catdir( $base, '__scripts', $name ) ) {
+            $script_dir = catdir( $base, '__scripts', $name );
         }
         else {
      # Source part doesn't have script stuff, so we need to create by ourselves.
@@ -141,7 +141,7 @@ sub run {
 
             if ( my $script = $self->build_script ) {
                 copy( $self->build_script,
-                    File::Spec->catfile( $script_dir, 'build' ) );
+                    catfile( $script_dir, 'build' ) );
             }
             else {
                 $self->_generate_build( $source, $script_dir, $shipwright );
@@ -152,10 +152,10 @@ sub run {
         unless ( $self->no_follow ) {
             $self->_import_req( $source, $shipwright, $script_dir );
 
-            if ( -e File::Spec->catfile( $source, '__require.yml' ) ) {
+            if ( -e catfile( $source, '__require.yml' ) ) {
                 move(
-                    File::Spec->catfile( $source,     '__require.yml' ),
-                    File::Spec->catfile( $script_dir, 'require.yml' )
+                    catfile( $source,     '__require.yml' ),
+                    catfile( $script_dir, 'require.yml' )
                 ) or die "move __require.yml failed: $!\n";
             }
         }
@@ -202,13 +202,13 @@ sub _import_req {
     my $shipwright   = shift;
     my $script_dir   = shift;
 
-    my $require_file = File::Spec->catfile( $source, '__require.yml' );
-    $require_file = File::Spec->catfile( $script_dir, 'require.yml' )
-      unless -e File::Spec->catfile( $source, '__require.yml' );
+    my $require_file = catfile( $source, '__require.yml' );
+    $require_file = catfile( $script_dir, 'require.yml' )
+      unless -e catfile( $source, '__require.yml' );
 
     my $dir = $self->_parent_dir($source);
 
-    my $map_file = File::Spec->catfile( $dir, 'map.yml' );
+    my $map_file = catfile( $dir, 'map.yml' );
 
     if ( -e $require_file ) {
         my $req = Shipwright::Util::LoadFile($require_file);
@@ -238,19 +238,19 @@ sub _import_req {
                         next;
                     }
 
-                    $s = File::Spec->catdir( $dir, $s );
+                    $s = catdir( $dir, $s );
 
                     my $script_dir;
-                    if ( -e File::Spec->catdir( $dir, '__scripts', $dist ) ) {
+                    if ( -e catdir( $dir, '__scripts', $dist ) ) {
                         $script_dir =
-                          File::Spec->catdir( $dir, '__scripts', $dist );
+                          catdir( $dir, '__scripts', $dist );
                     }
                     else {
-                        $script_dir = tempdir( CLEANUP => 1 );
-                        if ( -e File::Spec->catfile( $s, '__require.yml' ) ) {
+                        $script_dir = tempdir( 'shipwright_XXXXXX',  CLEANUP => 1 , TMPDIR => 1);
+                        if ( -e catfile( $s, '__require.yml' ) ) {
                             move(
-                                File::Spec->catfile( $s, '__require.yml' ),
-                                File::Spec->catfile(
+                                catfile( $s, '__require.yml' ),
+                                catfile(
                                     $script_dir, 'require.yml'
                                 )
                             ) or die "move $s/__require.yml failed: $!\n";
@@ -289,10 +289,8 @@ sub _generate_build {
     my $script_dir = shift;
     my $shipwright = shift;
 
-    chdir $source_dir;
-
     my @commands;
-    if ( -f 'Build.PL' ) {
+    if ( -f catfile( $source_dir, 'Build.PL' ) ) {
         print
 "detected Module::Build build system; generating appropriate build script\n";
         push @commands,
@@ -305,7 +303,7 @@ sub _generate_build {
         # is just a symblic link which can't do things right
         push @commands, "clean: %%PERL%% Build realclean";
     }
-    elsif ( -f 'Makefile.PL' ) {
+    elsif ( -f catfile( $source_dir, 'Makefile.PL' ) ) {
         print
 "detected ExtUtils::MakeMaker build system; generating appropriate build script\n";
         push @commands,
@@ -315,7 +313,7 @@ sub _generate_build {
         push @commands, "install: make install";
         push @commands, "clean: make clean";
     }
-    elsif ( -f 'configure' ) {
+    elsif ( -f catfile( $source_dir, 'configure' ) ) {
         print
 "detected autoconf build system; generating appropriate build script\n";
         @commands = (
@@ -344,7 +342,7 @@ sub _generate_build {
         push @commands, 'clean: ';
     }
 
-    open my $fh, '>', File::Spec->catfile( $script_dir, 'build' ) or die $@;
+    open my $fh, '>', catfile( $script_dir, 'build' ) or die $@;
     print $fh $_, "\n" for @commands;
     close $fh;
 }
@@ -354,9 +352,9 @@ sub _generate_build {
 sub _parent_dir {
     my $self   = shift;
     my $source = shift;
-    my @dirs   = File::Spec->splitdir($source);
+    my @dirs   = splitdir($source);
     pop @dirs;
-    return File::Spec->catfile(@dirs);
+    return catfile(@dirs);
 }
 
 # _reorder:

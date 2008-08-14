@@ -38,7 +38,7 @@ sub run {
     if ( $self->install_base ) {
 
         # convert relative path to be absolute
-        $self->install_base( File::Spec->rel2abs( $self->install_base ) );
+        $self->install_base( rel2abs( $self->install_base ) );
     }
 
     unless ( $self->name ) {
@@ -87,7 +87,7 @@ sub run {
 
     my $dists_dir = $shipwright->build->build_base;
     for my $name ( keys %source ) {
-        my $dir = File::Spec->catfile( $dists_dir, 'dists', $name );
+        my $dir = catfile( $dists_dir, 'dists', $name );
         system("rm -rf $dir");
         system("cp -r $source{$name} $dir");
     }
