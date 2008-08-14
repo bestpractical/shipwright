@@ -300,10 +300,8 @@ sub _generate_build {
     my $script_dir = shift;
     my $shipwright = shift;
 
-    chdir $source_dir;
-
     my @commands;
-    if ( -f 'Build.PL' ) {
+    if ( -f File::Spec->catfile( $source_dir, 'Build.PL' ) ) {
         print
 "detected Module::Build build system; generating appropriate build script\n";
         push @commands,
@@ -316,7 +314,7 @@ sub _generate_build {
         # is just a symblic link which can't do things right
         push @commands, "clean: %%PERL%% Build realclean";
     }
-    elsif ( -f 'Makefile.PL' ) {
+    elsif ( -f File::Spec->catfile( $source_dir, 'Makefile.PL' ) ) {
         print
 "detected ExtUtils::MakeMaker build system; generating appropriate build script\n";
         push @commands,
@@ -326,7 +324,7 @@ sub _generate_build {
         push @commands, "install: make install";
         push @commands, "clean: make clean";
     }
-    elsif ( -f 'configure' ) {
+    elsif ( -f File::Spec->catfile( $source_dir, 'configure' ) ) {
         print
 "detected autoconf build system; generating appropriate build script\n";
         @commands = (
