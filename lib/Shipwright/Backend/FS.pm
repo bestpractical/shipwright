@@ -3,7 +3,7 @@ package Shipwright::Backend::FS;
 use warnings;
 use strict;
 use Carp;
-use File::Spec::Functions qw/catfile catdir/;
+use File::Spec::Functions qw/catfile catdir splitdir/;
 use Shipwright::Util;
 use File::Copy qw/copy/;
 use File::Copy::Recursive qw/dircopy/;
@@ -65,21 +65,26 @@ sub _cmd {
         }
         else {
             if ( my $script_dir = $args{build_script} ) {
-                @cmd = [
+                push @cmd, [
                     'cp',        '-r',
                     "$script_dir/", $self->repository . "/scripts/$args{name}",
                 ];
             }
             else {
                 if ( $self->has_branch_support ) {
-                    unless ( -e $self->repository
-                        . "/sources/$args{name}/$args{as}" )
+                    my @dirs = splitdir( $args{name} );
+                    unless (
+                          -e $self->repository
+                        . "/sources/$args{name}/"
+                        . join '/',
+                        @dirs[ 0 .. $#dirs - 1 ]
+                      )
                     {
-                        push @cmd,
-                          [
+                        push @cmd, [
                             'mkdir', '-p',
-                            $self->repository . "/sources/$args{name}/$args{as}"
-                          ];
+                            $self->repository . "/sources/$args{name}/" . join
+                              '/', @dirs[ 0 .. $#dirs - 1 ]
+                        ];
                     }
 
                     push @cmd,
@@ -182,6 +187,16 @@ sub _update_file {
     my $file = catfile( $self->repository, $path );
 
     copy( $latest, $file );
+}
+
+=item import
+
+=cut
+
+sub import {
+    my $self = shift;
+    return unless @_;
+    return $self->SUPER::import( @_, delete => 1 );
 }
 
 =back
