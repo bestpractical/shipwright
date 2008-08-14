@@ -163,6 +163,16 @@ sub _update_file {
     copy( $latest, $file );
 }
 
+=item import
+
+=cut
+
+sub import {
+    my $self = shift;
+    return unless @_;
+    return $self->SUPER::import( @_, delete => 1 );
+}
+
 =back
 
 =cut
