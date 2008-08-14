@@ -124,8 +124,9 @@ sub _latest_version {
 
 # XXX TODO we need a better latest_version for shipwright source
 # using the source shipwright repo's whole version seems lame
-        $args{url} =~ s/^shipwright://;
-        $args{url} =~ s!/[^/]+$!!;
+        if ( $args{url} =~ s/^shipwright:// ) {
+            $args{url} =~ s!/[^/]+$!!;
+        }
 
         # has url, meaning svn or svk
         if ( $args{url} =~ /^svn[:+]/ ) {
