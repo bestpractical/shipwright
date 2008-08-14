@@ -108,7 +108,7 @@ unless ( $args{name} ) {
 
 unless ( $args{'install-base'} ) {
     my $dir =
-      tempdir( 'shipwright_XXXXXX', $args{name} . '-XXXXXX', TMPDIR => 1 );
+      tempdir( 'vessel_' . $args{name} . '-XXXXXX', TMPDIR => 1 );
     $args{'install-base'} = catfile( $dir, $args{name} );
     print "no default install-base, will set it to $args{'install-base'}\n";
 }
