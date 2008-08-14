@@ -5,7 +5,7 @@ use Shipwright;
 use File::Temp qw/tempdir/;
 use File::Copy;
 use File::Copy::Recursive qw/dircopy/;
-use File::Spec;
+use File::Spec::Functions qw/catfile catdir/;
 use Cwd;
 
 use Test::More tests => 41;
@@ -28,9 +28,9 @@ SKIP: {
         'svk://local/hello'                  => 'SVK',
         'cpan:Acme::Hello'                   => 'CPAN',
         'file:'
-          . File::Spec->catfile( 't', 'hello', 'Acme-Hello-0.03.tar.gz' ) =>
+          . catfile( 't', 'hello', 'Acme-Hello-0.03.tar.gz' ) =>
           'Compressed',
-        'dir:' . File::Spec->catfile( 't', 'hello' ) => 'Directory',
+        'dir:' . catfile( 't', 'hello' ) => 'Directory',
     );
 
     for ( keys %source ) {
@@ -46,7 +46,7 @@ SKIP: {
     my $shipwright = Shipwright->new(
         repository => "svk:$repo",
         source     => 'file:'
-          . File::Spec->catfile( 't', 'hello', 'Acme-Hello-0.03.tar.gz' ),
+          . catfile( 't', 'hello', 'Acme-Hello-0.03.tar.gz' ),
         follow    => 0,
         log_level => 'FATAL',
     );
@@ -74,9 +74,9 @@ SKIP: {
         isa_ok( $shipwright->$_->log, 'Log::Log4perl::Logger' );
     }
 
-    ok( -e File::Spec->catfile( $source_dir, 'lib', 'Acme', 'Hello.pm' ),
+    ok( -e catfile( $source_dir, 'lib', 'Acme', 'Hello.pm' ),
         'lib/Acme/Hello.pm exists in the source' );
-    ok( -e File::Spec->catfile( $source_dir, 'META.yml' ),
+    ok( -e catfile( $source_dir, 'META.yml' ),
         'META.yml exists in the source' );
 
     # import
@@ -85,10 +85,10 @@ SKIP: {
     ok( grep( {/Build\.PL/} `svk ls $repo/sources/Acme-Hello/vendor` ),
         'imported ok' );
 
-    my $script_dir = tempdir( CLEANUP => 1 );
-    copy( File::Spec->catfile( 't', 'hello', 'scripts', 'build' ),
+    my $script_dir = tempdir( 'shipwright_XXXXXX',  CLEANUP => 1 , TMPDIR => 1);
+    copy( catfile( 't', 'hello', 'scripts', 'build' ),
         $script_dir );
-    copy( File::Spec->catfile( 't', 'hello', 'scripts', 'require.yml' ),
+    copy( catfile( 't', 'hello', 'scripts', 'require.yml' ),
         $script_dir );
 
     $shipwright->backend->import(
@@ -103,24 +103,24 @@ SKIP: {
     $shipwright->backend->export( target => $shipwright->build->build_base );
 
     for (
-        File::Spec->catfile(
+        catfile(
             $shipwright->build->build_base,
             'shipwright', 'order.yml',
         ),
-        File::Spec->catfile(
+        catfile(
             $shipwright->build->build_base, 'etc',
             'shipwright-script-wrapper'
         ),
-        File::Spec->catfile(
+        catfile(
             $shipwright->build->build_base, 'sources',
             'Acme-Hello',                   'vendor',
         ),
-        File::Spec->catfile(
+        catfile(
             $shipwright->build->build_base, 'sources',
             'Acme-Hello',                   'vendor',
             'MANIFEST',
         ),
-        File::Spec->catfile(
+        catfile(
             $shipwright->build->build_base, 'scripts',
             'Acme-Hello',                   'build',
         ),
@@ -130,12 +130,12 @@ SKIP: {
     }
 
     # install
-    my $install_dir = tempdir;
+    my $install_dir = tempdir( 'shipwright_XXXXXX',  CLEANUP => 1 , TMPDIR => 1);
     $shipwright->build->run( install_base => $install_dir );
 
     for (
-        File::Spec->catfile( $install_dir, 'lib', 'perl5', 'Acme', 'Hello.pm' ),
-        File::Spec->catfile( $install_dir, 'etc', 'shipwright-script-wrapper' ),
+        catfile( $install_dir, 'lib', 'perl5', 'Acme', 'Hello.pm' ),
+        catfile( $install_dir, 'etc', 'shipwright-script-wrapper' ),
       )
     {
         ok( -e $_, "$_ exists" );
@@ -147,7 +147,7 @@ SKIP: {
     $shipwright = Shipwright->new(
         repository => "svk:$repo",
         source     => 'file:'
-          . File::Spec->catfile( 't', 'hello', 'Acme-Hello-0.03.tar.gz' ),
+          . catfile( 't', 'hello', 'Acme-Hello-0.03.tar.gz' ),
         name      => 'howdy',
         follow    => 0,
         log_level => 'FATAL',
@@ -158,11 +158,11 @@ SKIP: {
     $shipwright->backend->import( name => 'hello', source => $source_dir );
     ok( grep( {/Build\.PL/} `svk ls $repo/sources/howdy/vendor` ),
         'imported ok' );
-    $script_dir = tempdir( CLEANUP => 1 );
-    copy( File::Spec->catfile( 't', 'hello', 'scripts', 'build' ),
+    $script_dir = tempdir( 'shipwright_XXXXXX',  CLEANUP => 1 , TMPDIR => 1);
+    copy( catfile( 't', 'hello', 'scripts', 'build' ),
         $script_dir );
-    copy( File::Spec->catfile( 't', 'hello', 'scripts', 'howdy_require.yml' ),
-        File::Spec->catfile( $script_dir, 'require.yml' ) );
+    copy( catfile( 't', 'hello', 'scripts', 'howdy_require.yml' ),
+        catfile( $script_dir, 'require.yml' ) );
 
     $shipwright->backend->import(
         name         => 'hello',
@@ -172,10 +172,10 @@ SKIP: {
     ok( grep( {/Build\.PL/} `svk cat $repo/scripts/howdy/build` ),
         'build script ok' );
 
-    my $tempdir = tempdir( CLEANUP => 1 );
+    my $tempdir = tempdir( 'shipwright_XXXXXX',  CLEANUP => 1 , TMPDIR => 1);
     dircopy(
-        File::Spec->catfile( 't',      'hello', 'shipwright' ),
-        File::Spec->catfile( $tempdir, 'shipwright' )
+        catfile( 't',      'hello', 'shipwright' ),
+        catfile( $tempdir, 'shipwright' )
     );
 
     # check to see if update_order works
@@ -186,7 +186,7 @@ SKIP: {
     );
 
     system( 'svk import '
-          . File::Spec->catfile( $tempdir, 'shipwright' )
+          . catfile( $tempdir, 'shipwright' )
           . " $repo/shipwright -m ''" );
     like(
         `svk cat $repo/shipwright/order.yml`,
@@ -213,10 +213,10 @@ SKIP: {
         $shipwright->backend->initialize();
         $shipwright->backend->export(
             target => $shipwright->build->build_base );
-        my $install_dir = tempdir;
+        my $install_dir = tempdir( 'shipwright_XXXXXX',  CLEANUP => 1 , TMPDIR => 1);
         $shipwright->build->run( install_base => $install_dir );
         ok(
-            -e File::Spec->catfile(
+            -e catfile(
                 $install_dir, 'etc', 'shipwright-script-wrapper'
             ),
             'build with 0 packages ok'

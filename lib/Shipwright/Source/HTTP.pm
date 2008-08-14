@@ -3,7 +3,7 @@ package Shipwright::Source::HTTP;
 use warnings;
 use strict;
 use Carp;
-use File::Spec;
+use File::Spec::Functions qw/catfile catdir/;
 use Shipwright::Source::Compressed;
 
 use base qw/Shipwright::Source::Base/;
@@ -38,7 +38,7 @@ sub _run {
 
         my $src_dir = $self->download_directory;
         mkdir $src_dir unless -e $src_dir;
-        $self->source( File::Spec->catfile( $src_dir, $file ) );
+        $self->source( catfile( $src_dir, $file ) );
 
         require LWP::UserAgent;
         my $ua = LWP::UserAgent->new;

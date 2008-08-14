@@ -3,7 +3,7 @@ package Shipwright::Backend::FS;
 use warnings;
 use strict;
 use Carp;
-use File::Spec;
+use File::Spec::Functions qw/catfile catdir/;
 use Shipwright::Util;
 use File::Copy qw/copy/;
 use File::Copy::Recursive qw/dircopy/;
@@ -132,7 +132,7 @@ sub _yml {
     my $path = shift;
     my $yml  = shift;
 
-    my $file = File::Spec->catfile( $self->repository, $path );
+    my $file = catfile( $self->repository, $path );
     if ($yml) {
 
         Shipwright::Util::DumpFile( $file, $yml );
@@ -179,7 +179,7 @@ sub _update_file {
     my $path   = shift;
     my $latest = shift;
 
-    my $file = File::Spec->catfile( $self->repository, $path );
+    my $file = catfile( $self->repository, $path );
 
     copy( $latest, $file );
 }

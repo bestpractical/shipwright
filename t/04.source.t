@@ -4,6 +4,7 @@ use warnings;
 use Test::More tests => 28;
 use Shipwright::Test;
 use Shipwright::Source;
+use File::Spec::Functions qw/catfile/;
 
 Shipwright::Test->init;
 
@@ -15,9 +16,9 @@ my %source = (
     'cpan:Acme::Hello'                          => 'CPAN',
     'cpan:S/SU/SUNNAVY/IP-QQWry-v0.0.15.tar.gz' => 'CPAN',
     'file:'
-      . File::Spec->catfile( 't', 'hello', 'Acme-Hello-0.03.tar.gz' ) =>
+      . catfile( 't', 'hello', 'Acme-Hello-0.03.tar.gz' ) =>
       'Compressed',
-    'dir:' . File::Spec->catfile( 't', 'hello' ) => 'Directory',
+    'dir:' . catfile( 't', 'hello' ) => 'Directory',
 );
 
 for ( keys %source ) {

@@ -1,8 +1,8 @@
 use Test::More;
-use File::Spec;
+use File::Spec::Functions qw/catfile catdir/;
 use File::Basename qw( dirname );
 
-my $manifest = File::Spec->catdir( dirname(__FILE__), '..', 'MANIFEST' );
+my $manifest = catdir( dirname(__FILE__), '..', 'MANIFEST' );
 plan skip_all => 'MANIFEST does not exist' unless -e $manifest;
 open FH, '<', $manifest;
 

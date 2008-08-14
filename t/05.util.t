@@ -5,7 +5,7 @@ use Test::More tests => 16;
 
 use Shipwright::Test;
 use Shipwright::Util;
-use File::Spec;
+use File::Spec::Functions qw/catfile catdir/;
 use File::Temp qw/tempfile/;
 use Cwd;
 
@@ -17,13 +17,13 @@ my ( $shipwright_root, $share_root );
 if ( grep { m{blib/lib} } @INC ) {
 
     # found blib/lib, so we're probably in `make test` or something like that.
-    $shipwright_root = File::Spec->catfile( $cwd, 'blib', 'lib' );
+    $shipwright_root = catfile( $cwd, 'blib', 'lib' );
     $share_root =
-      File::Spec->catfile( $cwd, 'blib', 'lib', 'auto', 'share', 'dist', 'Shipwright' );
+      catfile( $cwd, 'blib', 'lib', 'auto', 'share', 'dist', 'Shipwright' );
 }
 else {
-    $shipwright_root = File::Spec->catfile( $cwd, 'lib' );
-    $share_root      = File::Spec->catfile( $cwd, 'share' );
+    $shipwright_root = catfile( $cwd, 'lib' );
+    $share_root      = catfile( $cwd, 'share' );
 }
 
 # we want to run shipwright_root and share_root twice to get codes covered.

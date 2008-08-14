@@ -3,7 +3,7 @@ package Shipwright::Backend::SVK;
 use warnings;
 use strict;
 use Carp;
-use File::Spec;
+use File::Spec::Functions qw/catfile catdir/;
 use Shipwright::Util;
 use File::Temp qw/tempdir/;
 use File::Copy qw/copy/;
@@ -111,7 +111,7 @@ sub _cmd {
             }
 
             if ( $self->info( path => $path ) ) {
-                my $tmp_dir = tempdir( CLEANUP => 1 );
+                my $tmp_dir = tempdir( 'shipwright_XXXXXX',  CLEANUP => 1 , TMPDIR => 1);
                 @cmd = (
                     [ 'rm',  '-rf', "$tmp_dir" ],
                     [ 'svk', 'checkout', $self->repository . $path, $tmp_dir ],
@@ -177,8 +177,8 @@ sub _yml {
     my ($f) = $path =~ m{.*/(.*)$};
 
     if ($yml) {
-        my $dir = tempdir( CLEANUP => 1 );
-        my $file = File::Spec->catfile( $dir, $f );
+        my $dir = tempdir( 'shipwright_XXXXXX',  CLEANUP => 1 , TMPDIR => 1);
+        my $file = catfile( $dir, $f );
 
         $self->checkout( path => $path, target => $file );
 
@@ -251,8 +251,8 @@ sub _update_file {
     my $path   = shift;
     my $latest = shift;
 
-    my $dir = tempdir( CLEANUP => 1 );
-    my $file = File::Spec->catfile( $dir, $path );
+    my $dir = tempdir( 'shipwright_XXXXXX',  CLEANUP => 1 , TMPDIR => 1);
+    my $file = catfile( $dir, $path );
 
     $self->checkout(
         path   => $path,

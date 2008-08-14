@@ -3,7 +3,7 @@ use strict;
 use warnings;
 
 use Getopt::Long;
-use File::Spec;
+use File::Spec::Functions qw/catfile catdir/;
 use Cwd;
 
 my %args;
@@ -33,13 +33,13 @@ elsif ( $args{'install-links'} ) {
         my $dh;
         opendir $dh, $dir or die $!;
 
-        mkdir File::Spec->catfile( $args{'install-links'},       $dir )
-          unless -e File::Spec->catfile( $args{'install-links'}, $dir );
+        mkdir catfile( $args{'install-links'},       $dir )
+          unless -e catfile( $args{'install-links'}, $dir );
         my @files = readdir $dh;
         for (@files) {
             next if $_ eq '.' || $_ eq '..';
-            symlink File::Spec->catfile( $cwd, $dir, $_ ),
-              File::Spec->catfile( $args{'install-links'}, $dir, $_ ) or die
+            symlink catfile( $cwd, $dir, $_ ),
+              catfile( $args{'install-links'}, $dir, $_ ) or die
                   $!;
         }
     }

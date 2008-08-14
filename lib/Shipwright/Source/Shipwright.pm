@@ -3,7 +3,7 @@ use strict;
 use warnings;
 
 use Carp;
-use File::Spec;
+use File::Spec::Functions qw/catfile catdir/;
 
 use base qw/Shipwright::Source::Base/;
 
@@ -22,19 +22,19 @@ sub run {
 
     if ( $source_shipwright->backend->has_branch_support ) {
         $source_shipwright->backend->export(
-            target => File::Spec->catfile( $self->directory, $self->name ),
+            target => catfile( $self->directory, $self->name ),
             path   => "/sources/$dist",
         );
     }
     else {
         $source_shipwright->backend->export(
-            target => File::Spec->catfile( $self->directory, $self->name ),
+            target => catfile( $self->directory, $self->name ),
             path   => "/dists/$dist",
         );
     }
 
     $source_shipwright->backend->export(
-        target => File::Spec->catfile( $self->scripts_directory, $self->name ),
+        target => catfile( $self->scripts_directory, $self->name ),
         path   => "/scripts/$dist",
     );
     
@@ -57,7 +57,7 @@ sub run {
 
         for my $type ( keys %$require ) {
             for my $req ( keys %{ $require->{$type} } ) {
-                unless ( -e File::Spec->catfile( $self->directory, $req ) ) {
+                unless ( -e catfile( $self->directory, $req ) ) {
                     my $s = Shipwright::Source->new(
                         %$self,
                         source => "shipwright:$base/$req",
@@ -69,7 +69,7 @@ sub run {
         }
     }
 
-    return File::Spec->catfile( $self->directory, $self->name );
+    return catfile( $self->directory, $self->name );
 }
 
 1;

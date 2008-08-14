@@ -37,7 +37,7 @@ sub _run {
         $self->_update_url( $self->just_name($file), $source );
         my $src_dir = $self->download_directory;
         mkdir $src_dir unless -e $src_dir;
-        $self->source( File::Spec->catfile( $src_dir, $file ) );
+        $self->source( catfile( $src_dir, $file ) );
 
         require LWP::UserAgent;
         my $ua = LWP::UserAgent->new;

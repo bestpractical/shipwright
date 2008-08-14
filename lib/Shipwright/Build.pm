@@ -11,7 +11,7 @@ __PACKAGE__->mk_accessors(
       skip only_test force order flags name only/
 );
 
-use File::Spec;
+use File::Spec::Functions qw/catfile catdir splitdir/;
 use File::Temp qw/tempdir/;
 use File::Copy::Recursive qw/dircopy/;
 use File::Copy qw/move copy/;
@@ -35,7 +35,7 @@ sub new {
     $self->log( Log::Log4perl->get_logger( ref $self ) );
 
     $self->{build_base} ||=
-      File::Spec->catfile( tempdir( CLEANUP => 1 ) );
+      tempdir( 'shipwright_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
     rmdir $self->{build_base};
 
     $self->name('vessel') unless $self->name;
@@ -43,26 +43,27 @@ sub new {
 
     unless ( $self->install_base ) {
 
-        my $dir = tempdir( $self->name . '-XXXXXX', DIR => File::Spec->tmpdir );
-        $self->install_base( File::Spec->catfile( $dir, $self->name ) );
+        my $dir =
+          tempdir( 'vessel_' . $self->name . '-XXXXXX', TMPDIR => 1 );
+        $self->install_base( catfile( $dir, $self->name ) );
     }
 
     no warnings 'uninitialized';
 
     $ENV{DYLD_LIBRARY_PATH} =
-      File::Spec->catfile( $self->install_base, 'lib' ) . ':'
+      catfile( $self->install_base, 'lib' ) . ':'
       . $ENV{DYLD_LIBRARY_PATH};
     $ENV{LD_LIBRARY_PATH} =
-      File::Spec->catfile( $self->install_base, 'lib' ) . ':'
+      catfile( $self->install_base, 'lib' ) . ':'
       . $ENV{LD_LIBRARY_PATH};
     $ENV{PERL5LIB} =
-        File::Spec->catfile( $self->install_base, 'lib', 'perl5', 'site_perl' )
+        catfile( $self->install_base, 'lib', 'perl5', 'site_perl' )
       . ':'
-      . File::Spec->catfile( $self->install_base, 'lib', 'perl5' ) . ':'
+      . catfile( $self->install_base, 'lib', 'perl5' ) . ':'
       . $ENV{PERL5LIB};
     $ENV{PATH} =
-        File::Spec->catfile( $self->install_base, 'bin' ) . ':'
-      . File::Spec->catfile( $self->install_base, 'sbin' ) . ':'
+        catfile( $self->install_base, 'bin' ) . ':'
+      . catfile( $self->install_base, 'sbin' ) . ':'
       . $ENV{PATH};
     $ENV{PERL_MM_USE_DEFAULT} = 1;
 
@@ -101,11 +102,11 @@ sub run {
         $self->test;
     }
     else {
-        dircopy( 'etc', File::Spec->catfile( $self->install_base, 'etc' ) );
+        dircopy( 'etc', catfile( $self->install_base, 'etc' ) );
 
         my $installed_hash = {};
         $installed_file =
-          File::Spec->catfile( $self->install_base, 'installed.yml' );
+          catfile( $self->install_base, 'installed.yml' );
         if ( -e $installed_file ) {
             $installed = Shipwright::Util::LoadFile($installed_file);
             $installed_hash = { map { $_ => 1 } @$installed };
@@ -116,14 +117,14 @@ sub run {
 
         my $order =
           Shipwright::Util::LoadFile(
-            File::Spec->catfile( 'shipwright', 'order.yml' ) )
+            catfile( 'shipwright', 'order.yml' ) )
           || [];
 
         my ( $flags, $ktf, $branches );
-        if ( -e File::Spec->catfile( 'shipwright', 'flags.yml' ) ) {
+        if ( -e catfile( 'shipwright', 'flags.yml' ) ) {
 
             $flags = Shipwright::Util::LoadFile(
-                File::Spec->catfile( 'shipwright', 'flags.yml' ) );
+                catfile( 'shipwright', 'flags.yml' ) );
 
             # fill not specified but mandatory flags
             if ( $flags->{__mandatory} ) {
@@ -138,19 +139,19 @@ sub run {
             $flags = {};
         }
 
-        if ( -e File::Spec->catfile( 'shipwright', 'known_test_failures.yml' ) ) {
+        if ( -e catfile( 'shipwright', 'known_test_failures.yml' ) ) {
 
             $ktf = Shipwright::Util::LoadFile(
-                File::Spec->catfile( 'shipwright', 'known_test_failures.yml' ) );
+                catfile( 'shipwright', 'known_test_failures.yml' ) );
         }
         else {
             $ktf = {};
         }
 
-        if ( -e File::Spec->catfile( 'shipwright', 'branches.yml' ) ) {
+        if ( -e catfile( 'shipwright', 'branches.yml' ) ) {
 
             $branches = Shipwright::Util::LoadFile(
-                File::Spec->catfile( 'shipwright', 'branches.yml' ) );
+                catfile( 'shipwright', 'branches.yml' ) );
         }
 
         # calculate the real order
@@ -174,7 +175,7 @@ sub run {
 
         unless ( $self->perl && -e $self->perl ) {
             my $perl =
-              File::Spec->catfile( $self->install_base, 'bin', 'perl' );
+              catfile( $self->install_base, 'bin', 'perl' );
 
             # -e $perl makes sense when we install on to another vessel
             if ( ( grep { /^perl/ } @{$order} ) || -e $perl ) {
@@ -212,24 +213,24 @@ sub _install {
     if ( $branches ) {
             system(
                 "cp -r "
-                  . File::Spec->catdir( 'sources', $dir, split /\//,
+                  . catdir( 'sources', $dir, split /\//,
                     $branches->{$dir}[0] )
                   . ' '
-                  . File::Spec->catdir( 'dists', $dir )
+                  . catdir( 'dists', $dir )
               )
               && die
               "cp sources/$dir/$branches->{$dir}[0] to dists/$dir failed";
     }
 
-    chdir File::Spec->catfile( 'dists', $dir );
+    chdir catfile( 'dists', $dir );
 
-    if ( -e File::Spec->catfile( '..', '..', 'scripts', $dir, 'build.pl' ) ) {
+    if ( -e catfile( '..', '..', 'scripts', $dir, 'build.pl' ) ) {
         $self->log->info(
             "found build.pl for $dir, will install $dir using that");
         Shipwright::Util->run(
             [
                 $self->perl,
-                File::Spec->catfile( '..', '..', 'scripts', $dir, 'build.pl' ),
+                catfile( '..', '..', 'scripts', $dir, 'build.pl' ),
                 '--install-base' => $self->install_base,
                 '--flags'        => join( ',', keys %{ $self->flags } ),
                 $self->skip_test ? '--skip-test' : (),
@@ -241,7 +242,7 @@ sub _install {
     else {
 
         my @cmds = read_file(
-            File::Spec->catfile( '..', '..', 'scripts', $dir, 'build' ) );
+            catfile( '..', '..', 'scripts', $dir, 'build' ) );
         chomp @cmds;
         @cmds = map { $self->_substitute($_) } @cmds;
 
@@ -305,21 +306,21 @@ sub _wrapper {
             return;
         }
 
-        my $dir = ( File::Spec->splitdir($File::Find::dir) )[-1];
-        mkdir File::Spec->catfile( $self->install_base,       "$dir-wrapped" )
-          unless -d File::Spec->catfile( $self->install_base, "$dir-wrapped" );
+        my $dir = ( splitdir($File::Find::dir) )[-1];
+        mkdir catfile( $self->install_base,       "$dir-wrapped" )
+          unless -d catfile( $self->install_base, "$dir-wrapped" );
 
         if (
-            -e File::Spec->catfile( $self->install_base, "$dir-wrapped", $file )
+            -e catfile( $self->install_base, "$dir-wrapped", $file )
           )
         {
             $self->log->warn(
                 'found old '
-                  . File::Spec->catfile( $self->install_base, "$dir-wrapped",
+                  . catfile( $self->install_base, "$dir-wrapped",
                     $file )
                   . ', deleting' . "\n"
             );
-            unlink File::Spec->catfile( $self->install_base, "$dir-wrapped",
+            unlink catfile( $self->install_base, "$dir-wrapped",
                 $file );
         }
 
@@ -344,23 +345,23 @@ sub _wrapper {
         }
 
         move(
-            $file => File::Spec->catfile( $self->install_base, "$dir-wrapped" )
+            $file => catfile( $self->install_base, "$dir-wrapped" )
         ) or die $!;
 
     # if we have this $type(e.g. perl) installed and have that specific wrapper,
     # then link to it, else link to the normal one
         if (   $type
-            && -e File::Spec->catfile( '..', 'bin', $type )
-            && -e File::Spec->catfile( '..', 'etc', "shipwright-$type-wrapper" )
+            && -e catfile( '..', 'bin', $type )
+            && -e catfile( '..', 'etc', "shipwright-$type-wrapper" )
           )
         {
-            symlink File::Spec->catfile( '..', 'etc',
+            symlink catfile( '..', 'etc',
                 "shipwright-$type-wrapper" ) => $file
               or die $!;
         }
         else {
 
-            symlink File::Spec->catfile( '..', 'etc',
+            symlink catfile( '..', 'etc',
                 'shipwright-script-wrapper' ) => $file
               or die $!;
         }
@@ -368,7 +369,7 @@ sub _wrapper {
 
     my @dirs =
       grep { -d $_ }
-      map { File::Spec->catfile( $self->install_base, $_ ) }
+      map { catfile( $self->install_base, $_ ) }
       qw/bin sbin libexec/;
     find( $sub, @dirs ) if @dirs;
 }
@@ -399,7 +400,7 @@ run the commands in t/test
 sub test {
     my $self = shift;
 
-    my @cmds = read_file( File::Spec->catfile( 't', 'test' ) );
+    my @cmds = read_file( catfile( 't', 'test' ) );
     chomp @cmds;
     @cmds = map { $self->_substitute($_) } @cmds;
     $self->log->info('run tests:');

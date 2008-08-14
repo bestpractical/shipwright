@@ -6,7 +6,7 @@ use base qw/Exporter/;
 
 use File::Temp qw/tempdir/;
 use IPC::Cmd qw/can_run/;
-use File::Spec;
+use File::Spec::Functions qw/catfile catdir/;
 
 our @EXPORT =
   qw/has_svk has_svn create_fs_repo create_svk_repo create_svn_repo devel_cover_enabled test_cmd/;
@@ -48,7 +48,7 @@ create a repo for fs
 =cut
 
 sub create_fs_repo {
-    return tempdir;
+    return tempdir( 'shipwright_XXXXXX',  CLEANUP => 1 , TMPDIR => 1);
 }
 
 =head2 create_svk_repo 
@@ -59,8 +59,8 @@ return $ENV{SVKROOT}
 =cut
 
 sub create_svk_repo {
-    $ENV{SVKROOT} = tempdir;
-    my $svk_root_local = File::Spec->catfile( $ENV{SVKROOT}, 'local' );
+    $ENV{SVKROOT} = tempdir( 'shipwright_XXXXXX',  CLEANUP => 1 , TMPDIR => 1);
+    my $svk_root_local = catfile( $ENV{SVKROOT}, 'local' );
     system("svnadmin create $svk_root_local");
     system("svk depotmap -i");
     return $ENV{SVKROOT};
@@ -74,7 +74,7 @@ return the repo's uri, like file:///tmp/foo
 =cut
 
 sub create_svn_repo {
-    my $repo = tempdir;
+    my $repo = tempdir( 'shipwright_XXXXXX',  CLEANUP => 1 , TMPDIR => 1);
     system("svnadmin create $repo") && die "create repo failed: $!";
     return "file://$repo";
 }
@@ -104,7 +104,7 @@ sub shipwright_bin {
     # then what did you call this method for?
 
     $ENV{PERL5LIB} = 'lib:' . $ENV{PERL5LIB} unless $ENV{PERL5LIB} =~ /^lib:/;
-    return File::Spec->catfile( 'bin', 'shipwright' );
+    return catfile( 'bin', 'shipwright' );
 }
 
 =head2 devel_cover_enabled
