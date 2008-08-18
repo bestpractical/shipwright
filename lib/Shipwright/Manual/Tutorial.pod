@@ -92,10 +92,10 @@ dist name you want to import.
 We'll import apache 2.2.9, perl 5.10, mod_perl 2.0, libxml and XML::LibXML
 in this tutorial one by one.
 
-    $ shipwright import -r svk://foo http://www.apache.org/dist/httpd/httpd-2.2.9.tar.gz
+    $ shipwright import -r svk://foo http://www.apache.org/dist/httpd/httpd-2.2.9.tar.gz --name apache
     $ shipwright import -r svk://foo http://www.cpan.org/authors/id/R/RG/RGARCIA/perl-5.10.0.tar.gz
-    $ shipwright import -r svk://foo http://perl.apache.org/dist/mod_perl-2.0-current.tar.gz
-    $ shipwright import -r svk://foo ftp://xmlsoft.org/libxml2/libxml2-2.6.32.tar.gz
+    $ shipwright import -r svk://foo http://perl.apache.org/dist/mod_perl-2.0-current.tar.gz --name mod_perl
+    $ shipwright import -r svk://foo ftp://xmlsoft.org/libxml2/libxml2-2.6.32.tar.gz --name libxml
     $ shipwright import -r svk://foo cpan:XML::LibXML
 
 Run I<shipwright help import> to see more options.
@@ -105,6 +105,13 @@ mechanism that Shipwright can automatically create a set of build instructions
 for (currently I<autoconf>, L<ExtUtils::MakeMaker>, L<Module::Install>, and 
 L<Module::Build>), you would now need to edit F<scripts/DISTNAME/build> to tell
 Shipwright how to build that source.
+
+For our tutorial, e.g. perl 5.10, the build can't be created automitacally,
+so we need to edit the build file:
+
+  configure: ./Configure -des -Dprefix=%%INSTALL_BASE%%
+  test: make test
+  install: make install
 
 For more information on build scripts, see L<Shipwright::Manual::CustomizeBuild>.
 
