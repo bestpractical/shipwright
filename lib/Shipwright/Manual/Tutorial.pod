@@ -92,7 +92,7 @@ dist name you want to import.
 We'll import apache 2.2.9, perl 5.10, mod_perl 2.0, libxml and XML::LibXML
 in this tutorial one by one.
 
-    $ shipwright import -r svk://foo http://www.apache.org/dist/httpd/httpd-2.2.9.tar.gz
+    $ shipwright import -r svk://foo http://www.apache.org/dist/httpd/httpd-2.2.9.tar.gz --name apache
     $ shipwright import -r svk://foo http://www.cpan.org/authors/id/R/RG/RGARCIA/perl-5.10.0.tar.gz
     $ shipwright import -r svk://foo http://perl.apache.org/dist/mod_perl-2.0-current.tar.gz
     $ shipwright import -r svk://foo ftp://xmlsoft.org/libxml2/libxml2-2.6.32.tar.gz
