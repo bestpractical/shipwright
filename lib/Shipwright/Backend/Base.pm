@@ -8,6 +8,7 @@ use Shipwright::Util;
 use File::Temp qw/tempdir/;
 use File::Copy qw/copy/;
 use File::Copy::Recursive qw/dircopy/;
+use File::Path;
 use List::MoreUtils qw/uniq/;
 
 our %REQUIRE_OPTIONS = ( import => [qw/source/] );
@@ -59,6 +60,13 @@ sub initialize {
     my $dir = tempdir( 'shipwright_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
 
     dircopy( Shipwright::Util->share_root, $dir );
+
+    # copy YAML/Tiny.pm to inc/
+    my $yaml_tiny_path = catfile( $dir, 'inc', 'YAML' );
+    mkpath $yaml_tiny_path or die "mkpath $yaml_tiny_path failed: $!";
+    require Module::Info;
+    copy( Module::Info->new_from_module('YAML::Tiny')->file, $yaml_tiny_path )
+      or die "copy YAML/Tiny.pm failed: $!";
 
     # share_root can't keep empty dirs, we have to create them manually
     for (qw/scripts t sources/) {
