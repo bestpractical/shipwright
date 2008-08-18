@@ -25,6 +25,8 @@ requires 'LWP::UserAgent' => 0;
 requires 'Module::CoreList' => 0;
 requires 'UNIVERSAL::require' => 0;
 requires 'version' => 0;
+requires 'Module::Info' => 0;
+requires 'YAML::Tiny' => 0;
 
 if ( can_cc() ) {
     requires( 'YAML::Syck' => 0.71 );

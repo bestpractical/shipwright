@@ -68,8 +68,11 @@ sub new {
     $ENV{PERL_MM_USE_DEFAULT} = 1;
 
     require CPAN;
-    eval { require CPAN::Config; }
-      or warn("can't require CPAN::Config: $@");
+    require Module::Info;
+    if ( Module::Info->new_from_module('CPAN::Config') ) {
+        # keep original CPAN::Config info
+        require CPAN::Config;
+    }
 
     # we don't want any prereqs any more!
     $CPAN::Config->{prerequisites_policy} = 'ignore';

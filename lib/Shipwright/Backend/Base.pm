@@ -7,6 +7,7 @@ use File::Spec::Functions qw/catfile catdir/;
 use Shipwright::Util;
 use File::Temp qw/tempdir/;
 use File::Copy qw/copy/;
+use File::Path;
 use File::Copy::Recursive qw/dircopy/;
 use List::MoreUtils qw/uniq/;
 
@@ -60,6 +61,13 @@ sub initialize {
 
     dircopy( Shipwright::Util->share_root, $dir );
 
+    # copy YAML/Tiny.pm to inc/
+    my $yaml_tiny_path = catfile( $dir, 'inc', 'YAML' );
+    mkpath $yaml_tiny_path;
+    require Module::Info;
+    copy( Module::Info->new_from_module('YAML::Tiny')->file, $yaml_tiny_path )
+      or die "copy YAML/Tiny.pm failed: $!";
+    
     # share_root can't keep empty dirs, we have to create them manually
     for (qw/dists scripts t/) {
         mkdir catfile( $dir, $_ );

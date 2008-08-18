@@ -61,7 +61,6 @@ share/etc/shipwright-script-wrapper
 share/etc/shipwright-source-bash
 share/etc/shipwright-source-tcsh
 share/etc/shipwright-utility
-share/inc/YAML/Tiny.pm
 share/shipwright/flags.yml
 share/shipwright/known_test_failures.yml
 share/shipwright/map.yml
