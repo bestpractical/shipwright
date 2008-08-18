@@ -106,6 +106,13 @@ for (currently I<autoconf>, L<ExtUtils::MakeMaker>, L<Module::Install>, and
 L<Module::Build>), you would now need to edit F<scripts/DISTNAME/build> to tell
 Shipwright how to build that source.
 
+For our tutorial, e.g. perl 5.10, the build can't be created automitacally,
+so we need to edit the build file:
+
+  configure: ./Configure -des -Dprefix=%%INSTALL_BASE%%
+  test: make test
+  install: make install
+
 For more information on build scripts, see L<Shipwright::Manual::CustomizeBuild>.
 
 =head2 update
