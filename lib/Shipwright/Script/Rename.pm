@@ -28,8 +28,8 @@ sub run {
     die "no such dist: $name\n" unless grep { $_ eq $name } @$order;
 
     $shipwright->backend->move(
-        path     => "/dists/$name",
-        new_path => "/dists/$new_name",
+        path     => "/sources/$name",
+        new_path => "/sources/$new_name",
     );
     $shipwright->backend->move(
         path     => "/scripts/$name",
