@@ -63,7 +63,7 @@ sub initialize {
 
     # copy YAML/Tiny.pm to inc/
     my $yaml_tiny_path = catfile( $dir, 'inc', 'YAML' );
-    mkpath $yaml_tiny_path or die "mkpath $yaml_tiny_path failed: $!";
+    mkpath $yaml_tiny_path;
     require Module::Info;
     copy( Module::Info->new_from_module('YAML::Tiny')->file, $yaml_tiny_path )
       or die "copy YAML/Tiny.pm failed: $!";
