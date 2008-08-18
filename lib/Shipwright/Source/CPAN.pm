@@ -10,12 +10,11 @@ use Data::Dumper;
 use File::Temp qw/tempdir/;
 use File::Spec::Functions qw/catfile catdir/;
 use File::Slurp;
-use UNIVERSAL::require;
 use CPAN::DistnameInfo;
 
 use base qw/Shipwright::Source::Base/;
 
-my $cpan_dir = tempdir( 'shipwright_XXXXXX',  CLEANUP => 1 , TMPDIR => 1);
+my $cpan_dir = tempdir( 'shipwright_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
 unshift @INC, $cpan_dir;
 
 =head1 NAME
@@ -32,19 +31,24 @@ sub new {
     my $class = shift;
     my $self  = $class->SUPER::new(@_);
 
-    CPAN::Config->use;
+    require Module::Info;
+    if ( Module::Info->new_from_module('CPAN::Config') ) {
+
+        # keep original CPAN::Config info
+        require CPAN::Config;
+    }
 
     mkdir catfile( $cpan_dir, 'CPAN' );
     my $config_file = catfile( $cpan_dir, 'CPAN', 'MyConfig.pm' );
 
     unless ( -f $config_file ) {
-        $CPAN::Config->{cpan_home} = catfile($cpan_dir);
-        $CPAN::Config->{build_dir} = catfile( $cpan_dir, 'build' );
-        $CPAN::Config->{histfile} =
-          catfile( $cpan_dir, 'histfile' );
-        $CPAN::Config->{keep_source_where} =
-          catfile( $cpan_dir, 'sources' );
-        $CPAN::Config->{prefs_dir} = catfile( $cpan_dir, 'prefs' );
+
+        # hack $CPAN::Config, mostly to make cpan stuff temporary
+        $CPAN::Config->{cpan_home}         = catfile($cpan_dir);
+        $CPAN::Config->{build_dir}         = catfile( $cpan_dir, 'build' );
+        $CPAN::Config->{histfile}          = catfile( $cpan_dir, 'histfile' );
+        $CPAN::Config->{keep_source_where} = catfile( $cpan_dir, 'sources' );
+        $CPAN::Config->{prefs_dir}         = catfile( $cpan_dir, 'prefs' );
         $CPAN::Config->{prerequisites_policy} = 'follow';
         $CPAN::Config->{urllist}              = [];
         write_file( $config_file,
@@ -78,7 +82,7 @@ sub _run {
 
     my ( $source, $distribution );
 
-    Shipwright::Util->select( 'cpan' );
+    Shipwright::Util->select('cpan');
 
     if ( $self->source =~ /\.tar\.gz$/ ) {
 
@@ -129,23 +133,19 @@ sub _run {
 
     my $name = CPAN::DistnameInfo->new( $distribution->{ID} )->dist;
 
-
     if ( $name eq 'perl' ) {
         die 'perl itself contains ' . $self->source . ', will not process';
     }
 
     $distribution->get;
 
-    Shipwright::Util->select( 'stdout' );
+    Shipwright::Util->select('stdout');
 
     $self->name( 'cpan-' . $name );
     $self->_update_map( $self->source, 'cpan-' . $name );
 
     $self->source(
-        catfile(
-            $CPAN::Config->{keep_source_where},
-            'authors', 'id', $source
-        )
+        catfile( $CPAN::Config->{keep_source_where}, 'authors', 'id', $source )
     );
     return 1;
 }
