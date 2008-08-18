@@ -4,83 +4,188 @@ Shipwright::Manual::Tutorial - introduction to Shipwright
 
 =head1 SYNOPSIS
 
-In this tutorial, we'll create a simple vessel: the L<Acme::Hello> module
-from CPAN.
-
-We will use C<svk://__shipwright/hello> as our repository.
+In this tutorial, we'll create a vessel to represent basic stuff of Shipwright.
 
 =head1 DESCRIPTION
 
-There are three main steps to creating a shipwright vessel.
+Currently, Shipwright supports 3 kinds of backends: I<SVK>, I<SVN> and I<plain
+file system>. e.g.
 
-=head2 1. initialize
+    svn:file:///tmp/svnrepo/foo
+    svn:http://svn.example.com/foo
+    svk://foo
+    svk:/test/foo
+    fs:/tmp/foo
 
-    $ shipwright create -r svk://__shipwright/hello
+we'll use C<svk://foo> as the repository for the rest tutorial.
 
-=head2 2. import
+=head2 create
 
-    $ shipwright import -r svk://__shipwright/hello cpan:Acme::Hello
+First, let's initialize the repository of the project:
 
-Then shipwright will try to download and import L<Acme::Hello> and all its
-dependencies from CPAN. (You can import from other types of sources as well;
-see C<shipwright help import> to find out about them.) In Shipwright terms,
-these imported sources are called I<distributions>, and are stored under
-F<dists/> in the repository.
+    $ shipwright create -r svk://foo
 
-If you want to skip some dependencies, e.g. L<Locale::Maketext> and
-L<Locale::Maketext::Lexicon>, just say C<--skip
-Locale::Maketext,Locale::Maketext::Lexicon>.
+For the layout of shipwright's source, see L<Shipwright>.
 
-Run C<shipwright help import> to see more options.
+=head2 import
+
+It's worthless if we don't import some dists to Shipwright, let's do it now.
+
+Shipwright supports 8 kinds of sources:
+
+here're some examples:
+
+B<Caveat>: for files, we only support I<.tar.gz>(I<.tgz>) and I<.tar.bz2> format currently.
+
+=over 4
+
+=item compressed file
+
+    file:/tmp/foo.tar.gz
+    file:/home/ross/dinosaur-0.01.tar.bz2
+
+=item plain directory
+
+    dir:/tmp/foo
+    directory:/home/ross/dinosaur-0.01
+
+
+=item HTTP
+    
+    http://apache.mirror.phpchina.com/httpd/httpd-2.2.9.tar.gz
+    http://ftp.cuhk.edu.hk/pub/packages/perl/CPAN/authors/id/C/CL/CLKAO/SVK-v2.0.2.tar.gz
+
+
+=item FTP
+
+    ftp://ftp.gnupg.org/gcrypt/gnupg/gnupg-1.4.9.tar.bz2
+    ftp://ftp.cuhk.edu.hk/pub/packages/perl/CPAN/authors/id/C/CL/CLKAO/SVK-v2.0.2.tar.gz
+
+=item SVK
+    
+    svk://foo>
+    svk:/test/foo
+
+=item SVN
+
+    svn:file:///tmp/repo/foo
+    svn:http://svn.example.com/foo
+
+=item CPAN
+
+    cpan:Jifty
+    cpan:Module::Install
+
+It's ok, Shipwright will find the download link automatically for you,
+with L<CPAN>'s help.
+
+=item Shipwright
+
+    shipwright:svk:/shipwright/repo/foo
+    shipwright:svk:/shipwright/repo/bar
+
+svk:/shipwright/repo is another shipwright repository, 'foo' or 'bar' is the
+dist name you want to import.
+
+=back
+
+We'll import apache 2.2.9, perl 5.10, mod_perl 2.0, libxml and XML::LibXML
+in this tutorial one by one.
+
+    $ shipwright import -r svk://foo http://www.apache.org/dist/httpd/httpd-2.2.9.tar.gz
+    $ shipwright import -r svk://foo http://www.cpan.org/authors/id/R/RG/RGARCIA/perl-5.10.0.tar.gz
+    $ shipwright import -r svk://foo http://perl.apache.org/dist/mod_perl-2.0-current.tar.gz
+    $ shipwright import -r svk://foo ftp://xmlsoft.org/libxml2/libxml2-2.6.32.tar.gz
+    $ shipwright import -r svk://foo cpan:XML::LibXML
+
+Run I<shipwright help import> to see more options.
 
 As a side note, if you were importing from a source that doesn't use a build
 mechanism that Shipwright can automatically create a set of build instructions
-for (currently autoconf, MakeMaker, Module::Install, and Module::Build), you
-would now need to edit F<scripts/DISTNAME/build> to tell Shipwright how to build
-that source. For more information on build scripts, see
-L<Shipwright::Manual::CustomizeBuild>.
+for (currently I<autoconf>, L<ExtUtils::MakeMaker>, L<Module::Install>, and 
+L<Module::Build>), you would now need to edit F<scripts/DISTNAME/build> to tell
+Shipwright how to build that source.
 
-=head2 3. build
+For more information on build scripts, see L<Shipwright::Manual::CustomizeBuild>.
 
-    $ shipwright build -r svk://__shipwright/hello
+=head2 update
 
-If tests are time-consuming or for some reason unnecessary for your build, you
-can add C<--skip-test> to skip them.
+For dists with I<CPAN>, I<SVK>, I<SVN> and I<Shipwright> types,
+we can simply use the I<update> cmd to update:
 
-Run C<shipwright help build> to see more options.
+    $ shipwright update -r svk://foo cpan-XML-LibXML
+    (yeah, that's right, cpan:XML::LibXML will be named cpan-XML-LibXML)
 
-And that's it! Your build should end with a bunch of lines beginning with
-C<Installing>. These specify where you can find your built vessel. This will
-generally be in a subdirectory of F</tmp>, but you can specify a different
-location with C<--install-base>.
+you can also specify the version you want to update to with --version arg:
+
+    $ shipwright update -r svk://foo cpan-XML-LibXML --version 1.60
+
+For other types, Shipwright can't find the latest version, so we have to tell 
+Shipwright where it is by I<relocate> cmd.
+
+e.g. apache 2.2.10 is released one day, with download link
+L<http://apache.mirror.phpchina.com/httpd/httpd-2.2.10.tar.gz>, we need to 
+set the source url first before update.
+
+    $ shipwright relocate -r svk://foo apache http://www.apache.org/dist/httpd/httpd-2.2.10.tar.gz 
+    $ shipwright update -r svk://foo apache
+
+=head2 tweak manually 
+
+You may find that I<cpan-XML-LibXML> needs I<libxml> as a dependence, but
+in F</scripts/cpan-XML-LibXML/require.yml> there's no such entry,
+because F<require.yml> is created automatically, filled with perl module dists,
+no extra dependence will be set.
+
+So we have to do it manually, edit F</scripts/cpan-XML-LibXML/require.yml>
+ourselves, at least by now.
+
+Hey, you know how to edit that file, right? ;)
+
+=head2 build
+
+There're two ways to build a Shipwright project, you can use Shipwright's
+I<build> command or use the F</bin/shipwright-builder> in the repository. 
+
+=over 4
+
+=item build cmd
+
+$ shipwright build -r svk://foo
+
+You can tell Shipwright the dir to install to by C<--install-base> arg.
+
+Run I<shipwright help build> to see more options.
+
+=item F<./bin/shipwright-buider>
+
+F<./bin/shipwright-buider> lives in the Shipwright repository,
+so we need to I<check out> the repository to some place first,
+then I<chdir> there, and run:
+
+$ ./bin/shipwright-builder 
+
+Run I<./bin/shipwright-builder --help> to see more options.
+
+=back
+
+=head2 ship your vessel
+
+We call the built stuff the I<vessel>.
 
 To ship your vessel, create an archive of the built files using an archive
-program such as C<tar>, e.g. by running C<tar czvf your-vessel.tar.gz
-/tmp/your-vessel>. Users can use your vessel by extracting the archive to a
-directory and then adding the following command to their shell's startup script
-(e.g. for bash users, edit F</home/user/.bashrc> on most systems): C<source
+program such as I<tar>, e.g. by running I<tar czvf your-vessel.tar.gz
+/tmp/your-vessel>.
+
+Users can use your vessel by extracting the archive to a directory and then
+adding the following command to their shell's startup script
+(e.g. for bash users, edit F</home/user/.bashrc> on most systems): I<source
 /base/path/hello/etc/shipwright-source-bash> (for bash users). A source script
-is also provided for the tcsh shell. After sourcing this script, users will be
-able to run binaries and load perl modules from your vessel as with normal
-installed programs, though they will need to start a new shell or re-run their
-startup script.
-
-A log of the above commands can be found in F<docs/tutorial.log>.
-
-=head1 NOTES
-
-=head2 Updating distributions
-
-There are two commands you can use to update a distribution: C<update> and
-C<import>.
-
-If you would like to just update the distribution source (files in F<dists/>),
-use C<update>. It will delete the directory in F<dists/> and add it again.
-
-The other way is to C<import> the distribution again. This will delete the
-corresponding directories in F<dists/> and F<scripts/> and then add new ones. If
-you want to update the dependency lists too, just add the C<--overwrite>
-option.
+is also provided for the tcsh shell.
+                                    
+After sourcing this script, users will be able to run binaries and load perl
+modules from your vessel as with normal installed programs, though they will 
+need to start a new shell or re-run their startup script.
 
 =head1 SEE ALSO
 
