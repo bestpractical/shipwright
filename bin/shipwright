@@ -4,6 +4,10 @@ use strict;
 use warnings;
 use Shipwright;
 use Shipwright::Script;
+use Cwd;
 
 local $SIG{INT} = sub { warn "Stopped\n"; exit; };
+
+my $cwd = getcwd;
 Shipwright::Script->dispatch();
+chdir $cwd;
