@@ -94,8 +94,8 @@ in this tutorial one by one.
 
     $ shipwright import -r svk://foo http://www.apache.org/dist/httpd/httpd-2.2.9.tar.gz --name apache
     $ shipwright import -r svk://foo http://www.cpan.org/authors/id/R/RG/RGARCIA/perl-5.10.0.tar.gz
-    $ shipwright import -r svk://foo http://perl.apache.org/dist/mod_perl-2.0-current.tar.gz
-    $ shipwright import -r svk://foo ftp://xmlsoft.org/libxml2/libxml2-2.6.32.tar.gz
+    $ shipwright import -r svk://foo http://perl.apache.org/dist/mod_perl-2.0-current.tar.gz --name mod_perl
+    $ shipwright import -r svk://foo ftp://xmlsoft.org/libxml2/libxml2-2.6.32.tar.gz --name libxml
     $ shipwright import -r svk://foo cpan:XML::LibXML
 
 Run I<shipwright help import> to see more options.

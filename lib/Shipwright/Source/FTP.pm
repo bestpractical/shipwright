@@ -5,6 +5,7 @@ use strict;
 use Carp;
 
 use Shipwright::Source::Compressed;
+use File::Spec::Functions qw/catfile/;
 
 use base qw/Shipwright::Source::Base/;
 
