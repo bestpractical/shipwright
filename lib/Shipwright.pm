@@ -157,7 +157,7 @@ etc/
     # utility which will be installed to tools/
     shipwright-utility
 
-dists/      # all the sources of your dists live here
+sources/      # all the sources of your dists live here
 
 scripts/    # all the build scripts and dependency hints live here
 
@@ -175,7 +175,7 @@ t/
 
 =head3 repository after import
 
-After importing, say cpan:Acme::Hello, both the dists and scripts directories
+After importing, say cpan:Acme::Hello, both the sources and scripts directories
 will have a `cpan-Acme-Hello' directory.
 
 Under scripts/cpan-Acme-Hello there are two files: 'build' and 'require.yml'.
