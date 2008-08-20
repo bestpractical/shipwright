@@ -422,7 +422,7 @@ sub wrap_bin {
             my $shebang = <$fh>;
             if (
                 $shebang =~ m{
-\Q$args{'install-base'}\E(?:/|\\)(?:s?bin|libexec)(?:/|\\)(\w+)
+\Q$args{'install-base'}\E(?:/|\\)(?:s?bin)(?:/|\\)(\w+)
 |\benv\s+(\w+)
 }x
               )
@@ -458,7 +458,7 @@ sub wrap_bin {
     my @dirs =
       grep { -d $_ }
       map { catfile( $args{'install-base'}, $_ ) }
-      qw/bin sbin libexec/;
+      qw/bin sbin/;
     find( $sub, @dirs ) if @dirs;
 
 }
