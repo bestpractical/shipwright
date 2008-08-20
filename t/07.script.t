@@ -5,6 +5,7 @@ use Test::More tests => 11;
 
 use Shipwright::Script;
 use Shipwright;
+use Shipwright::Test;
 
 is_deeply(
     { del => 'delete', ls => 'list', up => 'update' },
@@ -17,21 +18,19 @@ isa_ok( $logger, 'Log::Log4perl::Logger', 'Shipwright::Script->log' );
 
 my %argv = (
     'passed nothing will get a help' => [],
-    'passed -h will get a help'  => ['-h'],
+    'passed -h will get a help'      => ['-h'],
     'passed --help will get a help'  => ['--help'],
 );
 
 for my $msg ( keys %argv ) {
     @ARGV = @{ $argv{$msg} };
     my $cmd = Shipwright::Script->prepare();
-    isa_ok($cmd, 'Shipwright::Script::Help' )
+    isa_ok( $cmd, 'Shipwright::Script::Help' );
 }
 
 my %wrong_argv = (
-    'Unknown option: (r|repository)' => [
-        [ 'ls', '-r' ],
-        [ 'ls', '--repository' ],
-    ],
+    'Unknown option: (r|repository)' =>
+      [ [ 'ls', '-r' ], [ 'ls', '--repository' ], ],
     'need repository arg' => [ ['ls'] ],
     'invalid repository' => [
         [ 'ls', '-r', 'lalal' ],
@@ -42,8 +41,17 @@ my %wrong_argv = (
 
 for my $msg ( keys %wrong_argv ) {
     for my $v ( @{ $wrong_argv{$msg} } ) {
-        eval { @ARGV = @$v; Shipwright::Script->prepare };
-        like( $@, qr/$msg/, $msg );
+        if ( $v->[2] && $v->[2] =~ /^svn/ ) {
+          SKIP: {
+                skip 'no svn found', 1 unless has_svn;
+                eval { @ARGV = @$v; Shipwright::Script->prepare };
+                like( $@, qr/$msg/, $msg );
+            }
+        }
+        else {
+            eval { @ARGV = @$v; Shipwright::Script->prepare };
+            like( $@, qr/$msg/, $msg );
+        }
     }
 }
 

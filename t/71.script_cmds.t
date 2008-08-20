@@ -310,7 +310,7 @@ qr/set mandatory flags with success\s+mandatory flags of man1 is build/,
             my $cmd = shift @{ $item->[0] };
             test_cmd(
                 $repo,
-                [ $sw, $cmd, '-r', $repo, @{ $item->[0] }, ],
+                [ $^X, $sw, $cmd, '-r', $repo, @{ $item->[0] }, ],
                 @$item[ 1 .. $#$item ],
             );
         }
