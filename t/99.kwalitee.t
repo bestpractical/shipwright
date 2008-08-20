@@ -1,4 +1,3 @@
 use Test::More;
-
-eval { require Test::Kwalitee; Test::Kwalitee->import };
+eval { use Test::Kwalitee 1.01; };
 plan( skip_all => 'Test::Kwalitee not installed; skipping' ) if $@;

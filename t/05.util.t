@@ -46,8 +46,8 @@ like( $@, qr/something wrong/i, 'run "ls lalala" results in death' );
 ( undef, $err ) = Shipwright::Util->run( [ 'ls', 'lalala' ], 1 );
 like(
     $err,
-    qr/no such file/i,
-    "run 'ls lalala' get 'no file' warning if ignore_failure"
+    qr/ls:/i,
+    "run 'ls lalala' get warning if ignore_failure"
 );
 
 my $hashref = { foo => 'bar' };
