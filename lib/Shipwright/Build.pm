@@ -339,7 +339,7 @@ sub _wrapper {
                 $type = 'perl';
             }
             elsif (
-                $shebang =~ m{$base(?:/|\\)(?:s?bin|libexec)(?:/|\\)(\w+)
+                $shebang =~ m{$base(?:/|\\)(?:s?bin)(?:/|\\)(\w+)
                 |\benv\s+(\w+)}x
               )
             {
@@ -373,7 +373,7 @@ sub _wrapper {
     my @dirs =
       grep { -d $_ }
       map { catfile( $self->install_base, $_ ) }
-      qw/bin sbin libexec/;
+      qw/bin sbin/;
     find( $sub, @dirs ) if @dirs;
 }
 
