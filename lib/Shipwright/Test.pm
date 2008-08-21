@@ -7,6 +7,7 @@ use base qw/Exporter/;
 use File::Temp qw/tempdir/;
 use IPC::Cmd qw/can_run/;
 use File::Spec::Functions qw/catfile catdir/;
+use Shipwright::Util;
 
 our @EXPORT =
   qw/has_svk has_svn create_fs_repo create_svk_repo create_svn_repo devel_cover_enabled test_cmd/;
@@ -21,24 +22,36 @@ Shipwright::Test - useful subs for tests are here
 
 =head2 has_svk
 
-check to see if we have svk or not.
-in fact, it also checks svnadmin since we need that to create repo for svk
+check to see if we have svk or not, also limit the svk version to be 2+.
+in fact, it also checks svnadmin since we need that to create repo for svk.
 
 =cut
 
 sub has_svk {
-    return can_run('svk') && can_run('svnadmin');
+    if ( can_run('svk') && can_run('svnadmin') ) {
+        my $out = Shipwright::Util->run(['svk', '--version']);
+        if ( $out =~ /version v(\d)\./ ) {
+            return 1 if $1 >= 2;
+        }
+    }
+    return;
 }
 
 =head2 has_svn
 
-check to see if we have svn or not.
-in fact, it also checks svnadmin since we need that to create repo
+check to see if we have svn or not, also limit the svn version to be 1.4+.
+in fact, it also checks svnadmin since we need that to create repo.
 
 =cut
 
 sub has_svn {
-    return can_run('svn') && can_run('svnadmin');
+    if ( can_run('svn') && can_run('svnadmin') ) {
+        my $out = Shipwright::Util->run(['svn', '--version']);
+        if ( $out =~ /version 1\.(\d)/ ) {
+            return 1 if $1 >= 4;
+        }
+    }
+    return;
 }
 
 =head2 create_fs_repo 
