@@ -71,7 +71,7 @@ sub run {
           Shipwright::Source::Compressed->new( %$self, _no_update_url => 1 );
         $compressed->run(@_);
     }
-    else {
+    elsif ($self->source =~ /\S/) {
         die 'invalid source: ' . $self->source;
     }
 }
