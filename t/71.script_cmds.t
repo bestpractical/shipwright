@@ -63,7 +63,7 @@ sub start_test {
         ],
 
         # list cmd
-        [ [ 'list', ], '', "list null $repo" ],
+        [ [ 'list', ], qr/^\s*$/, "list null $repo" ],
         [
             [ 'list', 'foo' ],
             qr/foo doesn't exist/,
