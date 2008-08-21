@@ -10,6 +10,7 @@ use Cwd;
 
 use Test::More tests => 41;
 use Shipwright::Test qw/has_svk create_svk_repo/;
+Shipwright::Test->init;
 
 SKIP: {
     skip "no svk and svnadmin found", Test::More->builder->expected_tests

@@ -9,6 +9,7 @@ use File::Spec::Functions qw/catfile catdir/;
 use Cwd;
 use Test::More tests => 17;
 use Shipwright::Test qw/has_svn create_svn_repo/;
+Shipwright::Test->init;
 
 SKIP: {
     skip "no svn found", Test::More->builder->expected_tests

@@ -7,6 +7,8 @@ use File::Spec::Functions qw/catfile catdir/;
 
 use Test::More tests => 6;
 
+Shipwright::Test->init;
+
 SKIP: {
     skip "no svk and svnadmin found", 3
       unless has_svk();

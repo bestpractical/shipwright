@@ -6,6 +6,7 @@ use Test::More tests => 11;
 use Shipwright::Script;
 use Shipwright;
 use Shipwright::Test;
+Shipwright::Test->init;
 
 is_deeply(
     { del => 'delete', ls => 'list', up => 'update' },

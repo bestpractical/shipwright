@@ -8,6 +8,8 @@ use File::Temp qw/tempdir/;
 
 use Test::More tests => 10;
 
+Shipwright::Test->init;
+
 SKIP: {
     skip "no svk found", 5
       unless has_svk();
