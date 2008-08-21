@@ -1,7 +1,7 @@
 ---
 abstract: 'Best Practical Builder'
 author:
-  - 'sunnavy  <sunnavy@bestpractical.com>'
+  - 'sunnavy <sunnavy@bestpractical.com>'
 build_requires:
   ExtUtils::MakeMaker: 6.11
   IPC::Cmd: 0
@@ -38,8 +38,11 @@ requires:
   List::MoreUtils: 0
   Log::Log4perl: 0
   Module::CoreList: 0
+  Module::Info: 0
   UNIVERSAL::require: 0
   YAML::Syck: 0.71
+  YAML::Tiny: 0
+  perl: 5.8.8
   version: 0
 resources:
   license: http://dev.perl.org/licenses/
