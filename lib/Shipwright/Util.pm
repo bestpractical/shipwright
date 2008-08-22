@@ -4,8 +4,9 @@ use warnings;
 use strict;
 use Carp;
 use IPC::Run3;
-use File::Spec::Functions qw/catfile catdir splitpath splitdir rel2abs/;
+use File::Spec::Functions qw/catfile catdir splitpath splitdir/;
 use File::Temp qw/tempdir/;
+use Cwd qw/abs_path/;
 
 use Shipwright;    # we need this to find where Shipwright.pm lives
 
@@ -88,7 +89,7 @@ sub shipwright_root {
 
     unless ($SHIPWRIGHT_ROOT) {
         my $dir = ( splitpath( $INC{"Shipwright.pm"} ) )[1];
-        $SHIPWRIGHT_ROOT = rel2abs($dir);
+        $SHIPWRIGHT_ROOT = abs_path($dir);
     }
 
     return ($SHIPWRIGHT_ROOT);
@@ -106,7 +107,7 @@ sub share_root {
 
     require File::ShareDir;
     $SHARE_ROOT ||=
-      eval { rel2abs( File::ShareDir::module_dir('Shipwright') ) };
+      eval { abs_path( File::ShareDir::module_dir('Shipwright') ) };
 
     unless ( $SHARE_ROOT ) {
 
