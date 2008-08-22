@@ -29,8 +29,8 @@ in fact, it also checks svnadmin since we need that to create repo for svk.
 
 sub has_svk {
     if ( can_run('svk') && can_run('svnadmin') ) {
-        my $out = Shipwright::Util->run(['svk', '--version']);
-        if ( $out =~ /version v(\d)\./ ) {
+        my $out = Shipwright::Util->run(['svk', '--version'], 1);
+        if ( $out && $out =~ /version v(\d)\./i ) {
             return 1 if $1 >= 2;
         }
     }
@@ -46,8 +46,8 @@ in fact, it also checks svnadmin since we need that to create repo.
 
 sub has_svn {
     if ( can_run('svn') && can_run('svnadmin') ) {
-        my $out = Shipwright::Util->run(['svn', '--version']);
-        if ( $out =~ /version 1\.(\d)/ ) {
+        my $out = Shipwright::Util->run(['svn', '--version'], 1);
+        if ( $out && $out =~ /version 1\.(\d)/i ) {
             return 1 if $1 >= 4;
         }
     }
