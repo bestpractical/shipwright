@@ -29,7 +29,7 @@ in fact, it also checks svnadmin since we need that to create repo for svk.
 
 sub has_svk {
     if ( can_run('svk') && can_run('svnadmin') ) {
-        my $out = Shipwright::Util->run(['svk', '--version'], 1);
+        my $out = Shipwright::Util->run( [ 'svk', '--version' ], 1 );
         if ( $out && $out =~ /version v(\d)\./i ) {
             return 1 if $1 >= 2;
         }
@@ -46,7 +46,7 @@ in fact, it also checks svnadmin since we need that to create repo.
 
 sub has_svn {
     if ( can_run('svn') && can_run('svnadmin') ) {
-        my $out = Shipwright::Util->run(['svn', '--version'], 1);
+        my $out = Shipwright::Util->run( [ 'svn', '--version' ], 1 );
         if ( $out && $out =~ /version 1\.(\d)/i ) {
             return 1 if $1 >= 4;
         }
@@ -61,7 +61,7 @@ create a repo for fs
 =cut
 
 sub create_fs_repo {
-    return tempdir( 'shipwright_XXXXXX',  CLEANUP => 1 , TMPDIR => 1);
+    return tempdir( 'shipwright_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
 }
 
 =head2 create_svk_repo 
@@ -72,7 +72,7 @@ return $ENV{SVKROOT}
 =cut
 
 sub create_svk_repo {
-    $ENV{SVKROOT} = tempdir( 'shipwright_XXXXXX',  CLEANUP => 1 , TMPDIR => 1);
+    $ENV{SVKROOT} = tempdir( 'shipwright_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
     my $svk_root_local = catfile( $ENV{SVKROOT}, 'local' );
     system("svnadmin create $svk_root_local");
     system("svk depotmap -i");
@@ -87,7 +87,7 @@ return the repo's uri, like file:///tmp/foo
 =cut
 
 sub create_svn_repo {
-    my $repo = tempdir( 'shipwright_XXXXXX',  CLEANUP => 1 , TMPDIR => 1);
+    my $repo = tempdir( 'shipwright_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
     system("svnadmin create $repo") && die "create repo failed: $!";
     return "file://$repo";
 }
@@ -149,7 +149,7 @@ sub test_cmd {
     require Test::More;
     my ( $out, $err ) = Shipwright::Util->run( $cmd, 1 );    # ingnore failure
 
-    _test_cmd( $out, $exp, $msg ) if defined $exp;
+    _test_cmd( $out, $exp,     $msg )     if defined $exp;
     _test_cmd( $err, $exp_err, $msg_err ) if defined $exp_err;
 }
 
