@@ -228,7 +228,11 @@ sub check_repository {
 
         my ( $info, $err ) = $self->info;
 
-        return 1 if $info || $err && $err =~ /Not a valid URL/;
+        my $repo = $self->repository;
+# $err like 
+# file:///tmp/svn/foo:  (Not a valid URL)
+# usually means foo doesn't exist, which is valid for create
+        return 1 if $info || $err && $err =~ /^$repo:/;
 
     }
     else {
