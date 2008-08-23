@@ -117,13 +117,21 @@ sub _follow {
                 my $shipwright_makefile = <<'EOF';
 my $shipwright_req = {};
 
+sub _shipwright_requires {
+    my $type = shift;
+    my %req  = @_;
+    for my $name ( keys %req ) {
+        $shipwright_req->{$type}{$name} = $req{$name};
+    }
+}
+
 sub shipwright_requires {
-    $shipwright_req->{requires}{$_[0]} = $_[1] || 0;
+    _shipwright_requires( 'requires', @_ == 1 ? ( @_, 0 ) : @_ );
     goto &requires;
 }
 
 sub shipwright_build_requires {
-    $shipwright_req->{build_requires}{$_[0]} = $_[1] || 0;
+    _shipwright_requires( 'build_requires', @_ == 1 ? ( @_, 0 ) : @_ );
     goto &build_requires;
 }
 
