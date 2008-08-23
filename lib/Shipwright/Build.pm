@@ -62,8 +62,8 @@ sub new {
       . catfile( $self->install_base, 'sbin' ) . ':'
       . $ENV{PATH};
     $ENV{PERL_MM_USE_DEFAULT} = 1;
-    $ENV{LDFLAGS} .= ' -L' . catfile( $args{'install-base'}, 'lib' );
-    $ENV{CFLAGS}  .= ' -I' . catfile( $args{'install-base'}, 'include' );
+    $ENV{LDFLAGS} .= ' -L' . catfile( $self->install_base, 'lib' );
+    $ENV{CFLAGS}  .= ' -I' . catfile( $self->install_base, 'include' );
 
     require CPAN;
     require Module::Info;
