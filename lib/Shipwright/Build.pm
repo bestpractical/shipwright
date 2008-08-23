@@ -43,22 +43,18 @@ sub new {
 
     unless ( $self->install_base ) {
 
-        my $dir =
-          tempdir( 'vessel_' . $self->name . '-XXXXXX', TMPDIR => 1 );
+        my $dir = tempdir( 'vessel_' . $self->name . '-XXXXXX', TMPDIR => 1 );
         $self->install_base( catfile( $dir, $self->name ) );
     }
 
     no warnings 'uninitialized';
 
     $ENV{DYLD_LIBRARY_PATH} =
-      catfile( $self->install_base, 'lib' ) . ':'
-      . $ENV{DYLD_LIBRARY_PATH};
+      catfile( $self->install_base, 'lib' ) . ':' . $ENV{DYLD_LIBRARY_PATH};
     $ENV{LD_LIBRARY_PATH} =
-      catfile( $self->install_base, 'lib' ) . ':'
-      . $ENV{LD_LIBRARY_PATH};
+      catfile( $self->install_base, 'lib' ) . ':' . $ENV{LD_LIBRARY_PATH};
     $ENV{PERL5LIB} =
-        catfile( $self->install_base, 'lib', 'perl5', 'site_perl' )
-      . ':'
+        catfile( $self->install_base, 'lib', 'perl5', 'site_perl' ) . ':'
       . catfile( $self->install_base, 'lib', 'perl5' ) . ':'
       . $ENV{PERL5LIB};
     $ENV{PATH} =
@@ -66,10 +62,13 @@ sub new {
       . catfile( $self->install_base, 'sbin' ) . ':'
       . $ENV{PATH};
     $ENV{PERL_MM_USE_DEFAULT} = 1;
+    $ENV{LDFLAGS} .= ' -L' . catfile( $args{'install-base'}, 'lib' );
+    $ENV{CFLAGS}  .= ' -I' . catfile( $args{'install-base'}, 'include' );
 
     require CPAN;
     require Module::Info;
     if ( Module::Info->new_from_module('CPAN::Config') ) {
+
         # keep original CPAN::Config info
         require CPAN::Config;
     }
@@ -108,8 +107,7 @@ sub run {
         dircopy( 'etc', catfile( $self->install_base, 'etc' ) );
 
         my $installed_hash = {};
-        $installed_file =
-          catfile( $self->install_base, 'installed.yml' );
+        $installed_file = catfile( $self->install_base, 'installed.yml' );
         if ( -e $installed_file ) {
             $installed = Shipwright::Util::LoadFile($installed_file);
             $installed_hash = { map { $_ => 1 } @$installed };
@@ -119,14 +117,14 @@ sub run {
         }
 
         my $order =
-          Shipwright::Util::LoadFile(
-            catfile( 'shipwright', 'order.yml' ) )
+          Shipwright::Util::LoadFile( catfile( 'shipwright', 'order.yml' ) )
           || [];
 
         my ( $flags, $ktf, $branches );
         if ( -e catfile( 'shipwright', 'flags.yml' ) ) {
 
-            $flags = Shipwright::Util::LoadFile(
+            $flags =
+              Shipwright::Util::LoadFile(
                 catfile( 'shipwright', 'flags.yml' ) );
 
             # fill not specified but mandatory flags
@@ -144,7 +142,8 @@ sub run {
 
         if ( -e catfile( 'shipwright', 'known_test_failures.yml' ) ) {
 
-            $ktf = Shipwright::Util::LoadFile(
+            $ktf =
+              Shipwright::Util::LoadFile(
                 catfile( 'shipwright', 'known_test_failures.yml' ) );
         }
         else {
@@ -153,7 +152,8 @@ sub run {
 
         if ( -e catfile( 'shipwright', 'branches.yml' ) ) {
 
-            $branches = Shipwright::Util::LoadFile(
+            $branches =
+              Shipwright::Util::LoadFile(
                 catfile( 'shipwright', 'branches.yml' ) );
         }
 
@@ -177,8 +177,7 @@ sub run {
         @$order = grep { !$installed_hash->{$_} } @$order;
 
         unless ( $self->perl && -e $self->perl ) {
-            my $perl =
-              catfile( $self->install_base, 'bin', 'perl' );
+            my $perl = catfile( $self->install_base, 'bin', 'perl' );
 
             # -e $perl makes sense when we install on to another vessel
             if ( ( grep { /^perl/ } @{$order} ) || -e $perl ) {
@@ -208,21 +207,17 @@ sub run {
 # install one dist, the install methods are in scripts/distname/build
 
 sub _install {
-    my $self = shift;
-    my $dir  = shift;
-    my $ktf  = shift;
+    my $self     = shift;
+    my $dir      = shift;
+    my $ktf      = shift;
     my $branches = shift;
 
-    if ( $branches ) {
-            system(
-                "cp -r "
-                  . catdir( 'sources', $dir, split /\//,
-                    $branches->{$dir}[0] )
-                  . ' '
-                  . catdir( 'dists', $dir )
-              )
-              && die
-              "cp sources/$dir/$branches->{$dir}[0] to dists/$dir failed";
+    if ($branches) {
+        system( "cp -r "
+              . catdir( 'sources', $dir, split /\//, $branches->{$dir}[0] )
+              . ' '
+              . catdir( 'dists', $dir ) )
+          && die "cp sources/$dir/$branches->{$dir}[0] to dists/$dir failed";
     }
 
     chdir catfile( 'dists', $dir );
@@ -244,8 +239,7 @@ sub _install {
     }
     else {
 
-        my @cmds = read_file(
-            catfile( '..', '..', 'scripts', $dir, 'build' ) );
+        my @cmds = read_file( catfile( '..', '..', 'scripts', $dir, 'build' ) );
         chomp @cmds;
         @cmds = map { $self->_substitute($_) } @cmds;
 
@@ -313,18 +307,12 @@ sub _wrapper {
         mkdir catfile( $self->install_base,       "$dir-wrapped" )
           unless -d catfile( $self->install_base, "$dir-wrapped" );
 
-        if (
-            -e catfile( $self->install_base, "$dir-wrapped", $file )
-          )
-        {
-            $self->log->warn(
-                'found old '
-                  . catfile( $self->install_base, "$dir-wrapped",
-                    $file )
-                  . ', deleting' . "\n"
-            );
-            unlink catfile( $self->install_base, "$dir-wrapped",
-                $file );
+        if ( -e catfile( $self->install_base, "$dir-wrapped", $file ) ) {
+            $self->log->warn( 'found old '
+                  . catfile( $self->install_base, "$dir-wrapped", $file )
+                  . ', deleting'
+                  . "\n" );
+            unlink catfile( $self->install_base, "$dir-wrapped", $file );
         }
 
         my $type;
@@ -347,33 +335,28 @@ sub _wrapper {
             }
         }
 
-        move(
-            $file => catfile( $self->install_base, "$dir-wrapped" )
-        ) or die $!;
+        move( $file => catfile( $self->install_base, "$dir-wrapped" ) )
+          or die $!;
 
     # if we have this $type(e.g. perl) installed and have that specific wrapper,
     # then link to it, else link to the normal one
         if (   $type
             && -e catfile( '..', 'bin', $type )
-            && -e catfile( '..', 'etc', "shipwright-$type-wrapper" )
-          )
+            && -e catfile( '..', 'etc', "shipwright-$type-wrapper" ) )
         {
-            symlink catfile( '..', 'etc',
-                "shipwright-$type-wrapper" ) => $file
+            symlink catfile( '..', 'etc', "shipwright-$type-wrapper" ) => $file
               or die $!;
         }
         else {
 
-            symlink catfile( '..', 'etc',
-                'shipwright-script-wrapper' ) => $file
+            symlink catfile( '..', 'etc', 'shipwright-script-wrapper' ) => $file
               or die $!;
         }
     };
 
     my @dirs =
       grep { -d $_ }
-      map { catfile( $self->install_base, $_ ) }
-      qw/bin sbin/;
+      map { catfile( $self->install_base, $_ ) } qw/bin sbin/;
     find( $sub, @dirs ) if @dirs;
 }
 

@@ -107,20 +107,17 @@ unless ( $args{name} ) {
 }
 
 unless ( $args{'install-base'} ) {
-    my $dir =
-      tempdir( 'vessel_' . $args{name} . '-XXXXXX', TMPDIR => 1 );
+    my $dir = tempdir( 'vessel_' . $args{name} . '-XXXXXX', TMPDIR => 1 );
     $args{'install-base'} = catfile( $dir, $args{name} );
     print "no default install-base, will set it to $args{'install-base'}\n";
 }
 
 my $installed;
 my $installed_hash = {};
-my $installed_file =
-  catfile( $args{'install-base'}, 'installed.yml' );
+my $installed_file = catfile( $args{'install-base'}, 'installed.yml' );
 if ( -e $installed_file ) {
     $installed =
-      YAML::Tiny->read(
-        catfile( $args{'install-base'}, 'installed.yml' ) );
+      YAML::Tiny->read( catfile( $args{'install-base'}, 'installed.yml' ) );
     $installed_hash = { map { $_ => 1 } @{ $installed->[0] } };
 }
 else {
@@ -130,37 +127,29 @@ else {
 $args{'install-base'} = abs_path( $args{'install-base'} );
 
 # YAML::Tiny objects are array based.
-my $order =
-  ( YAML::Tiny->read( catfile( 'shipwright', 'order.yml' ) ) )->[0];
+my $order = ( YAML::Tiny->read( catfile( 'shipwright', 'order.yml' ) ) )->[0];
 
 my ( $flags, $ktf, $branches );
 
 if ( -e catfile( 'shipwright', 'flags.yml' ) ) {
-    $flags =
-      ( YAML::Tiny->read( catfile( 'shipwright', 'flags.yml' ) ) )
-      ->[0];
+    $flags = ( YAML::Tiny->read( catfile( 'shipwright', 'flags.yml' ) ) )->[0];
 }
 else {
     $flags = {};
 }
 
 if ( -e catfile( 'shipwright', 'known_test_failures.yml' ) ) {
-    $ktf = (
-        YAML::Tiny->read(
-            catfile( 'shipwright', 'known_test_failures.yml' )
-        )
-    )->[0];
+    $ktf =
+      ( YAML::Tiny->read( catfile( 'shipwright', 'known_test_failures.yml' ) ) )
+      ->[0];
 }
 else {
     $ktf = {};
 }
 
 if ( -e catfile( 'shipwright', 'branches.yml' ) ) {
-    $branches = (
-        YAML::Tiny->read(
-            catfile( 'shipwright', 'branches.yml' )
-        )
-    )->[0];
+    $branches =
+      ( YAML::Tiny->read( catfile( 'shipwright', 'branches.yml' ) ) )->[0];
 }
 
 # fill not specified but mandatory flags
@@ -270,12 +259,9 @@ else {
           catfile( $args{'install-base'}, 'lib' ) . ':'
           . $ENV{DYLD_LIBRARY_PATH};
         $ENV{LD_LIBRARY_PATH} =
-          catfile( $args{'install-base'}, 'lib' ) . ':'
-          . $ENV{LD_LIBRARY_PATH};
+          catfile( $args{'install-base'}, 'lib' ) . ':' . $ENV{LD_LIBRARY_PATH};
         $ENV{PERL5LIB} =
-          catfile( $args{'install-base'}, 'lib', 'perl5',
-            'site_perl' )
-          . ':'
+            catfile( $args{'install-base'}, 'lib', 'perl5', 'site_perl' ) . ':'
           . catfile( $args{'install-base'}, 'lib', 'perl5' ) . ':'
           . $ENV{PERL5LIB};
         $ENV{PATH} =
@@ -283,6 +269,8 @@ else {
           . catfile( $args{'install-base'}, 'sbin' ) . ':'
           . $ENV{PATH};
         $ENV{PERL_MM_USE_DEFAULT} = 1;
+        $ENV{LDFLAGS} .= ' -L' . catfile( $args{'install-base'}, 'lib' );
+        $ENV{CFLAGS}  .= ' -I' . catfile( $args{'install-base'}, 'include' );
     }
 
     mkpath $args{'install-base'} unless -e $args{'install-base'};
@@ -305,8 +293,7 @@ else {
     }
 
     chmod oct 755,
-      catfile( $args{'install-base'}, 'tools',
-        'shipwright-utility' );
+      catfile( $args{'install-base'}, 'tools', 'shipwright-utility' );
 
     mkdir 'dists' unless -e 'dists';
     for my $dist (@$order) {
@@ -331,13 +318,10 @@ sub install {
     }
     else {
         if ($branches) {
-            system(
-                "cp -r "
-                  . catdir( 'sources', $dir, split /\//,
-                    $branches->{$dir}[0] )
+            system( "cp -r "
+                  . catdir( 'sources', $dir, split /\//, $branches->{$dir}[0] )
                   . ' '
-                  . catdir( 'dists', $dir )
-              )
+                  . catdir( 'dists', $dir ) )
               && die
               "cp sources/$dir/$branches->{$dir}[0] to dists/$dir failed";
         }
@@ -368,8 +352,7 @@ sub install {
         }
     }
     else {
-        my $cmds =
-          cmds( catfile( '..', '..', 'scripts', $dir, 'build' ) );
+        my $cmds = cmds( catfile( '..', '..', 'scripts', $dir, 'build' ) );
 
         for (@$cmds) {
             my ( $type, $cmd ) = @$_;
@@ -425,20 +408,14 @@ sub wrap_bin {
         }
 
         my $dir = ( splitdir($File::Find::dir) )[-1];
-        mkdir catfile( $args{'install-base'}, "$dir-wrapped" )
-          unless -d catfile( $args{'install-base'},
-            "$dir-wrapped" );
+        mkdir catfile( $args{'install-base'},       "$dir-wrapped" )
+          unless -d catfile( $args{'install-base'}, "$dir-wrapped" );
 
-        if (
-            -e catfile( $args{'install-base'}, "$dir-wrapped",
-                $file ) )
-        {
+        if ( -e catfile( $args{'install-base'}, "$dir-wrapped", $file ) ) {
             print $log 'found old '
-              . catfile( $args{'install-base'}, "$dir-wrapped",
-                $file )
+              . catfile( $args{'install-base'}, "$dir-wrapped", $file )
               . ', deleting' . "\n";
-            unlink catfile( $args{'install-base'}, "$dir-wrapped",
-                $file );
+            unlink catfile( $args{'install-base'}, "$dir-wrapped", $file );
         }
 
         my $type;
@@ -456,25 +433,21 @@ sub wrap_bin {
             }
         }
 
-        move( $file =>
-              catfile( $args{'install-base'}, "$dir-wrapped" ) )
+        move( $file => catfile( $args{'install-base'}, "$dir-wrapped" ) )
           or die $!;
 
     # if we have this $type(e.g. perl) installed and have that specific wrapper,
     # then link to it, else link to the normal one
         if (   $type
             && -e catfile( '..', 'bin', $type )
-            && -e catfile( '..', 'etc', "shipwright-$type-wrapper" )
-          )
+            && -e catfile( '..', 'etc', "shipwright-$type-wrapper" ) )
         {
-            symlink catfile( '..', 'etc',
-                "shipwright-$type-wrapper" ) => $file
+            symlink catfile( '..', 'etc', "shipwright-$type-wrapper" ) => $file
               or die $!;
         }
         else {
 
-            symlink catfile( '..', 'etc',
-                'shipwright-script-wrapper' ) => $file
+            symlink catfile( '..', 'etc', 'shipwright-script-wrapper' ) => $file
               or die $!;
         }
         chmod oct 755, $file;
@@ -482,8 +455,7 @@ sub wrap_bin {
 
     my @dirs =
       grep { -d $_ }
-      map { catfile( $args{'install-base'}, $_ ) }
-      qw/bin sbin/;
+      map { catfile( $args{'install-base'}, $_ ) } qw/bin sbin/;
     find( $sub, @dirs ) if @dirs;
 
 }
@@ -575,8 +547,7 @@ sub clean {
           '--clean';
     }
     else {
-        my $cmds =
-          cmds( catfile( '..', '..', 'scripts', $dir, 'build' ) );
+        my $cmds = cmds( catfile( '..', '..', 'scripts', $dir, 'build' ) );
 
         for (@$cmds) {
             my ( $type, $c ) = @$_;
