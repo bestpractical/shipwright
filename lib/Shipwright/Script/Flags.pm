@@ -38,7 +38,7 @@ sub run {
     {
 
         # show without change
-        $self->_show_flags($flags, $name);
+        $self->_show_flags( $flags, $name );
         return;
     }
 

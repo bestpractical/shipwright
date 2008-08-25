@@ -64,7 +64,7 @@ sub run {
     Shipwright::Util->select('stdout');
 
     $log->info("run output:\n$out") if $out;
-    $log->error("run err:\n$err")    if $err;
+    $log->error("run err:\n$err")   if $err;
 
     if ($?) {
         $log->error(
@@ -114,18 +114,19 @@ sub share_root {
     $SHARE_ROOT ||=
       eval { abs_path( File::ShareDir::module_dir('Shipwright') ) };
 
-    unless ( $SHARE_ROOT ) {
+    unless ($SHARE_ROOT) {
 
         # XXX TODO: This is a bloody hack
         # Module::Install::Share and File::ShareDir don't play nicely
         # together
         my @root = splitdir( $self->shipwright_root );
-        $root[-1] = 'share';                       # replace 'lib' to 'share'
+        $root[-1] = 'share';           # replace 'lib' to 'share'
         $SHARE_ROOT = catdir(@root);
     }
 
-    if ( $SHARE_ROOT !~ m{([/\\])auto\1share\1}
-            && $SHARE_ROOT =~ m{([/\\])blib\1lib\1} ) {
+    if (   $SHARE_ROOT !~ m{([/\\])auto\1share\1}
+        && $SHARE_ROOT =~ m{([/\\])blib\1lib\1} )
+    {
         my $sep = $1;
         $SHARE_ROOT =~ s!${sep}auto$sep!${sep}auto${sep}share${sep}dist${sep}!;
     }
@@ -148,7 +149,8 @@ my ( $null_fh, $stdout_fh, $cpan_fh, $cpan_log_path, $cpan_fh_flag );
 open $null_fh, '>', '/dev/null';
 
 $cpan_log_path =
-  catfile( tempdir( 'shipwright_XXXXXX',  CLEANUP => 1, TMPDIR => 1 ), 'shipwright_cpan.log' );
+  catfile( tempdir( 'shipwright_XXXXXX', CLEANUP => 1, TMPDIR => 1 ),
+    'shipwright_cpan.log' );
 open $cpan_fh, '>>', $cpan_log_path;
 $stdout_fh = select;
 

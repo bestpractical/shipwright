@@ -18,7 +18,7 @@ sub run {
     my ( $base, $dist ) = $self->source =~ m{(.*)/(.+)};
 
     my $source_shipwright = Shipwright->new( repository => $base );
-    $self->name( $dist ) unless $self->name;
+    $self->name($dist) unless $self->name;
 
     if ( $source_shipwright->backend->has_branch_support ) {
         $source_shipwright->backend->export(
@@ -37,23 +37,22 @@ sub run {
         target => catfile( $self->scripts_directory, $self->name ),
         path   => "/scripts/$dist",
     );
-    
+
     my $source_version = $source_shipwright->backend->version->{$dist};
-    my $branches = $source_shipwright->backend->branches;
+    my $branches       = $source_shipwright->backend->branches;
     $self->_update_version( $self->name || $dist, $source_version );
     $self->_update_url( $self->name || $dist, 'shipwright:' . $self->source );
     $self->_update_branches( $self->name || $dist, $branches->{$dist} );
 
-# follow
+    # follow
     if ( $self->follow ) {
         my $out = Shipwright::Util->run(
             $source_shipwright->backend->_cmd(
-                'cat',
-                path => "/scripts/$dist/require.yml",
+                'cat', path => "/scripts/$dist/require.yml",
             ),
             1
         );
-        my $require = Shipwright::Util::Load( $out ) || {};
+        my $require = Shipwright::Util::Load($out) || {};
 
         for my $type ( keys %$require ) {
             for my $req ( keys %{ $require->{$type} } ) {

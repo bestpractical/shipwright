@@ -85,9 +85,9 @@ sub _cmd {
         }
         elsif ( $args{_extra_tests} ) {
             @cmd = [
-                'svn', 'import',
+                'svn',         'import',
                 $args{source}, $self->repository . 't/extra',
-                '-m', q{'} . $args{comment} . q{'},
+                '-m',          q{'} . $args{comment} . q{'},
             ];
         }
         else {
@@ -132,7 +132,8 @@ sub _cmd {
     }
     elsif ( $type eq 'delete' ) {
         @cmd = [
-            'svn', 'delete', '-m', q{'} . 'delete' . $args{path} . q{'},
+            'svn', 'delete', '-m',
+            q{'} . 'delete' . $args{path} . q{'},
             $self->repository . $args{path}
         ];
     }
@@ -173,7 +174,7 @@ sub _yml {
     }
 
     if ($yml) {
-        my $dir = tempdir( 'shipwright_XXXXXX',  CLEANUP => 1 , TMPDIR => 1);
+        my $dir = tempdir( 'shipwright_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
         my $file = catfile( $dir, $f );
 
         $self->checkout(
@@ -229,9 +230,10 @@ sub check_repository {
         my ( $info, $err ) = $self->info;
 
         my $repo = $self->repository;
-# $err like 
-# file:///tmp/svn/foo:  (Not a valid URL)
-# usually means foo doesn't exist, which is valid for create
+
+        # $err like
+        # file:///tmp/svn/foo:  (Not a valid URL)
+        # usually means foo doesn't exist, which is valid for create
         return 1 if $info || $err && $err =~ m{^\Q$repo\E:}m;
 
     }
@@ -247,7 +249,7 @@ sub _update_file {
     my $latest = shift;
 
     if ( $path =~ m{(.*)/(.*)$} ) {
-        my $dir = tempdir( 'shipwright_XXXXXX',  CLEANUP => 1 , TMPDIR => 1);
+        my $dir = tempdir( 'shipwright_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
         my $file = catfile( $dir, $2 );
 
         $self->checkout(

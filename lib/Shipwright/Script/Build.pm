@@ -71,8 +71,7 @@ sub run {
             name   => $name,
             source => $self->with->{$name},
             follow => 0,
-            map { $_ => $self->$_ }
-              qw/repository only_test perl/
+            map { $_ => $self->$_ } qw/repository only_test perl/
         );
         $source{$name} = $shipwright->source->run;
     }

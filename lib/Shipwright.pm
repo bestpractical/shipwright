@@ -24,18 +24,20 @@ sub new {
     my %args = @_;
     $args{log_level} = uc $args{log_level} || 'FATAL';
 
-    unless ($args{log_file}) {
+    unless ( $args{log_file} ) {
+
         # a better named log_file, in the name of repository
         my $info = join '', map { /\w/ ? $_ : '_' } split //, $args{repository};
         $args{log_file} =
-          catfile( tempdir( 'shipwright_XXXXXX',  CLEANUP => 1, TMPDIR => 1 ), "shipwright_${info}.log" );
+          catfile( tempdir( 'shipwright_XXXXXX', CLEANUP => 1, TMPDIR => 1 ),
+            "shipwright_${info}.log" );
     }
 
     my $self = {
         log_level => $args{log_level},
         log_file  => $args{log_file},
     };
-    
+
     bless $self, $class;
 
     Shipwright::Logger->new($self);

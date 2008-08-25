@@ -4,7 +4,7 @@ use warnings;
 use Test::More tests => 2;
 
 require Shipwright::Logger;
-Shipwright::Logger->new( { log_level => undef } ) ;
+Shipwright::Logger->new( { log_level => undef } );
 
 ok( Log::Log4perl->initialized, 'initialized' );
 my $logger = Log::Log4perl->get_logger;

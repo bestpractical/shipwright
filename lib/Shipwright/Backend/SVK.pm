@@ -73,9 +73,7 @@ sub _cmd {
                 'svk',                           'checkout',
                 $self->repository . $args{path}, $args{target}
             ],
-            [
-                'svk', 'checkout', '-d', $args{target}
-            ]
+            [ 'svk', 'checkout', '-d', $args{target} ]
         );
     }
     elsif ( $type eq 'list' ) {
@@ -91,9 +89,9 @@ sub _cmd {
         }
         elsif ( $args{_extra_tests} ) {
             @cmd = [
-                'svk', 'import',
+                'svk',         'import',
                 $args{source}, $self->repository . '/t/extra',
-                '-m', q{'} . $args{comment} . q{'},
+                '-m',          q{'} . $args{comment} . q{'},
             ];
         }
         else {
@@ -111,12 +109,13 @@ sub _cmd {
             }
 
             if ( $self->info( path => $path ) ) {
-                my $tmp_dir = tempdir( 'shipwright_XXXXXX',  CLEANUP => 1 , TMPDIR => 1);
+                my $tmp_dir =
+                  tempdir( 'shipwright_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
                 @cmd = (
-                    [ 'rm',  '-rf', "$tmp_dir" ],
+                    [ 'rm', '-rf', "$tmp_dir" ],
                     [ 'svk', 'checkout', $self->repository . $path, $tmp_dir ],
-                    [ 'rm',  '-rf', "$tmp_dir" ],
-                    [ 'cp',  '-r',  $source,                   "$tmp_dir" ],
+                    [ 'rm',  '-rf',      "$tmp_dir" ],
+                    [ 'cp', '-r', $source, "$tmp_dir" ],
                     [
                         'svk',      'commit',
                         '--import', $tmp_dir,
@@ -140,7 +139,8 @@ sub _cmd {
     }
     elsif ( $type eq 'delete' ) {
         @cmd = [
-            'svk', 'delete', '-m', q{'} . 'delete repository' . q{'},
+            'svk', 'delete', '-m',
+            q{'} . 'delete repository' . q{'},
             $self->repository . $args{path},
         ];
     }
@@ -177,7 +177,7 @@ sub _yml {
     my ($f) = $path =~ m{.*/(.*)$};
 
     if ($yml) {
-        my $dir = tempdir( 'shipwright_XXXXXX',  CLEANUP => 1 , TMPDIR => 1);
+        my $dir = tempdir( 'shipwright_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
         my $file = catfile( $dir, $f );
 
         $self->checkout( path => $path, target => $file );
@@ -251,7 +251,7 @@ sub _update_file {
     my $path   = shift;
     my $latest = shift;
 
-    my $dir = tempdir( 'shipwright_XXXXXX',  CLEANUP => 1 , TMPDIR => 1);
+    my $dir = tempdir( 'shipwright_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
     my $file = catfile( $dir, $path );
 
     $self->checkout(

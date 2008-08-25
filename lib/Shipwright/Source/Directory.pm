@@ -33,11 +33,13 @@ sub run {
         $self->version );
 
     $self->_update_url( $self->name || $self->just_name( $self->path ),
-        'directory:' . $self->source ) unless $self->{_no_update_url};
+        'directory:' . $self->source )
+      unless $self->{_no_update_url};
 
-    my $newer = $self->_cmd; # if we really get something new
+    my $newer = $self->_cmd;    # if we really get something new
 
     $self->SUPER::run(@_);
+
     # follow only if --follow and we really added new stuff.
     $self->_follow(
         catfile(

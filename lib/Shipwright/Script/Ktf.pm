@@ -12,8 +12,8 @@ use List::MoreUtils qw/uniq/;
 
 sub options {
     (
-        'd|delete'       => 'delete',
-        's|set=s'        => 'set',
+        'd|delete' => 'delete',
+        's|set=s'  => 'set',
     );
 }
 
@@ -37,7 +37,7 @@ sub run {
         $shipwright->backend->ktf($ktf);
     }
 
-    $self->_show_ktf($ktf, $name);
+    $self->_show_ktf( $ktf, $name );
 }
 
 sub _show_ktf {

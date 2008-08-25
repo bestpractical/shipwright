@@ -17,7 +17,8 @@ SKIP: {
 
     my $repo = '//__shipwright/foo';
 
-    my $install_base = tempdir( 'shipwright_XXXXXX',  CLEANUP => 1 , TMPDIR => 1);
+    my $install_base =
+      tempdir( 'shipwright_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
 
     my $sw = Shipwright->new(
         repository   => "svk:$repo",
@@ -57,7 +58,7 @@ SKIP: {
     # import a fake perl dist
     my $source = catfile( tempdir( CLEANUP => 1, TMPDIR => 1 ), 'perl' );
     mkdir $source;
-    my $script_dir = tempdir( 'shipwright_XXXXXX',  CLEANUP => 1 , TMPDIR => 1);
+    my $script_dir = tempdir( 'shipwright_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
     my $build_script = catfile( $script_dir, 'build' );
     open $fh, '>', $build_script;
     close $fh;

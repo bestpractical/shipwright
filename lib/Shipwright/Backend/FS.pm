@@ -58,17 +58,16 @@ sub _cmd {
     }
     elsif ( $type eq 'import' ) {
         if ( $args{_extra_tests} ) {
-            @cmd = [
-                'cp', '-r',
-                $args{source}, $self->repository . '/t/extra'
-            ];
+            @cmd =
+              [ 'cp', '-r', $args{source}, $self->repository . '/t/extra' ];
         }
         else {
             if ( my $script_dir = $args{build_script} ) {
-                push @cmd, [
-                    'cp',        '-r',
-                    "$script_dir/", $self->repository . "/scripts/$args{name}",
-                ];
+                push @cmd,
+                  [
+                    'cp', '-r', "$script_dir/",
+                    $self->repository . "/scripts/$args{name}",
+                  ];
             }
             else {
                 if ( $self->has_branch_support ) {
@@ -80,11 +79,15 @@ sub _cmd {
                         @dirs[ 0 .. $#dirs - 1 ]
                       )
                     {
-                        push @cmd, [
-                            'mkdir', '-p',
-                            $self->repository . "/sources/$args{name}/" . join
-                              '/', @dirs[ 0 .. $#dirs - 1 ]
-                        ];
+                        push @cmd,
+                          [
+                            'mkdir',
+                            '-p',
+                            $self->repository
+                              . "/sources/$args{name}/"
+                              . join '/',
+                            @dirs[ 0 .. $#dirs - 1 ]
+                          ];
                     }
 
                     push @cmd,
