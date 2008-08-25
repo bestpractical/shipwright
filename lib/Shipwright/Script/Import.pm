@@ -17,7 +17,7 @@ use File::Copy qw/copy move/;
 use File::Temp qw/tempdir/;
 use Config;
 use Hash::Merge;
-use List::MoreUtils qw/uniq firstidx/;
+use List::MoreUtils qw/firstidx/;
 
 Hash::Merge::set_behavior('RIGHT_PRECEDENT');
 
@@ -187,7 +187,8 @@ sub run {
             Hash::Merge::merge( $shipwright->backend->source || {}, $new_url )
         );
 
-        $self->_reorder($shipwright);
+        my $new_order = $shipwright->backend->fiddle_order;
+        $shipwright->backend->order( $new_order );
     }
 
     print "imported with success\n";
@@ -356,50 +357,6 @@ sub _parent_dir {
     my @dirs   = splitdir($source);
     pop @dirs;
     return catfile(@dirs);
-}
-
-# _reorder:
-# make some hack for order.
-# move ExtUtils::MakeMaker and Module::Build to the head of cpan dists
-
-sub _reorder {
-    my $self       = shift;
-    my $shipwright = shift;
-    my $order      = $shipwright->backend->order;
-
-    my $first_cpan_index = firstidx { /^cpan-/ } @$order;
-
-    unless (
-        (
-            $order->[$first_cpan_index] eq 'cpan-ExtUtils-MakeMaker'
-            && ( ( ( firstidx { $_ eq 'cpan-Module-Build' } @$order ) == -1 )
-                || $order->[ $first_cpan_index + 1 ] eq 'cpan-Module-Build' )
-        )
-        || (
-            $order->[$first_cpan_index] eq 'cpan-Module-Build'
-            && (
-                (
-                    ( firstidx { $_ eq 'cpan-ExtUtils-MakeMaker' } @$order ) ==
-                    -1
-                )
-                || $order->[ $first_cpan_index + 1 ] eq
-                'cpan-ExtUtils-MakeMaker'
-            )
-        )
-      )
-    {
-        for my $build (qw/cpan-ExtUtils-MakeMaker cpan-Module-Build/) {
-            my $index = firstidx { $build eq $_ } @$order;
-            next if $index == -1;    # $index == -1 if not found
-            if ( $index > $first_cpan_index ) {    # not the 1st cpan dist
-                splice @$order, $first_cpan_index, 0, $build;
-            }
-        }
-    }
-
-    @$order = uniq @$order;
-    $shipwright->backend->order($order);
-
 }
 
 1;
