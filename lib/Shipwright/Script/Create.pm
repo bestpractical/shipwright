@@ -11,11 +11,9 @@ use File::Spec::Functions qw/catfile catdir/;
 use Shipwright::Util;
 
 sub run {
-    my $self       = shift;
-    
-    my $shipwright = Shipwright->new(
-        repository => $self->repository,
-    );
+    my $self = shift;
+
+    my $shipwright = Shipwright->new( repository => $self->repository, );
     $shipwright->backend->initialize();
     print "created with success\n";
 }

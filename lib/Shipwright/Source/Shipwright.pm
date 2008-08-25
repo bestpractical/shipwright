@@ -18,7 +18,7 @@ sub run {
     my ( $base, $dist ) = $self->source =~ m{(.*)/(.+)};
 
     my $source_shipwright = Shipwright->new( repository => $base );
-    $self->name( $dist ) unless $self->name;
+    $self->name($dist) unless $self->name;
 
     $source_shipwright->backend->export(
         target => catfile( $self->directory, $self->name ),
@@ -29,12 +29,12 @@ sub run {
         target => catfile( $self->scripts_directory, $self->name ),
         path   => "/scripts/$dist",
     );
-    
+
     my $source_version = $source_shipwright->backend->version->{$dist};
     $self->_update_version( $self->name || $dist, $source_version );
     $self->_update_url( $self->name || $dist, $self->source );
 
-# follow
+    # follow
     if ( $self->follow ) {
         my $out = Shipwright::Util->run(
             $source_shipwright->backend->_cmd(
@@ -42,7 +42,7 @@ sub run {
             ),
             1
         );
-        my $require = Shipwright::Util::Load( $out ) || {};
+        my $require = Shipwright::Util::Load($out) || {};
 
         for my $type ( keys %$require ) {
             for my $req ( keys %{ $require->{$type} } ) {

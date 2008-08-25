@@ -13,5 +13,5 @@ for my $pm (@pms) {
     $pm =~ s|\.pm$||;
     $pm =~ s|/|::|g;
 
-    use_ok ($pm);
+    use_ok($pm);
 }

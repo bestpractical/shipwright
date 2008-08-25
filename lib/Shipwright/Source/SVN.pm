@@ -49,8 +49,7 @@ sub _run {
     my $self   = shift;
     my $source = $self->source;
 
-
-    my $cmd    = [
+    my $cmd = [
         'svn', 'export', $self->source,
         catfile( $self->download_directory, $self->name ),
         $self->version ? ( '-r', $self->version ) : (),
@@ -64,8 +63,7 @@ sub _run {
         }
     }
 
-    $self->source(
-        catfile( $self->download_directory, $self->name ) );
+    $self->source( catfile( $self->download_directory, $self->name ) );
     Shipwright::Util->run($cmd);
 }
 

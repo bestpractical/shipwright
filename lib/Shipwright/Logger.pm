@@ -18,7 +18,7 @@ Shipwright::Logger -
 =cut
 
 sub new {
-    my $class      = shift;
+    my $class = shift;
 
     my $self = {};
     bless $self, $class;

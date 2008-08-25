@@ -6,20 +6,17 @@ use Carp;
 use UNIVERSAL::require;
 use Hash::Merge qw/merge/;
 use File::Temp qw/tempdir/;
-use File::Spec::Functions qw/catfile catdir/; 
+use File::Spec::Functions qw/catfile catdir/;
 Hash::Merge::set_behavior('RIGHT_PRECEDENT');
 
 our %DEFAULT = ( follow => 1, );
 
-$DEFAULT{directory} = tempdir( 'shipwright_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
-$DEFAULT{scripts_directory} = 
-  catfile( $DEFAULT{directory}, '__scripts' );
-$DEFAULT{download_directory} =
-  catfile( $DEFAULT{directory}, '__download' );
-$DEFAULT{map_path} = catfile( $DEFAULT{directory}, 'map.yml' );
-$DEFAULT{url_path} = catfile( $DEFAULT{directory}, 'url.yml' );
-$DEFAULT{version_path} =
-  catfile( $DEFAULT{directory}, 'version.yml' );
+$DEFAULT{directory} = tempdir( 'shipwright_XXXXXX', CLEANUP => 0, TMPDIR => 1 );
+$DEFAULT{scripts_directory}  = catfile( $DEFAULT{directory}, '__scripts' );
+$DEFAULT{download_directory} = catfile( $DEFAULT{directory}, '__download' );
+$DEFAULT{map_path}           = catfile( $DEFAULT{directory}, 'map.yml' );
+$DEFAULT{url_path}           = catfile( $DEFAULT{directory}, 'url.yml' );
+$DEFAULT{version_path}       = catfile( $DEFAULT{directory}, 'version.yml' );
 
 for (qw/map_path url_path version_path/) {
     open my $fh, '>', $DEFAULT{$_} or die "can't write to $DEFAULT{$_}: $!";
@@ -46,7 +43,7 @@ sub new {
 
     croak "need source arg" unless exists $args{source};
 
-    for my $dir ( qw/directory download_directory scripts_directory/ ) {
+    for my $dir (qw/directory download_directory scripts_directory/) {
         mkdir $args{$dir} unless -e $args{$dir};
     }
 
@@ -72,7 +69,7 @@ sub type {
         return 'Compressed';
     }
 
-    return 'Directory' if $$source =~ s/^dir(ectory)?://i;
+    return 'Directory'  if $$source =~ s/^dir(ectory)?://i;
     return 'Shipwright' if $$source =~ s/^shipwright://i;
 
     if ( $$source =~ s/^cpan://i ) {

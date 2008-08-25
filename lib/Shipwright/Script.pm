@@ -4,7 +4,7 @@ use warnings;
 use App::CLI;
 use base qw/App::CLI Class::Accessor::Fast/;
 
-__PACKAGE__->mk_accessors( qw/repository log_file log_level/ );
+__PACKAGE__->mk_accessors(qw/repository log_file log_level/);
 
 =head2 alias
 =cut

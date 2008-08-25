@@ -278,7 +278,7 @@ qr/set mandatory flags with success\s+mandatory flags of man1 is build/,
                 [ 'list', 'foo' ],
                 $update_cmd
                 ? qr/version:\s+1\s+/
-                : qr/version:\s+55\s+/m, # the magic number is from practice ;)
+                : qr/version:\s+55\s+/m,  # the magic number is from practice ;)
                 'list foo, version seems ok',
             ],
             $update_cmd,    # if the source dist is svk, $update_cmd is undef

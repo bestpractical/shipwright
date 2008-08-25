@@ -26,9 +26,7 @@ sub options {
 sub run {
     my $self = shift;
 
-    my $shipwright = Shipwright->new(
-        repository => $self->repository,
-    );
+    my $shipwright = Shipwright->new( repository => $self->repository, );
 
     if ( $self->update_order ) {
         $shipwright->backend->update_order(

@@ -136,12 +136,12 @@ sub run {
             $script_dir = catdir( $base, '__scripts', $name );
         }
         else {
+
      # Source part doesn't have script stuff, so we need to create by ourselves.
             $script_dir = tempdir( CLEANUP => 1 );
 
             if ( my $script = $self->build_script ) {
-                copy( $self->build_script,
-                    catfile( $script_dir, 'build' ) );
+                copy( $self->build_script, catfile( $script_dir, 'build' ) );
             }
             else {
                 $self->_generate_build( $source, $script_dir, $shipwright );
@@ -197,10 +197,10 @@ sub run {
 # _import_req: import required dists for a dist
 
 sub _import_req {
-    my $self         = shift;
-    my $source       = shift;
-    my $shipwright   = shift;
-    my $script_dir   = shift;
+    my $self       = shift;
+    my $source     = shift;
+    my $shipwright = shift;
+    my $script_dir = shift;
 
     my $require_file = catfile( $source, '__require.yml' );
     $require_file = catfile( $script_dir, 'require.yml' )
@@ -242,17 +242,18 @@ sub _import_req {
 
                     my $script_dir;
                     if ( -e catdir( $dir, '__scripts', $dist ) ) {
-                        $script_dir =
-                          catdir( $dir, '__scripts', $dist );
+                        $script_dir = catdir( $dir, '__scripts', $dist );
                     }
                     else {
-                        $script_dir = tempdir( 'shipwright_XXXXXX',  CLEANUP => 1 , TMPDIR => 1);
+                        $script_dir = tempdir(
+                            'shipwright_XXXXXX',
+                            CLEANUP => 1,
+                            TMPDIR  => 1
+                        );
                         if ( -e catfile( $s, '__require.yml' ) ) {
                             move(
-                                catfile( $s, '__require.yml' ),
-                                catfile(
-                                    $script_dir, 'require.yml'
-                                )
+                                catfile( $s,          '__require.yml' ),
+                                catfile( $script_dir, 'require.yml' )
                             ) or die "move $s/__require.yml failed: $!\n";
                         }
 
@@ -378,8 +379,8 @@ sub _reorder {
             $order->[$first_cpan_index] eq 'cpan-Module-Build'
             && (
                 (
-                    ( firstidx { $_ eq 'cpan-ExtUtils-MakeMaker' } @$order )
-                    == -1
+                    ( firstidx { $_ eq 'cpan-ExtUtils-MakeMaker' } @$order ) ==
+                    -1
                 )
                 || $order->[ $first_cpan_index + 1 ] eq
                 'cpan-ExtUtils-MakeMaker'

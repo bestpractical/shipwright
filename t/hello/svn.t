@@ -21,8 +21,7 @@ SKIP: {
 
     my $shipwright = Shipwright->new(
         repository => "svn:$repo",
-        source     => 'file:'
-          . catfile( 't', 'hello', 'Acme-Hello-0.03.tar.gz' ),
+        source => 'file:' . catfile( 't', 'hello', 'Acme-Hello-0.03.tar.gz' ),
         log_level => 'FATAL',
         follow    => 0,
     );
@@ -46,11 +45,9 @@ SKIP: {
     $shipwright->backend->import( name => 'hello', source => $source_dir );
     ok( grep( {/Build\.PL/} `svn ls $repo/dists/Acme-Hello` ), 'imported ok' );
 
-    my $script_dir = tempdir( 'shipwright_XXXXXX',  CLEANUP => 1 , TMPDIR => 1);
-    copy( catfile( 't', 'hello', 'scripts', 'build' ),
-        $script_dir );
-    copy( catfile( 't', 'hello', 'scripts', 'require.yml' ),
-        $script_dir );
+    my $script_dir = tempdir( 'shipwright_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
+    copy( catfile( 't', 'hello', 'scripts', 'build' ),       $script_dir );
+    copy( catfile( 't', 'hello', 'scripts', 'require.yml' ), $script_dir );
 
     $shipwright->backend->import(
         name         => 'hello',
@@ -65,18 +62,12 @@ SKIP: {
     $shipwright->backend->export( target => $shipwright->build->build_base );
 
     for (
-        catfile(
-            $shipwright->build->build_base,
-            'shipwright', 'order.yml',
-        ),
+        catfile( $shipwright->build->build_base, 'shipwright', 'order.yml', ),
         catfile(
             $shipwright->build->build_base, 'etc',
             'shipwright-script-wrapper'
         ),
-        catfile(
-            $shipwright->build->build_base,
-            'dists', 'Acme-Hello',
-        ),
+        catfile( $shipwright->build->build_base, 'dists', 'Acme-Hello', ),
         catfile(
             $shipwright->build->build_base, 'dists',
             'Acme-Hello',                   'MANIFEST',
@@ -91,7 +82,7 @@ SKIP: {
     }
 
     # install
-    my $install_dir = tempdir( 'shipwright_XXXXXX',  CLEANUP => 1 , TMPDIR => 1);
+    my $install_dir = tempdir( 'shipwright_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
     $shipwright->build->run( install_base => $install_dir );
 
     for (
@@ -107,10 +98,9 @@ SKIP: {
     chdir $cwd;
     $shipwright = Shipwright->new(
         repository => "svn:$repo",
-        source     => 'file:'
-          . catfile( 't', 'hello', 'Acme-Hello-0.03.tar.gz' ),
-        name      => 'howdy',
-        follow    => 0,
+        source => 'file:' . catfile( 't', 'hello', 'Acme-Hello-0.03.tar.gz' ),
+        name   => 'howdy',
+        follow => 0,
         log_level => 'FATAL',
     );
 
@@ -119,8 +109,7 @@ SKIP: {
     $shipwright->backend->import( name => 'hello', source => $source_dir );
     ok( grep( {/Build\.PL/} `svn ls $repo/dists/howdy` ), 'imported ok' );
     $script_dir = tempdir( CLEANUP => 1 );
-    copy( catfile( 't', 'hello', 'scripts', 'build' ),
-        $script_dir );
+    copy( catfile( 't', 'hello', 'scripts', 'build' ), $script_dir );
     copy( catfile( 't', 'hello', 'scripts', 'howdy_require.yml' ),
         catfile( $script_dir, 'require.yml' ) );
 
@@ -132,7 +121,7 @@ SKIP: {
     ok( grep( {/Build\.PL/} `svn cat $repo/scripts/howdy/build` ),
         'build script ok' );
 
-    my $tempdir = tempdir( 'shipwright_XXXXXX',  CLEANUP => 1 , TMPDIR => 1);
+    my $tempdir = tempdir( 'shipwright_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
     dircopy(
         catfile( 't',      'hello', 'shipwright' ),
         catfile( $tempdir, 'shipwright' )

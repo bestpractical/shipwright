@@ -80,12 +80,12 @@ sub run {
                 @dists = $name;
             }
 
-            for ( @dists ) {
+            for (@dists) {
                 if ( $_ eq $name ) {
                     $self->_update( $_, $self->version );
                 }
                 else {
-                    $self->_update( $_ );
+                    $self->_update($_);
                 }
             }
         }
@@ -138,8 +138,8 @@ sub _update {
     $version = Shipwright::Util::LoadFile( $shipwright->source->version_path );
 
     $shipwright->backend->import(
-        source  => catfile( $shipwright->source->directory, $name ),
-        comment => "update $name",
+        source    => catfile( $shipwright->source->directory, $name ),
+        comment   => "update $name",
         overwrite => 1,
         version   => $version->{$name},
     );

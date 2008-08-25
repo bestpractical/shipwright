@@ -61,7 +61,7 @@ SKIP: {
     my %map = (
         create => {
             "svn:$valid" => 1,
-            $invalid         => undef,
+            $invalid     => undef,
         },
         list => {
             "svn:$valid"     => undef,

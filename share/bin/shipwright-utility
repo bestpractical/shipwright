@@ -8,12 +8,8 @@ use YAML::Syck;
 my %args;
 
 die "unknown option"
-  unless GetOptions(
-          \%args,                  'update-order',
-          'keep-requires=s',       'keep-recommends=s',
-          'keep-build-requires=s', 'for-dists=s',
-          'help',
-  );
+  unless GetOptions( \%args, 'update-order', 'keep-requires=s',
+    'keep-recommends=s', 'keep-build-requires=s', 'for-dists=s', 'help', );
 
 my $USAGE = <<'END'
 run: ./bin/shipwright-utility --update-order
@@ -33,15 +29,15 @@ update-order: regenerate install order.
     e.g. --update-order --keep-recommends 0 --for-dists Jifty-DBI,Jifty
 
 END
-;
+  ;
 
-if ( $args{'help'} ) { 
+if ( $args{'help'} ) {
     print $USAGE;
     exit 0;
 }
 if ( $args{'update-order'} ) {
     for ( 'keep-requires', 'keep-recommends', 'keep-build-requires' ) {
-        $args{$_} = 1 unless defined $args{$_}; 
+        $args{$_} = 1 unless defined $args{$_};
     }
 
     my @dists = split /,\s*/, $args{'for-dists'};

@@ -15,9 +15,7 @@ my %source = (
     'svk://local/hello'                         => 'SVK',
     'cpan:Acme::Hello'                          => 'CPAN',
     'cpan:S/SU/SUNNAVY/IP-QQWry-v0.0.15.tar.gz' => 'CPAN',
-    'file:'
-      . catfile( 't', 'hello', 'Acme-Hello-0.03.tar.gz' ) =>
-      'Compressed',
+    'file:' . catfile( 't', 'hello', 'Acme-Hello-0.03.tar.gz' ) => 'Compressed',
     'dir:' . catfile( 't', 'hello' ) => 'Directory',
 );
 

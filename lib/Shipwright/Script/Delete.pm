@@ -19,6 +19,7 @@ sub run {
     my $shipwright = Shipwright->new( repository => $self->repository, );
     my $map = $shipwright->backend->map || {};
     if ( $map->{$name} ) {
+
         # it's a cpan module
         $name = $map->{$name};
     }

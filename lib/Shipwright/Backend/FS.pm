@@ -58,22 +58,20 @@ sub _cmd {
     }
     elsif ( $type eq 'import' ) {
         if ( $args{_extra_tests} ) {
-            $cmd = [
-                'cp', '-r',
-                $args{source}, $self->repository . '/t/extra'
-            ];
+            $cmd =
+              [ 'cp', '-r', $args{source}, $self->repository . '/t/extra' ];
         }
         else {
             if ( my $script_dir = $args{build_script} ) {
                 $cmd = [
-                    'cp',        '-r',
-                    "$script_dir/", $self->repository . "/scripts/$args{name}",
+                    'cp', '-r', "$script_dir/",
+                    $self->repository . "/scripts/$args{name}",
                 ];
             }
             else {
                 $cmd = [
-                    'cp',          '-r',
-                    "$args{source}/", $self->repository . "/dists/$args{name}",
+                    'cp', '-r', "$args{source}/",
+                    $self->repository . "/dists/$args{name}",
                 ];
             }
         }

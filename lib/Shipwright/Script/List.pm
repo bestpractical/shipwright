@@ -5,8 +5,7 @@ use warnings;
 use Carp;
 
 use base qw/App::CLI::Command Class::Accessor::Fast Shipwright::Script/;
-__PACKAGE__->mk_accessors(
-    qw/with_latest_version only_update/);
+__PACKAGE__->mk_accessors(qw/with_latest_version only_update/);
 
 use Shipwright;
 
@@ -21,13 +20,11 @@ sub run {
     my $self = shift;
     my $name = shift;
 
-    my $shipwright = Shipwright->new(
-        repository => $self->repository,
-    );
+    my $shipwright = Shipwright->new( repository => $self->repository, );
 
     my $versions = $shipwright->backend->version;
     my $source   = $shipwright->backend->source;
-    my $refs = $shipwright->backend->refs || {};
+    my $refs     = $shipwright->backend->refs || {};
 
     my $latest_version = {};
 
@@ -37,16 +34,16 @@ sub run {
     if ( $self->with_latest_version ) {
         my $map = $shipwright->backend->map;
 
-        if ( $name ) {
+        if ($name) {
             if ( $name =~ /^cpan-/ ) {
                 my %reversed = reverse %$map;
-                my $module   = $reversed{ $name };
-                $latest_version->{ $name } =
+                my $module   = $reversed{$name};
+                $latest_version->{$name} =
                   $self->_latest_version( name => $module );
             }
             else {
-                $latest_version->{ $name } =
-                  $self->_latest_version( url => $source->{ $name } );
+                $latest_version->{$name} =
+                  $self->_latest_version( url => $source->{$name} );
             }
         }
         else {
@@ -67,10 +64,10 @@ sub run {
         }
     }
 
-    if ( $name ) {
+    if ($name) {
         my $new_versions = {};
-        $new_versions->{ $name } = $versions->{ $name }
-          if exists $versions->{ $name };
+        $new_versions->{$name} = $versions->{$name}
+          if exists $versions->{$name};
         $versions = $new_versions;
     }
     for my $name ( sort keys %$versions ) {
@@ -92,8 +89,8 @@ sub run {
             print $name, ': ', "\n";
             print ' ' x 4 . 'version: ', $versions->{$name} || '',     "\n";
             print ' ' x 4 . 'from: ',    $source->{$name}   || 'CPAN', "\n";
-            print ' ' x 4 . 'references: ', defined $refs->{$name} ?
-                $refs->{$name} : 'unknown', "\n";
+            print ' ' x 4 . 'references: ',
+              defined $refs->{$name} ? $refs->{$name} : 'unknown', "\n";
             if ( $self->with_latest_version ) {
                 print ' ' x 4 . 'latest_version: ', $latest_version->{$name}
                   || 'unknown', "\n";
@@ -134,11 +131,11 @@ sub _latest_version {
         require CPAN;
         require CPAN::DistnameInfo;
 
-        Shipwright::Util->select( 'cpan' );
+        Shipwright::Util->select('cpan');
 
         my $module = CPAN::Shell->expand( 'Module', $args{name} );
 
-        Shipwright::Util->select( 'stdout' );
+        Shipwright::Util->select('stdout');
 
         my $info    = CPAN::DistnameInfo->new( $module->cpan_file );
         my $version = $info->version;

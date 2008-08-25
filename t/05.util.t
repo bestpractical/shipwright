@@ -44,11 +44,7 @@ eval { Shipwright::Util->run( [ 'ls', 'lalala' ] ) };
 like( $@, qr/something wrong/i, 'run "ls lalala" results in death' );
 
 ( undef, $err ) = Shipwright::Util->run( [ 'ls', 'lalala' ], 1 );
-like(
-    $err,
-    qr/ls:/i,
-    "run 'ls lalala' get warning if ignore_failure"
-);
+like( $err, qr/ls:/i, "run 'ls lalala' get warning if ignore_failure" );
 
 my $hashref = { foo => 'bar' };
 my $string = <<EOF;
