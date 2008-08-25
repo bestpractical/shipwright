@@ -4,6 +4,7 @@ use warnings;
 
 use Getopt::Long;
 use YAML::Syck;
+use List::MoreUtils qw/uniq firstidx/;
 
 my %args;
 
@@ -40,7 +41,7 @@ if ( $args{'update-order'} ) {
         $args{$_} = 1 unless defined $args{$_};
     }
 
-    my @dists = split /,\s*/, $args{'for-dists'};
+    my @dists = split /,\s*/, $args{'for-dists'} || '';
     unless (@dists) {
         my $out = `ls scripts`;
         my $sep = $/;
@@ -52,7 +53,15 @@ if ( $args{'update-order'} ) {
     my $require = {};
 
     for (@dists) {
-        fill_deps( %args, require => $require, dist => $_ );
+
+        # bloody hack, cpan-Module-Build have recommends that will
+        # cause circular deps
+        if ( $_ eq 'cpan-Module-Build' ) {
+            $require->{'cpan-Module-Build'} = [];
+        }
+        else {
+            fill_deps( %args, require => $require, name => $_ );
+        }
     }
 
     require Algorithm::Dependency::Ordered;
@@ -63,34 +72,64 @@ if ( $args{'update-order'} ) {
     my $dep = Algorithm::Dependency::Ordered->new( source => $source, )
       or die $@;
     my $order = $dep->schedule_all();
+
+    # fiddle the order a bit
+    # put cpan-ExtUtils-MakeMaker and cpan-Module-Build to the head of
+    # cpan dists.
+    # also put cpan-Module-Build's recommends right after it,
+    # since we omitted them in the $require->{'cpan-Module-Build'}
+
+    for my $maker ( 'cpan-Module-Build', 'cpan-ExtUtils-MakeMaker' ) {
+        if ( grep { $_ eq $maker } @$order ) {
+            @$order = grep { $_ ne $maker } @$order;
+            my $first_cpan_index = firstidx { /^cpan-/ } @$order;
+            splice @$order, $first_cpan_index, 0, $maker;
+
+            if ( $maker eq 'cpan-Module-Build' ) {
+
+                # cpan-Regexp-Common is the dep of cpan-Pod-Readme
+                my @maker_recommends = (
+                    'cpan-Regexp-Common', 'cpan-Pod-Readme',
+                    'cpan-version',       'cpan-ExtUtils-CBuilder',
+                    'cpan-Archive-Tar',   'cpan-ExtUtils-ParseXS'
+                );
+                my %maker_recommends = map { $_ => 1 } @maker_recommends;
+                @$order = grep { $maker_recommends{$_} ? 0 : 1 } @$order;
+                splice @$order, $first_cpan_index + 1, 0, @maker_recommends;
+            }
+        }
+    }
+
     DumpFile( 'shipwright/order.yml', $order );
 }
 
 sub fill_deps {
     my %args    = @_;
     my $require = $args{require};
-    my $dist    = $args{dist};
+    my $name    = $args{name};
 
     my $string;
-    my $req = LoadFile("scripts/$dist/require.yml");
+    my $req = LoadFile("scripts/$name/require.yml");
 
     if ( $req->{requires} ) {
         for (qw/requires recommends build_requires/) {
             my $arg = "keep-$_";
             $arg =~ s/_/-/g;
-            push @{ $require->{$dist} }, keys %{ $req->{$_} }
+            push @{ $require->{$name} }, keys %{ $req->{$_} }
               if $args{$arg};
         }
     }
     else {
 
         #for back compatbility
-        push @{ $require->{$dist} }, keys %$req;
+        push @{ $require->{$name} }, keys %$req;
     }
 
-    for my $dep ( @{ $require->{$dist} } ) {
+    @{ $require->{$name} } = uniq @{ $require->{$name} };
+
+    for my $dep ( @{ $require->{$name} } ) {
         next if $require->{$dep};
-        fill_deps( %args, dist => $dep );
+        fill_deps( %args, name => $dep );
     }
 }
 
