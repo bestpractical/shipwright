@@ -9,7 +9,7 @@ use File::Temp qw/tempdir/;
 use File::Copy qw/copy/;
 use File::Copy::Recursive qw/dircopy/;
 use File::Path;
-use List::MoreUtils qw/uniq/;
+use List::MoreUtils qw/uniq firstidx/;
 
 our %REQUIRE_OPTIONS = ( import => [qw/source/] );
 
@@ -117,7 +117,7 @@ sub import {
                 );
             }
             else {
-                $self->delete( path =>  "/scripts/$name" ) if $args{delete};
+                $self->delete( path => "/scripts/$name" ) if $args{delete};
 
                 $self->log->info(
                     "import $args{source}'s scripts to " . $self->repository );
@@ -129,14 +129,16 @@ sub import {
             }
         }
         else {
-            if ( $self->info( path => "/sources/$name/$args{as}" ) && not $args{overwrite} )
+            if ( $self->info( path => "/sources/$name/$args{as}" )
+                && not $args{overwrite} )
             {
                 $self->log->warn(
 "path sources/$name/$args{as} alreay exists, need to set overwrite arg to overwrite"
                 );
             }
             else {
-                $self->delete( path =>  "/sources/$name/$args{as}" ) if $args{delete};
+                $self->delete( path => "/sources/$name/$args{as}" )
+                  if $args{delete};
                 $self->log->info(
                     "import $args{source} to " . $self->repository );
                 $self->_add_to_order($name);
@@ -147,7 +149,8 @@ sub import {
 
                 my $branches = $self->branches;
                 if ( $args{branches} ) {
-            # mostly this happens when import from another shipwright repo
+
+                  # mostly this happens when import from another shipwright repo
                     $branches->{$name} = $args{branches};
                     $self->branches($branches);
                 }
@@ -188,7 +191,7 @@ sub export {
     $self->log->info(
         'export ' . $self->repository . "/$path to $args{target}" );
     for my $cmd ( $self->_cmd( export => %args ) ) {
-        Shipwright::Util->run( $cmd );
+        Shipwright::Util->run($cmd);
     }
 }
 
@@ -203,7 +206,7 @@ sub checkout {
     $self->log->info(
         'export ' . $self->repository . "/$path to $args{target}" );
     for my $cmd ( $self->_cmd( checkout => %args ) ) {
-        Shipwright::Util->run( $cmd );
+        Shipwright::Util->run($cmd);
     }
 }
 
@@ -217,11 +220,10 @@ sub commit {
     my $self = shift;
     my %args = @_;
     $self->log->info( 'commit ' . $args{path} );
-    for my $cmd (  $self->_cmd( commit => @_ ) ) {
+    for my $cmd ( $self->_cmd( commit => @_ ) ) {
         Shipwright::Util->run( $cmd, 1 );
     }
 }
-
 
 sub _add_to_order {
     my $self = shift;
@@ -258,6 +260,7 @@ sub update_order {
     my $require = {};
 
     for (@dists) {
+
         $self->_fill_deps( %args, require => $require, name => $_ );
     }
 
@@ -280,10 +283,10 @@ sub _fill_deps {
     my $name    = $args{name};
 
     return if $require->{$name};
-    my $out = Shipwright::Util->run( $self->_cmd( 'cat', path =>
-                "/scripts/$name/require.yml" ), 1 );
+    my $out = Shipwright::Util->run(
+        $self->_cmd( 'cat', path => "/scripts/$name/require.yml" ), 1 );
 
-    my $req = Shipwright::Util::Load( $out ) || {};
+    my $req = Shipwright::Util::Load($out) || {};
 
     if ( $req->{requires} ) {
         for (qw/requires recommends build_requires/) {
@@ -355,7 +358,7 @@ Get or set the sources map.
 sub source {
     my $self   = shift;
     my $source = shift;
-    my $path = '/shipwright/source.yml';
+    my $path   = '/shipwright/source.yml';
     return $self->_yml( $path, $source );
 }
 
@@ -394,7 +397,7 @@ Get or set branches.
 =cut
 
 sub branches {
-    my $self    = shift;
+    my $self     = shift;
     my $branches = shift;
 
     my $path = '/shipwright/branches.yml';
@@ -423,7 +426,7 @@ Get or set refs
 
 sub refs {
     my $self = shift;
-    my $refs  = shift;
+    my $refs = shift;
     my $path = '/shipwright/refs.yml';
 
     return $self->_yml( $path, $refs );
@@ -529,8 +532,7 @@ sub requires {
     my %args = @_;
     my $name = $args{name};
 
-    return $self->_yml(
-        catfile( 'scripts', $name, 'require.yml' ) );
+    return $self->_yml( catfile( 'scripts', $name, 'require.yml' ) );
 }
 
 =item check_repository
@@ -569,8 +571,7 @@ sub update {
     croak "need path option" unless $args{path};
 
     croak "$args{path} seems not shipwright's own file"
-      unless -e catfile( Shipwright::Util->share_root,
-        $args{path} );
+      unless -e catfile( Shipwright::Util->share_root, $args{path} );
 
     return $self->_update_file( $args{path},
         catfile( Shipwright::Util->share_root, $args{path} ) );
@@ -612,11 +613,11 @@ sub trim {
         @names_to_trim = $args{name};
     }
 
-    my $order = $self->order;
-    my $map = $self->map;
+    my $order   = $self->order;
+    my $map     = $self->map;
     my $version = $self->version || {};
-    my $source  = $self->source  || {};
-    my $flags   = $self->flags   || {};
+    my $source  = $self->source || {};
+    my $flags   = $self->flags || {};
 
     for my $name (@names_to_trim) {
         $self->delete( path => "/sources/$name" );
@@ -659,23 +660,27 @@ we need update this after import and trim
 =cut
 
 sub update_refs {
-    my $self = shift;
+    my $self  = shift;
     my $order = $self->order;
-    my $refs = {};
+    my $refs  = {};
 
     for my $name (@$order) {
+
         # initialize here, in case we don't have $name entry in $refs
         $refs->{$name} ||= 0;
 
-        my $out = Shipwright::Util->run( $self->_cmd( 'cat', path =>
-                    "/scripts/$name/require.yml"), 1 );
+        my $out = Shipwright::Util->run(
+            $self->_cmd( 'cat', path => "/scripts/$name/require.yml" ), 1 );
 
         my $req = Shipwright::Util::Load($out) || {};
 
         my @deps;
         if ( $req->{requires} ) {
-            @deps = ( keys %{ $req->{requires} }, keys %{ $req->{recommends} },
-              keys %{ $req->{build_requires} } );
+            @deps = (
+                keys %{ $req->{requires} },
+                keys %{ $req->{recommends} },
+                keys %{ $req->{build_requires} }
+            );
         }
         else {
 
@@ -690,7 +695,7 @@ sub update_refs {
         }
     }
 
-    $self->refs( $refs );
+    $self->refs($refs);
 }
 
 =item has_branch_support
@@ -705,9 +710,7 @@ sub has_branch_support {
     return;
 }
 
-
 *_cmd = *_update_file = *_subclass_method;
-
 
 =back
 
