@@ -11,6 +11,7 @@ use Config;
 use Getopt::Long;
 use Cwd qw/getcwd abs_path/;
 use inc::YAML::Tiny;
+use Carp qw/confess/;
 
 my $build_base = getcwd;
 
@@ -25,7 +26,7 @@ die "unknown option"
     'force',                  'clean',
     'name=s',                 'help',
     'noclean',                'only=s',
-    'with=s',
+    'with=s',                 'noclean-after-install',
   );
 
 my $USAGE = <<'END'
@@ -179,49 +180,32 @@ else {
 my $log;
 
 if ( $args{'only-test'} ) {
-    open $log, '>', 'test.log' or die $!;
+    open $log, '>', 'test.log' or confess $!;
 
     test();
 }
 elsif ( $args{'clean'} ) {
-    open $log, '>', 'clean.log' or die $!;
-
-    system('rm -rf tmp_dists') && die "rm tmp_dists failed\n";
-    print $log "removed tmp_dists";
-
-    if ($branches) {
-        system('rm -rf dists') && die "rm dists failed\n";
-        print $log "removed dists";
-    }
-    else {
-        for my $dist (@$order) {
-            clean($dist);
-            chdir $build_base;
-        }
-    }
-
-    unlink '__need_clean';
+    clean();
 }
 else {
-
-    # for install
-    open $log, '>', 'build.log' or die $!;
-
     if ( -e '__need_clean' && !$args{noclean} ) {
         print "seems it has been built before, need to clean first\n";
-        print $log "seems it has been built before, need to clean first\n";
-        system(
-            "$0 --clean "
-              . (
-                $args{only}
-                ? '--only ' . join( ',', keys %{ $args{only} } )
-                : '--skip ' . ( join( ',', keys %{ $args{skip} } || q{''} ) )
-              )
-        ) && die 'clean failed.';
+        clean();
     }
+    install();
+    unless ( $args{'noclean-after-install'} ) {
+        clean();
+        print "install finished, the dists are at $args{'install-base'}\n";
+    }
+}
+
+sub install {
+
+    # for install
+    open $log, '>', 'build.log' or confess $!;
 
     # set clean flag again
-    open my $tmp_fh, '>', '__need_clean' or die $!;
+    open my $tmp_fh, '>', '__need_clean' or confess $!;
     close $tmp_fh;
 
     process_tmp_dists() if keys %{ $args{with} };
@@ -240,7 +224,7 @@ else {
     };
 
     open my $fh, '>', '__install_base'
-      or die "can't write to __install_base: $!";
+      or confess "can't write to __install_base: $!";
     print $fh $args{'install-base'};
     close $fh;
 
@@ -297,21 +281,22 @@ else {
 
     mkdir 'dists' unless -e 'dists';
     for my $dist (@$order) {
-        install($dist);
-        record($dist);
+        _install($dist, $log);
+        _record($dist, $log);
         chdir $build_base;
     }
 
     mkdir catfile( $args{'install-base'},       'bin' )
       unless -e catfile( $args{'install-base'}, 'bin' );
 
-    wrap_bin();
+    wrap_bin( $log );
     print "install finished, the dists are at $args{'install-base'}\n";
     print $log "install finished, the dists are at $args{'install-base'}\n";
 }
 
-sub install {
+sub _install {
     my $dir = shift;
+    my $log = shift;
 
     if ( $args{with}{$dir} && -e catfile( 'tmp_dists', $dir ) ) {
         chdir catfile( 'tmp_dists', $dir );
@@ -322,7 +307,7 @@ sub install {
                   . catdir( 'sources', $dir, split /\//, $branches->{$dir}[0] )
                   . ' '
                   . catdir( 'dists', $dir ) )
-              && die
+              && confess
               "cp sources/$dir/$branches->{$dir}[0] to dists/$dir failed";
         }
         chdir catdir( 'dists', $dir );
@@ -348,7 +333,7 @@ sub install {
           $args{'clean'} ? '--clean' : ();
         if ( system($cmd) ) {
             print $log "build $dir with failure.\n";
-            die "build $dir with failure.\n";
+            confess "build $dir with failure.\n";
         }
     }
     else {
@@ -381,7 +366,7 @@ sub install {
                         next;
                     }
                 }
-                die "build $dir $type part with failure.\n";
+                confess "build $dir $type part with failure.\n";
             }
             else {
                 print $log "build $dir $type part with success!\n";
@@ -394,7 +379,7 @@ sub install {
 }
 
 sub wrap_bin {
-    my $self = shift;
+    my $log = shift;
 
     my $sub = sub {
         my $file = $_;
@@ -420,7 +405,7 @@ sub wrap_bin {
 
         my $type;
         if ( -T $file ) {
-            open my $fh, '<', $file or die "can't open $file: $!";
+            open my $fh, '<', $file or confess "can't open $file: $!";
             my $shebang = <$fh>;
             if (
                 $shebang =~ m{
@@ -434,7 +419,7 @@ sub wrap_bin {
         }
 
         move( $file => catfile( $args{'install-base'}, "$dir-wrapped" ) )
-          or die $!;
+          or confess $!;
 
     # if we have this $type(e.g. perl) installed and have that specific wrapper,
     # then link to it, else link to the normal one
@@ -443,12 +428,12 @@ sub wrap_bin {
             && -e catfile( '..', 'etc', "shipwright-$type-wrapper" ) )
         {
             symlink catfile( '..', 'etc', "shipwright-$type-wrapper" ) => $file
-              or die $!;
+              or confess $!;
         }
         else {
 
             symlink catfile( '..', 'etc', 'shipwright-script-wrapper' ) => $file
-              or die $!;
+              or confess $!;
         }
         chmod oct 755, $file;
     };
@@ -491,7 +476,7 @@ sub test {
         my ( $type, $cmd ) = @$_;
         print $log "run tests $type part with cmd: $cmd\n";
         if ( system($cmd ) ) {
-            die "something wrong when execute $cmd.";
+            confess "something wrong when execute $cmd.";
         }
         else {
             print $log "run test $type part with success\n";
@@ -506,7 +491,7 @@ sub cmds {
     my @cmds;
 
     {
-        open my $fh, '<', $file or die "$!: $file";
+        open my $fh, '<', $file or confess "$!: $file";
         @cmds = <$fh>;
         close $fh;
         chomp @cmds;
@@ -533,7 +518,28 @@ sub cmds {
 }
 
 sub clean {
+    open my $log, '>', 'clean.log' or confess $!;
+
+    system('rm -rf tmp_dists') && confess "rm tmp_dists failed\n";
+    print $log "removed tmp_dists\n";
+
+    if ($branches) {
+        system('rm -rf dists') && confess "rm dists failed\n";
+        print $log "removed dists\n";
+    }
+    else {
+        for my $dist (@$order) {
+            _clean($dist, $log);
+            chdir $build_base;
+        }
+    }
+
+    unlink '__need_clean';
+}
+
+sub _clean {
     my $dir = shift;
+    my $log = shift;
 
     my $cmd;
     chdir catfile( 'dists', $dir );
@@ -583,7 +589,7 @@ sub process_tmp_dists {
     for my $name ( keys %{ $args{with} } ) {
         my $cmd = cmd( $name, $args{with}{$name} );
         if ($cmd) {
-            system($cmd) && die "run $cmd with failure";
+            system($cmd) && confess "run $cmd with failure";
         }
     }
 }
@@ -610,7 +616,7 @@ sub cmd {
     return;
 }
 
-sub record {
+sub _record {
     my $dist = shift;
     push @{ $installed->[0] }, $dist;
     $installed->write($installed_file);
