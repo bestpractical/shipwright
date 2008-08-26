@@ -317,6 +317,7 @@ sub fiddle_order {
         if ( grep { $_ eq $maker } @$order ) {
             @$order = grep { $_ ne $maker } @$order;
             my $first_cpan_index = firstidx { /^cpan-/ } @$order;
+            $first_cpan_index = scalar @$order if $first_cpan_index == -1;
             splice @$order, $first_cpan_index, 0, $maker;
 
             if ( $maker eq 'cpan-Module-Build' ) {
