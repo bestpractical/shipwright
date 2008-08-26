@@ -29,6 +29,10 @@ requires 'UNIVERSAL::require' => 0;
 requires 'version' => 0;
 requires 'Module::Info' => 0;
 requires 'YAML::Tiny' => 0;
+requires 'IO::Uncompress::Bunzip2' => 0;
+requires 'Archive::Extract' => 0;
+requires 'IO::Uncompress::RawInflate' => '2.012';
+
 
 if ( can_cc() ) {
     requires( 'YAML::Syck' => 0.71 );
