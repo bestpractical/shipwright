@@ -45,7 +45,12 @@ sub run {
     my $self = shift;
     my %args = @_;
     for ( $self->_cmd ) {
-        Shipwright::Util->run($_);
+        if ( ref $_ eq 'CODE' ) {
+            $_->();
+        }
+        else {
+            Shipwright::Util->run($_);
+        }
     }
     $self->_copy( %{ $args{copy} } ) if $args{copy};
 }
@@ -320,6 +325,7 @@ EOF
                                 source  => $require->{$type}{$module}{source},
                                 name    => $name,
                                 version => undef,
+                                _path   => undef,
                             );
                         }
                         else {
@@ -328,6 +334,7 @@ EOF
                                 source  => "cpan:$module",
                                 version => undef,
                                 name => '',   # cpan name is automaticaly fixed.
+                                _path   => undef,
                             );
                         }
                         $s->run();
