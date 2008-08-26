@@ -30,3 +30,9 @@ Revision history for Shipwright
 * updated tutorial
 * not wrap libexec any more
 
+1.14 Tue Aug 26 16:23:56 CST 2008
+* limit versions: perl 5.8.8+, SVK 2+, SVN 1.4+
+* CFLAGS and LDFLAGS are added when build
+* use Archive::Extract instead of tar cmd to extract compressed files
+* some bug fixes
+
