@@ -9,7 +9,7 @@ use File::Temp qw/tempdir/;
 use File::Copy qw/copy/;
 use File::Path;
 use File::Copy::Recursive qw/dircopy/;
-use List::MoreUtils qw/uniq/;
+use List::MoreUtils qw/uniq firstidx/;
 
 our %REQUIRE_OPTIONS = ( import => [qw/source/] );
 
