@@ -193,10 +193,6 @@ else {
         clean();
     }
     install();
-    unless ( $args{'noclean-after-install'} ) {
-        clean();
-        print "install finished, the dists are at $args{'install-base'}\n";
-    }
 }
 
 sub install {
@@ -205,8 +201,10 @@ sub install {
     open $log, '>', 'build.log' or confess $!;
 
     # set clean flag again
-    open my $tmp_fh, '>', '__need_clean' or confess $!;
-    close $tmp_fh;
+    if ( $args{'noclean-after-install'} ) {
+        open my $tmp_fh, '>', '__need_clean' or confess $!;
+        close $tmp_fh;
+    }
 
     process_tmp_dists() if keys %{ $args{with} };
 
@@ -281,15 +279,15 @@ sub install {
 
     mkdir 'dists' unless -e 'dists';
     for my $dist (@$order) {
-        _install($dist, $log);
-        _record($dist, $log);
+        _install( $dist, $log );
+        _record( $dist, $log );
         chdir $build_base;
     }
 
     mkdir catfile( $args{'install-base'},       'bin' )
       unless -e catfile( $args{'install-base'}, 'bin' );
 
-    wrap_bin( $log );
+    wrap_bin($log);
     print "install finished, the dists are at $args{'install-base'}\n";
     print $log "install finished, the dists are at $args{'install-base'}\n";
 }
@@ -341,7 +339,7 @@ sub _install {
 
         for (@$cmds) {
             my ( $type, $cmd ) = @$_;
-            next if $type eq 'clean';
+            next if $type eq 'clean' && $args{'noclean-after-install'};
 
             if ( $skip_test && $type eq 'test' ) {
                 print $log "skip build $type part in $dir\n";
@@ -357,16 +355,19 @@ sub _install {
                     if ( $args{force} ) {
                         print $log
 "although tests failed, will install anyway since we have force arg\n";
-                        next;
                     }
                     ## no critic
                     elsif ( eval "$ktf->{$dir}" ) {
                         print $log
 "although tests failed, will install anyway since it's a known failure\n";
-                        next;
                     }
+                    next;
                 }
-                confess "build $dir $type part with failure.\n";
+                elsif ( $type ne 'clean' ) {
+
+                    # clean is trivial, we'll just ignore if 'clean' fails
+                    confess "build $dir $type part with failure.\n";
+                }
             }
             else {
                 print $log "build $dir $type part with success!\n";
@@ -529,7 +530,7 @@ sub clean {
     }
     else {
         for my $dist (@$order) {
-            _clean($dist, $log);
+            _clean( $dist, $log );
             chdir $build_base;
         }
     }
