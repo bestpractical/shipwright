@@ -105,25 +105,19 @@ currently only used to store the initial files in project.
 sub share_root {
     my $self = shift;
 
-    require File::ShareDir;
-    $SHARE_ROOT ||=
-      eval { abs_path( File::ShareDir::module_dir('Shipwright') ) };
-
     unless ($SHARE_ROOT) {
-
-        # XXX TODO: This is a bloody hack
-        # Module::Install::Share and File::ShareDir don't play nicely
-        # together
         my @root = splitdir( $self->shipwright_root );
-        $root[-1] = 'share';           # replace 'lib' to 'share'
-        $SHARE_ROOT = catdir(@root);
-    }
 
-    if (   $SHARE_ROOT !~ m{([/\\])auto\1share\1}
-        && $SHARE_ROOT =~ m{([/\\])blib\1lib\1} )
-    {
-        my $sep = $1;
-        $SHARE_ROOT =~ s!${sep}auto$sep!${sep}auto${sep}share${sep}dist${sep}!;
+        if ( $root[-2] ne 'blib' && $root[-1] eq 'lib' ) {
+
+            # so it's -Ilib in the Shipwright's source dir
+            $root[-1] = 'share';
+        }
+        else {
+            push @root, qw/auto share dist Shipwright/;
+        }
+
+        $SHARE_ROOT = catdir(@root);
     }
 
     return ($SHARE_ROOT);
