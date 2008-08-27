@@ -16,7 +16,6 @@ requires 'Class::Accessor::Fast' => 0;
 requires 'File::Temp' => 0;
 requires 'File::Copy' => 0;
 requires 'File::Copy::Recursive' => 0;
-requires 'File::ShareDir' => 0;
 requires 'File::Spec' => 0;
 requires 'File::Slurp' => 0;
 requires 'Hash::Merge' => 0;
