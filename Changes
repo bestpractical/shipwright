@@ -35,4 +35,6 @@ Revision history for Shipwright
 * CFLAGS and LDFLAGS are added when build
 * use Archive::Extract instead of tar cmd to extract compressed files
 * some bug fixes
+* clean each dist right after each dist is installed
+* replace die with confess
 
