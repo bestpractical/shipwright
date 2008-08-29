@@ -256,7 +256,6 @@ sub _install {
                 $cmd  = $_;
             }
 
-            next if $type eq 'clean';        # don't need to clean when install
             if ( $self->skip_test && $type eq 'test' ) {
                 $self->log->info("skip build $type part in $dir");
                 next;
@@ -271,17 +270,20 @@ sub _install {
                         $self->log->error(
 "although tests failed, will install anyway since we have force arg\n"
                         );
-                        next;
                     }
                     ## no critic
                     elsif ( eval "$ktf->{$dir}" ) {
                         $self->log->error(
 "although tests failed, will install anyway since it's a known failure\n"
                         );
-                        next;
                     }
+                    next;
                 }
-                die "install failed";
+                elsif ( $type ne 'clean' ) {
+
+                    # clean is trivial, we'll just ignore if 'clean' fails
+                    die "build $dir $type part with failure.";
+                }
             }
         }
     }
