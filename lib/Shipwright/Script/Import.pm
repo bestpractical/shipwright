@@ -62,7 +62,7 @@ sub run {
 
     }
 
-    die "we need source arg\n" unless $source;
+    confess "we need source arg\n" unless $source;
 
     if ( $self->extra_tests ) {
         $shipwright->backend->import(
@@ -86,7 +86,7 @@ sub run {
                 $self->name($name);
             }
             if ( $self->name !~ /^[-.\w]+$/ ) {
-                die
+                confess
                   qq{name can only have alphanumeric characters, "." and "-"\n};
             }
         }
@@ -158,7 +158,7 @@ sub run {
                 move(
                     catfile( $source,     '__require.yml' ),
                     catfile( $script_dir, 'require.yml' )
-                ) or die "move __require.yml failed: $!\n";
+                ) or confess "move __require.yml failed: $!\n";
             }
         }
 
@@ -263,7 +263,7 @@ sub _import_req {
                             move(
                                 catfile( $s,          '__require.yml' ),
                                 catfile( $script_dir, 'require.yml' )
-                            ) or die "move $s/__require.yml failed: $!\n";
+                            ) or confess "move $s/__require.yml failed: $!\n";
                         }
 
                         $self->_generate_build( $s, $script_dir, $shipwright );
@@ -355,7 +355,7 @@ sub _generate_build {
         push @commands, 'clean: ';
     }
 
-    open my $fh, '>', catfile( $script_dir, 'build' ) or die $@;
+    open my $fh, '>', catfile( $script_dir, 'build' ) or confess $@;
     print $fh $_, "\n" for @commands;
     close $fh;
 }

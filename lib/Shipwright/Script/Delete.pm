@@ -14,7 +14,7 @@ sub run {
     my $self = shift;
     my $name = shift;
 
-    die "need name arg\n" unless $name;
+    confess "need name arg\n" unless $name;
 
     my $shipwright = Shipwright->new( repository => $self->repository, );
     my $map = $shipwright->backend->map || {};

@@ -45,7 +45,7 @@ sub new {
 
 sub _subclass_method {
     my $method = ( caller(0) )[3];
-    die "your should subclass $method\n";
+    confess "your should subclass $method\n";
 }
 
 =item initialize
@@ -66,7 +66,7 @@ sub initialize {
     mkpath $yaml_tiny_path;
     require Module::Info;
     copy( Module::Info->new_from_module('YAML::Tiny')->file, $yaml_tiny_path )
-      or die "copy YAML/Tiny.pm failed: $!";
+      or confess "copy YAML/Tiny.pm failed: $!";
 
     # share_root can't keep empty dirs, we have to create them manually
     for (qw/scripts t sources/) {
@@ -277,7 +277,7 @@ sub update_order {
     my $source = Algorithm::Dependency::Source::HoA->new($require);
     $source->load();
     my $dep = Algorithm::Dependency::Ordered->new( source => $source, )
-      or die $@;
+      or confess $@;
     my $order = $dep->schedule_all();
 
     $order = $self->fiddle_order( $order );

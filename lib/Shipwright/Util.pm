@@ -70,7 +70,7 @@ sub run {
         $log->error(
             'failed to run ' . join( ' ', @$cmd ) . " with exit number $?" );
         unless ($ignore_failure) {
-            die <<"EOF";
+            confess <<"EOF";
 something wrong when execute @$cmd: $?
 the output is: $out
 the error is: $err
@@ -165,7 +165,7 @@ sub select {
         select $cpan_fh;
     }
     else {
-        die "unknown type: $type";
+        confess "unknown type: $type";
     }
 }
 

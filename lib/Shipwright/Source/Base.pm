@@ -91,12 +91,12 @@ sub _follow {
         if ( -e 'Build.PL' ) {
             Shipwright::Util->run( [ $^X, 'Build.PL' ] );
             my $source = read_file( catfile( '_build', 'prereqs' ) )
-              or die "can't read _build/prereqs: $!";
+              or confess "can't read _build/prereqs: $!";
             my $eval = '$require = ' . $source;
-            eval $eval or die "eval error: $@";    ## no critic
+            eval $eval or confess "eval error: $@";    ## no critic
 
             $source = read_file( catfile('Build.PL') )
-              or die "can't read Build.PL: $!";
+              or confess "can't read Build.PL: $!";
             if (   $source =~ /Module::Build/
                 && $self->name ne 'cpan-Module-Build' )
             {
@@ -109,7 +109,7 @@ sub _follow {
         }
         elsif ( -e 'Makefile.PL' ) {
             my $makefile = read_file('Makefile.PL')
-              or die "can't read Makefile.PL: $!";
+              or confess "can't read Makefile.PL: $!";
 
             if ( $makefile =~ /inc::Module::Install/ ) {
 
@@ -199,8 +199,8 @@ EOF
 
                 Shipwright::Util->run( [ $^X, 'shipwright_makefile.pl' ] );
                 my $prereqs = read_file( catfile('shipwright_prereqs') )
-                  or die "can't read prereqs: $!";
-                eval $prereqs or die "eval error: $@";    ## no critic
+                  or confess "can't read prereqs: $!";
+                eval $prereqs or confess "eval error: $@";    ## no critic
 
                 Shipwright::Util->run( [ 'rm', 'shipwright_makefile.pl' ] );
                 Shipwright::Util->run( [ 'rm', 'shipwright_prereqs' ] );
@@ -213,7 +213,7 @@ EOF
                 if ( $source && $source =~ /({.*})/ ) {
                     my $eval .= '$require = ' . $1;
                     $eval =~ s/([\w:]+)=>/'$1'=>/g;
-                    eval $eval or die "eval error: $@";    ## no critic
+                    eval $eval or confess "eval error: $@";    ## no critic
                 }
 
                 for ( keys %$require ) {
@@ -243,7 +243,7 @@ EOF
         }
 
         Shipwright::Util::DumpFile( $require_path, $require )
-          or die "can't dump __require.yml: $!";
+          or confess "can't dump __require.yml: $!";
     }
 
     if ( my $require = Shipwright::Util::LoadFile($require_path) ) {

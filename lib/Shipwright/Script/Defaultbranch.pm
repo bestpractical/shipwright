@@ -12,8 +12,8 @@ sub run {
     my $name    = shift;
     my $default = shift;
 
-    die "need name arg\n"    unless $name;
-    die "need default arg\n" unless $default;
+    confess "need name arg\n"    unless $name;
+    confess "need default arg\n" unless $default;
 
     my $shipwright = Shipwright->new( repository => $self->repository, );
 
@@ -28,7 +28,7 @@ sub run {
         print "set default branch for $name with success, now it's $default\n";
     }
     else {
-        die "$name doesn't have branches $default.
+        confess "$name doesn't have branches $default.
 Available branches are " . join( ', ', @{ $branches->{$name} } ) . "\n";
     }
 }

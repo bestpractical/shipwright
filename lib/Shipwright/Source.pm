@@ -22,7 +22,7 @@ $DEFAULT{version_path}       = catfile( $DEFAULT{directory}, 'version.yml' );
 $DEFAULT{branches_path}      = catfile( $DEFAULT{directory}, 'branches.yml' );
 
 for (qw/map_path url_path version_path branches_path/) {
-    open my $fh, '>', $DEFAULT{$_} or die "can't write to $DEFAULT{$_}: $!";
+    open my $fh, '>', $DEFAULT{$_} or confess "can't write to $DEFAULT{$_}: $!";
     close $fh;
 }
 

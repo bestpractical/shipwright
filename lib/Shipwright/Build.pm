@@ -217,7 +217,7 @@ sub _install {
               . catdir( 'sources', $dir, split /\//, $branches->{$dir}[0] )
               . ' '
               . catdir( 'dists', $dir ) )
-          && die "cp sources/$dir/$branches->{$dir}[0] to dists/$dir failed";
+          && confess "cp sources/$dir/$branches->{$dir}[0] to dists/$dir failed";
     }
 
     chdir catfile( 'dists', $dir );
@@ -282,7 +282,7 @@ sub _install {
                 elsif ( $type ne 'clean' ) {
 
                     # clean is trivial, we'll just ignore if 'clean' fails
-                    die "build $dir $type part with failure.";
+                    confess "build $dir $type part with failure.";
                 }
             }
         }
@@ -319,7 +319,7 @@ sub _wrapper {
 
         my $type;
         if ( -T $file ) {
-            open my $fh, '<', $file or die "can't open $file: $!";
+            open my $fh, '<', $file or confess "can't open $file: $!";
             my $shebang = <$fh>;
             my $base    = quotemeta $self->install_base;
             my $perl    = quotemeta $self->perl;
@@ -338,7 +338,7 @@ sub _wrapper {
         }
 
         move( $file => catfile( $self->install_base, "$dir-wrapped" ) )
-          or die $!;
+          or confess $!;
 
     # if we have this $type(e.g. perl) installed and have that specific wrapper,
     # then link to it, else link to the normal one
@@ -347,12 +347,12 @@ sub _wrapper {
             && -e catfile( '..', 'etc', "shipwright-$type-wrapper" ) )
         {
             symlink catfile( '..', 'etc', "shipwright-$type-wrapper" ) => $file
-              or die $!;
+              or confess $!;
         }
         else {
 
             symlink catfile( '..', 'etc', 'shipwright-script-wrapper' ) => $file
-              or die $!;
+              or confess $!;
         }
     };
 
@@ -408,7 +408,7 @@ sub test {
         $self->log->info("run tests $type:");
         if ( system($cmd) ) {
             $self->log->error("tests failed");
-            die;
+            confess;
         }
     }
 }
