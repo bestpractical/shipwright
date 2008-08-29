@@ -48,7 +48,7 @@ sub _run {
 
         if ( $response->is_success ) {
             open my $fh, '>', $self->source
-              or die "can't open file " . $self->source . ": $!";
+              or confess "can't open file " . $self->source . ": $!";
             print $fh $response->content;
         }
         else {

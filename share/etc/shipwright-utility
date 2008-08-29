@@ -5,6 +5,7 @@ use warnings;
 use Getopt::Long;
 use File::Spec::Functions qw/catfile catdir/;
 use Cwd;
+use Carp;
 
 my %args;
 GetOptions( \%args, 'install-links=s', 'help' );
@@ -31,7 +32,7 @@ elsif ( $args{'install-links'} ) {
     for my $dir (qw/bin sbin libexec/) {
         next unless -e $dir;
         my $dh;
-        opendir $dh, $dir or die $!;
+        opendir $dh, $dir or confess $!;
 
         mkdir catfile( $args{'install-links'},       $dir )
           unless -e catfile( $args{'install-links'}, $dir );
@@ -39,7 +40,7 @@ elsif ( $args{'install-links'} ) {
         for (@files) {
             next if $_ eq '.' || $_ eq '..';
             symlink catfile( $cwd, $dir, $_ ),
-              catfile( $args{'install-links'}, $dir, $_ ) or die
+              catfile( $args{'install-links'}, $dir, $_ ) or confess
                   $!;
         }
     }

@@ -12,8 +12,8 @@ sub run {
     my $self = shift;
     my ( $name, $new_source ) = @_;
 
-    die "need name arg\n"   unless $name;
-    die "need source arg\n" unless $new_source;
+    confess "need name arg\n"   unless $name;
+    confess "need source arg\n" unless $new_source;
 
     my $shipwright = Shipwright->new(
         repository => $self->repository,

@@ -3,6 +3,7 @@ package Shipwright::Test;
 use warnings;
 use strict;
 use base qw/Exporter/;
+use Carp;
 
 use File::Temp qw/tempdir/;
 use IPC::Cmd qw/can_run/;
@@ -88,7 +89,7 @@ return the repo's uri, like file:///tmp/foo
 
 sub create_svn_repo {
     my $repo = tempdir( 'shipwright_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
-    system("svnadmin create $repo") && die "create repo failed: $!";
+    system("svnadmin create $repo") && confess "create repo failed: $!";
     return "file://$repo";
 }
 

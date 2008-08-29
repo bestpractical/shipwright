@@ -44,7 +44,7 @@ sub run {
     }
     else {
 
-        die "need name arg\n" unless $name || $self->all;
+        confess "need name arg\n" unless $name || $self->all;
 
         $map    = $shipwright->backend->map    || {};
         $source = $shipwright->backend->source || {};
@@ -121,7 +121,7 @@ sub _update {
             $name = $map->{$name};
         }
         else {
-            die 'invalid name ' . $name . "\n";
+            confess 'invalid name ' . $name . "\n";
         }
 
         $shipwright->source(

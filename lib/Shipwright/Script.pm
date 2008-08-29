@@ -3,6 +3,7 @@ use strict;
 use warnings;
 use App::CLI;
 use base qw/App::CLI Class::Accessor::Fast/;
+use Carp;
 
 __PACKAGE__->mk_accessors(qw/repository log_file log_level/);
 
@@ -51,11 +52,11 @@ sub prepare {
                 log_level  => $cmd->log_level,
                 log_file   => $cmd->log_file,
             );
-            die 'invalid repository: ' . $cmd->repository
+            confess 'invalid repository: ' . $cmd->repository
               unless $backend->check_repository( action => $action );
         }
         else {
-            die "need repository arg\n";
+            confess "need repository arg\n";
         }
     }
     return $cmd;

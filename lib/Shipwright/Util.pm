@@ -70,7 +70,7 @@ sub run {
         $log->error(
             'failed to run ' . join( ' ', @$cmd ) . " with exit number $?" );
 
-        die "something wrong when execute @$cmd: $?" unless $ignore_failure;
+        confess "something wrong when execute @$cmd: $?" unless $ignore_failure;
     }
 
     return wantarray ? ( $out, $err ) : $out;
@@ -160,7 +160,7 @@ sub select {
         select $cpan_fh;
     }
     else {
-        die "unknown type: $type";
+        confess "unknown type: $type";
     }
 }
 

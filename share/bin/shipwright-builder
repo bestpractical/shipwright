@@ -17,7 +17,7 @@ my $build_base = getcwd;
 
 my %args;
 
-die "unknown option"
+confess "unknown option"
   unless GetOptions(
     \%args,                   'install-base=s',
     'perl=s',                 'skip=s',

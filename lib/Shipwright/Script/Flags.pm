@@ -23,7 +23,7 @@ sub run {
     my $self = shift;
     my $name = shift;
 
-    die "need name arg\n" unless $name;
+    confess "need name arg\n" unless $name;
 
     if ( $name =~ /^__/ ) {
         print "$name can't start as __\n";
@@ -43,7 +43,7 @@ sub run {
     }
 
     unless ( 1 == grep { defined $_ } $self->add, $self->delete, $self->set ) {
-        die "you should specify one and only one of add, delete and set\n";
+        confess "you should specify one and only one of add, delete and set\n";
     }
 
     my $list;

@@ -15,17 +15,17 @@ sub run {
 
     my ( $name, $new_name ) = @_;
 
-    die "need name arg\n"     unless $name;
-    die "need new-name arg\n" unless $new_name;
+    confess "need name arg\n"     unless $name;
+    confess "need new-name arg\n" unless $new_name;
 
-    die "invalid new-name: $new_name, should only contain - and alphanumeric\n"
+    confess "invalid new-name: $new_name, should only contain - and alphanumeric\n"
       unless $new_name =~ /^[-\w]+$/;
 
     my $shipwright = Shipwright->new( repository => $self->repository, );
 
     my $order = $shipwright->backend->order;
 
-    die "no such dist: $name\n" unless grep { $_ eq $name } @$order;
+    confess "no such dist: $name\n" unless grep { $_ eq $name } @$order;
 
     $shipwright->backend->move(
         path     => "/dists/$name",

@@ -1,14 +1,14 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-
+use Carp;
 use Getopt::Long;
 use YAML::Syck;
 use List::MoreUtils qw/uniq firstidx/;
 
 my %args;
 
-die "unknown option"
+confess "unknown option"
   unless GetOptions( \%args, 'update-order', 'keep-requires=s',
     'keep-recommends=s', 'keep-build-requires=s', 'for-dists=s', 'help', );
 
@@ -70,7 +70,7 @@ if ( $args{'update-order'} ) {
     my $source = Algorithm::Dependency::Source::HoA->new($require);
     $source->load();
     my $dep = Algorithm::Dependency::Ordered->new( source => $source, )
-      or die $@;
+      or confess $@;
     my $order = $dep->schedule_all();
 
     # fiddle the order a bit

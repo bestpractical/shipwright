@@ -72,7 +72,7 @@ sub run {
         $compressed->run(@_);
     }
     else {
-        die 'invalid source: ' . $self->source;
+        confess 'invalid source: ' . $self->source;
     }
 }
 
@@ -134,7 +134,7 @@ sub _run {
     my $name = CPAN::DistnameInfo->new( $distribution->{ID} )->dist;
 
     if ( $name eq 'perl' ) {
-        die 'perl itself contains ' . $self->source . ', will not process';
+        confess 'perl itself contains ' . $self->source . ', will not process';
     }
 
     $distribution->get;
