@@ -24,6 +24,7 @@ SKIP: {
         source => 'file:' . catfile( 't', 'hello', 'Acme-Hello-0.03.tar.gz' ),
         log_level => 'FATAL',
         follow    => 0,
+        force => 1,
     );
 
     isa_ok( $shipwright->backend, 'Shipwright::Backend::SVN' );
