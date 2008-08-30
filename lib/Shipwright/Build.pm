@@ -270,16 +270,18 @@ sub _install {
                         $self->log->error(
 "although tests failed, will install anyway since we have force arg\n"
                         );
+                        next;
                     }
                     ## no critic
                     elsif ( eval "$ktf->{$dir}" ) {
                         $self->log->error(
 "although tests failed, will install anyway since it's a known failure\n"
                         );
+                        next;
                     }
-                    next;
                 }
-                elsif ( $type ne 'clean' ) {
+
+                if ( $type ne 'clean' ) {
 
                     # clean is trivial, we'll just ignore if 'clean' fails
                     confess "build $dir $type part with failure.";
