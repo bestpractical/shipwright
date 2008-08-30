@@ -48,6 +48,7 @@ SKIP: {
         source => 'file:' . catfile( 't', 'hello', 'Acme-Hello-0.03.tar.gz' ),
         follow => 0,
         log_level => 'FATAL',
+        force => 1,
     );
 
     isa_ok( $shipwright,          'Shipwright' );
@@ -139,6 +140,7 @@ SKIP: {
         name   => 'howdy',
         follow => 0,
         log_level => 'FATAL',
+        force => 1,
     );
 
     $source_dir = $shipwright->source->run();
