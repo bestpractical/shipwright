@@ -356,7 +356,7 @@ sub _parent_dir {
     my $source = shift;
     my @dirs   = splitdir($source);
     pop @dirs;
-    return catfile(@dirs);
+    return catdir(@dirs);
 }
 
 1;

@@ -2,7 +2,7 @@ package Shipwright::Source::Directory;
 use strict;
 use warnings;
 use Carp;
-use File::Spec::Functions qw/catfile catdir/;
+use File::Spec::Functions qw/catdir/;
 use File::Basename;
 
 use base qw/Shipwright::Source::Base/;
@@ -42,11 +42,11 @@ sub run {
 
     # follow only if --follow and we really added new stuff.
     $self->_follow(
-        catfile(
+        catdir(
             $self->directory, $self->name || $self->just_name( $self->path )
         )
     ) if $self->follow && $newer;
-    return catfile( $self->directory,
+    return catdir( $self->directory,
         $self->name || $self->just_name( $self->path ) );
 }
 
@@ -64,7 +64,7 @@ sub path {
 sub _cmd {
     my $self = shift;
     my $to =
-      catfile( $self->directory,
+      catdir( $self->directory,
         $self->name || $self->just_name( $self->path ) );
     return if -e $to;
 

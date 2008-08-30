@@ -16,7 +16,7 @@ use Shipwright::Backend;
 use Shipwright::Source;
 use Shipwright::Build;
 use File::Temp qw/tempdir/;
-use File::Spec::Functions qw/catfile catdir/;
+use File::Spec::Functions qw/catfile/;
 
 sub new {
     my $class = shift;

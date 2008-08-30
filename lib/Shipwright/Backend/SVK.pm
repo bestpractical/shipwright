@@ -3,7 +3,7 @@ package Shipwright::Backend::SVK;
 use warnings;
 use strict;
 use Carp;
-use File::Spec::Functions qw/catfile catdir/;
+use File::Spec::Functions qw/catfile/;
 use Shipwright::Util;
 use File::Temp qw/tempdir/;
 use File::Copy qw/copy/;

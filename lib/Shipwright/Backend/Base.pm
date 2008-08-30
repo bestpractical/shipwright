@@ -62,7 +62,7 @@ sub initialize {
     dircopy( Shipwright::Util->share_root, $dir );
 
     # copy YAML/Tiny.pm to inc/
-    my $yaml_tiny_path = catfile( $dir, 'inc', 'YAML' );
+    my $yaml_tiny_path = catdir( $dir, 'inc', 'YAML' );
     mkpath $yaml_tiny_path;
     require Module::Info;
     copy( Module::Info->new_from_module('YAML::Tiny')->file, $yaml_tiny_path )
@@ -70,7 +70,7 @@ sub initialize {
 
     # share_root can't keep empty dirs, we have to create them manually
     for (qw/dists scripts t/) {
-        mkdir catfile( $dir, $_ );
+        mkdir catdir( $dir, $_ );
     }
 
     # hack for share_root living under blib/

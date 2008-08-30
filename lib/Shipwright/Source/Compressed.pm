@@ -30,9 +30,9 @@ sub run {
     my $ret = $self->SUPER::run(@_);
 
     # follow only if --follow and we really added new stuff.
-    $self->_follow( catfile( $self->directory, $self->name ) )
+    $self->_follow( catdir( $self->directory, $self->name ) )
       if $self->follow && $newer;
-    return catfile( $self->directory, $self->name );
+    return catdir( $self->directory, $self->name );
 }
 
 =head2 path
@@ -72,8 +72,8 @@ sub _cmd {
     my $arg;
 
     my ( $from, $to );
-    $from = catfile( $self->directory, $self->path );
-    $to   = catfile( $self->directory, $self->name );
+    $from = catdir( $self->directory, $self->path );
+    $to   = catdir( $self->directory, $self->name );
 
     # if it already exists, assuming we have processed it already, don't do it
     # again

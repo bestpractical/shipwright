@@ -86,7 +86,7 @@ sub _follow {
 
         # if not found, we'll create one according to Build.PL or Makefile.PL
         my $require = {};
-        chdir catfile($path);
+        chdir catdir($path);
 
         if ( -e 'Build.PL' ) {
             Shipwright::Util->run( [ $^X, 'Build.PL' ] );

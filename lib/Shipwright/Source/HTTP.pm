@@ -3,7 +3,7 @@ package Shipwright::Source::HTTP;
 use warnings;
 use strict;
 use Carp;
-use File::Spec::Functions qw/catfile catdir/;
+use File::Spec::Functions qw/catfile/;
 use Shipwright::Source::Compressed;
 
 use base qw/Shipwright::Source::Base/;

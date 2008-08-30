@@ -29,8 +29,9 @@ requires 'version' => 0;
 requires 'Module::Info' => 0;
 requires 'YAML::Tiny' => 0;
 requires 'IO::Uncompress::Bunzip2' => 0;
-requires 'Archive::Extract' => 0;
 requires 'IO::Uncompress::RawInflate' => '2.012';
+requires 'Archive::Tar' => 0;
+requires 'Archive::Extract' => 0;
 
 
 if ( can_cc() ) {

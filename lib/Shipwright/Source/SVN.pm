@@ -3,7 +3,7 @@ package Shipwright::Source::SVN;
 use warnings;
 use strict;
 use Carp;
-use File::Spec::Functions qw/catfile catdir/;
+use File::Spec::Functions qw/catdir/;
 
 use base qw/Shipwright::Source::Base/;
 
@@ -51,7 +51,7 @@ sub _run {
 
     my $cmd = [
         'svn', 'export', $self->source,
-        catfile( $self->download_directory, $self->name ),
+        catdir( $self->download_directory, $self->name ),
         $self->version ? ( '-r', $self->version ) : (),
     ];
 
@@ -63,7 +63,7 @@ sub _run {
         }
     }
 
-    $self->source( catfile( $self->download_directory, $self->name ) );
+    $self->source( catdir( $self->download_directory, $self->name ) );
     Shipwright::Util->run($cmd);
 }
 

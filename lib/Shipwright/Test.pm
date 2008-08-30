@@ -74,7 +74,7 @@ return $ENV{SVKROOT}
 
 sub create_svk_repo {
     $ENV{SVKROOT} = tempdir( 'shipwright_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
-    my $svk_root_local = catfile( $ENV{SVKROOT}, 'local' );
+    my $svk_root_local = catdir( $ENV{SVKROOT}, 'local' );
     system("svnadmin create $svk_root_local");
     system("svk depotmap -i");
     return $ENV{SVKROOT};
