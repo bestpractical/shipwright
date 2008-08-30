@@ -1,5 +1,5 @@
 # this is a test comment
-configure: /usr/bin/env perl Build.PL --install_base=%%INSTALL_BASE%%
+configure: %%PERL%% Build.PL --install_base=%%INSTALL_BASE%%
 make: ./Build
 test: ./Build test
 # and another
