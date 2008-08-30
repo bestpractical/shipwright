@@ -50,20 +50,20 @@ sub new {
     no warnings 'uninitialized';
 
     $ENV{DYLD_LIBRARY_PATH} =
-      catfile( $self->install_base, 'lib' ) . ':' . $ENV{DYLD_LIBRARY_PATH};
+      catdir( $self->install_base, 'lib' ) . ':' . $ENV{DYLD_LIBRARY_PATH};
     $ENV{LD_LIBRARY_PATH} =
-      catfile( $self->install_base, 'lib' ) . ':' . $ENV{LD_LIBRARY_PATH};
+      catdir( $self->install_base, 'lib' ) . ':' . $ENV{LD_LIBRARY_PATH};
     $ENV{PERL5LIB} =
-        catfile( $self->install_base, 'lib', 'perl5', 'site_perl' ) . ':'
-      . catfile( $self->install_base, 'lib', 'perl5' ) . ':'
+        catdir( $self->install_base, 'lib', 'perl5', 'site_perl' ) . ':'
+      . catdir( $self->install_base, 'lib', 'perl5' ) . ':'
       . $ENV{PERL5LIB};
     $ENV{PATH} =
-        catfile( $self->install_base, 'bin' ) . ':'
-      . catfile( $self->install_base, 'sbin' ) . ':'
+        catdir( $self->install_base, 'bin' ) . ':'
+      . catdir( $self->install_base, 'sbin' ) . ':'
       . $ENV{PATH};
     $ENV{PERL_MM_USE_DEFAULT} = 1;
-    $ENV{LDFLAGS} .= ' -L' . catfile( $self->install_base, 'lib' );
-    $ENV{CFLAGS}  .= ' -I' . catfile( $self->install_base, 'include' );
+    $ENV{LDFLAGS} .= ' -L' . catdir( $self->install_base, 'lib' );
+    $ENV{CFLAGS}  .= ' -I' . catdir( $self->install_base, 'include' );
 
     require CPAN;
     require Module::Info;
@@ -104,7 +104,7 @@ sub run {
         $self->test;
     }
     else {
-        dircopy( 'etc', catfile( $self->install_base, 'etc' ) );
+        dircopy( 'etc', catdir( $self->install_base, 'etc' ) );
 
         my $installed_hash = {};
         $installed_file = catfile( $self->install_base, 'installed.yml' );
@@ -220,7 +220,7 @@ sub _install {
           && confess "cp sources/$dir/$branches->{$dir}[0] to dists/$dir failed";
     }
 
-    chdir catfile( 'dists', $dir );
+    chdir catdir( 'dists', $dir );
 
     if ( -e catfile( '..', '..', 'scripts', $dir, 'build.pl' ) ) {
         $self->log->info(
@@ -306,8 +306,8 @@ sub _wrapper {
         }
 
         my $dir = ( splitdir($File::Find::dir) )[-1];
-        mkdir catfile( $self->install_base,       "$dir-wrapped" )
-          unless -d catfile( $self->install_base, "$dir-wrapped" );
+        mkdir catdir( $self->install_base,       "$dir-wrapped" )
+          unless -d catdir( $self->install_base, "$dir-wrapped" );
 
         if ( -e catfile( $self->install_base, "$dir-wrapped", $file ) ) {
             $self->log->warn( 'found old '
@@ -337,7 +337,7 @@ sub _wrapper {
             }
         }
 
-        move( $file => catfile( $self->install_base, "$dir-wrapped" ) )
+        move( $file => catdir( $self->install_base, "$dir-wrapped" ) )
           or confess $!;
 
     # if we have this $type(e.g. perl) installed and have that specific wrapper,
@@ -358,7 +358,7 @@ sub _wrapper {
 
     my @dirs =
       grep { -d $_ }
-      map { catfile( $self->install_base, $_ ) } qw/bin sbin/;
+      map { catdir( $self->install_base, $_ ) } qw/bin sbin/;
     find( $sub, @dirs ) if @dirs;
 }
 

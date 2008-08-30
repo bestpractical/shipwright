@@ -12,6 +12,7 @@ __PACKAGE__->mk_accessors(
 
 use Shipwright;
 use Cwd 'abs_path';
+use File::Spec::Functions qw/catdir/;
 
 sub options {
     (
@@ -86,7 +87,7 @@ sub run {
 
     my $dists_dir = $shipwright->build->build_base;
     for my $name ( keys %source ) {
-        my $dir = catfile( $dists_dir, 'dists', $name );
+        my $dir = catdir( $dists_dir, 'dists', $name );
         system("rm -rf $dir");
         system("cp -r $source{$name} $dir");
     }

@@ -109,7 +109,7 @@ unless ( $args{name} ) {
 
 unless ( $args{'install-base'} ) {
     my $dir = tempdir( 'vessel_' . $args{name} . '-XXXXXX', TMPDIR => 1 );
-    $args{'install-base'} = catfile( $dir, $args{name} );
+    $args{'install-base'} = catdir( $dir, $args{name} );
     print "no default install-base, will set it to $args{'install-base'}\n";
 }
 
@@ -238,29 +238,29 @@ sub install {
     {
         no warnings 'uninitialized';
         $ENV{DYLD_LIBRARY_PATH} =
-          catfile( $args{'install-base'}, 'lib' ) . ':'
+          catdir( $args{'install-base'}, 'lib' ) . ':'
           . $ENV{DYLD_LIBRARY_PATH};
         $ENV{LD_LIBRARY_PATH} =
-          catfile( $args{'install-base'}, 'lib' ) . ':' . $ENV{LD_LIBRARY_PATH};
+          catdir( $args{'install-base'}, 'lib' ) . ':' . $ENV{LD_LIBRARY_PATH};
         $ENV{PERL5LIB} =
-            catfile( $args{'install-base'}, 'lib', 'perl5', 'site_perl' ) . ':'
-          . catfile( $args{'install-base'}, 'lib', 'perl5' ) . ':'
+            catdir( $args{'install-base'}, 'lib', 'perl5', 'site_perl' ) . ':'
+          . catdir( $args{'install-base'}, 'lib', 'perl5' ) . ':'
           . $ENV{PERL5LIB};
         $ENV{PATH} =
-            catfile( $args{'install-base'}, 'bin' ) . ':'
-          . catfile( $args{'install-base'}, 'sbin' ) . ':'
+            catdir( $args{'install-base'}, 'bin' ) . ':'
+          . catdir( $args{'install-base'}, 'sbin' ) . ':'
           . $ENV{PATH};
         $ENV{PERL_MM_USE_DEFAULT} = 1;
-        $ENV{LDFLAGS} .= ' -L' . catfile( $args{'install-base'}, 'lib' );
-        $ENV{CFLAGS}  .= ' -I' . catfile( $args{'install-base'}, 'include' );
+        $ENV{LDFLAGS} .= ' -L' . catdir( $args{'install-base'}, 'lib' );
+        $ENV{CFLAGS}  .= ' -I' . catdir( $args{'install-base'}, 'include' );
     }
 
     mkpath $args{'install-base'} unless -e $args{'install-base'};
 
-    mkdir catfile( $args{'install-base'},       'etc' )
-      unless -e catfile( $args{'install-base'}, 'etc' );
-    mkdir catfile( $args{'install-base'},       'tools' )
-      unless -e catfile( $args{'install-base'}, 'tools' );
+    mkdir catdir( $args{'install-base'},       'etc' )
+      unless -e catdir( $args{'install-base'}, 'etc' );
+    mkdir catdir( $args{'install-base'},       'tools' )
+      unless -e catdir( $args{'install-base'}, 'tools' );
 
     for ( 'shipwright-script-wrapper', 'shipwright-perl-wrapper' ) {
         copy( catfile( 'etc', $_ ),
@@ -284,8 +284,8 @@ sub install {
         chdir $build_base;
     }
 
-    mkdir catfile( $args{'install-base'},       'bin' )
-      unless -e catfile( $args{'install-base'}, 'bin' );
+    mkdir catdir( $args{'install-base'},       'bin' )
+      unless -e catdir( $args{'install-base'}, 'bin' );
 
     wrap_bin($log);
     print "install finished, the dists are at $args{'install-base'}\n";
@@ -296,8 +296,8 @@ sub _install {
     my $dir = shift;
     my $log = shift;
 
-    if ( $args{with}{$dir} && -e catfile( 'tmp_dists', $dir ) ) {
-        chdir catfile( 'tmp_dists', $dir );
+    if ( $args{with}{$dir} && -e catdir( 'tmp_dists', $dir ) ) {
+        chdir catdir( 'tmp_dists', $dir );
     }
     else {
         if ($branches) {
@@ -394,8 +394,8 @@ sub wrap_bin {
         }
 
         my $dir = ( splitdir($File::Find::dir) )[-1];
-        mkdir catfile( $args{'install-base'},       "$dir-wrapped" )
-          unless -d catfile( $args{'install-base'}, "$dir-wrapped" );
+        mkdir catdir( $args{'install-base'},       "$dir-wrapped" )
+          unless -d catdir( $args{'install-base'}, "$dir-wrapped" );
 
         if ( -e catfile( $args{'install-base'}, "$dir-wrapped", $file ) ) {
             print $log 'found old '
@@ -419,7 +419,7 @@ sub wrap_bin {
             }
         }
 
-        move( $file => catfile( $args{'install-base'}, "$dir-wrapped" ) )
+        move( $file => catdir( $args{'install-base'}, "$dir-wrapped" ) )
           or confess $!;
 
     # if we have this $type(e.g. perl) installed and have that specific wrapper,
@@ -441,7 +441,7 @@ sub wrap_bin {
 
     my @dirs =
       grep { -d $_ }
-      map { catfile( $args{'install-base'}, $_ ) } qw/bin sbin/;
+      map { catdir( $args{'install-base'}, $_ ) } qw/bin sbin/;
     find( $sub, @dirs ) if @dirs;
 
 }
@@ -543,7 +543,7 @@ sub _clean {
     my $log = shift;
 
     my $cmd;
-    chdir catfile( 'dists', $dir );
+    chdir catdir( 'dists', $dir );
 
     if ( -e catfile( '..', '..', 'scripts', $dir, 'build.pl' ) ) {
         print $log "found build.pl for $dir, will clean $dir using that\n";

@@ -7,7 +7,6 @@ use Carp;
 use base qw/App::CLI::Command Shipwright::Script/;
 
 use Shipwright;
-use File::Spec::Functions qw/catfile catdir/;
 use Shipwright::Util;
 
 sub run {

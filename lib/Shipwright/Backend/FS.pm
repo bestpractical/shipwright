@@ -3,7 +3,7 @@ package Shipwright::Backend::FS;
 use warnings;
 use strict;
 use Carp;
-use File::Spec::Functions qw/catfile catdir splitdir/;
+use File::Spec::Functions qw/catfile splitdir/;
 use Shipwright::Util;
 use File::Copy qw/copy/;
 use File::Copy::Recursive qw/dircopy/;

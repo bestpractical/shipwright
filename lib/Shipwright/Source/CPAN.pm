@@ -8,7 +8,6 @@ use Shipwright::Source::Compressed;
 use CPAN;
 use Data::Dumper;
 use File::Temp qw/tempdir/;
-use File::Spec::Functions qw/catfile catdir/;
 use File::Slurp;
 use CPAN::DistnameInfo;
 
@@ -38,17 +37,17 @@ sub new {
         require CPAN::Config;
     }
 
-    mkdir catfile( $cpan_dir, 'CPAN' );
+    mkdir catdir( $cpan_dir, 'CPAN' );
     my $config_file = catfile( $cpan_dir, 'CPAN', 'MyConfig.pm' );
 
     unless ( -f $config_file ) {
 
         # hack $CPAN::Config, mostly to make cpan stuff temporary
-        $CPAN::Config->{cpan_home}         = catfile($cpan_dir);
-        $CPAN::Config->{build_dir}         = catfile( $cpan_dir, 'build' );
+        $CPAN::Config->{cpan_home}         = catdir($cpan_dir);
+        $CPAN::Config->{build_dir}         = catdir( $cpan_dir, 'build' );
         $CPAN::Config->{histfile}          = catfile( $cpan_dir, 'histfile' );
-        $CPAN::Config->{keep_source_where} = catfile( $cpan_dir, 'sources' );
-        $CPAN::Config->{prefs_dir}         = catfile( $cpan_dir, 'prefs' );
+        $CPAN::Config->{keep_source_where} = catdir( $cpan_dir, 'sources' );
+        $CPAN::Config->{prefs_dir}         = catdir( $cpan_dir, 'prefs' );
         $CPAN::Config->{prerequisites_policy} = 'follow';
         $CPAN::Config->{urllist}              = [];
         write_file( $config_file,
