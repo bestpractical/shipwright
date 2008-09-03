@@ -8,7 +8,7 @@ use Shipwright::Util;
 use File::Temp qw/tempdir/;
 use File::Copy qw/copy/;
 
-our %REQUIRE_OPTIONS = ( import => [qw/source/], );
+our %REQUIRE_OPTIONS = ( import => [qw/source/] );
 
 use base qw/Shipwright::Backend::Base/;
 
@@ -37,8 +37,8 @@ sub initialize {
     $self->delete;    # clean repository in case it exists
     $self->import(
         source      => $dir,
-        comment     => 'create project',
         _initialize => 1,
+        comment     => 'created project',
     );
 
 }
@@ -80,14 +80,14 @@ sub _cmd {
             $cmd = [
                 'svn',         'import',
                 $args{source}, $self->repository,
-                '-m',          $args{comment}
+                '-m',          $args{comment},
             ];
         }
         elsif ( $args{_extra_tests} ) {
             $cmd = [
                 'svn',         'import',
-                $args{source}, $self->repository . 't/extra',
-                '-m',          $args{comment}
+                $args{source}, $self->repository . '/t/extra',
+                '-m',          $args{comment},
             ];
         }
         else {
@@ -117,8 +117,8 @@ sub _cmd {
     elsif ( $type eq 'delete' ) {
         $cmd = [
             'svn', 'delete', '-m',
-            q{'} . 'delete' . $args{path} . q{'},
-            $self->repository . $args{path}
+            'delete ' . $args{path},
+            $self->repository . $args{path},
         ];
     }
     elsif ( $type eq 'move' ) {
@@ -126,7 +126,7 @@ sub _cmd {
             'svn',
             'move',
             '-m',
-            q{'} . "move $args{path} to $args{new_path}" . q{'},
+            "move $args{path} to $args{new_path}",
             $self->repository . $args{path},
             $self->repository . $args{new_path}
         ];

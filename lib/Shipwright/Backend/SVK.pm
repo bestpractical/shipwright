@@ -70,8 +70,6 @@ sub _cmd {
     elsif ( $type eq 'export' ) {
         $cmd =
           [ 'svk', 'checkout', $self->repository . $args{path}, $args{target} ];
-
-        #            $cmd = [ 'svk', 'checkout', '-d', $args{target} ];
     }
     elsif ( $type eq 'list' ) {
         $cmd = [ 'svk', 'list', $self->repository . $args{path} ];
@@ -115,7 +113,7 @@ sub _cmd {
     elsif ( $type eq 'delete' ) {
         $cmd = [
             'svk', 'delete', '-m',
-            q{'} . 'delete repository' . q{'},
+            'delete repository',
             $self->repository . $args{path},
         ];
     }
@@ -124,7 +122,7 @@ sub _cmd {
             'svk',
             'move',
             '-m',
-            q{'} . "move $args{path} to $args{new_path}" . q{'},
+            "move $args{path} to $args{new_path}",
             $self->repository . $args{path},
             $self->repository . $args{new_path}
         ];
