@@ -81,14 +81,14 @@ sub _cmd {
             $cmd = [
                 'svk',         'import',
                 $args{source}, $self->repository,
-                '-m',          q{'} . $args{comment} . q{'},
+                '-m',          $args{comment},
             ];
         }
         elsif ( $args{_extra_tests} ) {
             $cmd = [
                 'svk',         'import',
                 $args{source}, $self->repository . '/t/extra',
-                '-m',          q{'} . $args{comment} . q{'},
+                '-m',          $args{comment},
             ];
         }
         else {
@@ -96,21 +96,21 @@ sub _cmd {
                 $cmd = [
                     'svk',       'import',
                     $script_dir, $self->repository . "/scripts/$args{name}/",
-                    '-m',        q{'} . $args{comment} . q{'},
+                    '-m',        $args{comment},
                 ];
             }
             else {
                 $cmd = [
                     'svk',         'import',
                     $args{source}, $self->repository . "/dists/$args{name}",
-                    '-m',          q{'} . $args{comment} . q{'},
+                    '-m',          $args{comment},
                 ];
             }
         }
     }
     elsif ( $type eq 'commit' ) {
         $cmd =
-          [ 'svk', 'commit', '-m', q{'} . $args{comment} . q{'}, $args{path} ];
+          [ 'svk', 'commit', '-m', $args{comment}, $args{path} ];
     }
     elsif ( $type eq 'delete' ) {
         $cmd = [
