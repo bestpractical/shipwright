@@ -84,14 +84,14 @@ sub _cmd {
             @cmd = [
                 'svk',         'import',
                 $args{source}, $self->repository,
-                '-m',          q{'} . $args{comment} . q{'},
+                '-m',          $args{comment},
             ];
         }
         elsif ( $args{_extra_tests} ) {
             @cmd = [
                 'svk',         'import',
                 $args{source}, $self->repository . '/t/extra',
-                '-m',          q{'} . $args{comment} . q{'},
+                '-m',          $args{comment},
             ];
         }
         else {
@@ -119,7 +119,7 @@ sub _cmd {
                     [
                         'svk',      'commit',
                         '--import', $tmp_dir,
-                        '-m',       q{'} . $args{comment} . q{'}
+                        '-m',       $args{comment}
                     ],
                     [ 'svk', 'checkout', '-d', $tmp_dir ],
                 );
@@ -128,14 +128,14 @@ sub _cmd {
                 @cmd = [
                     'svk',   'import',
                     $source, $self->repository . $path,
-                    '-m',    q{'} . $args{comment} . q{'},
+                    '-m',    $args{comment},
                 ];
             }
         }
     }
     elsif ( $type eq 'commit' ) {
         @cmd =
-          [ 'svk', 'commit', '-m', q{'} . $args{comment} . q{'}, $args{path} ];
+          [ 'svk', 'commit', '-m', $args{comment}, $args{path} ];
     }
     elsif ( $type eq 'delete' ) {
         @cmd = [

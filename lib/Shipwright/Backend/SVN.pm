@@ -80,14 +80,14 @@ sub _cmd {
             @cmd = [
                 'svn',         'import',
                 $args{source}, $self->repository,
-                '-m',          q{'} . $args{comment} . q{'}
+                '-m',          $args{comment}
             ];
         }
         elsif ( $args{_extra_tests} ) {
             @cmd = [
                 'svn',         'import',
                 $args{source}, $self->repository . 't/extra',
-                '-m',          q{'} . $args{comment} . q{'},
+                '-m',          $args{comment},
             ];
         }
         else {
@@ -95,7 +95,7 @@ sub _cmd {
                 @cmd = [
                     'svn',       'import',
                     $script_dir, $self->repository . "/scripts/$args{name}/",
-                    '-m',        q{'} . $args{comment} || '' . q{'},
+                    '-m',        $args{comment},
                 ];
             }
             else {
@@ -106,7 +106,7 @@ sub _cmd {
                         $args{source},
                         $self->repository . "/sources/$args{name}/$args{as}",
                         '-m',
-                        q{'} . $args{comment} . q{'},
+                        $args{comment},
                     ];
                 }
                 else {
@@ -116,7 +116,7 @@ sub _cmd {
                         $args{source},
                         $self->repository . "/dists/$args{name}",
                         '-m',
-                        q{'} . $args{comment} . q{'},
+                        $args{comment},
                     ];
 
                 }
@@ -128,7 +128,7 @@ sub _cmd {
     }
     elsif ( $type eq 'commit' ) {
         @cmd =
-          [ 'svn', 'commit', '-m', q{'} . $args{comment} . q{'}, $args{path} ];
+          [ 'svn', 'commit', '-m', $args{comment}, $args{path} ];
     }
     elsif ( $type eq 'delete' ) {
         @cmd = [
