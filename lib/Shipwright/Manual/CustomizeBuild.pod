@@ -62,10 +62,10 @@ configure, make, install, clean, and sometimes test. Their functions should be
 self-explanatory for anyone familiar with building perl modules.
 
 Three template substitutions are available for use in the command:
-%%PERL%%, %%PERL_ARCHNAME%% and %%INSTALL_BASE%%. These can be used in cases
-where the path to perl, the perl archname (e.g.
-'i486-linux-gnu-thread-multi'), or the base install path are needed, since they
-are not known beforehand.
+%%PERL%%, %%PERL_ARCHNAME%%, %%INSTALL_BASE%% and %%MAKE%%.
+These can be used in cases where the path to perl, the perl archname (e.g.
+'i486-linux-gnu-thread-multi'), the base install path or make command 
+are needed, since they are not known beforehand or need to choose one later.
 
 There are two special types: C<test> and C<clean>.
 

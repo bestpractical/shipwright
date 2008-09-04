@@ -27,6 +27,7 @@ confess "unknown option"
     'name=s',                 'help',
     'noclean',                'only=s',
     'with=s',                 'noclean-after-install',
+    'make=s',
   );
 
 my $USAGE = <<'END'
@@ -76,6 +77,9 @@ with: don't build the dist of the name in repo, use the one specified here inste
     e.g. --with svn=dir:/home/foo/svn
     'svn' is the dist name, 'dir:/home/foo/svn' is its source, with the format of Shipwright::Source
 
+make: specify the path of your make command, default is 'make'.
+    e.g. --make /usr/bin/make
+
 END
   ;
 
@@ -91,6 +95,7 @@ $args{flags} = {
 };
 
 $args{with} = { map { split /=/ } split /\s*,\s*/, $args{with} || '' };
+$args{make} ||= 'make';
 
 if ( $args{only} ) {
     $args{only} = { map { $_ => 1 } split /\s*,\s*/, $args{only} };
@@ -455,6 +460,8 @@ sub substitute {
     my $perl_archname = `$perl -MConfig -e 'print \$Config{archname}'`;
     $text =~ s/%%PERL%%/$perl/g;
     $text =~ s/%%PERL_ARCHNAME%%/$perl_archname/g;
+    $text =~ s/%%PERL_ARCHNAME%%/$perl_archname/g;
+    $text =~ s/%%MAKE%%/$args{make}/g;
 
     return $text;
 }

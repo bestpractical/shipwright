@@ -8,7 +8,7 @@ use base qw/Class::Accessor::Fast/;
 
 __PACKAGE__->mk_accessors(
     qw/install_base perl build_base skip_test commands log
-      skip only_test force order flags name only/
+      skip only_test force order flags name only make/
 );
 
 use File::Spec::Functions qw/catfile catdir splitdir/;
@@ -40,6 +40,7 @@ sub new {
 
     $self->name('vessel') unless $self->name;
     $self->skip( {} ) unless $self->skip;
+    $self->make('make') unless $self->make;
 
     unless ( $self->install_base ) {
 
@@ -361,6 +362,7 @@ sub _substitute {
     $text =~ s/%%PERL%%/$perl/g;
     $text =~ s/%%PERL_ARCHNAME%%/$perl_archname/g;
     $text =~ s/%%INSTALL_BASE%%/$install_base/g;
+    $text =~ s/%%MAKE%%/$self->make/eg;
     return $text;
 }
 

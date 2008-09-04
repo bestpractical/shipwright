@@ -308,10 +308,10 @@ sub _generate_build {
 "detected ExtUtils::MakeMaker build system; generating appropriate build script\n";
         @commands = (
             'configure: %%PERL%% Makefile.PL INSTALL_BASE=%%INSTALL_BASE%%',
-            'make: make',
-            'test: make test',
-            'install: make install',
-            'clean: make clean',
+            'make: %%MAKE%%',
+            'test: %%MAKE%% test',
+            'install: %%MAKE%% install',
+            'clean: %%MAKE%% clean',
         );
     }
     elsif ( -f catfile( $source_dir, 'configure' ) ) {
@@ -319,9 +319,9 @@ sub _generate_build {
 "detected autoconf build system; generating appropriate build script\n";
         @commands = (
             'configure: ./configure --prefix=%%INSTALL_BASE%%',
-            'make: make',
-            'install: make install',
-            'clean: make clean',
+            'make: %%MAKE%%',
+            'install: %%MAKE%% install',
+            'clean: %%MAKE%% clean',
         );
     }
     else {
