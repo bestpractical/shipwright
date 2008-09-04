@@ -306,25 +306,24 @@ sub _generate_build {
     if ( -f catfile( $source_dir, 'Build.PL' ) ) {
         print
 "detected Module::Build build system; generating appropriate build script\n";
-        push @commands,
-          'configure: %%PERL%% Build.PL --install_base=%%INSTALL_BASE%%';
-        push @commands, "make: ./Build";
-        push @commands, "test: ./Build test";
-        push @commands, "install: ./Build install";
-
-        # ./Build won't work because sometimes the perl path in the shebang line
-        # is just a symblic link which can't do things right
-        push @commands, "clean: %%PERL%% Build realclean";
+        @commands = (
+            'configure: %%PERL%% Build.PL --install_base=%%INSTALL_BASE%%',
+            'make: %%PERL%% Build',
+            'test: %%PERL%% Build test',
+            'install: %%PERL%% Build install',
+            'clean: %%PERL%% Build realclean',
+        );
     }
     elsif ( -f catfile( $source_dir, 'Makefile.PL' ) ) {
         print
 "detected ExtUtils::MakeMaker build system; generating appropriate build script\n";
-        push @commands,
-          'configure: %%PERL%% Makefile.PL INSTALL_BASE=%%INSTALL_BASE%%';
-        push @commands, 'make: make';
-        push @commands, 'test: make test';
-        push @commands, "install: make install";
-        push @commands, "clean: make clean";
+        @commands = (
+            'configure: %%PERL%% Makefile.PL INSTALL_BASE=%%INSTALL_BASE%%',
+            'make: make',
+            'test: make test',
+            'install: make install',
+            'clean: make clean',
+        );
     }
     elsif ( -f catfile( $source_dir, 'configure' ) ) {
         print
@@ -333,7 +332,7 @@ sub _generate_build {
             'configure: ./configure --prefix=%%INSTALL_BASE%%',
             'make: make',
             'install: make install',
-            'clean: make clean'
+            'clean: make clean',
         );
     }
     else {
@@ -344,15 +343,15 @@ sub _generate_build {
         $self->log->warn("I have no idea how to build this distribution");
 
         # stub build file to provide the user something to go from
-        push @commands,
-          '# Edit this file to specify commands for building this dist.';
-        push @commands,
-          '# See the perldoc for Shipwright::Manual::CustomizeBuild for more';
-        push @commands, '# info.';
-        push @commands, 'make: ';
-        push @commands, 'test: ';
-        push @commands, 'install: ';
-        push @commands, 'clean: ';
+        @commands = (
+            '# Edit this file to specify commands for building this dist.',
+            '# See the perldoc for Shipwright::Manual::CustomizeBuild for more',
+            '# info.',
+            'make: ',
+            'test: ',
+            'install: ',
+            'clean: ',
+        );
     }
 
     open my $fh, '>', catfile( $script_dir, 'build' ) or confess $@;
