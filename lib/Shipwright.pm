@@ -185,9 +185,9 @@ Under scripts/cpan-Acme-Hello there are two files: 'build' and 'require.yml'.
 =head4 build
 
 configure: %%PERL%% Build.PL --install_base=%%INSTALL_BASE%%
-make: ./Build
-test: ./Build test
-install: ./Build install
+make: %%PERL%% Build
+test: %%PERL%% Build test
+install: %%PERL%% Build install
 clean: %%PERL%% Build realclean
 
 Each line is of `type: command' format, and the command is executed line by

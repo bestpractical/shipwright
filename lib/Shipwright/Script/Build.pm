@@ -7,7 +7,7 @@ use Carp;
 use base qw/App::CLI::Command Class::Accessor::Fast Shipwright::Script/;
 __PACKAGE__->mk_accessors(
     qw/build_base skip skip_test only_test install_base
-      force log_file flags name perl only with/
+      force log_file flags name perl only with make/
 );
 
 use Shipwright;
@@ -27,6 +27,7 @@ sub options {
         'force'          => 'force',
         'perl'           => 'perl',
         'with=s'         => 'with',
+        'make=s'         => 'make',
     );
 }
 
@@ -80,7 +81,7 @@ sub run {
     my $shipwright = Shipwright->new(
         map { $_ => $self->$_ }
           qw/repository log_level log_file skip skip_test
-          flags name force only_test install_base build_base perl only/
+          flags name force only_test install_base build_base perl only make/
     );
 
     $shipwright->backend->export( target => $shipwright->build->build_base );
@@ -123,6 +124,7 @@ Shipwright::Script::Build - Build the specified project
  --name NAME                  : specify the name of the project
  --perl PATH                  : specify the path of perl that run the commands
                                 in scripts/
+ --make PATH                  : specify the path of make command
  --with name=source,...       : don't build the dist of the name in repo,
                                 use the one specified here instead.
 
