@@ -140,7 +140,7 @@ sub _cmd {
     elsif ( $type eq 'delete' ) {
         @cmd = [
             'svk', 'delete', '-m',
-            q{'} . 'delete repository' . q{'},
+            'delete repository',
             $self->repository . $args{path},
         ];
     }
@@ -149,7 +149,7 @@ sub _cmd {
             'svk',
             'move',
             '-m',
-            q{'} . "move $args{path} to $args{new_path}" . q{'},
+            "move $args{path} to $args{new_path}",
             $self->repository . $args{path},
             $self->repository . $args{new_path}
         ];

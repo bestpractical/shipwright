@@ -176,7 +176,7 @@ sub run {
 
         $shipwright->backend->import(
             source       => $source,
-            comment      => 'import scripts for' . $source,
+            comment      => 'import scripts for ' . $source,
             build_script => $script_dir,
             overwrite    => 1,
         );
@@ -282,7 +282,7 @@ sub _import_req {
                     );
                     $shipwright->backend->import(
                         source       => $s,
-                        comment      => 'import scripts for' . $s,
+                        comment      => 'import scripts for ' . $s,
                         build_script => $script_dir,
                         overwrite    => $self->overwrite,
                     );
