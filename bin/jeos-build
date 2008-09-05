@@ -67,6 +67,9 @@ unless ($partial) {
 }
 
 # Mount the disk image
+# XXX: This used to be a tmpfile, but it exploded -- I don't recall
+# how right now.  For now, you need a "disk-image" directory to mount
+# it under.
 my $mountpoint = "disk-image";
 $vm->mount($mountpoint);
 
