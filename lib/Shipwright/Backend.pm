@@ -4,6 +4,7 @@ use warnings;
 use strict;
 use Carp;
 use UNIVERSAL::require;
+use Cwd qw/abs_path/;
 
 =head1 NAME
 
@@ -45,6 +46,7 @@ sub new {
     }
     elsif ( $args{repository} =~ m{^\s*fs:} ) {
         $args{repository} =~ s{^\s*fs:}{};
+        $args{repository} = abs_path( $args{repository} );
         $module = 'Shipwright::Backend::FS';
     }
     else {
