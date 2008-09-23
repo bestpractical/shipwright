@@ -159,9 +159,9 @@ sub shipwright_features {
 #     ],
 # );
                for ( my $j = 0; $j < @{$mods->[$i]}; $j++ ) {
-                    if ( $mods->[$i][$j+1] =~ /^[\d\.]+$/ ) {
+                    if ( $mods->[$i][$j+1] =~ /^[\d\.]*$/ ) {
                         $shipwright_req->{recommends}{$mods->[$i][$j]} 
-                            = $mods->[$i][$j+1];
+                            = $mods->[$i][$j+1] || 0;
                         $j++;
                     }
                     else {
@@ -172,9 +172,9 @@ sub shipwright_features {
                 next;
             }
 
-            if ( $mods->[$i+1] =~ /^[\d\.]+$/ ) {
+            if ( $mods->[$i+1] =~ /^[\d\.]*$/ ) {
                 # index $i+1 is a version
-                $shipwright_req->{recommends}{$mods->[$i]} = $mods->[$i+1];
+                $shipwright_req->{recommends}{$mods->[$i]} = $mods->[$i+1] || 0;
                 $i++;
             }
             else {
