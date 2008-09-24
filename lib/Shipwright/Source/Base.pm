@@ -260,6 +260,9 @@ EOF
         for my $type (qw/requires recommends build_requires/) {
             for my $module ( keys %{ $require->{$type} } ) {
 
+#$module shouldn't be undefined, but it _indeed_ happens in reality sometimes
+                next unless $module;
+
                 # we don't want to require perl
                 if ( $module eq 'perl' ) {
                     delete $require->{$type}{$module};
