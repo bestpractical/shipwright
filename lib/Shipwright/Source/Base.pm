@@ -159,9 +159,9 @@ sub shipwright_features {
 #     ],
 # );
                for ( my $j = 0; $j < @{$mods->[$i]}; $j++ ) {
-                    if ( $mods->[$i][$j+1] =~ /^[\d\.]+$/ ) {
+                    if ( $mods->[$i][$j+1] =~ /^[\d\.]*$/ ) {
                         $shipwright_req->{recommends}{$mods->[$i][$j]} 
-                            = $mods->[$i][$j+1];
+                            = $mods->[$i][$j+1] || 0;
                         $j++;
                     }
                     else {
@@ -172,9 +172,9 @@ sub shipwright_features {
                 next;
             }
 
-            if ( $mods->[$i+1] =~ /^[\d\.]+$/ ) {
+            if ( $mods->[$i+1] =~ /^[\d\.]*$/ ) {
                 # index $i+1 is a version
-                $shipwright_req->{recommends}{$mods->[$i]} = $mods->[$i+1];
+                $shipwright_req->{recommends}{$mods->[$i]} = $mods->[$i+1] || 0;
                 $i++;
             }
             else {
@@ -259,6 +259,9 @@ EOF
 
         for my $type (qw/requires recommends build_requires/) {
             for my $module ( keys %{ $require->{$type} } ) {
+
+#the name shouldn't be undefined, but it _indeed_ happens in reality sometimes
+                next unless $module;
 
                 # we don't want to require perl
                 if ( $module eq 'perl' ) {

@@ -124,6 +124,11 @@ sub _update {
             confess 'invalid name ' . $name . "\n";
         }
 
+        unless ( $s ) {
+            warn "can't find the source of $name, skipping";
+            next;
+        }
+
         $shipwright->source(
             Shipwright::Source->new(
                 source  => "cpan:$s",
