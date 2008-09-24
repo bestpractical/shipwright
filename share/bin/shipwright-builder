@@ -292,6 +292,12 @@ sub install {
     mkdir catdir( $args{'install-base'},       'bin' )
       unless -e catdir( $args{'install-base'}, 'bin' );
 
+    # in case wrappers are overwritten by accident
+    for ( 'shipwright-script-wrapper', 'shipwright-perl-wrapper' ) {
+        copy( catfile( 'etc', $_ ),
+            catfile( $args{'install-base'}, 'etc', $_ ) );
+    }
+
     wrap_bin($log);
     print "install finished, the dists are at $args{'install-base'}\n";
     print $log "install finished, the dists are at $args{'install-base'}\n";
