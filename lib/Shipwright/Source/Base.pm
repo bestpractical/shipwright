@@ -13,8 +13,9 @@ use Cwd qw/getcwd/;
 use base qw/Class::Accessor::Fast/;
 __PACKAGE__->mk_accessors(
     qw/source directory scripts_directory download_directory follow
-      min_perl_version map_path skip map keep_recommends keep_build_requires
-      name log url_path version_path version/
+      min_perl_version map_path skip skip_recommends skip_all_recommends
+      map keep_recommends keep_build_requires name log url_path version_path 
+      version/
 );
 
 =head1 NAME
@@ -66,6 +67,7 @@ sub _follow {
     my $map          = {};
     my $url          = {};
 
+
     unless ( $self->min_perl_version ) {
         no warnings 'once';
         require Config;
@@ -81,6 +83,14 @@ sub _follow {
     if ( -e $self->url_path ) {
         $url = Shipwright::Util::LoadFile( $self->url_path );
     }
+
+    my @types = qw/requires build_requires/;
+
+    my $reverse_map = { reverse %$map };
+    my $skip_recommends = $self->skip_recommends->{ $self->name }
+      || $self->skip_recommends->{ $reverse_map->{ $self->name } }
+      || $self->skip_all_recommends;
+    push @types, 'recommends' unless $skip_recommends;
 
     if ( !-e $require_path ) {
 
@@ -235,7 +245,7 @@ EOF
             Shipwright::Util->run( [ 'rm',   'Makefile.old' ] );
         }
 
-        for my $type (qw/requires recommends build_requires/) {
+        for my $type ( @types ) {
             for my $module ( keys %{ $require->{$type} } ) {
                 $require->{$type}{$module}{version} =
                   delete $require->{$type}{$module};
@@ -257,7 +267,7 @@ EOF
             }
         }
 
-        for my $type (qw/requires recommends build_requires/) {
+        for my $type ( @types ) {
             for my $module ( keys %{ $require->{$type} } ) {
 
 #the name shouldn't be undefined, but it _indeed_ happens in reality sometimes
@@ -362,6 +372,9 @@ EOF
                 }
             }
         }
+        # don't keep recommends info if we skip them, so we won't encounter
+        # them when update later
+        $require->{recommends} = {} if $skip_recommends;
 
         Shipwright::Util::DumpFile( $require_path, $require );
     }
