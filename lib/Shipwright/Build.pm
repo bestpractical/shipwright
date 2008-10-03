@@ -188,7 +188,7 @@ sub run {
             chdir $self->build_base;
         }
 
-        $self->_wrapper();
+        $self->_wrapper() unless $^O =~ /MSWin/;
 
         $self->log->info(
             "install finished. the dists are at " . $self->install_base );

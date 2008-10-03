@@ -284,12 +284,17 @@ sub fiddle_order {
 
             if ( $maker eq 'cpan-Module-Build' ) {
 
+                my @maker_recommends; 
                 # cpan-Regexp-Common is the dep of cpan-Pod-Readme
-                my @maker_recommends = (
+                for my $r (
                     'cpan-Regexp-Common', 'cpan-Pod-Readme',
                     'cpan-version',       'cpan-ExtUtils-CBuilder',
-                    'cpan-Archive-Tar',   'cpan-ExtUtils-ParseXS'
-                );
+                    'cpan-Archive-Tar',   'cpan-ExtUtils-ParseXS',
+                  )
+                {
+                    push @maker_recommends, $r if grep { $r eq $_ } @$order;
+                }
+
                 my %maker_recommends = map { $_ => 1 } @maker_recommends;
                 @$order = grep { $maker_recommends{$_} ? 0 : 1 } @$order;
                 splice @$order, $first_cpan_index + 1, 0, @maker_recommends;
