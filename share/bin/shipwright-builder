@@ -298,7 +298,7 @@ sub install {
             catfile( $args{'install-base'}, 'etc', $_ ) );
     }
 
-    wrap_bin($log);
+    wrap_bin($log) unless $^O =~ /MSWin/;
     print "install finished, the dists are at $args{'install-base'}\n";
     print $log "install finished, the dists are at $args{'install-base'}\n";
 }
