@@ -1,23 +1,18 @@
-#!/bin/sh
-if [ -z `which readlink` ]; then  
-    # if we don't have readlink, we're on some pitiful platform like solaris
-    test -h $0 && LINK=`ls -l $0 | awk -F\>  '{print $NF}'`
-else
-    LINK=`readlink $0`
-fi
+#!/usr/bin/env perl
 
-if [ "$LINK" = '' ] || [ $LINK = '../etc/shipwright-perl-wrapper' ]; then
-    BASE=$0
-    BASE_DIR=`dirname "$BASE"`
-    BASE_DIR=` (cd "$BASE_DIR"; pwd) `
-    FILENAME=`basename "$BASE"`
-    WRAPPED_DIR=`basename "$BASE_DIR"`
-    PATH=${BASE_DIR}/../sbin:${BASE_DIR}/../bin:$PATH \
-    SHIPWRIGHT_PERL=$BASE_DIR/perl \
-    PERL5LIB=${BASE_DIR}/../lib/perl5/site_perl:${BASE_DIR}/../lib/perl5:${PERL5LIB}\
-        LD_LIBRARY_PATH=${BASE_DIR}/../lib:${LD_LIBRARY_PATH}\
-        DYLD_LIBRARY_PATH=${BASE_DIR}/../lib:${DYLD_LIBRARY_PATH}\
-        exec ${BASE_DIR}/../bin-wrapped/perl ${BASE_DIR}/../${WRAPPED_DIR}-wrapped/${FILENAME}  "$@"
-else
-    exec $LINK "$@"
-fi
+my $link = readlink($0);
+
+if (not $link or $link eq '../etc/shipwright-perl-wrapper') {
+    my $base = $0;
+    my $base_dir = `dirname "$base"`; chomp $base_dir;
+    $base_dir=` (cd "$base_dir"; pwd) `; chomp $base_dir;
+    my $filename=`basename "$base"`; chomp $filename;
+    my $wrapped_dir=`basename "$base_dir"`; chomp $wrapped_dir;
+    $ENV{PERL5LIB}="$base_dir/../lib/perl5/site_perl:$base_dir/../lib/perl5:$ENV{PERL5LIB}";
+    $ENV{LD_LIBRARY_PATH}="$base_dir/../lib:$ENV{LD_LIBRARY_PATH}";
+    $ENV{DYLD_LIBRARY_PATH}="$base_dir/../lib:$ENV{DYLD_LIBRARY_PATH}";
+    exec "$base_dir/../@{[$wrapped_dir]}-wrapped/perl", "$base_dir/../@{[$wrapped_dir]}-wrapped/$filename", @ARGV;
+} else {
+    exec $link, @ARGV;
+}
+
