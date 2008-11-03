@@ -12,8 +12,8 @@ dist for short, in it.
 
 =head2 repository
 
-The version control repository where you import your sources to. Currently, SVN
-and SVK are supported.
+the backend, where all stuff lives, e.g. metadata, sources, etc..
+Currently, SVN, SVK and FS(file system) are supported.
 
 =head2 vessel
 
