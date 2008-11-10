@@ -92,11 +92,13 @@ sub import {
     my $name = $args{source};
     $name =~ s{.*/}{};
 
-    if ( $args{branches} ) {
-        $args{as} = '';
-    }
-    else {
-        $args{as} ||= 'vendor';
+    if ( $self->has_branch_support ) {
+        if ( $args{branches} ) {
+            $args{as} = '';
+        }
+        else {
+            $args{as} ||= 'vendor';
+        }
     }
 
     unless ( $args{_initialize} || $args{_extra_tests} ) {
@@ -129,45 +131,71 @@ sub import {
             }
         }
         else {
-            if ( $self->info( path => "/sources/$name/$args{as}" )
-                && not $args{overwrite} )
-            {
-                $self->log->warn(
+            if ( $self->has_branch_support ) {
+                if ( $self->info( path => "/sources/$name/$args{as}" )
+                    && not $args{overwrite} )
+                {
+                    $self->log->warn(
 "path sources/$name/$args{as} alreay exists, need to set overwrite arg to overwrite"
-                );
-            }
-            else {
-                $self->delete( path => "/sources/$name/$args{as}" )
-                  if $args{delete};
-                $self->log->info(
-                    "import $args{source} to " . $self->repository );
-                $self->_add_to_order($name);
+                    );
+                }
+                else {
+                    $self->delete( path => "/sources/$name/$args{as}" )
+                      if $args{delete};
+                    $self->log->info(
+                        "import $args{source} to " . $self->repository );
+                    $self->_add_to_order($name);
 
-                my $version = $self->version;
-                $version->{$name} = $args{version};
-                $self->version($version);
+                    my $version = $self->version;
+                    $version->{$name} = $args{version};
+                    $self->version($version);
 
-                my $branches = $self->branches;
-                if ( $args{branches} ) {
+                    my $branches = $self->branches;
+                    if ( $args{branches} ) {
 
                   # mostly this happens when import from another shipwright repo
-                    $branches->{$name} = $args{branches};
-                    $self->branches($branches);
-                }
-                elsif (
-                    !(
-                        $branches->{$name} && grep { $args{as} eq $_ }
-                        @{ $branches->{$name} }
-                    )
-                  )
-                {
-                    $branches->{$name} =
-                      [ @{ $branches->{$name} || [] }, $args{as} ];
-                    $self->branches($branches);
-                }
+                        $branches->{$name} = $args{branches};
+                        $self->branches($branches);
+                    }
+                    elsif (
+                        !(
+                            $branches->{$name} && grep { $args{as} eq $_ }
+                            @{ $branches->{$name} }
+                        )
+                      )
+                    {
+                        $branches->{$name} =
+                          [ @{ $branches->{$name} || [] }, $args{as} ];
+                        $self->branches($branches);
+                    }
 
-                for my $cmd ( $self->_cmd( import => %args, name => $name ) ) {
-                    Shipwright::Util->run($cmd);
+                    for
+                      my $cmd ( $self->_cmd( import => %args, name => $name ) )
+                    {
+                        Shipwright::Util->run($cmd);
+                    }
+                }
+            }
+            else {
+                if ( $self->info( path => "/dists/$name" )
+                    && not $args{overwrite} )
+                {
+                    $self->log->warn(
+"path dists/$name alreay exists, need to set overwrite arg to overwrite"
+                    );
+                }
+                else {
+                    $self->delete( path => "/dists/$name" ) if $args{delete};
+                    $self->log->info(
+                        "import $args{source} to " . $self->repository );
+                    $self->_add_to_order($name);
+
+                    my $version = $self->version;
+                    $version->{$name} = $args{version};
+                    $self->version($version);
+
+                    Shipwright::Util->run(
+                        $self->_cmd( import => %args, name => $name ) );
                 }
             }
         }
@@ -280,7 +308,7 @@ sub update_order {
       or confess $@;
     my $order = $dep->schedule_all();
 
-    $order = $self->fiddle_order( $order );
+    $order = $self->fiddle_order($order);
 
     $self->order($order);
 }
@@ -301,18 +329,19 @@ note, this sub won't update shipwright/order.yml, you need to do it yourself.
 =cut
 
 sub fiddle_order {
-    my $self = shift;
+    my $self       = shift;
     my $orig_order = shift;
 
     my $order;
-    if ( $orig_order ) {
+    if ($orig_order) {
+
         # don't change the argument
-        $order = [ @$orig_order ];
+        $order = [@$orig_order];
     }
     else {
         $order = $self->order;
     }
-   
+
     for my $maker ( 'cpan-Module-Build', 'cpan-ExtUtils-MakeMaker' ) {
         if ( grep { $_ eq $maker } @$order ) {
             @$order = grep { $_ ne $maker } @$order;
@@ -322,7 +351,8 @@ sub fiddle_order {
 
             if ( $maker eq 'cpan-Module-Build' ) {
 
-                my @maker_recommends; 
+                my @maker_recommends;
+
                 # cpan-Regexp-Common is the dep of cpan-Pod-Readme
                 for my $r (
                     'cpan-Regexp-Common', 'cpan-Pod-Readme',
@@ -466,8 +496,13 @@ sub branches {
     my $self     = shift;
     my $branches = shift;
 
-    my $path = '/shipwright/branches.yml';
-    return $self->_yml( $path, $branches );
+    if ( $self->has_branch_support ) {
+        my $path = '/shipwright/branches.yml';
+        return $self->_yml( $path, $branches );
+    }
+
+    # no branches support in 1.x
+    return;
 }
 
 =item ktf
@@ -686,7 +721,12 @@ sub trim {
     my $flags   = $self->flags || {};
 
     for my $name (@names_to_trim) {
-        $self->delete( path => "/sources/$name" );
+        if ( $self->has_branch_support ) {
+            $self->delete( path => "/sources/$name" );
+        }
+        else {
+            $self->delete( path => "/sources/$name" );
+        }
         $self->delete( path => "/scripts/$name" );
 
         # clean order.yml
