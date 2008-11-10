@@ -5,7 +5,7 @@ use warnings;
 use Carp;
 
 use base qw/App::CLI::Command Class::Accessor::Fast Shipwright::Script/;
-__PACKAGE__->mk_accessors(qw/all follow builder utility version/);
+__PACKAGE__->mk_accessors(qw/all follow builder utility version only_sources/);
 
 use Shipwright;
 use File::Spec::Functions qw/catdir/;
@@ -19,11 +19,12 @@ Hash::Merge::set_behavior('RIGHT_PRECEDENT');
 
 sub options {
     (
-        'a|all'     => 'all',
-        'follow'    => 'follow',
-        'builder'   => 'builder',
-        'utility'   => 'utility',
-        'version=s' => 'version',
+        'a|all'        => 'all',
+        'follow'       => 'follow',
+        'builder'      => 'builder',
+        'utility'      => 'utility',
+        'version=s'    => 'version',
+        'only-sources' => 'only_sources',
     );
 }
 
@@ -81,11 +82,29 @@ sub run {
             }
 
             for (@dists) {
-                if ( $_ eq $name ) {
-                    $self->_update( $_, $self->version );
+                if ( $self->only_sources ) {
+                    if ( $_ eq $name ) {
+                        $self->_update( $_, $self->version );
+                    }
+                    else {
+                        $self->_update($_);
+                    }
                 }
                 else {
-                    $self->_update($_);
+                    system(
+                        "$0 import -r " . $self->repository
+                        . (
+                            $self->log_level
+                            ? ( " --log-level " . $self->log_level )
+                            : ''
+                          )
+                          . (
+                            $self->log_file
+                            ? ( " --log-file " . $self->log_file )
+                            : ''
+                          )
+                          . " --name $_"
+                    );
                 }
             }
         }
@@ -148,7 +167,6 @@ sub _update {
         overwrite => 1,
         version   => $version->{$name},
     );
-
 }
 
 1;
