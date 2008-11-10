@@ -198,11 +198,10 @@ sub run {
 
         $self->_wrapper() unless $^O =~ /MSWin/;
 
-        $self->log->info(
-            "install finished. the dists are at " . $self->install_base );
     }
 
     chdir $orig_cwd;
+    return 1;
 }
 
 # install one dist, the install methods are in scripts/distname/build

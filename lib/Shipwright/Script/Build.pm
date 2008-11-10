@@ -94,7 +94,13 @@ sub run {
             system("cp -r $source{$name} $dir");
         }
     }
-    $shipwright->build->run();
+    if ( $shipwright->build->run() ) {
+        print "install finished. the dists are at "
+          . $self->install_base . "\n";
+    }
+    else {
+        print "something bad happens\n";
+    }
 }
 
 1;
