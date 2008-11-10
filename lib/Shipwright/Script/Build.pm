@@ -87,10 +87,12 @@ sub run {
     $shipwright->backend->export( target => $shipwright->build->build_base );
 
     my $dists_dir = $shipwright->build->build_base;
-    for my $name ( keys %source ) {
-        my $dir = catdir( $dists_dir, 'dists', $name );
-        system("rm -rf $dir");
-        system("cp -r $source{$name} $dir");
+    if ( $shipwright->backend->has_branch_support ) {
+        for my $name ( keys %source ) {
+            my $dir = catdir( $dists_dir, 'dists', $name );
+            system("rm -rf $dir");
+            system("cp -r $source{$name} $dir");
+        }
     }
     $shipwright->build->run();
 }
