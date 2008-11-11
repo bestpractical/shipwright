@@ -68,6 +68,15 @@ sub initialize {
     copy( Module::Info->new_from_module('YAML::Tiny')->file, $yaml_tiny_path )
       or confess "copy YAML/Tiny.pm failed: $!";
 
+    # set proper permissions for yml under /shipwright/
+    my $sw_dir = catdir( $dir, 'shipwright' );
+    my $sw_dh;
+    opendir $sw_dh, $sw_dir or die "can't opendir $sw_dir: $!";
+    for my $yml ( grep { /.yml$/ } readdir $sw_dh ) {
+        chmod 0644, catfile( $dir, 'shipwright', $yml ); ## no critic
+    }
+    closedir $sw_dh;
+
     # share_root can't keep empty dirs, we have to create them manually
     for (qw/scripts t sources/) {
         mkdir catdir( $dir, $_ );
