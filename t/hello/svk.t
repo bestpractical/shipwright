@@ -6,6 +6,7 @@ use File::Temp qw/tempdir/;
 use File::Copy;
 use File::Copy::Recursive qw/dircopy/;
 use File::Spec::Functions qw/catfile catdir/;
+use File::Path qw/rmtree/;
 use Cwd;
 
 use Test::More tests => 41;
@@ -136,6 +137,8 @@ SKIP: {
         ok( -e $_, "$_ exists" );
     }
 
+    rmtree( $install_dir );
+
     # import another dist
 
     chdir $cwd;
@@ -213,5 +216,6 @@ SKIP: {
         ok( -e catfile( $install_dir, 'etc', 'shipwright-script-wrapper' ),
             'build with 0 packages ok' );
     }
+    rmtree( $install_dir );
 }
 

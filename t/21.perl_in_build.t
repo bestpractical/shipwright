@@ -5,6 +5,7 @@ use Shipwright;
 use Shipwright::Test qw/has_svk create_svk_repo has_svn create_svn_repo/;
 use File::Spec::Functions qw/catfile catdir/;
 use File::Temp qw/tempdir/;
+use File::Path qw/rmtree/;
 
 use Test::More tests => 8;
 Shipwright::Test->init;
@@ -82,5 +83,7 @@ SKIP: {
     $sw->build->run;
     is( $sw->build->perl, $^X,
         'install with --skip perl will not change $build->perl' );
+
+    rmtree( $sw->build->install_base );
 }
 

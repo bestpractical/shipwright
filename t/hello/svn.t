@@ -9,6 +9,7 @@ use File::Spec::Functions qw/catfile catdir/;
 use Cwd;
 use Test::More tests => 17;
 use Shipwright::Test qw/has_svn create_svn_repo/;
+use File::Path qw/rmtree/;
 Shipwright::Test->init;
 
 SKIP: {
@@ -98,6 +99,8 @@ SKIP: {
     {
         ok( -e $_, "$_ exists" );
     }
+
+    rmtree( $install_dir );
 
     # import another dist
 
