@@ -146,8 +146,11 @@ sub run {
         else {
 
      # Source part doesn't have script stuff, so we need to create by ourselves.
-            $script_dir =
-              tempdir( 'shipwright_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
+            $script_dir = tempdir(
+                'shipwright_script_import_XXXXXX',
+                CLEANUP => 1,
+                TMPDIR  => 1,
+            );
 
             if ( my $script = $self->build_script ) {
                 copy( $self->build_script, catfile( $script_dir, 'build' ) );
