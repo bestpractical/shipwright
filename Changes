@@ -38,3 +38,9 @@ Revision history for Shipwright
 * clean each dist right after each dist is installed
 * replace die with confess
 
+1.15 Tue Nov 11 19:52:47 CST 2008
++ --skip-recommends and --skip-all-recommends option for import cmd
++ --unreferenced and --check-only option for delete cmd
++ simple setenv bat for window 
+* some bug fixes
+
