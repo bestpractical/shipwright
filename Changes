@@ -44,3 +44,5 @@ Revision history for Shipwright
 + simple setenv bat for window 
 * some bug fixes
 
+1.16 Wed Nov 12 21:39:58 CST 2008
+* clean nearly all the tmp files automatically except log
