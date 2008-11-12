@@ -4,8 +4,8 @@ use warnings;
 use strict;
 use Carp;
 use IPC::Run3;
-use File::Spec::Functions qw/catfile catdir splitpath splitdir/;
-use File::Temp qw/tempdir/;
+use File::Spec::Functions qw/catfile catdir splitpath splitdir tmpdir/;
+use File::Temp qw/tempfile/;
 use Cwd qw/abs_path/;
 
 use Shipwright;    # we need this to find where Shipwright.pm lives
@@ -137,9 +137,8 @@ my ( $null_fh, $stdout_fh, $cpan_fh, $cpan_log_path, $cpan_fh_flag );
 
 open $null_fh, '>', '/dev/null';
 
-$cpan_log_path =
-  catfile( tempdir( 'shipwright_XXXXXX', CLEANUP => 1, TMPDIR => 1 ),
-    'shipwright_cpan.log' );
+$cpan_log_path = catfile( tmpdir(), 'shipwright_cpan.log');
+
 open $cpan_fh, '>>', $cpan_log_path;
 $stdout_fh = select;
 

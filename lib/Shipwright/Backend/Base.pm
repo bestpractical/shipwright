@@ -57,7 +57,8 @@ you should subclass this method, and call this to get the dir with content initi
 
 sub initialize {
     my $self = shift;
-    my $dir = tempdir( 'shipwright_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
+    my $dir =
+      tempdir( 'shipwright_backend_base_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
 
     dircopy( Shipwright::Util->share_root, $dir );
 

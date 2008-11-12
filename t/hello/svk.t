@@ -5,8 +5,9 @@ use Shipwright;
 use File::Temp qw/tempdir/;
 use File::Copy;
 use File::Copy::Recursive qw/dircopy/;
-use File::Spec::Functions qw/catfile catdir/;
-use Cwd;
+use File::Spec::Functions qw/catfile catdir updir/;
+use File::Path qw/rmtree/;
+use Cwd qw/getcwd abs_path/;
 
 use Test::More tests => 41;
 use Shipwright::Test qw/has_svk create_svk_repo/;
@@ -120,16 +121,17 @@ SKIP: {
     }
 
     # install
-    my $install_dir = tempdir( 'shipwright_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
-    $shipwright->build->run( install_base => $install_dir );
+    $shipwright->build->run();
 
     for (
-        catfile( $install_dir, 'lib', 'perl5', 'Acme', 'Hello.pm' ),
-        catfile( $install_dir, 'etc', 'shipwright-script-wrapper' ),
+        catfile( $shipwright->build->install_base, 'lib', 'perl5', 'Acme', 'Hello.pm' ),
+        catfile( $shipwright->build->install_base, 'etc', 'shipwright-script-wrapper' ),
       )
     {
         ok( -e $_, "$_ exists" );
     }
+
+    rmtree( abs_path(catdir( $shipwright->build->install_base, updir() )) );
 
     # import another dist
 
@@ -201,11 +203,15 @@ SKIP: {
         $shipwright->backend->initialize();
         $shipwright->backend->export(
             target => $shipwright->build->build_base );
-        my $install_dir =
-          tempdir( 'shipwright_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
-        $shipwright->build->run( install_base => $install_dir );
-        ok( -e catfile( $install_dir, 'etc', 'shipwright-script-wrapper' ),
-            'build with 0 packages ok' );
+        $shipwright->build->run();
+        ok(
+            -e catfile(
+                $shipwright->build->install_base, 'etc',
+                'shipwright-script-wrapper'
+            ),
+            'build with 0 packages ok'
+        );
+        rmtree( abs_path(catdir( $shipwright->build->install_base, updir() )) );
     }
 }
 

@@ -35,7 +35,7 @@ sub new {
     $self->log( Log::Log4perl->get_logger( ref $self ) );
 
     $self->{build_base} ||=
-      tempdir( 'shipwright_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
+      tempdir( 'shipwright_build_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
     rmdir $self->{build_base};
 
     $self->name('vessel') unless $self->name;
@@ -43,8 +43,8 @@ sub new {
     $self->make('make') unless $self->make;
 
     unless ( $self->install_base ) {
-
         my $dir = tempdir( 'vessel_' . $self->name . '-XXXXXX', TMPDIR => 1 );
+        rmdir $dir;
         $self->install_base( catfile( $dir, $self->name ) );
     }
 
@@ -410,6 +410,7 @@ sub _record {
     push @$installed, $dist;
     Shipwright::Util::DumpFile( $installed_file, $installed );
 }
+
 
 1;
 

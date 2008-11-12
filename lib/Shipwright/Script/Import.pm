@@ -254,9 +254,9 @@ sub _import_req {
                     }
                     else {
                         $script_dir = tempdir(
-                            'shipwright_XXXXXX',
+                            'shipwright_script_import_XXXXXX',
                             CLEANUP => 1,
-                            TMPDIR  => 1
+                            TMPDIR  => 1,
                         );
                         if ( -e catfile( $s, '__require.yml' ) ) {
                             move(

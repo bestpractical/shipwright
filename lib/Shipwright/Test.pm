@@ -62,7 +62,7 @@ create a repo for fs
 =cut
 
 sub create_fs_repo {
-    return tempdir( 'shipwright_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
+    return tempdir( 'shipwright_test_fs_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
 }
 
 =head2 create_svk_repo 
@@ -73,7 +73,7 @@ return $ENV{SVKROOT}
 =cut
 
 sub create_svk_repo {
-    $ENV{SVKROOT} = tempdir( 'shipwright_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
+    $ENV{SVKROOT} = tempdir( 'shipwright_test_svk_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
     my $svk_root_local = catdir( $ENV{SVKROOT}, 'local' );
     system("svnadmin create $svk_root_local");
     system("svk depotmap -i");
@@ -88,7 +88,7 @@ return the repo's uri, like file:///tmp/foo
 =cut
 
 sub create_svn_repo {
-    my $repo = tempdir( 'shipwright_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
+    my $repo = tempdir( 'shipwright_test_svn_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
     system("svnadmin create $repo") && confess "create repo failed: $!";
     return "file://$repo";
 }

@@ -150,7 +150,8 @@ sub _yml {
     my ($f) = $path =~ m{.*/(.*)$};
 
     if ($yml) {
-        my $dir = tempdir( 'shipwright_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
+        my $dir =
+          tempdir( 'shipwright_backend_svk_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
         my $file = catfile( $dir, $f );
 
         $self->checkout( path => $path, target => $file );
@@ -224,7 +225,8 @@ sub _update_file {
     my $path   = shift;
     my $latest = shift;
 
-    my $dir = tempdir( 'shipwright_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
+    my $dir =
+      tempdir( 'shipwright_backend_svk_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
     my $file = catfile( $dir, $path );
 
     $self->checkout(
