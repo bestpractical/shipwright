@@ -4,7 +4,7 @@ use warnings;
 use strict;
 use Carp;
 use IPC::Run3;
-use File::Spec::Functions qw/catfile catdir splitpath splitdir/;
+use File::Spec::Functions qw/catfile catdir splitpath splitdir tmpdir/;
 use File::Temp qw/tempfile/;
 use Cwd qw/abs_path/;
 
@@ -142,11 +142,7 @@ my ( $null_fh, $stdout_fh, $cpan_fh, $cpan_log_path, $cpan_fh_flag );
 
 open $null_fh, '>', '/dev/null';
 
-$cpan_log_path = tempfile(
-    'shipwright_cpan_XXXXXX',
-    TMPDIR => 1,
-    suffix => '.log',
-);
+$cpan_log_path = catfile( tmpdir(), 'shipwright_cpan.log');
 
 open $cpan_fh, '>>', $cpan_log_path;
 $stdout_fh = select;
