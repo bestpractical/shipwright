@@ -110,7 +110,7 @@ sub _cmd {
 
             if ( $self->info( path => $path ) ) {
                 my $tmp_dir =
-                  tempdir( 'shipwright_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
+                  tempdir( 'shipwright_backend_svk_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
                 @cmd = (
                     [ 'rm', '-rf', "$tmp_dir" ],
                     [ 'svk', 'checkout', $self->repository . $path, $tmp_dir ],
@@ -177,7 +177,8 @@ sub _yml {
     my ($f) = $path =~ m{.*/(.*)$};
 
     if ($yml) {
-        my $dir = tempdir( 'shipwright_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
+        my $dir =
+          tempdir( 'shipwright_backend_svk_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
         my $file = catfile( $dir, $f );
 
         $self->checkout( path => $path, target => $file );
@@ -251,7 +252,8 @@ sub _update_file {
     my $path   = shift;
     my $latest = shift;
 
-    my $dir = tempdir( 'shipwright_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
+    my $dir =
+      tempdir( 'shipwright_backend_svk_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
     my $file = catfile( $dir, $path );
 
     $self->checkout(

@@ -35,7 +35,7 @@ sub new {
     $self->log( Log::Log4perl->get_logger( ref $self ) );
 
     $self->{build_base} ||=
-      tempdir( 'shipwright_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
+      tempdir( 'shipwright_build_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
     rmdir $self->{build_base};
 
     $self->name('vessel') unless $self->name;

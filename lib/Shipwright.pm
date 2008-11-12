@@ -15,7 +15,7 @@ use Shipwright::Util;
 use Shipwright::Backend;
 use Shipwright::Source;
 use Shipwright::Build;
-use File::Temp qw/tempdir/;
+use File::Temp qw/tempfile/;
 use File::Spec::Functions qw/catfile/;
 
 sub new {
@@ -28,9 +28,11 @@ sub new {
 
         # a better named log_file, in the name of repository
         my $info = join '', map { /\w/ ? $_ : '_' } split //, $args{repository};
-        $args{log_file} =
-          catfile( tempdir( 'shipwright_XXXXXX', CLEANUP => 1, TMPDIR => 1 ),
-            "shipwright_${info}.log" );
+        $args{log_file} = tempfile(
+            "shipwright_${info}_XXXXXX",
+            TMPDIR => 1,
+            suffix => '.log',
+        );
     }
 
     my $self = {
