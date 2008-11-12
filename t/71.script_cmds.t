@@ -5,12 +5,16 @@ use Test::More tests => 112;
 
 use Shipwright;
 use Shipwright::Test;
-
+use File::Spec::Functions qw/catdir tmpdir/;
+use File::Path qw/rmtree/;
 my $sw = Shipwright::Test->shipwright_bin;
 
 Shipwright::Test->init;
 
-my $repo = 'fs:' . create_fs_repo();
+my $repo         = 'fs:' . create_fs_repo();
+my $install_base = catdir( tmpdir(), 'vessel_71_scripts_cmds' );
+my $build_base   = catdir( tmpdir(), 'shipwright_build_71_scripts_cmds' );
+
 start_test($repo);
 
 SKIP: {
@@ -245,12 +249,21 @@ qr/set mandatory flags with success\s+mandatory flags of man1 is build/,
             'set mandatory flag man1',
         ],
         [
-            ['build'],
+            [
+                'build',       '--install-base',
+                $install_base, '--build-base',
+                $build_base
+            ],
             qr/run, run, Build\.PL.*run, run, Makefile\.PL/ms,
             'Build.PL and Makefile.PL are run',
         ],
         [
-            [ 'build', '--flags', 'configure' ],
+            [
+                'build',       '--flags',
+                'configure',   '--install-base',
+                $install_base, '--build-base',
+                $build_base
+            ],
             qr/run, run, configure/,
             'configure is run',
         ],
@@ -313,6 +326,10 @@ qr/set mandatory flags with success\s+mandatory flags of man1 is build/,
                 [ $^X, $sw, $cmd, '-r', $repo, @{ $item->[0] }, ],
                 @$item[ 1 .. $#$item ],
             );
+            if ( $cmd eq 'build' ) {
+                rmtree( $install_base );
+                rmtree( $build_base );
+            }
         }
         else {
 
