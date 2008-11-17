@@ -43,9 +43,12 @@ sub new {
     unless ( -f $config_file ) {
 
         # hack $CPAN::Config, mostly to make cpan stuff temporary
-        $CPAN::Config->{cpan_home}         = catdir($cpan_dir);
-        $CPAN::Config->{build_dir}         = catdir( $cpan_dir, 'build' );
-        $CPAN::Config->{histfile}          = catfile( $cpan_dir, 'histfile' );
+        $CPAN::Config->{cpan_home} = catdir($cpan_dir);
+        $CPAN::Config->{build_dir} = catdir( $cpan_dir, 'build' );
+        $CPAN::Config->{histfile}  = catfile( $cpan_dir, 'histfile' );
+
+        # be careful, if you use minicpan, then the source won't be copied to
+        # $CPAN::Config->{keep_source_where}
         $CPAN::Config->{keep_source_where} = catdir( $cpan_dir, 'sources' );
         $CPAN::Config->{prefs_dir}         = catdir( $cpan_dir, 'prefs' );
         $CPAN::Config->{prerequisites_policy} = 'follow';
@@ -72,7 +75,7 @@ sub run {
           Shipwright::Source::Compressed->new( %$self, _no_update_url => 1 );
         $compressed->run(@_);
     }
-    elsif ($self->source =~ /\S/) {
+    elsif ( $self->source =~ /\S/ ) {
         confess 'invalid source: ' . $self->source;
     }
 }
@@ -128,7 +131,7 @@ sub _run {
                 $version = 'v' . $version;
             }
             $distribution->{ID} =~ s/$latest_version/$version/;
-            $source             =~ s/$latest_version/$version/;
+            $source =~ s/$latest_version/$version/;
         }
     }
 
@@ -138,16 +141,12 @@ sub _run {
         confess 'perl itself contains ' . $self->source . ', will not process';
     }
 
-    $distribution->get;
-
     Shipwright::Util->select('stdout');
 
     $self->name( 'cpan-' . $name );
     $self->_update_map( $self->source, 'cpan-' . $name );
 
-    $self->source(
-        catfile( $CPAN::Config->{keep_source_where}, 'authors', 'id', $source )
-    );
+    $self->source($distribution->get_file_onto_local_disk);
     return 1;
 }
 
