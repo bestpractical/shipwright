@@ -49,7 +49,9 @@ sub new {
         $CPAN::Config->{keep_source_where} = catdir( $cpan_dir, 'sources' );
         $CPAN::Config->{prefs_dir}         = catdir( $cpan_dir, 'prefs' );
         $CPAN::Config->{prerequisites_policy} = 'follow';
-        $CPAN::Config->{urllist}              = [];
+        unless ( $CPAN::Config->{urllist} && @{ $CPAN::Config->{urllist} } ) {
+            $CPAN::Config->{urllist} = ['http://search.cpan.org/CPAN'];
+        }
         write_file( $config_file,
             Data::Dumper->Dump( [$CPAN::Config], ['$CPAN::Config'] ) );
 
