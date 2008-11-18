@@ -29,6 +29,12 @@ Shipwright::Script::Create - Create a project
 
  create -r [repository]
 
+=head1 EXAMPLES
+
+ create -r fs:/tmp/foo
+ create -r svk://foo
+ create -r svn:file:///tmp/foo/bar
+
 =head1 OPTIONS
 
  -r [--repository] REPOSITORY   : specify the repository of our project
