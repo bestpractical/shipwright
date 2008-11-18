@@ -9,9 +9,15 @@ use Shipwright::Test;
 Shipwright::Test->init;
 
 is_deeply(
-    { del => 'delete', ls => 'list', up => 'update' },
+    {
+        del        => 'delete',
+        ls         => 'list',
+        up         => 'update',
+        init       => 'create',
+        initialize => 'create',
+    },
     { Shipwright::Script->alias },
-    "alias returns ( del => 'delete', ls => 'list', up => 'update' )"
+    "alias returns"
 );
 
 my $logger = Shipwright::Script->log;
