@@ -10,6 +10,7 @@ use Data::Dumper;
 use File::Temp qw/tempdir/;
 use File::Slurp;
 use CPAN::DistnameInfo;
+use File::HomeDir;
 
 use base qw/Shipwright::Source::Base/;
 
@@ -36,6 +37,15 @@ sub new {
         # keep original CPAN::Config info
         require CPAN::Config;
     }
+
+    unshift @INC, catdir( File::HomeDir->my_home, '.cpan' );
+    if ( Module::Info->new_from_module('CPAN::MyConfig') ) {
+
+        # keep user's CPAN::MyConfig too
+        require CPAN::MyConfig;
+    }
+    shift @INC;
+
 
     mkdir catdir( $cpan_dir, 'CPAN' );
     my $config_file = catfile( $cpan_dir, 'CPAN', 'MyConfig.pm' );
