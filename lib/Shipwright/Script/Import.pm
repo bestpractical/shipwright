@@ -46,6 +46,8 @@ my ( %imported, $version );
 sub run {
     my $self   = shift;
     my $source = shift;
+    my $name   = shift;
+    $self->name( $name ) if $name && ! $self->name;
 
     my $shipwright = Shipwright->new( repository => $self->repository, );
 
@@ -389,7 +391,7 @@ Shipwright::Script::Import - import a source and its dependencies
 
 =head1 SYNOPSIS
 
- import SOURCE
+ import SOURCE [NAME]
 
 =head1 OPTIONS
 
@@ -437,6 +439,9 @@ type and schema, just a colon.
 =item CPAN
 
 e.g. cpan:Jifty::DBI  cpan:File::Spec
+
+CAVEAT: we don't support renaming CPAN sources when importing, because it
+*really* is not a good idea and maybe hurt shipwright somewhere.
 
 =item File
 
