@@ -11,7 +11,13 @@ __PACKAGE__->mk_accessors(qw/repository log_file log_level/);
 =cut
 
 sub alias {
-    return ( ls => 'list', 'del' => 'delete', up => 'update' );
+    return (
+        ls         => 'list',
+        del        => 'delete',
+        up         => 'update',
+        init       => 'create',
+        initialize => 'create',
+    );
 }
 
 =head2 global_options
