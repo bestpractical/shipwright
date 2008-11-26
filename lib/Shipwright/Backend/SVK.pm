@@ -42,6 +42,20 @@ sub initialize {
     );
 }
 
+sub _svnroot {
+    my $self = shift;
+    return $self->{svnroot} if $self->{svnroot};
+    my $depotmap = Shipwright::Util->run( [ svk => depotmap => '--list' ] );
+    $depotmap =~ s{\A.*^(?=/)}{}sm;
+    while ($depotmap =~ /^(\S*)\s+(.*?)$/gm) {
+        my ($depot, $svnroot) = ($1, $2);
+        if ($self->repository =~ /^$depot(.*)/) {
+            return $self->{svnroot} = "file://$svnroot/$1";
+        }
+    }
+    croak "Can't find determine underlying SVN repository for ". $self->repository;
+}
+
 # a cmd generating factory
 sub _cmd {
     my $self = shift;
@@ -70,14 +84,13 @@ sub _cmd {
     elsif ( $type eq 'export' ) {
         @cmd = (
             [
-                'svk',                           'checkout',
-                $self->repository . $args{path}, $args{target}
+                'svn',                           'export',
+                $self->_svnroot . $args{path}, $args{target}
             ],
-            [ 'svk', 'checkout', '-d', $args{target} ]
         );
     }
     elsif ( $type eq 'list' ) {
-        @cmd = [ 'svk', 'list', $self->repository . $args{path} ];
+        @cmd = [ 'svn', 'list', $self->_svnroot . $args{path} ];
     }
     elsif ( $type eq 'import' ) {
         if ( $args{_initialize} ) {
@@ -158,7 +171,7 @@ sub _cmd {
         @cmd = [ 'svk', 'info', $self->repository . $args{path} ];
     }
     elsif ( $type eq 'cat' ) {
-        @cmd = [ 'svk', 'cat', $self->repository . $args{path} ];
+        @cmd = [ 'svn', 'cat', $self->_svnroot . $args{path} ];
     }
     else {
         croak "invalid command: $type";
