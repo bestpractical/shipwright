@@ -46,7 +46,7 @@ sub _svnroot {
     my $self = shift;
     return $self->{svnroot} if $self->{svnroot};
     my $depotmap = Shipwright::Util->run( [ svk => depotmap => '--list' ] );
-    $depotmap =~ s{\A.*^(?=/)}{}sm;
+    $depotmap =~ s{\A.*?^(?=/)}{}sm;
     while ($depotmap =~ /^(\S*)\s+(.*?)$/gm) {
         my ($depot, $svnroot) = ($1, $2);
         if ($self->repository =~ /^$depot(.*)/) {
