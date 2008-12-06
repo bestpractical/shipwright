@@ -69,6 +69,8 @@ sub run {
     confess "we need source arg\n" unless $source;
 
     if ( $self->extra_tests ) {
+
+        print "going to import extra_tests\n";
         $shipwright->backend->import(
             source       => $source,
             comment      => 'import extra tests',
@@ -76,6 +78,7 @@ sub run {
         );
     }
     elsif ( $self->test_script ) {
+        print "going to import test_script\n";
         $shipwright->backend->test_script( source => $source );
     }
     else {
@@ -136,6 +139,7 @@ sub run {
           Shipwright::Util::LoadFile( $shipwright->source->version_path );
 
         my ($name) = $source =~ m{.*/(.*)$};
+        print "importing $name: ";
         $imported{$name}++;
 
         my $base = $self->_parent_dir($source);
@@ -240,15 +244,16 @@ sub _import_req {
 
                 unless ( $imported{$dist}++ ) {
 
-                    my ($s) = grep { $_ eq $dist } @sources;
-                    unless ($s) {
+                    my ($name) = grep { $_ eq $dist } @sources;
+                    unless ($name) {
                         $self->log->warn(
                             "we don't have $dist in source which is for "
                               . $source );
                         next;
                     }
 
-                    $s = catdir( $dir, $s );
+                    print "importing $name: ";
+                    my $s = catdir( $dir, $name );
 
                     my $script_dir;
                     if ( -e catdir( $dir, '__scripts', $dist ) ) {
@@ -302,8 +307,7 @@ sub _generate_build {
 
     my @commands;
     if ( -f catfile( $source_dir, 'Build.PL' ) ) {
-        print
-"detected Module::Build build system; generating appropriate build script\n";
+        print "detected Module::Build build system\n";
         @commands = (
             'configure: %%PERL%% Build.PL --install_base=%%INSTALL_BASE%%',
             'make: %%PERL%% Build',
@@ -313,8 +317,7 @@ sub _generate_build {
         );
     }
     elsif ( -f catfile( $source_dir, 'Makefile.PL' ) ) {
-        print
-"detected ExtUtils::MakeMaker build system; generating appropriate build script\n";
+        print "detected ExtUtils::MakeMaker build system\n";
         @commands = (
             'configure: %%PERL%% Makefile.PL INSTALL_BASE=%%INSTALL_BASE%%',
             'make: %%MAKE%%',
@@ -324,8 +327,7 @@ sub _generate_build {
         );
     }
     elsif ( -f catfile( $source_dir, 'configure' ) ) {
-        print
-"detected autoconf build system; generating appropriate build script\n";
+        print "detected autoconf build system\n";
         @commands = (
             'configure: ./configure --prefix=%%INSTALL_BASE%%',
             'make: %%MAKE%%',
