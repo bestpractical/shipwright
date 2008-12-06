@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 112;
+use Test::More tests => 106;
 
 use Shipwright;
 use Shipwright::Test;
@@ -280,38 +280,15 @@ qr/set mandatory flags with success\s+mandatory flags of man1 is build/,
 
         $source
         ? (
-
             # import an svn or svk dist named foo
             [
                 [ 'import', $source ],
                 qr/imported with success/,
                 "imported $source",
             ],
-            [
-                [ 'list', 'foo' ],
-                $update_cmd
-                ? qr/version:\s+1\s+/
-                : qr/version:\s+59\s+/m,  # the magic number is from practice ;)
-                'list foo, version seems ok',
-            ],
             $update_cmd,    # if the source dist is svk, $update_cmd is undef
-            [
-                [ 'list', 'foo', '--with-latest-version' ],
-                $update_cmd
-                ? qr/latest_version:\s+([^1]|\d{2,})\s+/
-                : qr/latest_version:\s+(?!59)\d+\s+/,
-                'list foo, latest version seems ok',
-            ],
-
             # update cmd
             [ [ 'update', 'foo' ], qr/updated with success/, "updated foo", ],
-            [
-                [ 'list', 'foo' ],
-                $update_cmd
-                ? qr/version:\s+([^1]|\d{2,})\s+/
-                : qr/version:\s+(?!49)\d+\s+/,
-                'list foo, update cmd seems ok',
-            ],
           )
         : (),
     );
