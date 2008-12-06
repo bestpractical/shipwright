@@ -86,7 +86,13 @@ sub run {
         $compressed->run(@_);
     }
     elsif ( $self->source =~ /\S/ ) {
-        confess 'invalid source: ' . $self->source;
+        my $error = q{invalid source: can't find '} . $self->source . q{'};
+        if ( $self->version ) {
+            $error .= ' version ' . $self->version;
+        }
+       
+        $error .= ' in your CPAN mirror(s)' . " [@{$CPAN::Config->{urllist}}].";
+        confess $error;
     }
 }
 
