@@ -32,7 +32,6 @@ my ( $shipwright, $map, $source );
 
 sub run {
     my $self = shift;
-    my $name = shift;
 
     $shipwright = Shipwright->new( repository => $self->repository, );
 
@@ -44,6 +43,23 @@ sub run {
 
     }
     else {
+        my $name       = shift;
+        my $new_source = shift;
+        if ($new_source) {
+            system(
+                    "$0 relocate -r " 
+                  . $self->repository
+                  . (
+                    $self->log_level ? ( " --log-level " . $self->log_level )
+                    : ''
+                  )
+                  . (
+                    $self->log_file ? ( " --log-file " . $self->log_file )
+                    : ''
+                  )
+                  . " $name $new_source"
+            ) && die "relocate $name to $new_source failed: $!";
+        }
 
         confess "need name arg\n" unless $name || $self->all;
 
@@ -180,7 +196,7 @@ Shipwright::Script::Update - Update dist(s) and scripts
 =head1 SYNOPSIS
 
  update --all
- update NAME [--follow]
+ update NAME [NEW_SOURCE_URL] [--follow]
  update --builder
  update --utility
 
