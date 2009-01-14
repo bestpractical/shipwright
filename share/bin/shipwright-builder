@@ -432,6 +432,7 @@ sub wrap_bin {
             }
         }
 
+        chmod oct 755, $file;
         move( $file => catdir( $args{'install-base'}, "$dir-wrapped" ) )
           or confess $!;
 

@@ -339,6 +339,7 @@ sub _wrapper {
             }
         }
 
+        chmod oct 755, $file;
         move( $file => catdir( $self->install_base, "$dir-wrapped" ) )
           or confess $!;
 
@@ -356,6 +357,7 @@ sub _wrapper {
             symlink catfile( '..', 'etc', 'shipwright-script-wrapper' ) => $file
               or confess $!;
         }
+        chmod oct 755, $file;
     };
 
     my @dirs =
