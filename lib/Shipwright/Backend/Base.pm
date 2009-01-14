@@ -204,8 +204,11 @@ sub import {
                     $version->{$name} = $args{version};
                     $self->version($version);
 
-                    Shipwright::Util->run(
-                        $self->_cmd( import => %args, name => $name ) );
+                    for
+                      my $cmd ( $self->_cmd( import => %args, name => $name ) )
+                    {
+                        Shipwright::Util->run($cmd);
+                    }
                 }
             }
         }
