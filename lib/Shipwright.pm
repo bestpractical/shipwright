@@ -257,6 +257,7 @@ build part:
     only_test: don't install, just test, (used for previously installed dists),
                 default is false
     flags: flags for building, default is { default => 1 }
+    branches: branches build should use
 
 =head1 SEE ALSO
 

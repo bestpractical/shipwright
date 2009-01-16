@@ -8,7 +8,7 @@ use base qw/Class::Accessor::Fast/;
 
 __PACKAGE__->mk_accessors(
     qw/install_base perl build_base skip_test commands log
-      skip only_test force order flags name only make/
+      skip only_test force order flags name only make branches/
 );
 
 use File::Spec::Functions qw/catfile catdir splitdir/;
@@ -211,13 +211,14 @@ sub _install {
     my $dir      = shift;
     my $ktf      = shift;
     my $branches = shift;
+    my $branch = $self->branches->{$dir} || $branches->{$dir}[0];
 
     if ($branches) {
         system( "cp -r "
-              . catdir( 'sources', $dir, split /\//, $branches->{$dir}[0] )
+              . catdir( 'sources', $dir, split /\//, $branch )
               . ' '
               . catdir( 'dists', $dir ) )
-          && confess "cp sources/$dir/$branches->{$dir}[0] to dists/$dir failed";
+          && confess "cp sources/$dir/$branch to dists/$dir failed";
     }
 
     chdir catdir( 'dists', $dir );

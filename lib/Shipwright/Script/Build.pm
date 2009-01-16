@@ -7,7 +7,7 @@ use Carp;
 use base qw/App::CLI::Command Class::Accessor::Fast Shipwright::Script/;
 __PACKAGE__->mk_accessors(
     qw/build_base skip skip_test only_test install_base
-      force log_file flags name perl only with make/
+      force log_file flags name perl only with make branches/
 );
 
 use Shipwright;
@@ -28,6 +28,7 @@ sub options {
         'perl'           => 'perl',
         'with=s'         => 'with',
         'make=s'         => 'make',
+        'branches=s'     => 'branches',
     );
 }
 
@@ -66,6 +67,8 @@ sub run {
     );
 
     $self->with( { map { split /=/ } split /\s*,\s*/, $self->with || '' } );
+    $self->branches(
+        { map { split /=/ } split /\s*,\s*/, $self->branches || '' } );
 
     my %source;
     for my $name ( keys %{ $self->with } ) {
@@ -81,19 +84,28 @@ sub run {
     my $shipwright = Shipwright->new(
         map { $_ => $self->$_ }
           qw/repository log_level log_file skip skip_test
-          flags name force only_test install_base build_base perl only make/
+          flags name force only_test install_base build_base perl only make
+          branches
+          /
     );
+    my $branches = $shipwright->backend->branches() || {};
+    for my $name ( keys %{ $self->branches } ) {
+        die 'no branch name ' . $self->branches->{$name} . " for $name"
+          unless grep { $_ eq $self->branches->{$name} }
+              @{ $branches->{$name} || [] };
+    }
 
     $shipwright->backend->export( target => $shipwright->build->build_base );
 
     my $dists_dir = $shipwright->build->build_base;
-    if ( $shipwright->backend->has_branch_support ) {
-        for my $name ( keys %source ) {
-            my $dir = catdir( $dists_dir, 'dists', $name );
-            system("rm -rf $dir");
-            system("cp -r $source{$name} $dir");
-        }
+
+    mkdir 'dists' unless -e 'dists';
+    for my $name ( keys %source ) {
+        my $dir = catdir( $dists_dir, 'dists', $name );
+        system("rm -rf $dir");
+        system("cp -r $source{$name} $dir");
     }
+
     if ( $shipwright->build->run() ) {
         print "install finished. the dists are at "
           . $self->install_base . "\n";
@@ -135,4 +147,5 @@ Shipwright::Script::Build - Build the specified project
  --make PATH                  : specify the path of make command
  --with name=source,...       : don't build the dist of the name in repo,
                                 use the one specified here instead.
+ --branches name=branch,...   : specify the branch we want to build
 

@@ -27,7 +27,7 @@ confess "unknown option"
     'name=s',                 'help',
     'noclean',                'only=s',
     'with=s',                 'noclean-after-install',
-    'make=s',
+    'make=s',                 'branches=s',
   );
 
 my $USAGE = <<'END'
@@ -80,6 +80,9 @@ with: don't build the dist of the name in repo, use the one specified here inste
 make: specify the path of your make command, default is 'make'.
     e.g. --make /usr/bin/make
 
+branches: specify the branch you want to build.
+    e.g. --branches Foo,trunk,Bar,2.0
+
 END
   ;
 
@@ -95,6 +98,7 @@ $args{flags} = {
 };
 
 $args{with} = { map { split /=/ } split /\s*,\s*/, $args{with} || '' };
+$args{branches} = { map { split /=/ } split /\s*,\s*/, $args{branches} || '' };
 $args{make} ||= 'make';
 
 if ( $args{only} ) {
@@ -155,7 +159,13 @@ else {
 
 if ( -e catfile( 'shipwright', 'branches.yml' ) ) {
     $branches =
-      ( YAML::Tiny->read( catfile( 'shipwright', 'branches.yml' ) ) )->[0];
+         ( YAML::Tiny->read( catfile( 'shipwright', 'branches.yml' ) ) )->[0]
+      || {};
+    for my $name ( keys %{ $args{branches} } ) {
+        die 'no branch name ' . $args{branches}->{$name} . " for $name"
+          unless grep { $_ eq $args{branches}->{$name} }
+              @{ $branches->{$name} || [] };
+    }
 }
 
 # fill not specified but mandatory flags
@@ -312,12 +322,13 @@ sub _install {
     }
     else {
         if ($branches) {
+            my $branch = $args{branches}{$dir} || $branches->{$dir}[0];
             system( "cp -r "
-                  . catdir( 'sources', $dir, split /\//, $branches->{$dir}[0] )
+                  . catdir( 'sources', $dir, split /\//, $branch )
                   . ' '
                   . catdir( 'dists', $dir ) )
               && confess
-              "cp sources/$dir/$branches->{$dir}[0] to dists/$dir failed";
+              "cp sources/$dir/$branch to dists/$dir failed";
         }
         chdir catdir( 'dists', $dir );
     }
