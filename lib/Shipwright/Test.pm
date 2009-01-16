@@ -11,7 +11,7 @@ use File::Spec::Functions qw/catfile catdir/;
 use Shipwright::Util;
 
 our @EXPORT =
-  qw/has_svk has_svn create_fs_repo create_svk_repo create_svn_repo devel_cover_enabled test_cmd/;
+  qw/has_svk has_svn skip_svk skip_svn create_fs_repo create_svk_repo create_svn_repo devel_cover_enabled test_cmd/;
 
 =head1 NAME
 
@@ -53,6 +53,34 @@ sub has_svn {
         }
     }
     return;
+}
+
+=head2 skip_svn
+
+if skip svn when test.
+skip test svn unless env SHIPWRIGHT_TEST_BACKEND_SVN is set to true and
+the system has svn
+
+=cut
+
+sub skip_svn {
+    return 1 unless $ENV{'SHIPWRIGHT_TEST_BACKEND_SVN'};
+    return unless has_svn();
+    return 1;
+}
+
+=head2 skip_svk
+
+if skip svk when test.
+skip test svk unless env SHIPWRIGHT_TEST_BACKEND_SVK is set to true and
+the system has svk
+
+=cut
+
+sub skip_svk {
+    return 1 unless $ENV{'SHIPWRIGHT_TEST_BACKEND_SVK'};
+    return unless has_svk();
+    return 1;
 }
 
 =head2 create_fs_repo 
