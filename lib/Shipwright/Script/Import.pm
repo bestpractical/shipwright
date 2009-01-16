@@ -403,6 +403,7 @@ Shipwright::Script::Import - import a source and its dependencies
  -m [--comment] COMMENT         : specify the comment
  --name NAME                    : specify the source name (only alphanumeric
                                   characters, . and -)
+ --as                           : the branch name
  --build-script FILENAME        : specify the build script
  --require-yml FILENAME         : specify the require.yml
  --no-follow                    : don't follow the dependency chain
