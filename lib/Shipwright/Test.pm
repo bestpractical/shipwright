@@ -64,8 +64,7 @@ the system has svn
 =cut
 
 sub skip_svn {
-    return 1 unless $ENV{'SHIPWRIGHT_TEST_BACKEND_SVN'};
-    return unless has_svn();
+    return if $ENV{'SHIPWRIGHT_TEST_BACKEND_SVN'} && has_svn();
     return 1;
 }
 
@@ -78,8 +77,7 @@ the system has svk
 =cut
 
 sub skip_svk {
-    return 1 unless $ENV{'SHIPWRIGHT_TEST_BACKEND_SVK'};
-    return unless has_svk();
+    return if $ENV{'SHIPWRIGHT_TEST_BACKEND_SVK'} && has_svk();
     return 1;
 }
 
@@ -101,7 +99,8 @@ return $ENV{SVKROOT}
 =cut
 
 sub create_svk_repo {
-    $ENV{SVKROOT} = tempdir( 'shipwright_test_svk_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
+    $ENV{SVKROOT} =
+      tempdir( 'shipwright_test_svk_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
     my $svk_root_local = catdir( $ENV{SVKROOT}, 'local' );
     system("svnadmin create $svk_root_local");
     system("svk depotmap -i");
@@ -116,7 +115,8 @@ return the repo's uri, like file:///tmp/foo
 =cut
 
 sub create_svn_repo {
-    my $repo = tempdir( 'shipwright_test_svn_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
+    my $repo =
+      tempdir( 'shipwright_test_svn_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
     system("svnadmin create $repo") && confess "create repo failed: $!";
     return "file://$repo";
 }
