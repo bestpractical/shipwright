@@ -17,6 +17,12 @@ file system>. e.g.
     svk:/test/foo
     fs:/tmp/foo
 
+Note: since we need C<svk>/C<svn>/C<svnadmin> cmds in in backends, sources or 
+other places, we can tell shipwright the location of C<svk>/C<svn> cmds by 
+setting ENV C<SHIPWRIGHT_SVK> or C<SHIPWRIGHT_SVN>.
+C<svnadmin> is assumed in the same directory of svn. 
+
+
 we'll use C<svn:file:///tmp/svnrepo/foo> as the repository for the rest tutorial.
 
 =head2 create
