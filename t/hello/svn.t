@@ -8,7 +8,7 @@ use File::Copy::Recursive qw/dircopy/;
 use File::Spec::Functions qw/catfile catdir updir/;
 use Cwd qw/getcwd abs_path/;
 use Test::More tests => 17;
-use Shipwright::Test qw/skip_svn create_svn_repo/;
+use Shipwright::Test;
 use File::Path qw/rmtree/;
 Shipwright::Test->init;
 
@@ -56,7 +56,6 @@ SKIP: {
         name         => 'hello',
         source       => $source_dir,
         build_script => $script_dir,
-        log_level    => 'FATAL',
     );
     ok( grep( {/Build\.PL/} `svn cat $repo/scripts/Acme-Hello/build` ),
         'build script ok' );

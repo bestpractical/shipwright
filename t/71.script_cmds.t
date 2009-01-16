@@ -11,11 +11,14 @@ my $sw = Shipwright::Test->shipwright_bin;
 
 Shipwright::Test->init;
 
-my $repo         = 'fs:' . create_fs_repo();
 my $install_base = catdir( tmpdir(), 'vessel_71_scripts_cmds' );
 my $build_base   = catdir( tmpdir(), 'shipwright_build_71_scripts_cmds' );
 
-start_test($repo);
+{
+    # fs backend
+    start_test('fs:' . create_fs_repo() );
+}
+
 
 SKIP: {
     skip "svn: no svn found or env SHIPWRIGHT_TEST_BACKEND_SVN not set", 36 if skip_svn();

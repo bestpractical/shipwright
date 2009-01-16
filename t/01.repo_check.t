@@ -2,18 +2,41 @@ use strict;
 use warnings;
 
 use Shipwright;
-use Shipwright::Test qw/skip_svk create_svk_repo skip_svn create_svn_repo/;
+use Shipwright::Test;
 use File::Spec::Functions qw/catfile/;
 use File::Temp qw/tempdir/;
 
-use Test::More tests => 10;
+use Test::More tests => 28;
 
 Shipwright::Test->init;
 
+{
+
+    # fs backend test
+    my $repo       = 'fs:' . create_fs_repo();
+    my $shipwright = Shipwright->new(
+        log_level  => 'fatal',
+        repository => $repo,
+    );
+    $shipwright->backend->initialize;
+
+    my %map = (
+        create => {
+            $repo => 1,
+
+          # yeah, fs can create anywhere, but this may fail if permission denied
+            'fs:/noexists/blalba' => 1,
+        },
+        list => {
+            'fs:/noexists/bla' => undef,
+            $repo              => 1,
+        },
+    );
+    test_repo( 'FS', %map );
+}
+
 SKIP: {
-    skip
-"svk: no svk found or env SHIPWRIGHT_TEST_BACKEND_SVK not set",
-      5
+    skip "svk: no svk found or env SHIPWRIGHT_TEST_BACKEND_SVK not set", 10 
       if skip_svk();
 
     create_svk_repo();
@@ -34,21 +57,11 @@ SKIP: {
         },
     );
 
-    for my $action ( keys %map ) {
-        for my $repo ( keys %{ $map{$action} } ) {
-            my $backend = Shipwright::Backend->new( repository => $repo );
-            is(
-                $backend->check_repository( action => $action ),
-                $map{$action}{$repo},
-                "$repo for action $action",
-            );
-        }
-    }
-
+    test_repo( 'SVK', %map );
 }
 
 SKIP: {
-    skip "svn: no svn found or env SHIPWRIGHT_TEST_BACKEND_SVN not set", 5
+    skip "svn: no svn found or env SHIPWRIGHT_TEST_BACKEND_SVN not set", 10 
       if skip_svn();
 
     my $valid   = create_svn_repo();
@@ -72,9 +85,16 @@ SKIP: {
         },
     );
 
+    test_repo( 'SVN', %map );
+}
+
+sub test_repo {
+    my $bk_class = shift;
+    my %map      = @_;
     for my $action ( keys %map ) {
         for my $repo ( keys %{ $map{$action} } ) {
             my $backend = Shipwright::Backend->new( repository => $repo );
+            isa_ok( $backend, 'Shipwright::Backend::' . $bk_class );
             is(
                 $backend->check_repository( action => $action ),
                 $map{$action}{$repo},
@@ -82,5 +102,4 @@ SKIP: {
             );
         }
     }
-
 }

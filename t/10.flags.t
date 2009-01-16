@@ -2,37 +2,16 @@ use strict;
 use warnings;
 
 use Shipwright;
-use Shipwright::Test qw/skip_svk create_svk_repo skip_svn create_svn_repo/;
+use Shipwright::Test;
 use File::Spec::Functions qw/catfile catdir/;
 
-use Test::More tests => 6;
+use Test::More tests => 3;
 
 Shipwright::Test->init;
 
-SKIP: {
-    skip "svk: no svk found or env SHIPWRIGHT_TEST_BACKEND_SVK not set", 3
-      if skip_svk();
-
-    create_svk_repo();
-    my $repo = '//__shipwright/foo';
-
+{
     my $shipwright = Shipwright->new(
-        repository => "svk:$repo",
-        log_level  => 'FATAL',
-    );
-
-    test_flags( shipwright => $shipwright, name => 'foo' );
-
-}
-
-SKIP: {
-    skip "svn: no svn found or env SHIPWRIGHT_TEST_BACKEND_SVN not set", 3
-      if skip_svn();
-
-    my $repo = create_svn_repo . '/foo';
-
-    my $shipwright = Shipwright->new(
-        repository => "svn:$repo",
+        repository => 'fs:' . create_fs_repo,
         log_level  => 'FATAL',
     );
 

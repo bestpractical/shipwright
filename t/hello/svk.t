@@ -9,8 +9,8 @@ use File::Spec::Functions qw/catfile catdir updir/;
 use File::Path qw/rmtree/;
 use Cwd qw/getcwd abs_path/;
 
-use Test::More tests => 41;
-use Shipwright::Test qw/skip_svk create_svk_repo/;
+use Test::More tests => 17;
+use Shipwright::Test;
 Shipwright::Test->init;
 
 SKIP: {
@@ -23,27 +23,6 @@ SKIP: {
 
     my $repo = '//__shipwright/hello';
 
-    my %source = (
-        'http://example.com/hello.tar.gz'    => 'HTTP',
-        'ftp://example.com/hello.tar.gz'     => 'FTP',
-        'svn:file:///home/sunnavy/svn/hello' => 'SVN',
-        'svk://local/hello'                  => 'SVK',
-        'cpan:Acme::Hello'                   => 'CPAN',
-        'file:'
-          . catfile( 't', 'hello', 'Acme-Hello-0.03.tar.gz' ) => 'Compressed',
-        'dir:' . catfile( 't', 'hello' ) => 'Directory',
-    );
-
-    for ( keys %source ) {
-        my $shipwright = Shipwright->new(
-            repository => "svk:$repo",
-            source     => $_,
-            log_level  => 'FATAL',
-        );
-        isa_ok( $shipwright, 'Shipwright' );
-        isa_ok( $shipwright->source, "Shipwright::Source::$source{$_}" );
-    }
-
     my $shipwright = Shipwright->new(
         repository => "svk:$repo",
         source => 'file:' . catfile( 't', 'hello', 'Acme-Hello-0.03.tar.gz' ),
@@ -51,11 +30,7 @@ SKIP: {
         log_level => 'FATAL',
         force => 1,
     );
-
-    isa_ok( $shipwright,          'Shipwright' );
     isa_ok( $shipwright->backend, 'Shipwright::Backend::SVK' );
-    isa_ok( $shipwright->source,  'Shipwright::Source::Compressed' );
-    isa_ok( $shipwright->build,   'Shipwright::Build' );
 
     # init
     $shipwright->backend->initialize();
@@ -69,16 +44,6 @@ SKIP: {
 
     # source
     my $source_dir = $shipwright->source->run();
-    like( $source_dir, qr/\bAcme-Hello\b/, 'source name looks ok' );
-
-    for (qw/source backend build/) {
-        isa_ok( $shipwright->$_->log, 'Log::Log4perl::Logger' );
-    }
-
-    ok( -e catfile( $source_dir, 'lib', 'Acme', 'Hello.pm' ),
-        'lib/Acme/Hello.pm exists in the source' );
-    ok( -e catfile( $source_dir, 'META.yml' ),
-        'META.yml exists in the source' );
 
     # import
 
@@ -197,27 +162,5 @@ SKIP: {
         'updated order works'
     );
 
-    # build with 0 packages
-
-    {
-        my $shipwright = Shipwright->new(
-            repository => "svk:$repo",
-            log_level  => 'FATAL',
-        );
-
-        # init
-        $shipwright->backend->initialize();
-        $shipwright->backend->export(
-            target => $shipwright->build->build_base );
-        $shipwright->build->run();
-        ok(
-            -e catfile(
-                $shipwright->build->install_base, 'etc',
-                'shipwright-script-wrapper'
-            ),
-            'build with 0 packages ok'
-        );
-        rmtree( abs_path(catdir( $shipwright->build->install_base, updir() )) );
-    }
 }
 
