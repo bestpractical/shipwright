@@ -46,13 +46,14 @@ sub run {
     }
     $shipwright->backend->map($map);
 
-    # update version.yml, source.yml and flags.yml
-    my $version = $shipwright->backend->version || {};
-    my $source  = $shipwright->backend->source  || {};
-    my $flags   = $shipwright->backend->flags   || {};
-    my $refs    = $shipwright->backend->refs    || {};
+    my $version = $shipwright->backend->version;
+    my $source  = $shipwright->backend->source;
+    my $flags   = $shipwright->backend->flags;
+    my $refs    = $shipwright->backend->refs;
+    my $branches= $shipwright->backend->branches;
 
-    for my $hashref ( $source, $flags, $version, $refs ) {
+    for my $hashref ( $source, $flags, $version, $refs, $branches ) {
+        next unless $hashref; # branches can be undef
         for ( keys %$hashref ) {
             if ( $_ eq $name ) {
                 $hashref->{$new_name} = delete $hashref->{$_};
@@ -65,6 +66,7 @@ sub run {
     $shipwright->backend->source($source);
     $shipwright->backend->flags($flags);
     $shipwright->backend->refs($refs);
+    $shipwright->backend->branches($branches) if $branches;
 
     print "renamed $name to $new_name with success\n";
 }
