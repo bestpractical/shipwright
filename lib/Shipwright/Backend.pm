@@ -46,7 +46,8 @@ sub new {
     }
     elsif ( $args{repository} =~ m{^\s*fs:} ) {
         $args{repository} =~ s{^\s*fs:}{};
-        $args{repository} = abs_path( $args{repository} );
+        my $abs_path = abs_path($args{repository});
+        $args{repository} = $abs_path if $abs_path;
         $module = 'Shipwright::Backend::FS';
     }
     else {
