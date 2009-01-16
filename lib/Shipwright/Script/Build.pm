@@ -88,11 +88,13 @@ sub run {
           branches
           /
     );
-    my $branches = $shipwright->backend->branches() || {};
-    for my $name ( keys %{ $self->branches } ) {
-        confess 'no branch name ' . $self->branches->{$name} . " for $name"
-          unless grep { $_ eq $self->branches->{$name} }
-              @{ $branches->{$name} || [] };
+    my $branches = $shipwright->backend->branches();
+    if ($branches) {
+        for my $name ( keys %{ $self->branches } ) {
+            confess 'no branch name ' . $self->branches->{$name} . " for $name"
+              unless grep { $_ eq $self->branches->{$name} }
+                  @{ $branches->{$name} || [] };
+        }
     }
 
     $shipwright->backend->export( target => $shipwright->build->build_base );
