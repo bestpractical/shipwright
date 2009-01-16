@@ -40,6 +40,7 @@ sub new {
 
     $self->name('vessel') unless $self->name;
     $self->skip( {} ) unless $self->skip;
+    $self->branches( {} ) unless $self->branches;
     $self->make('make') unless $self->make;
 
     unless ( $self->install_base ) {
@@ -152,7 +153,6 @@ sub run {
         }
 
         if ( -e catfile( 'shipwright', 'branches.yml' ) ) {
-
             $branches =
               Shipwright::Util::LoadFile(
                 catfile( 'shipwright', 'branches.yml' ) );
