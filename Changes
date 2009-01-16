@@ -1,19 +1,45 @@
 Revision history for Shipwright
 
-0.0.1  Tue Nov 20 16:28:55 2007
-       Initial release.
-0.0.2  Thu Feb  7 09:08:55 CST 2008
-       no config any more
-1.0    Fri Feb 15 03:38:17 CST 2008
-       the first public release
+2.0 Fri Jan 16 19:14:31 CST 2009
++ env SHIPWRIGHT_SVK, SHIPWRIGHT_SVN, SHIPWRIGHT_TEST_SVK, SHIPWRIGHT_TEST_SVN 
++ branch support
+* to add branch support, the layout of vessel source has changed a bit, 
+    but 2.0 can work well with old layout in case you have an old vessel source.
++ JEOS build tool to create JEOS images from a vessel
+* update cmd now will act as import except with --only-sources
+* update cmd can be feeded a new source url
+* some bug fixes
 
-1.01 Fri Feb 15 14:30:34 EST 2008
+1.16 Wed Nov 12 21:39:58 CST 2008
+* clean nearly all the tmp files automatically except log
 
-* Fixed search.cpan.org indexing of documentation. 
-  Added more doc
-  Fixed a few cpantesters-reported issues
+1.15 Tue Nov 11 19:52:47 CST 2008
++ --skip-recommends and --skip-all-recommends option for import cmd
++ --unreferenced and --check-only option for delete cmd
++ simple setenv bat for window 
+* some bug fixes
 
-1.10 Tue Aug 12 19:42:52 CST 2008
+
+1.14 Tue Aug 26 16:23:56 CST 2008
+* limit versions: perl 5.8.8+, SVK 2+, SVN 1.4+
+* CFLAGS and LDFLAGS are added when build
+* use Archive::Extract instead of tar cmd to extract compressed files
+* some bug fixes
+* clean each dist right after each dist is installed
+* replace die with confess
+
+1.13 Wed Aug 20 23:11:31 CST 2008
+* refactor a bit
+* updated tutorial
+* not wrap libexec any more
+
+1.12 Thu Aug 14 00:30:16 CST 2008
+* clean some test failures
+
+
+1.10 Tue Aug 12 19:42:52 CST 2008ug 14 00:30:16 CST 2008
+* clean some test failures
+
 
 * added flags support
 * added build.pl support
@@ -21,3 +47,16 @@ Revision history for Shipwright
 * more tests
 * more docs
 * a lot of bug fixes
+
+1.01 Fri Feb 15 14:30:34 EST 2008
+
+* Fixed search.cpan.org indexing of documentation. 
+  Added more doc
+  Fixed a few cpantesters-reported issues
+
+1.0    Fri Feb 15 03:38:17 CST 2008
+       the first public release
+0.0.2  Thu Feb  7 09:08:55 CST 2008
+       no config any more
+0.0.1  Tue Nov 20 16:28:55 2007
+       Initial release.
