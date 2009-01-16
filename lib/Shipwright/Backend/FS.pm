@@ -71,7 +71,7 @@ sub _cmd {
             }
             else {
                 if ( $self->has_branch_support ) {
-                    my @dirs = splitdir( $args{name} );
+                    my @dirs = splitdir( $args{as} );
                     unless (
                           -e $self->repository
                         . "/sources/$args{name}/"
