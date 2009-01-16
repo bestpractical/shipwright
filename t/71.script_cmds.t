@@ -21,7 +21,7 @@ my $build_base   = catdir( tmpdir(), 'shipwright_build_71_scripts_cmds' );
 }
 
 SKIP: {
-    skip "svn: no svn found or env SHIPWRIGHT_TEST_BACKEND_SVN not set", 36
+    skip "svn: no svn found or env SHIPWRIGHT_TEST_SVN not set", 36
       if skip_svn();
 
     my $repo = 'svn:' . create_svn_repo() . '/hello';
@@ -45,7 +45,7 @@ SKIP: {
 }
 
 SKIP: {
-    skip "svk: no svk found or env SHIPWRIGHT_TEST_BACKEND_SVK not set", 36
+    skip "svk: no svk found or env SHIPWRIGHT_TEST_SVK not set", 36
       if skip_svk();
 
     create_svk_repo();

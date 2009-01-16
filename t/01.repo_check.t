@@ -36,7 +36,7 @@ Shipwright::Test->init;
 }
 
 SKIP: {
-    skip "svk: no svk found or env SHIPWRIGHT_TEST_BACKEND_SVK not set", 10 
+    skip "svk: no svk found or env SHIPWRIGHT_TEST_SVK not set", 10 
       if skip_svk();
 
     create_svk_repo();
@@ -61,7 +61,7 @@ SKIP: {
 }
 
 SKIP: {
-    skip "svn: no svn found or env SHIPWRIGHT_TEST_BACKEND_SVN not set", 10 
+    skip "svn: no svn found or env SHIPWRIGHT_TEST_SVN not set", 10 
       if skip_svn();
 
     my $valid   = create_svn_repo();

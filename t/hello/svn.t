@@ -13,7 +13,7 @@ use File::Path qw/rmtree/;
 Shipwright::Test->init;
 
 SKIP: {
-    skip "svn: no svn found or env SHIPWRIGHT_TEST_BACKEND_SVN not set", Test::More->builder->expected_tests
+    skip "svn: no svn found or env SHIPWRIGHT_TEST_SVN not set", Test::More->builder->expected_tests
       if skip_svn();
 
     my $cwd = getcwd;

@@ -64,26 +64,26 @@ sub has_svn {
 =head2 skip_svn
 
 if skip svn when test.
-skip test svn unless env SHIPWRIGHT_TEST_BACKEND_SVN is set to true and
+skip test svn unless env SHIPWRIGHT_TEST_SVN is set to true and
 the system has svn
 
 =cut
 
 sub skip_svn {
-    return if $ENV{'SHIPWRIGHT_TEST_BACKEND_SVN'} && has_svn();
+    return if $ENV{'SHIPWRIGHT_TEST_SVN'} && has_svn();
     return 1;
 }
 
 =head2 skip_svk
 
 if skip svk when test.
-skip test svk unless env SHIPWRIGHT_TEST_BACKEND_SVK is set to true and
+skip test svk unless env SHIPWRIGHT_TEST_SVK is set to true and
 the system has svk
 
 =cut
 
 sub skip_svk {
-    return if $ENV{'SHIPWRIGHT_TEST_BACKEND_SVK'} && has_svk();
+    return if $ENV{'SHIPWRIGHT_TEST_SVK'} && has_svk();
     return 1;
 }
 

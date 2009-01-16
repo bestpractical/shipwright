@@ -14,7 +14,7 @@ use Shipwright::Test;
 Shipwright::Test->init;
 
 SKIP: {
-    skip "svk: no svk found or env SHIPWRIGHT_TEST_BACKEND_SVK not set", Test::More->builder->expected_tests
+    skip "svk: no svk found or env SHIPWRIGHT_TEST_SVK not set", Test::More->builder->expected_tests
       if skip_svk();
 
     my $cwd = getcwd;
