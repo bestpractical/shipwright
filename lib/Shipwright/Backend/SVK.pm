@@ -45,7 +45,7 @@ sub initialize {
 sub _svnroot {
     my $self = shift;
     return $self->{svnroot} if $self->{svnroot};
-    my $depotmap = Shipwright::Util->run( [ svk => depotmap => '--list' ] );
+    my $depotmap = Shipwright::Util->run( [ $ENV{'SHIPWRIGHT_SVK'} => depotmap => '--list' ] );
     $depotmap =~ s{\A.*?^(?=/)}{}sm;
     while ($depotmap =~ /^(\S*)\s+(.*?)$/gm) {
         my ($depot, $svnroot) = ($1, $2);
@@ -72,11 +72,11 @@ sub _cmd {
 
     if ( $type eq 'checkout' ) {
         if ( $args{detach} ) {
-            @cmd = [ 'svk', 'checkout', '-d', $args{target} ];
+            @cmd = [ $ENV{'SHIPWRIGHT_SVK'}, 'checkout', '-d', $args{target} ];
         }
         else {
             @cmd = [
-                'svk',                           'checkout',
+                $ENV{'SHIPWRIGHT_SVK'},                           'checkout',
                 $self->repository . $args{path}, $args{target}
             ];
         }
@@ -95,14 +95,14 @@ sub _cmd {
     elsif ( $type eq 'import' ) {
         if ( $args{_initialize} ) {
             @cmd = [
-                'svk',         'import',
+                $ENV{'SHIPWRIGHT_SVK'},         'import',
                 $args{source}, $self->repository,
                 '-m',          $args{comment},
             ];
         }
         elsif ( $args{_extra_tests} ) {
             @cmd = [
-                'svk',         'import',
+                $ENV{'SHIPWRIGHT_SVK'},         'import',
                 $args{source}, $self->repository . '/t/extra',
                 '-m',          $args{comment},
             ];
@@ -126,20 +126,20 @@ sub _cmd {
                   tempdir( 'shipwright_backend_svk_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
                 @cmd = (
                     [ 'rm', '-rf', "$tmp_dir" ],
-                    [ 'svk', 'checkout', $self->repository . $path, $tmp_dir ],
+                    [ $ENV{'SHIPWRIGHT_SVK'}, 'checkout', $self->repository . $path, $tmp_dir ],
                     [ 'rm',  '-rf',      "$tmp_dir" ],
                     [ 'cp', '-r', $source, "$tmp_dir" ],
                     [
-                        'svk',      'commit',
+                        $ENV{'SHIPWRIGHT_SVK'},      'commit',
                         '--import', $tmp_dir,
                         '-m',       $args{comment}
                     ],
-                    [ 'svk', 'checkout', '-d', $tmp_dir ],
+                    [ $ENV{'SHIPWRIGHT_SVK'}, 'checkout', '-d', $tmp_dir ],
                 );
             }
             else {
                 @cmd = [
-                    'svk',   'import',
+                    $ENV{'SHIPWRIGHT_SVK'},   'import',
                     $source, $self->repository . $path,
                     '-m',    $args{comment},
                 ];
@@ -148,18 +148,18 @@ sub _cmd {
     }
     elsif ( $type eq 'commit' ) {
         @cmd =
-          [ 'svk', 'commit', '-m', $args{comment}, $args{path} ];
+          [ $ENV{'SHIPWRIGHT_SVK'}, 'commit', '-m', $args{comment}, $args{path} ];
     }
     elsif ( $type eq 'delete' ) {
         @cmd = [
-            'svk', 'delete', '-m',
+            $ENV{'SHIPWRIGHT_SVK'}, 'delete', '-m',
             'delete repository',
             $self->repository . $args{path},
         ];
     }
     elsif ( $type eq 'move' ) {
         @cmd = [
-            'svk',
+            $ENV{'SHIPWRIGHT_SVK'},
             'move',
             '-m',
             "move $args{path} to $args{new_path}",
@@ -168,7 +168,7 @@ sub _cmd {
         ];
     }
     elsif ( $type eq 'info' ) {
-        @cmd = [ 'svk', 'info', $self->repository . $args{path} ];
+        @cmd = [ $ENV{'SHIPWRIGHT_SVK'}, 'info', $self->repository . $args{path} ];
     }
     elsif ( $type eq 'cat' ) {
         @cmd = [ 'svn', 'cat', $self->_svnroot . $args{path} ];
@@ -202,7 +202,7 @@ sub _yml {
     }
     else {
         my ($out) =
-          Shipwright::Util->run( [ 'svk', 'cat', $self->repository . $path ] );
+          Shipwright::Util->run( [ $ENV{'SHIPWRIGHT_SVK'}, 'cat', $self->repository . $path ] );
         return Shipwright::Util::Load($out);
     }
 }

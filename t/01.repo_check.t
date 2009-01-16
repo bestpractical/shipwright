@@ -25,7 +25,7 @@ Shipwright::Test->init;
             $repo => 1,
 
           # yeah, fs can create anywhere, but this may fail if permission denied
-            'fs:/noexists/blalba' => 1,
+            'fs:/noexists/bla' => 1,
         },
         list => {
             'fs:/noexists/bla' => undef,

@@ -29,8 +29,11 @@ in fact, it also checks svnadmin since we need that to create repo for svk.
 =cut
 
 sub has_svk {
-    if ( can_run('svk') && can_run('svnadmin') ) {
-        my $out = Shipwright::Util->run( [ 'svk', '--version' ], 1 );
+    if (   can_run( $ENV{'SHIPWRIGHT_SVK'} )
+        && can_run( $ENV{'SHIPWRIGHT_SVN'} . 'admin' ) )
+    {
+        my $out =
+          Shipwright::Util->run( [ $ENV{'SHIPWRIGHT_SVK'}, '--version' ], 1 );
         if ( $out && $out =~ /version v(\d)\./i ) {
             return 1 if $1 >= 2;
         }
@@ -46,8 +49,11 @@ in fact, it also checks svnadmin since we need that to create repo.
 =cut
 
 sub has_svn {
-    if ( can_run('svn') && can_run('svnadmin') ) {
-        my $out = Shipwright::Util->run( [ 'svn', '--version' ], 1 );
+    if (   can_run( $ENV{'SHIPWRIGHT_SVN'} )
+        && can_run( $ENV{'SHIPWRIGHT_SVN'} . 'admin' ) )
+    {
+        my $out =
+          Shipwright::Util->run( [ $ENV{'SHIPWRIGHT_SVN'}, '--version' ], 1 );
         if ( $out && $out =~ /version 1\.(\d)/i ) {
             return 1 if $1 >= 4;
         }
@@ -102,8 +108,8 @@ sub create_svk_repo {
     $ENV{SVKROOT} =
       tempdir( 'shipwright_test_svk_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
     my $svk_root_local = catdir( $ENV{SVKROOT}, 'local' );
-    system("svnadmin create $svk_root_local");
-    system("svk depotmap -i");
+    system("$ENV{SHIPWRIGHT_SVN}admin create $svk_root_local");
+    system("$ENV{SHIPWRIGHT_SVK} depotmap -i");
     return $ENV{SVKROOT};
 }
 
@@ -117,7 +123,8 @@ return the repo's uri, like file:///tmp/foo
 sub create_svn_repo {
     my $repo =
       tempdir( 'shipwright_test_svn_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
-    system("svnadmin create $repo") && confess "create repo failed: $!";
+    system("$ENV{SHIPWRIGHT_SVN}admin create $repo")
+      && confess "create repo failed: $!";
     return "file://$repo";
 }
 
@@ -130,6 +137,8 @@ init something, like log
 sub init {
     require Shipwright::Logger;
     Shipwright::Logger->new( log_level => 'FATAL' );
+    $ENV{'SHIPWRIGHT_SVK'} ||= 'svk';
+    $ENV{'SHIPWRIGHT_SVN'} ||= 'svn';
 }
 
 =head2 shipwright_bin

@@ -50,13 +50,16 @@ sub _run {
     my $source = $self->source;
 
     my $cmd = [
-        'svn', 'export', $self->source,
+        $ENV{'SHIPWRIGHT_SVN'},
+        'export',
+        $self->source,
         catdir( $self->download_directory, $self->name ),
         $self->version ? ( '-r', $self->version ) : (),
     ];
 
     unless ( $self->version ) {
-        my ($out) = Shipwright::Util->run( [ 'svn', 'info', $source, ] );
+        my ($out) =
+          Shipwright::Util->run( [ $ENV{'SHIPWRIGHT_SVN'}, 'info', $source, ] );
 
         if ( $out =~ /^Revision: (\d+)/m ) {
             $self->version($1);

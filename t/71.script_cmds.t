@@ -15,36 +15,50 @@ my $install_base = catdir( tmpdir(), 'vessel_71_scripts_cmds' );
 my $build_base   = catdir( tmpdir(), 'shipwright_build_71_scripts_cmds' );
 
 {
+
     # fs backend
-    start_test('fs:' . create_fs_repo() );
+    start_test( 'fs:' . create_fs_repo() );
 }
 
-
 SKIP: {
-    skip "svn: no svn found or env SHIPWRIGHT_TEST_BACKEND_SVN not set", 36 if skip_svn();
+    skip "svn: no svn found or env SHIPWRIGHT_TEST_BACKEND_SVN not set", 36
+      if skip_svn();
 
     my $repo = 'svn:' . create_svn_repo() . '/hello';
 
     my $source = create_svn_repo() . '/foo';    # svn source we'll import
 
     Shipwright::Util->run(
-        [ 'svn', 'import', '-m', q{''}, 't/dists/version1', $source ] );
+        [
+            $ENV{'SHIPWRIGHT_SVN'}, 'import',
+            '-m',                   q{''},
+            't/dists/version1',     $source
+        ]
+    );
 
     my $update_cmd = [
-        'svn', 'import', '-m', q{''}, 't/dists/version2', $source . '/version2'
+        $ENV{'SHIPWRIGHT_SVN'}, 'import',
+        '-m',                   q{''},
+        't/dists/version2',     $source . '/version2'
     ];
     start_test( $repo, "svn:$source", $update_cmd );
 }
 
 SKIP: {
-    skip "svk: no svk found or env SHIPWRIGHT_TEST_BACKEND_SVK not set", 36 if skip_svk();
+    skip "svk: no svk found or env SHIPWRIGHT_TEST_BACKEND_SVK not set", 36
+      if skip_svk();
 
     create_svk_repo();
 
     my $repo   = 'svk://__shipwright/hello';
     my $source = '//foo';
     Shipwright::Util->run(
-        [ 'svk', 'import', '-m', q{''}, 't/dists/version1', $source ] );
+        [
+            $ENV{'SHIPWRIGHT_SVK'}, 'import',
+            '-m',                   q{''},
+            't/dists/version1',     $source
+        ]
+    );
 
     start_test( $repo, "svk:$source" );
 
@@ -283,6 +297,7 @@ qr/set mandatory flags with success\s+mandatory flags of man1 is build/,
 
         $source
         ? (
+
             # import an svn or svk dist named foo
             [
                 [ 'import', $source ],
@@ -290,7 +305,7 @@ qr/set mandatory flags with success\s+mandatory flags of man1 is build/,
                 "imported $source",
             ],
             $update_cmd,    # if the source dist is svk, $update_cmd is undef
-            # update cmd
+                            # update cmd
             [ [ 'update', 'foo' ], qr/updated with success/, "updated foo", ],
           )
         : (),
@@ -307,8 +322,8 @@ qr/set mandatory flags with success\s+mandatory flags of man1 is build/,
                 @$item[ 1 .. $#$item ],
             );
             if ( $cmd eq 'build' ) {
-                rmtree( $install_base );
-                rmtree( $build_base );
+                rmtree($install_base);
+                rmtree($build_base);
             }
         }
         else {

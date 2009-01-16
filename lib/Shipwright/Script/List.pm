@@ -128,11 +128,11 @@ sub _latest_version {
         # has url, meaning svn or svk
         if ( $args{url} =~ /^svn[:+]/ ) {
             $args{url} =~ s{^svn:(?!//)}{};
-            $cmd = [ 'svn', 'info', $args{url} ];
+            $cmd = [ $ENV{'SHIPWRIGHT_SVN'}, 'info', $args{url} ];
         }
         elsif ( $args{url} =~ m{^(svk:|//)} ) {
             $args{url} =~ s/^svk://;
-            $cmd = [ 'svk', 'info', $args{url} ];
+            $cmd = [ $ENV{'SHIPWRIGHT_SVK'}, 'info', $args{url} ];
         }
 
         ($out) = Shipwright::Util->run( $cmd, 1 );    # ignore failure

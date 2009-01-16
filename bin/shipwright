@@ -9,5 +9,7 @@ use Cwd;
 local $SIG{INT} = sub { warn "Stopped\n"; exit; };
 
 my $cwd = getcwd;
+$ENV{SHIPWRIGHT_SVK} ||= 'svk';
+$ENV{SHIPWRIGHT_SVN} ||= 'svn';
 Shipwright::Script->dispatch();
 chdir $cwd;
