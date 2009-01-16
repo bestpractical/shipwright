@@ -90,7 +90,7 @@ sub run {
     );
     my $branches = $shipwright->backend->branches() || {};
     for my $name ( keys %{ $self->branches } ) {
-        die 'no branch name ' . $self->branches->{$name} . " for $name"
+        confess 'no branch name ' . $self->branches->{$name} . " for $name"
           unless grep { $_ eq $self->branches->{$name} }
               @{ $branches->{$name} || [] };
     }
