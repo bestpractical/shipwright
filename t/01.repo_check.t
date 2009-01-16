@@ -2,7 +2,7 @@ use strict;
 use warnings;
 
 use Shipwright;
-use Shipwright::Test qw/has_svk create_svk_repo has_svn create_svn_repo/;
+use Shipwright::Test qw/skip_svk create_svk_repo skip_svn create_svn_repo/;
 use File::Spec::Functions qw/catfile/;
 use File::Temp qw/tempdir/;
 
@@ -11,8 +11,10 @@ use Test::More tests => 10;
 Shipwright::Test->init;
 
 SKIP: {
-    skip "no svk found", 5
-      unless has_svk();
+    skip
+"svk: no svk found or env SHIPWRIGHT_TEST_BACKEND_SVK not set",
+      5
+      if skip_svk();
 
     create_svk_repo();
 
@@ -46,8 +48,8 @@ SKIP: {
 }
 
 SKIP: {
-    skip "no svn found", 5
-      unless has_svn();
+    skip "svn: no svn found or env SHIPWRIGHT_TEST_BACKEND_SVN not set", 5
+      if skip_svn();
 
     my $valid   = create_svn_repo();
     my $invalid = 'svn:file:///aa/bb/cc';

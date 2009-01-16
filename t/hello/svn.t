@@ -8,13 +8,13 @@ use File::Copy::Recursive qw/dircopy/;
 use File::Spec::Functions qw/catfile catdir updir/;
 use Cwd qw/getcwd abs_path/;
 use Test::More tests => 17;
-use Shipwright::Test qw/has_svn create_svn_repo/;
+use Shipwright::Test qw/skip_svn create_svn_repo/;
 use File::Path qw/rmtree/;
 Shipwright::Test->init;
 
 SKIP: {
-    skip "no svn found", Test::More->builder->expected_tests
-      unless has_svn();
+    skip "svn: no svn found or env SHIPWRIGHT_TEST_BACKEND_SVN not set", Test::More->builder->expected_tests
+      if skip_svn();
 
     my $cwd = getcwd;
 

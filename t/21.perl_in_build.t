@@ -2,7 +2,7 @@ use strict;
 use warnings;
 
 use Shipwright;
-use Shipwright::Test qw/has_svk create_svk_repo has_svn create_svn_repo/;
+use Shipwright::Test qw/skip_svk create_svk_repo skip_svn create_svn_repo/;
 use File::Spec::Functions qw/catfile catdir/;
 use File::Temp qw/tempdir/;
 
@@ -10,8 +10,8 @@ use Test::More tests => 8;
 Shipwright::Test->init;
 
 SKIP: {
-    skip "no svk and svnadmin found", 8
-      unless has_svk();
+    skip "svk: no svk found or env SHIPWRIGHT_TEST_BACKEND_SVK not set", 8
+      if skip_svk();
 
     create_svk_repo();
 

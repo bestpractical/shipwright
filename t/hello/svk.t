@@ -10,12 +10,12 @@ use File::Path qw/rmtree/;
 use Cwd qw/getcwd abs_path/;
 
 use Test::More tests => 41;
-use Shipwright::Test qw/has_svk create_svk_repo/;
+use Shipwright::Test qw/skip_svk create_svk_repo/;
 Shipwright::Test->init;
 
 SKIP: {
-    skip "no svk and svnadmin found", Test::More->builder->expected_tests
-      unless has_svk();
+    skip "svk: no svk found or env SHIPWRIGHT_TEST_BACKEND_SVK not set", Test::More->builder->expected_tests
+      if skip_svk();
 
     my $cwd = getcwd;
 

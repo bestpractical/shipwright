@@ -50,7 +50,7 @@ for my $msg ( keys %wrong_argv ) {
     for my $v ( @{ $wrong_argv{$msg} } ) {
         if ( $v->[2] && $v->[2] =~ /^svn/ ) {
           SKIP: {
-                skip 'no svn found', 1 unless has_svn;
+                skip 'svn: no svn found or env SHIPWRIGHT_TEST_BACKEND_SVN not set', 1 if skip_svn;
                 eval { @ARGV = @$v; Shipwright::Script->prepare };
                 like( $@, qr/$msg/, $msg );
             }
