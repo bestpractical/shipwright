@@ -62,8 +62,11 @@ sub run {
             for my $name ( keys %$source ) {
                 next if exists $latest_version->{$name};
                 if ( $source->{$name} =~ m{^(sv[nk]|shipwright):} ) {
-                    $latest_version->{$name} =
-                      $self->_latest_version( url => $source->{$name} );
+                    for my $branch ( keys %{ $source->{$name} } ) {
+                        $latest_version->{$name}{$branch} =
+                          $self->_latest_version(
+                            url => $source->{$name}{$branch} );
+                    }
                 }
             }
         }
@@ -118,10 +121,21 @@ sub run {
 
             print ' ' x 4 . 'references: ',
               defined $refs->{$name} ? $refs->{$name} : 'unknown', "\n";
+
             if ( $self->with_latest_version ) {
-                print ' ' x 4 . 'latest_version: ', $latest_version->{$name}
-                  || 'unknown', "\n";
+                print ' ' x 4, 'latest_version: ';
+                if ( ref $source->{$name} ) {
+                    print "\n";
+                    for my $branch ( keys %{$source->{$name}} ) {
+                        print ' ' x 8, $branch, ': ',
+                            $latest_version->{$name}{$branch} || 'unknown', "\n";
+                    }
+                }
+                else {
+                    print $latest_version->{$name} || 'unknown', "\n";
+                }
             }
+
             if ($branches) {
                 print ' ' x 4 . 'branches: ',
                   join( ', ', @{ $branches->{$name} } ), "\n";
