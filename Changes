@@ -1,14 +1,15 @@
 Revision history for Shipwright
 
-2.0 Fri Jan 16 19:14:31 CST 2009
-+ env SHIPWRIGHT_SVK, SHIPWRIGHT_SVN, SHIPWRIGHT_TEST_SVK, SHIPWRIGHT_TEST_SVN 
+2.0.0 Sun Jan 18 21:10:40 CST 2009
 + branch support
 * to add branch support, the layout of vessel source has changed a bit, 
     but 2.0 can work well with old layout in case you have an old vessel source.
++ env SHIPWRIGHT_SVK, SHIPWRIGHT_SVN, SHIPWRIGHT_TEST_SVK, SHIPWRIGHT_TEST_SVN 
 + JEOS build tool to create JEOS images from a vessel
 * update cmd now will act as import except with --only-sources
 * update cmd can be feeded a new source url
-* some bug fixes
+* use version;
+* bug fixes
 
 1.16 Wed Nov 12 21:39:58 CST 2008
 * clean nearly all the tmp files automatically except log
