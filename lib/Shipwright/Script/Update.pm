@@ -5,7 +5,9 @@ use warnings;
 use Carp;
 
 use base qw/App::CLI::Command Class::Accessor::Fast Shipwright::Script/;
-__PACKAGE__->mk_accessors(qw/all follow builder utility version only_sources/);
+__PACKAGE__->mk_accessors(
+    qw/all follow builder utility version only_sources as/
+);
 
 use Shipwright;
 use File::Spec::Functions qw/catdir/;
@@ -25,10 +27,11 @@ sub options {
         'utility'      => 'utility',
         'version=s'    => 'version',
         'only-sources' => 'only_sources',
+        'as=s'         => 'as',
     );
 }
 
-my ( $shipwright, $map, $source );
+my ( $shipwright, $map, $source, $branches );
 
 sub run {
     my $self = shift;
@@ -43,28 +46,9 @@ sub run {
 
     }
     else {
-        my $name       = shift;
-        my $new_source = shift;
-        if ($new_source) {
-            system(
-                    "$0 relocate -r " 
-                  . $self->repository
-                  . (
-                    $self->log_level ? ( " --log-level " . $self->log_level )
-                    : ''
-                  )
-                  . (
-                    $self->log_file ? ( " --log-file " . $self->log_file )
-                    : ''
-                  )
-                  . " $name $new_source"
-            ) && die "relocate $name to $new_source failed: $!";
-        }
-
-        confess "need name arg\n" unless $name || $self->all;
-
         $map    = $shipwright->backend->map    || {};
         $source = $shipwright->backend->source || {};
+        $branches = $shipwright->backend->branches;
 
         if ( $self->all ) {
             my $dists = $shipwright->backend->order || [];
@@ -73,6 +57,41 @@ sub run {
             }
         }
         else {
+            my $name = shift;
+            confess "need name arg\n" unless $name;
+
+            # die if the specified branch doesn't exist
+            if ( $branches && $self->as ) {
+                confess "$name doesn't have branch "
+                  . $self->as
+                  . ". please use import cmd instead"
+                  unless grep { $_ eq $self->as } @{ $branches->{$name} || [] };
+            }
+
+            my $new_source = shift;
+            if ($new_source) {
+                system(
+                        "$0 relocate -r " 
+                      . $self->repository
+                      . (
+                        $self->log_level
+                        ? ( " --log-level " . $self->log_level )
+                        : ''
+                      )
+                      . (
+                        $self->log_file ? ( " --log-file " . $self->log_file )
+                        : ''
+                      )
+                      . (
+                        $self->as ? ( " --as " . $self->as )
+                        : ''
+                      )
+                      . " $name $new_source"
+                ) && die "relocate $name to $new_source failed: $!";
+                # renew our $source
+                $source = $shipwright->backend->source || {};
+            }
+
             my @dists;
             if ( $self->follow ) {
                 my (%checked);
@@ -100,7 +119,7 @@ sub run {
             for (@dists) {
                 if ( $self->only_sources ) {
                     if ( $_ eq $name ) {
-                        $self->_update( $_, $self->version );
+                        $self->_update( $_, $self->version, $self->as );
                     }
                     else {
                         $self->_update($_);
@@ -108,8 +127,9 @@ sub run {
                 }
                 else {
                     system(
-                        "$0 import -r " . $self->repository
-                        . (
+                            "$0 import -r " 
+                          . $self->repository
+                          . (
                             $self->log_level
                             ? ( " --log-level " . $self->log_level )
                             : ''
@@ -117,6 +137,10 @@ sub run {
                           . (
                             $self->log_file
                             ? ( " --log-file " . $self->log_file )
+                            : ''
+                          )
+                          . (
+                            $self->as ? ( " --as " . $self->as )
                             : ''
                           )
                           . " --name $_"
@@ -133,6 +157,7 @@ sub _update {
     my $self    = shift;
     my $name    = shift;
     my $version = shift;
+    my $as      = shift;
     if ( $source->{$name} ) {
         $shipwright->source(
             Shipwright::Source->new(
@@ -182,6 +207,7 @@ sub _update {
         comment   => "update $name",
         overwrite => 1,
         version   => $version->{$name},
+        as        => $as,
     );
 }
 
@@ -212,6 +238,7 @@ Shipwright::Script::Update - Update dist(s) and scripts
  --builder                    : update bin/shipwright-builder
  --utility                    : update bin/shipwright-utility
  --only-sources               : only update sources, no build scripts
+ --as                         : the branch name
 
 =head1 DESCRIPTION
 
