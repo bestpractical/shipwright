@@ -168,6 +168,7 @@ sub import {
                         $self->branches($branches);
                     }
                     elsif (
+                            $name !~ /^cpan-/ && 
                         !(
                             $branches->{$name} && grep { $args{as} eq $_ }
                             @{ $branches->{$name} }
