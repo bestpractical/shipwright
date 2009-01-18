@@ -6,27 +6,60 @@ use Carp;
 
 use base qw/App::CLI::Command Shipwright::Script/;
 
+__PACKAGE__->mk_accessors('as');
+
+sub options {
+    ( 'as=s' => 'as', );
+}
+
 use Shipwright;
 
 sub run {
     my $self = shift;
     my ( $name, $new_source ) = @_;
 
-    confess "need name arg\n"   unless $name;
-    confess "need source arg\n" unless $new_source;
+    confess "need name arg"   unless $name;
+    confess "need source arg" unless $new_source;
 
     my $shipwright = Shipwright->new(
         repository => $self->repository,
         source     => $new_source,
     );
 
-    my $source = $shipwright->backend->source;
+    my $source   = $shipwright->backend->source;
+    my $branches = $shipwright->backend->branches;
+
+    # die if the specified branch doesn't exist
+    if ( $branches && $self->as ) {
+        confess "$name doesn't have branch "
+          . $self->as
+          . ". please use import cmd instead"
+          unless grep { $_ eq $self->as } @{ $branches->{$name} || [] };
+    }
+
     if ( exists $source->{$name} ) {
-        if ( $source->{$name} eq $new_source ) {
+        if (
+            (
+                ref $source->{$name}
+                  && $source->{$name}{ $self->as || $branches->{$name}[0] } eq
+                  $new_source
+            )
+            || $source->{$name} eq $new_source
+          )
+        {
             print "the new source is the same as old source, won't update\n";
         }
         else {
-            $source->{$name} = $new_source;
+            if ( ref $source->{$name} ) {
+                $source->{$name} = {
+                    %{ $source->{$name} },
+                    $self->as || $branches->{$name}[0] => $new_source
+                };
+            }
+            else {
+                $source->{$name} = $new_source;
+            }
+
             $shipwright->backend->source($source);
             print "relocated $name to $new_source with success\n";
         }
