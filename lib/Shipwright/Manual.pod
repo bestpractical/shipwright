@@ -15,12 +15,16 @@ vessel.
 
 =item L<Shipwright::Manual::CustomizeBuild>
 
-A guide to customizing the build process of individual distributions in a
+A guide of customizing the build process of individual distributions in a
 Shipwright repository.
 
 =item L<Shipwright::Manual::UsingFlags>
 
-A guide to using Shipwright's flags feature.
+A guide of using Shipwright's flags feature.
+
+=item L<Shipwright::Manual::UsingBranches>
+
+A guide of using Shipwright's branches feature.
 
 =item L<Shipwright::Glossary>
 
