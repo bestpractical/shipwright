@@ -211,7 +211,7 @@ sub _install {
     my $dir      = shift;
     my $ktf      = shift;
     my $branches = shift;
-    my $branch = $self->branches->{$dir} || $branches->{$dir}[0];
+    my $branch = $self->branches->{$dir} || $branches->{$dir}[0] || 'vendor';
 
     if ($branches) {
         system( "cp -r "
