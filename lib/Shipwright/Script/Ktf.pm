@@ -77,3 +77,15 @@ Shipwright::Script::Ktf - Maintain a dist's known test failure conditions
  --log-file FILENAME            : specify the log file
  --delete conditions            : delete conditions
  --set conditions               : set conditions
+
+=head1 AUTHORS
+
+sunnavy  C<< <sunnavy@bestpractical.com> >>
+
+=head1 LICENCE AND COPYRIGHT
+
+Shipwright is Copyright 2007-2009 Best Practical Solutions, LLC.
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+

@@ -74,3 +74,14 @@ Shipwright::Script::Maintain - Maintain a project
  --update-order               : update the build order
  --update-refs                : update refs( times a dist shows in all the require.yml )
 
+=head1 AUTHORS
+
+sunnavy  C<< <sunnavy@bestpractical.com> >>
+
+=head1 LICENCE AND COPYRIGHT
+
+Shipwright is Copyright 2007-2009 Best Practical Solutions, LLC.
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+

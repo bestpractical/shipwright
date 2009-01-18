@@ -138,3 +138,15 @@ shipping some software that requires a database, your repository can use flags
 to allow binary vessels to be built for both MySQL and PostgreSQL from it.
 
 For more information on using flags, see L<Shipwright::Manual::UsingFlags>.
+
+=head1 AUTHORS
+
+sunnavy  C<< <sunnavy@bestpractical.com> >>
+
+=head1 LICENCE AND COPYRIGHT
+
+Shipwright is Copyright 2007-2009 Best Practical Solutions, LLC.
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+

@@ -150,3 +150,14 @@ Shipwright::Script::Build - Build the specified project
                                 use the one specified here instead.
  --branches name=branch,...   : specify the branch we want to build
 
+=head1 AUTHORS
+
+sunnavy  C<< <sunnavy@bestpractical.com> >>
+
+=head1 LICENCE AND COPYRIGHT
+
+Shipwright is Copyright 2007-2009 Best Practical Solutions, LLC.
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+

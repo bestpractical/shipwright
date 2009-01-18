@@ -26,7 +26,7 @@ This module implements a SVN repository backend for Shipwright.
 
 =item initialize
 
-Initialize a project.
+initialize a project.
 
 =cut
 
@@ -195,7 +195,7 @@ sub _yml {
 
 =item info
 
-A wrapper around svn's info command.
+a wrapper around svn's info command.
 
 =cut
 
@@ -218,7 +218,7 @@ sub info {
 
 =item check_repository
 
-Check if the given repository is valid.
+check if the given repository is valid.
 
 =cut
 
@@ -272,3 +272,16 @@ sub _update_file {
 =cut
 
 1;
+
+__END__
+
+=head1 AUTHORS
+
+sunnavy  C<< <sunnavy@bestpractical.com> >>
+
+=head1 LICENCE AND COPYRIGHT
+
+Shipwright is Copyright 2007-2009 Best Practical Solutions, LLC.
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.

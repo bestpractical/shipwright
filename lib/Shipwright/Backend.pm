@@ -6,28 +6,6 @@ use Carp;
 use UNIVERSAL::require;
 use Cwd qw/abs_path/;
 
-=head1 NAME
-
-Shipwright::Backend - VCS repository backends
-
-=head1 SYNOPSIS
-
-use Shipwright::Backend;
-$backend = Shipwright::Backend->new (repository => $args{repository});
-
-=head1 METHODS
-
-=over
-
-=item new
-
-The constructor returns the Backend object that corresponds to the type in
-$args{repository}.
-
-Currently, the only supported backends are SVN and SVK.
-
-=cut
-
 sub new {
     my $class = shift;
     my %args  = @_;
@@ -63,44 +41,69 @@ sub new {
 
 __END__
 
+=head1 NAME
+
+Shipwright::Backend - backends
+
+=head1 SYNOPSIS
+
+use Shipwright::Backend;
+$backend = Shipwright::Backend->new(repository => $args{repository});
+
+=head1 METHODS
+
+=over
+
+=item new
+
+returns the Backend object that corresponds to the type in
+$args{repository}.
+
+Currently, the supported backends are FS, SVN and SVK.
+
+=item initialize
+
+=item import
+
+=item export
+
+=item checkout
+
+=item commit
+
+=item update_order
+
+=item order
+
+=item map
+
+=item source
+
+=item delete
+
+=item info
+
+=item test_script
+
+=item requires
+
+=item flags
+
+=item version
+
+=item check_repository
+
+=item update
+
 =back
 
-=head1 INTERFACE
+=head1 AUTHORS
 
-A backend must support the following methods:
+sunnavy  C<< <sunnavy@bestpractical.com> >>
 
-=head2 initialize
+=head1 LICENCE AND COPYRIGHT
 
-=head2 import
+Shipwright is Copyright 2007-2009 Best Practical Solutions, LLC.
 
-=head2 export
-
-=head2 checkout
-
-=head2 commit
-
-=head2 update_order
-
-=head2 order
-
-=head2 map
-
-=head2 source
-
-=head2 delete
-
-=head2 info
-
-=head2 test_script
-
-=head2 requires
-
-=head2 flags
-
-=head2 version
-
-=head2 check_repository
-
-=head2 update
-
-=cut
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.

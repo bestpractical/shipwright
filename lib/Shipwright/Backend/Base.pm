@@ -30,7 +30,7 @@ Base Backend Class
 
 =item new
 
-This is the constructor.
+the constructor
 
 =cut
 
@@ -50,7 +50,7 @@ sub _subclass_method {
 
 =item initialize
 
-Initialize a project.
+initialize a project
 you should subclass this method, and call this to get the dir with content initialized
 
 =cut
@@ -91,7 +91,7 @@ sub initialize {
 
 =item import
 
-Import a dist.
+import a dist.
 
 =cut
 
@@ -282,7 +282,7 @@ sub _add_to_order {
 
 =item update_order
 
-Regenerate the dependency order.
+regenerate the dependency order.
 
 =cut
 
@@ -434,7 +434,7 @@ sub _yml {
 
 =item order
 
-Get or set the dependency order.
+get or set the dependency order.
 
 =cut
 
@@ -447,7 +447,7 @@ sub order {
 
 =item map
 
-Get or set the map.
+get or set the map.
 
 =cut
 
@@ -461,7 +461,7 @@ sub map {
 
 =item source
 
-Get or set the sources map.
+get or set the sources map.
 
 =cut
 
@@ -474,7 +474,7 @@ sub source {
 
 =item flags
 
-Get or set flags.
+get or set flags.
 
 =cut
 
@@ -488,7 +488,7 @@ sub flags {
 
 =item version
 
-Get or set version.
+get or set version.
 
 =cut
 
@@ -502,7 +502,7 @@ sub version {
 
 =item branches
 
-Get or set branches.
+get or set branches.
 
 =cut
 
@@ -521,7 +521,7 @@ sub branches {
 
 =item ktf
 
-Get or set known failure conditions.
+get or set known failure conditions.
 
 =cut
 
@@ -535,7 +535,7 @@ sub ktf {
 
 =item refs
 
-Get or set refs
+get or set refs
 
 =cut
 
@@ -638,7 +638,7 @@ sub info {
 
 =item requires
 
-Return the hashref of require.yml for a dist.
+return the hashref of require.yml for a dist.
 
 =cut
 
@@ -837,3 +837,15 @@ sub has_branch_support {
 =cut
 
 1;
+__END__
+
+=head1 AUTHORS
+
+sunnavy  C<< <sunnavy@bestpractical.com> >>
+
+=head1 LICENCE AND COPYRIGHT
+
+Shipwright is Copyright 2007-2009 Best Practical Solutions, LLC.
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.

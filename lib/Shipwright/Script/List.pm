@@ -230,3 +230,15 @@ Shipwright::Script::List - List dists of a project
                                      (info, debug, warn, error, or fatal)
    --with-latest-version           : show the latest version if possible
    --only-update                   : only show the dists that can be updated
+
+=head1 AUTHORS
+
+sunnavy  C<< <sunnavy@bestpractical.com> >>
+
+=head1 LICENCE AND COPYRIGHT
+
+Shipwright is Copyright 2007-2009 Best Practical Solutions, LLC.
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+

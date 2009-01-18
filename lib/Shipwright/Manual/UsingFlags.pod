@@ -55,3 +55,15 @@ it will be given the C<default> flag and will be installed by default.
 =head1 SEE ALSO
 
 L<Shipwright::Manual::CustomizeBuild>
+
+=head1 AUTHORS
+
+sunnavy  C<< <sunnavy@bestpractical.com> >>
+
+=head1 LICENCE AND COPYRIGHT
+
+Shipwright is Copyright 2007-2009 Best Practical Solutions, LLC.
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+

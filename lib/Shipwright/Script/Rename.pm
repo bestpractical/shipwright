@@ -89,3 +89,15 @@ Shipwright::Script::Rename - Rename a dist
  -l [--log-level] LOGLEVEL    : specify the log level
                                 (info, debug, warn, error, or fatal)
  --log-file FILENAME          : specify the log file
+
+=head1 AUTHORS
+
+sunnavy  C<< <sunnavy@bestpractical.com> >>
+
+=head1 LICENCE AND COPYRIGHT
+
+Shipwright is Copyright 2007-2009 Best Practical Solutions, LLC.
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+
