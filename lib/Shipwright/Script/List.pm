@@ -92,8 +92,30 @@ sub run {
 
         if ($flip) {
             print $name, ': ', "\n";
-            print ' ' x 4 . 'version: ', $versions->{$name} || '',     "\n";
-            print ' ' x 4 . 'from: ',    $source->{$name}   || 'CPAN', "\n";
+            print ' ' x 4 . 'version: ';
+            if ( ref $versions->{$name} ) {
+                print "\n";
+                for my $branch ( keys %{$versions->{$name}} ) {
+                    print ' ' x 8, $branch, ': ',
+                      $versions->{$name}{$branch} || '', "\n";
+                }
+            }
+            else {
+                print $versions->{$name} || '', "\n";
+            }
+
+            print ' ' x 4 . 'from: ';
+            if ( ref $source->{$name} ) {
+                print "\n";
+                for my $branch ( keys %{$source->{$name}} ) {
+                    print ' ' x 8, $branch, ': ',
+                      $source->{$name}{$branch} || '', "\n";
+                }
+            }
+            else {
+                print $source->{$name} || 'CPAN', "\n",
+            }
+
             print ' ' x 4 . 'references: ',
               defined $refs->{$name} ? $refs->{$name} : 'unknown', "\n";
             if ( $self->with_latest_version ) {
