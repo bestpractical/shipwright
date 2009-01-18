@@ -1,0 +1,48 @@
+=head1 NAME
+
+Shipwright::Manual::UsingBranches - Using Branches
+
+=head1 DESCRIPTION
+
+Shipwright B<branches> is a method to keep multiple sources for one dist,
+a bit like branches in vcs.
+technically, all the sources for I<foo> live below I<sources/foo/>.
+
+dists from CPAN can't be branched, or in the other way, can only have one branch.
+technically, only dists occurred in shipwright/source.yml can be branched.
+
+Imagine we have an app Foo, of which the layout in vcs is like:
+trunk/...
+branches/1.0/...
+branches/2.0/...
+
+with B<branches> support, we can add all the 3 versions in shipwright:
+
+    $ shipwright import -r ... svn:.../trunk --name Foo --as trunk
+    $ shipwright import -r ... svn:.../branches/1.0 --name Foo --as branches/1.0
+    $ shipwright import -r ... svn:.../branches/2.0 --name Foo --as branches/2.0
+
+the branch names can be whatever you want, no need to be the same layout as your 
+vcs system
+now we have I<trunk>, I<1.0> and I<2.0> branches in shipwright:
+
+    $ shipwright list -r ... Foo
+
+will show "branches: trunk, branches/1.0, branches/2.0"
+
+when build, the 1st one will be treated as the default branch.
+to change the default branch, e.g. we want to change 2.0 as the default:
+
+    $ shipwright defaultbranch -r ... Foo branches/2.0
+
+if we don't want to change the default branch, we can also supply --branch arg 
+when build:
+
+    $ shipwright build -r ... --branches Foo=branches/2.0
+
+Note:
+
+since all these branches share the same build script and the same dep dists,
+if branches are way too different, it's better to create another vessel source 
+instead of branching.
+
