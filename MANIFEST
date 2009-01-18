@@ -1,3 +1,4 @@
+bin/jeos-build
 bin/shipwright
 Changes
 inc/Module/AutoInstall.pm
@@ -24,6 +25,7 @@ lib/Shipwright/Manual.pod
 lib/Shipwright/Manual/CustomizeBuild.pod
 lib/Shipwright/Manual/Glossary.pod
 lib/Shipwright/Manual/Tutorial.pod
+lib/Shipwright/Manual/UsingBranches.pod
 lib/Shipwright/Manual/UsingFlags.pod
 lib/Shipwright/Script.pm
 lib/Shipwright/Script/Build.pm
@@ -62,7 +64,7 @@ share/etc/shipwright-script-wrapper
 share/etc/shipwright-source-bash
 share/etc/shipwright-source-tcsh
 share/etc/shipwright-utility
-share/shipwright/branches.yml
+share/etc/shipwright-windows-setenv.bat
 share/shipwright/branches.yml
 share/shipwright/flags.yml
 share/shipwright/known_test_failures.yml
@@ -90,6 +92,7 @@ t/dists/tgz_build.tar.gz
 t/dists/version1/info
 t/dists/version2/info
 t/hello/Acme-Hello-0.03.tar.gz
+t/hello/fs.t
 t/hello/scripts/build
 t/hello/scripts/howdy_require.yml
 t/hello/scripts/require.yml

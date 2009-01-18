@@ -7,7 +7,7 @@ build_requires:
   IPC::Cmd: 0
   Module::Build: 0
 distribution_type: module
-generated_by: 'Module::Install version 0.76'
+generated_by: 'Module::Install version 0.77'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -23,6 +23,8 @@ requires:
   Algorithm::Dependency::Ordered: 0
   Algorithm::Dependency::Source::HoA: 0
   App::CLI: 0
+  Archive::Extract: 0
+  Archive::Tar: 0
   CPAN: 1.9205
   CPAN::DistnameInfo: 0
   Class::Accessor::Fast: 0
@@ -32,6 +34,8 @@ requires:
   File::Spec: 0
   File::Temp: 0
   Hash::Merge: 0
+  IO::Uncompress::Bunzip2: 0
+  IO::Uncompress::RawInflate: 2.012
   IPC::Run3: 0
   LWP::UserAgent: 0
   List::MoreUtils: 0
@@ -45,4 +49,4 @@ requires:
   version: 0
 resources:
   license: http://dev.perl.org/licenses/
-version: 2.0
+version: 2.000000
