@@ -86,21 +86,36 @@ sub run {
             if ( $latest_version->{$name} ) {
                 require version;
                 my $latest = version->new( $latest_version->{$name} );
-                if ( $latest gt $versions->{$name} ) {
+                if ( ref $versions->{$name} ) {
+
+                  # we show this dist if at least one of the branches has update
+                    for my $branch ( keys %{ $versions->{$name} } ) {
+                        if ( $latest gt $versions->{$name}{$branch} ) {
+                            $flip = 1;
+                            last;
+                        }
+                    }
+                }
+                elsif ( $latest gt $versions->{$name} ) {
                     $flip = 1;
                 }
             }
-
         }
 
         if ($flip) {
             print $name, ': ', "\n";
             print ' ' x 4 . 'version: ';
             if ( ref $versions->{$name} ) {
-                print "\n";
-                for my $branch ( keys %{$versions->{$name}} ) {
-                    print ' ' x 8, $branch, ': ',
-                      $versions->{$name}{$branch} || '', "\n";
+
+                if ( $name =~ /^cpan-/ ) {
+                    print $versions->{$name}{'vendor'}, "\n";
+                }
+                else {
+                    print "\n";
+                    for my $branch ( keys %{ $versions->{$name} } ) {
+                        print ' ' x 8, $branch, ': ',
+                          $versions->{$name}{$branch} || '', "\n";
+                    }
                 }
             }
             else {
@@ -110,13 +125,13 @@ sub run {
             print ' ' x 4 . 'from: ';
             if ( ref $source->{$name} ) {
                 print "\n";
-                for my $branch ( keys %{$source->{$name}} ) {
+                for my $branch ( keys %{ $source->{$name} } ) {
                     print ' ' x 8, $branch, ': ',
                       $source->{$name}{$branch} || '', "\n";
                 }
             }
             else {
-                print $source->{$name} || 'CPAN', "\n",
+                print $source->{$name} || 'CPAN', "\n",;
             }
 
             print ' ' x 4 . 'references: ',
@@ -126,9 +141,9 @@ sub run {
                 print ' ' x 4, 'latest_version: ';
                 if ( ref $source->{$name} ) {
                     print "\n";
-                    for my $branch ( keys %{$source->{$name}} ) {
+                    for my $branch ( keys %{ $source->{$name} } ) {
                         print ' ' x 8, $branch, ': ',
-                            $latest_version->{$name}{$branch} || 'unknown', "\n";
+                          $latest_version->{$name}{$branch} || 'unknown', "\n";
                     }
                 }
                 else {
@@ -136,7 +151,7 @@ sub run {
                 }
             }
 
-            if ($branches) {
+            if ($branches && $name !~ /^cpan-/) {
                 print ' ' x 4 . 'branches: ',
                   join( ', ', @{ $branches->{$name} } ), "\n";
             }
