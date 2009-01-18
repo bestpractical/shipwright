@@ -217,12 +217,14 @@ sub run {
           || {};
         my $source_url = delete $new_url->{$name};
 
-        $shipwright->backend->source(
-            Hash::Merge::merge(
-                $shipwright->backend->source || {},
-                { $name => { $self->as || 'vendor' => $source_url } },
-            )
-        );
+        if ( $name !~ /^cpan-/ ) {
+            $shipwright->backend->source(
+                Hash::Merge::merge(
+                    $shipwright->backend->source || {},
+                    { $name => { $self->as || 'vendor' => $source_url } },
+                )
+            );
+        }
 
         my $new_order = $shipwright->backend->fiddle_order;
         $shipwright->backend->order($new_order);
