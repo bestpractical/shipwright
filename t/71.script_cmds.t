@@ -123,8 +123,8 @@ sub start_test {
         [
             [ 'list', ],
             qr{Acme-Hello:\s+
-        version:\s+0\.03\s+
-        from:\s+\Qfile:t/hello/Acme-Hello-0.03.tar.gz\E\s+
+        version:\s+vendor:\s+0\.03\s+
+        from:\s+vendor:\s+\Qfile:t/hello/Acme-Hello-0.03.tar.gz\E\s+
         references:\s+0\s+
             }mx,
             'list the repo'
@@ -140,8 +140,8 @@ sub start_test {
         [
             [ 'list', ],
             qr{foo:\s+
-        version:\s+0\.03\s+
-        from:\s+\Qfile:t/hello/Acme-Hello-0.03.tar.gz\E\s+
+        version:\s+vendor:\s+0\.03\s+
+        from:\s+vendor:\s+\Qfile:t/hello/Acme-Hello-0.03.tar.gz\E\s+
         references:\s+0\s+
             }mx,
             'list the repo'
@@ -191,8 +191,8 @@ sub start_test {
             [ 'ls', 'dir_configure' ],
 
             qr{dir_configure:\s+ 
-              version:\s+3\.14\s+
-              from:\s+\Qdirectory:t/dists/dir_configure\E\s+
+              version:\s+vendor:\s+3\.14\s+
+              from:\s+vendor:\s+\Qdirectory:t/dists/dir_configure\E\s+
               references:\s+0\s+
             }mx,
             'list dir_configure, --version arg works too',
@@ -211,8 +211,8 @@ sub start_test {
         [
             [ 'ls', 'tgz_build' ],
             qr{tgz_build:\s+ 
-              version:\s+2\.72\s+
-              from:\s+\Qfile:t/dists/tgz_build.tar.gz\E\s+
+              version:\s+vendor:\s+2\.72\s+
+              from:\s+vendor:\s+\Qfile:t/dists/tgz_build.tar.gz\E\s+
               references:\s+0\s+
             }mx,
             'list tgz_build, --version arg works too',
@@ -227,8 +227,8 @@ sub start_test {
         [
             [ 'ls', 'tbz_make' ],
             qr{tbz_make:\s+ 
-              version:\s+
-              from:\s+\Qfile:t/dists/tbz_make.tar.bz2\E\s+
+              version:\s+vendor:\s+
+              from:\s+vendor:\s+\Qfile:t/dists/tbz_make.tar.bz2\E\s+
               references:\s+0\s+
             }mx,
             'list tgz_make',
