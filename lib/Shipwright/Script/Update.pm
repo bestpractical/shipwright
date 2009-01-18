@@ -51,6 +51,9 @@ sub run {
         $branches = $shipwright->backend->branches;
 
         if ( $self->all ) {
+            confess '--all can not be specified with --as or NAME'
+              if @_ || $self->as;
+
             my $dists = $shipwright->backend->order || [];
             for (@$dists) {
                 $self->_update($_);
