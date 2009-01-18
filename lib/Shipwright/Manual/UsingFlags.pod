@@ -4,8 +4,7 @@ Shipwright::Manual::UsingFlags - Using Flags
 
 =head1 DESCRIPTION
 
-Shipwright B<flags> are a method for having a single repository support
-multiple variants of vessels.
+Shipwright B<flags> is a method to make a single repository to support multiple variants of vessels.
 
 Imagine you want to create a project which requires a database. There are
 several database types you want to support in the same repository, while you'd
