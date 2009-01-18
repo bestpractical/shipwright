@@ -56,13 +56,18 @@ sub run {
         # don't have source specified, use the one in repo
         my $map        = $shipwright->backend->map    || {};
         my $source_yml = $shipwright->backend->source || {};
+        my $branches   = $shipwright->backend->branches;
 
         my $r_map = { reverse %$map };
         if ( $r_map->{ $self->name } ) {
             $source = 'cpan:' . $r_map->{ $self->name };
         }
-        elsif ( $source_yml->{ $self->name } ) {
-            $source = $source_yml->{ $self->name };
+        elsif ($branches) {
+            $source = $source_yml->{ $self->name }{ $self->as
+                  || $branches->{ $self->name }[0] };
+        }
+        else {
+            $source = $source_yml->{$self->name};
         }
 
     }
@@ -207,8 +212,13 @@ sub run {
         my $new_url =
           Shipwright::Util::LoadFile( $shipwright->source->url_path )
           || {};
+        my $source_url = delete $new_url->{$name};
+
         $shipwright->backend->source(
-            Hash::Merge::merge( $shipwright->backend->source || {}, $new_url )
+            Hash::Merge::merge(
+                $shipwright->backend->source || {},
+                { $name => { $self->as || 'vendor' => $source_url } },
+            )
         );
 
         my $new_order = $shipwright->backend->fiddle_order;
