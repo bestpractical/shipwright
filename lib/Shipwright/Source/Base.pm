@@ -87,7 +87,8 @@ sub _follow {
 
     my $reverse_map = { reverse %$map };
     my $skip_recommends = $self->skip_recommends->{ $self->name }
-      || $self->skip_recommends->{ $reverse_map->{ $self->name } }
+      || ( $reverse_map->{ $self->name }
+        && $self->skip_recommends->{ $reverse_map->{ $self->name } } )
       || $self->skip_all_recommends;
     push @types, 'recommends' unless $skip_recommends;
 
