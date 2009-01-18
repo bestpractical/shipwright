@@ -118,6 +118,9 @@ sub run {
             skip_all_recommends => $self->skip_all_recommends,
         );
 
+        confess "cpan dists can't be branched"
+          if $shipwright->source->isa('Shipwright::Source::CPAN') && $self->as;
+
         unless ( $self->overwrite ) {
 
             # skip already imported dists
