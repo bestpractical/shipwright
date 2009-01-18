@@ -100,8 +100,7 @@ sub run {
     $shipwright->backend->export( target => $shipwright->build->build_base );
 
     my $dists_dir = $shipwright->build->build_base;
-
-    mkdir 'dists' unless -e 'dists';
+    mkdir catdir( $dists_dir, 'dists' ) unless -e catdir( $dists_dir, 'dists' );
     for my $name ( keys %source ) {
         my $dir = catdir( $dists_dir, 'dists', $name );
         system("rm -rf $dir");
