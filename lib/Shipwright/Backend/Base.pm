@@ -157,7 +157,7 @@ sub import {
                     $self->_add_to_order($name);
 
                     my $version = $self->version;
-                    $version->{$name} = $args{version};
+                    $version->{$name}{$args{as}} = $args{version};
                     $self->version($version);
 
                     my $branches = $self->branches;
