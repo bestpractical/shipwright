@@ -1,5 +1,8 @@
 Revision history for Shipwright
 
+2.0.1 Mon Jan 19 15:15:57 CST 2009
++ require File::HomeDir
+
 2.0.0 Sun Jan 18 21:10:40 CST 2009
 + branch support
 * to add branch support, the layout of vessel source has changed a bit, 
