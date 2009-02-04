@@ -42,6 +42,10 @@ sub prepare {
     if ( $ARGV[0] =~ /--?h(elp)?/i ) {
         $ARGV[0] = 'help';
     }
+    elsif ( $ARGV[0] =~ /^(-v|--version|version)$/ ) {
+        print "This is Shipwright, version $Shipwright::VERSION\n";
+        exit 0;
+    }
 
     my $action = $ARGV[0];
 
