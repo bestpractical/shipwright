@@ -51,6 +51,7 @@ lib/Shipwright/Source/HTTP.pm
 lib/Shipwright/Source/Shipwright.pm
 lib/Shipwright/Source/SVK.pm
 lib/Shipwright/Source/SVN.pm
+lib/Shipwright/Source/Git.pm
 lib/Shipwright/Test.pm
 lib/Shipwright/Util.pm
 Makefile.PL
