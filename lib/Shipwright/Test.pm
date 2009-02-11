@@ -139,6 +139,7 @@ sub init {
     Shipwright::Logger->new( log_level => 'FATAL' );
     $ENV{'SHIPWRIGHT_SVK'} ||= 'svk';
     $ENV{'SHIPWRIGHT_SVN'} ||= 'svn';
+    $ENV{'SHIPWRIGHT_GIT'} ||= 'git';
 }
 
 =head2 shipwright_bin
