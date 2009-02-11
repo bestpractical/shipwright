@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 28;
+use Test::More tests => 31;
 use Shipwright::Test;
 use Shipwright::Source;
 use File::Spec::Functions qw/catfile/;
@@ -17,6 +17,7 @@ my %source = (
     'cpan:S/SU/SUNNAVY/IP-QQWry-v0.0.15.tar.gz' => 'CPAN',
     'file:' . catfile( 't', 'hello', 'Acme-Hello-0.03.tar.gz' ) => 'Compressed',
     'dir:' . catfile( 't', 'hello' ) => 'Directory',
+    'git:file:///home/sunnavy/git/hello'        => 'Git',
 );
 
 for ( keys %source ) {
