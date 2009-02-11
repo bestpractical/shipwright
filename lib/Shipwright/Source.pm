@@ -84,10 +84,10 @@ sub type {
     }
 
     # prefix that can be omitted
-    for my $type (qw/svn http ftp/) {
+    for my $type (qw/svn http ftp git/) {
         if ( $$source =~ /^$type:/i ) {
             $$source =~ s{^$type:(?!//)}{}i;
-            return uc $type;
+            return $type eq 'git' ? 'Git' : uc $type;
         }
     }
 
