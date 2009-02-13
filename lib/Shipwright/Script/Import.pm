@@ -335,7 +335,7 @@ sub _generate_build {
     my $shipwright = shift;
 
     my @commands;
-    if ( -f catfile( $source_dir, 'Build.PL' ) ) {
+    if ( -f catfile( $source_dir, 'Build.PL' ) &&  $source_dir !~ /Module-Build/ ) { # M::B should be bootstrapped with MakeMaker
         print "detected Module::Build build system\n";
         @commands = (
             'configure: %%PERL%% Build.PL --install_base=%%INSTALL_BASE%%',
