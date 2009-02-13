@@ -328,7 +328,7 @@ sub _install {
             # assume we should use it 
             # XXX TODO - this will fail on old shipwright sources 
             # which have a vendor directory inside the dist.
-            if (!$branch  &&     -d  catdir( 'sources', $dir,  'vendor' ) {
+            if (!$branch  &&     -d  catdir( 'sources', $dir,  'vendor' )) {
                         $branch = 'vendor';
             }  
            system( "cp -r "
