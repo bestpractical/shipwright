@@ -324,7 +324,14 @@ sub _install {
     else {
         if ($branches) {
             my $branch = $args{branches}{$dir} || $branches->{$dir}[0];
-            system( "cp -r "
+            # If no branch is specified but the vendor dir is there, 
+            # assume we should use it 
+            # XXX TODO - this will fail on old shipwright sources 
+            # which have a vendor directory inside the dist.
+            if (!$branch  &&     -d  catdir( 'sources', $dir,  'vendor' ) {
+                        $branch = 'vendor';
+            }  
+           system( "cp -r "
                   . catdir( 'sources', $dir, split /\//, $branch )
                   . ' '
                   . catdir( 'dists', $dir ) )
