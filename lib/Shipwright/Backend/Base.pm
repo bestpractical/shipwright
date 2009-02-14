@@ -69,6 +69,12 @@ sub initialize {
     copy( Module::Info->new_from_module('YAML::Tiny')->file, $yaml_tiny_path )
       or confess "copy YAML/Tiny.pm failed: $!";
 
+    my $clean_inc_path = catdir( $dir, 'inc', 'Shipwright', 'Util' );
+    mkpath $clean_inc_path;
+    copy( Module::Info->new_from_module('Shipwright::Util::CleanINC')->file,
+        $clean_inc_path )
+      or confess "copy Shipwright/Util/CleanINC.pm failed: $!";
+
     # set proper permissions for yml under /shipwright/
     my $sw_dir = catdir( $dir, 'shipwright' );
     my $sw_dh;
