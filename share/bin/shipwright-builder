@@ -13,6 +13,14 @@ use Cwd qw/getcwd abs_path/;
 use inc::YAML::Tiny;
 use Carp qw/confess/;
 
+BEGIN {
+    @INC = (
+        $Config::Config{privlibexp},
+        $Config::Config{archlibexp},
+        split ':', $ENV{PERL5LIB}
+    );
+}
+
 my $build_base = getcwd;
 
 my %args;
