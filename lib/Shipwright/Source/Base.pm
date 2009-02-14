@@ -115,7 +115,8 @@ sub _follow {
                 }
             }
 
-            Shipwright::Util->run( [ './Build', 'realclean' ] );
+            Shipwright::Util->run(
+                [ './Build', 'realclean', '--allow_mb_mismatch', 1 ] );
         }
         elsif ( -e 'Makefile.PL' ) {
             my $makefile = read_file('Makefile.PL')
