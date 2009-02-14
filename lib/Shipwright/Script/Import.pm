@@ -226,8 +226,8 @@ sub run {
             );
         }
 
-        my $new_order = $shipwright->backend->fiddle_order;
-        $shipwright->backend->order($new_order);
+#        my $new_order = $shipwright->backend->fiddle_order;
+#        $shipwright->backend->order($new_order);
     }
 
     print "imported with success\n";
