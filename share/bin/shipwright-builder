@@ -160,13 +160,12 @@ else {
 
 if ( -e catfile( 'shipwright', 'branches.yml' ) ) {
     $branches =
-         ( YAML::Tiny->read( catfile( 'shipwright', 'branches.yml' ) ) )->[0];
-    if ($branches) {
-        for my $name ( keys %{ $args{branches} } ) {
-            die 'no branch name ' . $args{branches}->{$name} . " for $name"
-              unless grep { $_ eq $args{branches}->{$name} }
-                  @{ $branches->{$name} || [] };
-        }
+         ( YAML::Tiny->read( catfile( 'shipwright', 'branches.yml' ) ) )->[0]
+      || {};
+    for my $name ( keys %{ $args{branches} } ) {
+        die 'no branch name ' . $args{branches}->{$name} . " for $name"
+          unless grep { $_ eq $args{branches}->{$name} }
+              @{ $branches->{$name} || [] };
     }
 }
 
