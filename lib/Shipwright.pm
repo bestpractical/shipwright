@@ -13,7 +13,6 @@ use Shipwright::Logger;
 use Shipwright::Util;
 use Shipwright::Backend;
 use Shipwright::Source;
-use Shipwright::Build;
 use File::Temp qw/tempfile/;
 use File::Spec::Functions qw/catfile tmpdir/;
 
@@ -41,7 +40,6 @@ sub new {
 
     if ( $args{repository} ) {
         $self->backend( Shipwright::Backend->new(%args) );
-        $self->build( Shipwright::Build->new(%args) );
     }
 
     if ( $args{source} ) {
