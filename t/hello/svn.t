@@ -7,7 +7,7 @@ use File::Copy;
 use File::Copy::Recursive qw/dircopy/;
 use File::Spec::Functions qw/catfile catdir updir/;
 use Cwd qw/getcwd abs_path/;
-use Test::More tests => 17;
+use Test::More tests => 10;
 use Shipwright::Test;
 use File::Path qw/rmtree/;
 Shipwright::Test->init;
@@ -59,53 +59,6 @@ SKIP: {
     );
     ok( grep( {/Build\.PL/} `svn cat $repo/scripts/Acme-Hello/build` ),
         'build script ok' );
-
-    # export
-    $shipwright->backend->export( target => $shipwright->build->build_base );
-
-    for (
-        catfile( $shipwright->build->build_base, 'shipwright', 'order.yml', ),
-        catfile(
-            $shipwright->build->build_base, 'etc',
-            'shipwright-script-wrapper'
-        ),
-        catfile(
-            $shipwright->build->build_base, 'sources',
-            'Acme-Hello',                   'vendor',
-        ),
-        catfile(
-            $shipwright->build->build_base, 'sources',
-            'Acme-Hello',                   'vendor',
-            'MANIFEST',
-        ),
-        catfile(
-            $shipwright->build->build_base, 'scripts',
-            'Acme-Hello',                   'build',
-        ),
-      )
-    {
-        ok( -e $_, "$_ exists" );
-    }
-
-    # install
-    $shipwright->build->run();
-
-    for (
-        catfile(
-            $shipwright->build->install_base, 'lib',
-            'perl5',                          'Acme',
-            'Hello.pm'
-        ),
-        catfile(
-            $shipwright->build->install_base, 'etc',
-            'shipwright-script-wrapper'
-        ),
-      )
-    {
-        ok( -e $_, "$_ exists" );
-    }
-
-    rmtree( abs_path(catdir( $shipwright->build->install_base, updir() )) );
 
     # import another dist
 
