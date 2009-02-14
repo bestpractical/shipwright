@@ -163,30 +163,12 @@ Hey, you know how to edit that file, right? ;)
 
 =head2 build
 
-There're two ways to build a Shipwright project, we can use Shipwright's
-I<build> command or use the F</bin/shipwright-builder> in the repository. 
-
-=over 4
-
-=item build cmd
-
-$ shipwright build -r svn:file:///tmp/svnrepo/foo
-
-You can tell Shipwright the dir to install to by C<--install-base> arg.
-
-Run I<shipwright help build> to see more options.
-
-=item F<./bin/shipwright-buider>
-
-F<./bin/shipwright-buider> lives in the Shipwright repository,
-so we need to I<check out> the repository to some place first,
+We need to I<check out> the repository to some place first,
 then I<chdir> there, and run:
 
 $ ./bin/shipwright-builder 
 
 Run I<./bin/shipwright-builder --help> to see more options.
-
-=back
 
 =head2 ship our vessel
 

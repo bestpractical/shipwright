@@ -121,13 +121,8 @@ invoked like this:
 
 $ shipwright import ...
 
-$ shipwright build ...
-
-If you receive a Shipwright repository but don't have Shipwright installed
-on your system, you can still build and install a vessel with the repository's
-included F<bin/shipwright-builder> script. It's recommended and even encouraged
-to build with this script, as you can change it freely without worrying that
-the changes might affect other shipwright builds.
+$ check out your repository and cd there
+$ ./shipwright-builder ...
 
 =head2 What's in a Shipwright repository or vessel
 

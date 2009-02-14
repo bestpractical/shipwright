@@ -38,7 +38,7 @@ to change the default branch, e.g. we want to change 2.0 as the default:
 if we don't want to change the default branch, we can also supply --branch arg 
 when build:
 
-    $ shipwright build -r ... --branches Foo=branches/2.0
+    $ ./bin/shipwright-builder --branches Foo=branches/2.0
 
 Note:
 
