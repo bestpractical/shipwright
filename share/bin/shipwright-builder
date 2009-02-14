@@ -11,15 +11,8 @@ use Config;
 use Getopt::Long;
 use Cwd qw/getcwd abs_path/;
 use inc::YAML::Tiny;
+use inc::Shipwright::Util::CleanINC;
 use Carp qw/confess/;
-
-BEGIN {
-    @INC = (
-        $Config::Config{privlibexp},
-        $Config::Config{archlibexp},
-        split ':', $ENV{PERL5LIB}
-    );
-}
 
 my $build_base = getcwd;
 
@@ -362,6 +355,7 @@ sub _install {
     if ( -e catfile( '..', '..', 'scripts', $dir, 'build.pl' ) ) {
         print $log "found build.pl for $dir, will install $dir using that\n";
         my $cmd = join ' ', $args{perl} || $^X,
+           '-Minc::Shipwright::Util::CleanINC',
           catfile( '..', '..', 'scripts', $dir, 'build.pl' ),
           '--install-base' => $args{'install-base'},
           '--flags'        => join( ',', keys %{ $args{flags} } ),
@@ -591,6 +585,7 @@ sub _clean {
     if ( -e catfile( '..', '..', 'scripts', $dir, 'build.pl' ) ) {
         print $log "found build.pl for $dir, will clean $dir using that\n";
         $cmd = join ' ', $args{perl} || $^X,
+          '-Minc::Shipwright::Util::CleanINC',
           catfile( '..', '..', 'scripts', $dir, 'build.pl' ),
           '--install-base' => $args{'install-base'},
           '--flags'        => join( ',', keys %{ $args{flags} } ),
