@@ -7,7 +7,7 @@ build_requires:
   IPC::Cmd: 0
   Module::Build: 0
 distribution_type: module
-generated_by: 'Module::Install version 0.77'
+generated_by: 'Module::Install version 0.79'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -15,10 +15,9 @@ meta-spec:
 name: Shipwright
 no_index:
   directory:
-    - t
-    - docs
-    - share
     - inc
+    - share
+    - t
 requires:
   Algorithm::Dependency::Ordered: 0
   Algorithm::Dependency::Source::HoA: 0
