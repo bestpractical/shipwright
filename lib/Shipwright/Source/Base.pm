@@ -99,7 +99,7 @@ sub _follow {
         chdir catdir($path);
 
         if ( -e 'Build.PL' ) {
-            Shipwright::Util->run( [ $^X, '-MShipwright::Util::CleanINC', 'Build.PL' ] );
+            Shipwright::Util->run( [ $^X, '-MModule::Build', '-MShipwright::Util::CleanINC', 'Build.PL' ] );
             my $source = read_file( catfile( '_build', 'prereqs' ) )
               or confess "can't read _build/prereqs: $!";
             my $eval = '$require = ' . $source;
