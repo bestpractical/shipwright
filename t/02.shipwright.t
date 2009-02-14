@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 11;
+use Test::More tests => 9;
 use Shipwright;
 
 my $sw = Shipwright->new(
@@ -10,7 +10,6 @@ my $sw = Shipwright->new(
 );
 isa_ok( $sw->backend, 'Shipwright::Backend::SVK', '$sw->backend' );
 isa_ok( $sw->source,  'Shipwright::Source::CPAN', '$sw->source' );
-isa_ok( $sw->build,   'Shipwright::Build',        '$sw->build' );
 
 like( $sw->log_file, qr/svk__test_foo\.log$/, 'default log_file' );
 is( $sw->log_level, 'FATAL', 'default log_level is FATAL' );
@@ -21,7 +20,6 @@ $sw = Shipwright->new(
 );
 
 is( $sw->backend, undef, 'no repository, no backend' );
-is( $sw->build,   undef, 'no repository, no build' );
 is( $sw->source,  undef, 'no source, no backend' );
 
 is( $sw->log_file,  '/tmp/t.log', 'log_file arg is ok' );

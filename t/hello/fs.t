@@ -9,7 +9,7 @@ use File::Spec::Functions qw/catfile catdir updir/;
 use File::Path qw/rmtree/;
 use Cwd qw/getcwd abs_path/;
 
-use Test::More tests => 41;
+use Test::More tests => 31;
 use Shipwright::Test;
 Shipwright::Test->init;
 
@@ -48,7 +48,6 @@ my $shipwright = Shipwright->new(
 isa_ok( $shipwright,          'Shipwright' );
 isa_ok( $shipwright->backend, 'Shipwright::Backend::FS' );
 isa_ok( $shipwright->source,  'Shipwright::Source::Compressed' );
-isa_ok( $shipwright->build,   'Shipwright::Build' );
 
 # init
 $shipwright->backend->initialize();
@@ -65,7 +64,7 @@ is_deeply(
 my $source_dir = $shipwright->source->run();
 like( $source_dir, qr/\bAcme-Hello\b/, 'source name looks ok' );
 
-for (qw/source backend build/) {
+for (qw/source backend/) {
     isa_ok( $shipwright->$_->log, 'Log::Log4perl::Logger' );
 }
 
@@ -89,50 +88,6 @@ $shipwright->backend->import(
 );
 ok( grep( {/Build\.PL/} `cat $repo/scripts/Acme-Hello/build` ),
     'build script ok' );
-
-# export
-$shipwright->backend->export( target => $shipwright->build->build_base );
-
-for (
-    catfile( $shipwright->build->build_base, 'shipwright', 'order.yml', ),
-    catfile(
-        $shipwright->build->build_base,
-        'etc', 'shipwright-script-wrapper'
-    ),
-    catfile( $shipwright->build->build_base,
-        'sources', 'Acme-Hello', 'vendor', ),
-    catfile(
-        $shipwright->build->build_base, 'sources',
-        'Acme-Hello',                   'vendor',
-        'MANIFEST',
-    ),
-    catfile(
-        $shipwright->build->build_base, 'scripts', 'Acme-Hello', 'build',
-    ),
-  )
-{
-    ok( -e $_, "$_ exists" );
-}
-
-# install
-$shipwright->build->run();
-
-for (
-    catfile(
-        $shipwright->build->install_base, 'lib',
-        'perl5',                          'Acme',
-        'Hello.pm'
-    ),
-    catfile(
-        $shipwright->build->install_base, 'etc',
-        'shipwright-script-wrapper'
-    ),
-  )
-{
-    ok( -e $_, "$_ exists" );
-}
-
-rmtree( abs_path( catdir( $shipwright->build->install_base, updir() ) ) );
 
 # import another dist
 
@@ -188,26 +143,3 @@ like(
     qr/Acme-Hello.*howdy/s,
     'updated order works'
 );
-
-# build with 0 packages
-
-{
-    my $shipwright = Shipwright->new(
-        repository => "fs:$repo",
-        log_level  => 'FATAL',
-    );
-
-    # init
-    $shipwright->backend->initialize();
-    $shipwright->backend->export( target => $shipwright->build->build_base );
-    $shipwright->build->run();
-    ok(
-        -e catfile(
-            $shipwright->build->install_base, 'etc',
-            'shipwright-script-wrapper'
-        ),
-        'build with 0 packages ok'
-    );
-    rmtree( abs_path( catdir( $shipwright->build->install_base, updir() ) ) );
-}
-

@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 106;
+use Test::More tests => 104;
 
 use Shipwright;
 use Shipwright::Test;
@@ -264,25 +264,6 @@ qr/set flags with success\s+flags of dir_configure is bar, configure, foo/,
             [ 'flags', 'man1', '--set', 'build', '--mandatory' ],
 qr/set mandatory flags with success\s+mandatory flags of man1 is build/,
             'set mandatory flag man1',
-        ],
-        [
-            [
-                'build',       '--install-base',
-                $install_base, '--build-base',
-                $build_base
-            ],
-            qr/run, run, Build\.PL.*run, run, Makefile\.PL/ms,
-            'Build.PL and Makefile.PL are run',
-        ],
-        [
-            [
-                'build',       '--flags',
-                'configure',   '--install-base',
-                $install_base, '--build-base',
-                $build_base
-            ],
-            qr/run, run, configure/,
-            'configure is run',
         ],
         [
             [ 'update', '--builder' ],
