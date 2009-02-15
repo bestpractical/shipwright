@@ -57,7 +57,8 @@ sub path {
     my $base_dir = $files->[0];
 
     if ( @$files != grep { /^\Q$base_dir\E/ } @$files ) {
-        croak 'only support compressed file which contains only one directory';
+        croak 'only support compressed file which contains only one directory: '
+          . $base_dir;
     }
 
     $base_dir =~ s![/\\]$!!; # trim the last / or \\ if possible
