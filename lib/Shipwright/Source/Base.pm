@@ -99,7 +99,15 @@ sub _follow {
         chdir catdir($path);
 
         if ( -e 'Build.PL' ) {
-            Shipwright::Util->run( [ $^X, '-Mversion', '-MModule::Build', '-MShipwright::Util::CleanINC', 'Build.PL' ] );
+            Shipwright::Util->run(
+                [
+                    $^X,               '-Mversion',
+                    '-MModule::Build', '-MShipwright::Util::CleanINC',
+                    'Build.PL'
+                ],
+                1, # don't die if this fails
+            );
+            Shipwright::Util->run( [ $^X, 'Build.PL' ] );
             my $source = read_file( catfile( '_build', 'prereqs' ) )
               or confess "can't read _build/prereqs: $!";
             my $eval = '$require = ' . $source;
@@ -208,7 +216,17 @@ EOF
                 $shipwright_makefile .= $makefile;
                 write_file( 'shipwright_makefile.pl', $shipwright_makefile );
 
-                Shipwright::Util->run( [ $^X, '-Mversion', '-MShipwright::Util::CleanINC', 'shipwright_makefile.pl' ] );
+                Shipwright::Util->run(
+                    [
+                        $^X,
+                        '-Mversion',
+                        '-MShipwright::Util::CleanINC',
+                        'shipwright_makefile.pl'
+                    ],
+                    1, # don't die if this fails
+                );
+                Shipwright::Util->run( [ $^X, 'shipwright_makefile.pl' ] )
+                  if $?;
                 my $prereqs = read_file( catfile('shipwright_prereqs') )
                   or confess "can't read prereqs: $!";
                 eval $prereqs or confess "eval error: $@";    ## no critic
@@ -219,7 +237,21 @@ EOF
             else {
 
                 # we extract the deps from Makefile
-                Shipwright::Util->run( [ $^X, '-MShipwright::Util::CleanINC', 'Makefile.PL' ] );
+                Shipwright::Util->run(
+                    [
+                        $^X,
+                        '-MShipwright::Util::CleanINC',
+                        'Makefile.PL'
+                    ],
+                    1, # don't die if this fails
+                );
+                Shipwright::Util->run(
+                    [
+                        $^X,
+                        'Makefile.PL'
+                    ]
+                ) if $?;
+
                 my ($source) = grep { /PREREQ_PM/ } read_file('Makefile');
                 if ( $source && $source =~ /({.*})/ ) {
                     my $eval .= '$require = ' . $1;
