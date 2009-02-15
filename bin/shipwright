@@ -12,5 +12,6 @@ my $cwd = getcwd;
 $ENV{SHIPWRIGHT_SVK} ||= 'svk';
 $ENV{SHIPWRIGHT_SVN} ||= 'svn';
 $ENV{SHIPWRIGHT_GIT} ||= 'git';
+$ENV{PERL_MM_USE_DEFAULT} ||= 1;
 Shipwright::Script->dispatch();
 chdir $cwd;
