@@ -55,13 +55,14 @@ sub path {
     my $files = $ae->files;
 
     my $base_dir = $files->[0];
+# sunnavy found that the 1st file is not the directory name when extracting
+# HTML-Strip-1.06.tar.gz, which is weird but valid compressed file.
+    $base_dir =~ s![/\\].*!!; 
 
     if ( @$files != grep { /^\Q$base_dir\E/ } @$files ) {
         croak 'only support compressed file which contains only one directory: '
           . $base_dir;
     }
-
-    $base_dir =~ s![/\\]$!!; # trim the last / or \\ if possible
 
     $self->{_path} = $base_dir;
 
