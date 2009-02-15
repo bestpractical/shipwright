@@ -99,7 +99,7 @@ sub _follow {
         chdir catdir($path);
 
         if ( -e 'Build.PL' ) {
-            Shipwright::Util->run( [ $^X, '-MModule::Build', '-MShipwright::Util::CleanINC', 'Build.PL' ] );
+            Shipwright::Util->run( [ $^X, '-Mversion', '-MModule::Build', '-MShipwright::Util::CleanINC', 'Build.PL' ] );
             my $source = read_file( catfile( '_build', 'prereqs' ) )
               or confess "can't read _build/prereqs: $!";
             my $eval = '$require = ' . $source;
@@ -208,7 +208,7 @@ EOF
                 $shipwright_makefile .= $makefile;
                 write_file( 'shipwright_makefile.pl', $shipwright_makefile );
 
-                Shipwright::Util->run( [ $^X, '-MShipwright::Util::CleanINC', 'shipwright_makefile.pl' ] );
+                Shipwright::Util->run( [ $^X, '-Mversion', '-MShipwright::Util::CleanINC', 'shipwright_makefile.pl' ] );
                 my $prereqs = read_file( catfile('shipwright_prereqs') )
                   or confess "can't read prereqs: $!";
                 eval $prereqs or confess "eval error: $@";    ## no critic
