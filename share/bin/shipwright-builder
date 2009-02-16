@@ -2,6 +2,7 @@
 use warnings;
 use strict;
 
+use lib 'inc';
 use File::Spec::Functions qw/catfile catdir splitdir/;
 use File::Temp qw/tempdir/;
 use File::Copy qw/move copy/;
@@ -10,11 +11,12 @@ use File::Path;
 use Config;
 use Getopt::Long;
 use Cwd qw/getcwd abs_path/;
-use inc::YAML::Tiny;
-use inc::Shipwright::Util::CleanINC;
+use YAML::Tiny;
+use Shipwright::Util::CleanINC;
 use Carp qw/confess/;
 
 my $build_base = getcwd;
+my $inc_lib = catdir( $build_base, 'inc' );
 
 my %args;
 
@@ -355,7 +357,7 @@ sub _install {
         print $log "found build.pl for $dir, will install $dir using that\n";
         my $cmd = join ' ', $args{perl} || $^X,
            '-I' . $build_base,
-           '-Minc::Shipwright::Util::CleanINC',
+           '-MShipwright::Util::CleanINC',
           catfile( '..', '..', 'scripts', $dir, 'build.pl' ),
           '--install-base' => $args{'install-base'},
           '--flags'        => join( ',', keys %{ $args{flags} } ),
@@ -498,7 +500,7 @@ sub substitute {
     }
 
     my $perl_archname = `$perl -MConfig -e 'print \$Config{archname}'`;
-    $text =~ s/%%PERL%%/$perl -I$build_base -Minc::Shipwright::Util::CleanINC/g;
+    $text =~ s/%%PERL%%/$perl -I$build_base -MShipwright::Util::CleanINC/g;
     $text =~ s/%%PERL_ARCHNAME%%/$perl_archname/g;
     $text =~ s/%%PERL_ARCHNAME%%/$perl_archname/g;
     $text =~ s/%%MAKE%%/$args{make}/g;
@@ -585,7 +587,7 @@ sub _clean {
     if ( -e catfile( '..', '..', 'scripts', $dir, 'build.pl' ) ) {
         print $log "found build.pl for $dir, will clean $dir using that\n";
         $cmd = join ' ', $args{perl} || $^X,
-          '-Minc::Shipwright::Util::CleanINC',
+          '-MShipwright::Util::CleanINC',
           catfile( '..', '..', 'scripts', $dir, 'build.pl' ),
           '--install-base' => $args{'install-base'},
           '--flags'        => join( ',', keys %{ $args{flags} } ),
