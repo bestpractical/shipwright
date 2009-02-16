@@ -354,6 +354,7 @@ sub _install {
     if ( -e catfile( '..', '..', 'scripts', $dir, 'build.pl' ) ) {
         print $log "found build.pl for $dir, will install $dir using that\n";
         my $cmd = join ' ', $args{perl} || $^X,
+           '-I' . $build_base,
            '-Minc::Shipwright::Util::CleanINC',
           catfile( '..', '..', 'scripts', $dir, 'build.pl' ),
           '--install-base' => $args{'install-base'},
@@ -497,7 +498,7 @@ sub substitute {
     }
 
     my $perl_archname = `$perl -MConfig -e 'print \$Config{archname}'`;
-    $text =~ s/%%PERL%%/$perl/g;
+    $text =~ s/%%PERL%%/$perl -I$build_base -Minc::Shipwright::Util::CleanINC/g;
     $text =~ s/%%PERL_ARCHNAME%%/$perl_archname/g;
     $text =~ s/%%PERL_ARCHNAME%%/$perl_archname/g;
     $text =~ s/%%MAKE%%/$args{make}/g;
