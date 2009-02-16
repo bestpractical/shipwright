@@ -177,6 +177,6 @@ for (
     ok( -e $_, "$_ exists" );
 }
 
+chdir $cwd;
 rmtree( $build_base );
 rmtree( $install_base );
-chdir $cwd;
