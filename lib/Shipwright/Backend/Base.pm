@@ -60,7 +60,8 @@ sub initialize {
     my $dir =
       tempdir( 'shipwright_backend_base_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
 
-    dircopy( Shipwright::Util->share_root, $dir );
+    dircopy( Shipwright::Util->share_root, $dir )
+      or confess "copy share_root failed: $!";
 
     # copy YAML/Tiny.pm to inc/
     my $yaml_tiny_path = catdir( $dir, 'inc', 'YAML' );
@@ -74,6 +75,20 @@ sub initialize {
     copy( Module::Info->new_from_module('Shipwright::Util::CleanINC')->file,
         $clean_inc_path )
       or confess "copy Shipwright/Util/CleanINC.pm failed: $!";
+
+    my $module_build_path = catdir( $dir, 'inc', 'Module', );
+    mkpath catdir( $module_build_path, 'Build' );
+    copy( catdir( Module::Info->new_from_module('Module::Build')->file),
+            $module_build_path ) or confess "copy Module/Build.pm failed: $!";
+    dircopy(
+        catdir(
+            Module::Info->new_from_module('Module::Build')->inc_dir, 'Module',
+            'Build'
+        ),
+        catdir( $module_build_path, 'Build' )
+      )
+      or confess "copy
+        Module/Build failed: $!";
 
     # set proper permissions for yml under /shipwright/
     my $sw_dir = catdir( $dir, 'shipwright' );
