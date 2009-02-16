@@ -87,19 +87,8 @@ sub initialize {
         ),
         catdir( $module_build_path, 'Build' )
       )
-      or confess "copy Module/Build failed: $!";
-
-    my $mm_path = catdir( $dir, 'inc', 'ExtUtils' );
-    mkpath catdir( $mm_path, 'MakeMaker' );
-    copy( catdir( Module::Info->new_from_module('ExtUtils::MakeMaker')->file),
-            $mm_path ) or confess "copy ExtUtils/MakeMaker.pm failed: $!";
-    dircopy(
-        catdir(
-            Module::Info->new_from_module('ExtUtils::MakeMaker')->inc_dir,
-            'ExtUtils', 'MakeMaker'
-        ),
-        catdir( $mm_path, 'MakeMaker' )
-    ) or confess "copy ExtUtils/MakeMaker failed: $!";
+      or confess "copy
+        Module/Build failed: $!";
 
     # set proper permissions for yml under /shipwright/
     my $sw_dir = catdir( $dir, 'shipwright' );
