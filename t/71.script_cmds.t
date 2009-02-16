@@ -1,13 +1,15 @@
 use strict;
 use warnings;
 
-use Test::More tests => 100;
+use Test::More tests => 106;
 
 use Shipwright;
 use Shipwright::Test;
 use File::Spec::Functions qw/catdir tmpdir/;
 use File::Path qw/rmtree/;
+use Cwd qw/getcwd/;
 my $sw = Shipwright::Test->shipwright_bin;
+my $cwd = getcwd;
 
 Shipwright::Test->init;
 
@@ -21,7 +23,7 @@ my $build_base   = catdir( tmpdir(), 'shipwright_build_71_scripts_cmds' );
 }
 
 SKIP: {
-    skip "svn: no svn found or env SHIPWRIGHT_TEST_SVN not set", 34
+    skip "svn: no svn found or env SHIPWRIGHT_TEST_SVN not set", 36
       if skip_svn();
 
     my $repo = 'svn:' . create_svn_repo() . '/hello';
@@ -45,7 +47,7 @@ SKIP: {
 }
 
 SKIP: {
-    skip "svk: no svk found or env SHIPWRIGHT_TEST_SVK not set", 34
+    skip "svk: no svk found or env SHIPWRIGHT_TEST_SVK not set", 36
       if skip_svk();
 
     create_svk_repo();
@@ -266,6 +268,20 @@ qr/set mandatory flags with success\s+mandatory flags of man1 is build/,
             'set mandatory flag man1',
         ],
         [
+            [ 'build', '--install-base', $install_base, ],
+            qr/run, run, Build\.PL.*run, run, Makefile\.PL/ms,
+            'Build.PL and Makefile.PL are run',
+        ],
+        [
+            [
+                'build',     '--flags',
+                'configure', '--install-base',
+                $install_base,
+            ],
+            qr/run, run, configure/,
+            'configure is run',
+        ],
+        [
             [ 'update', '--builder' ],
             qr/updated with success/,
             "updated builder",
@@ -297,14 +313,27 @@ qr/set mandatory flags with success\s+mandatory flags of man1 is build/,
 
         if ( ref $item->[0] eq 'ARRAY' ) {
             my $cmd = shift @{ $item->[0] };
-            test_cmd(
-                $repo,
-                [ $^X, $sw, $cmd, '-r', $repo, @{ $item->[0] }, ],
-                @$item[ 1 .. $#$item ],
-            );
             if ( $cmd eq 'build' ) {
+# it's not really a build cmd, we need to export first, cd to it, 
+# then run bin/shipwright-builder
+                my $shipwright = Shipwright->new( repository => $repo );
+                $shipwright->backend->export( target => $build_base );
+                chdir $build_base;
+                test_cmd(
+                    $repo,
+                    [ $^X, 'bin/shipwright-builder', @{ $item->[0] } ],
+                    @$item[ 1 .. $#$item ],
+                );
+                chdir $cwd;
                 rmtree($install_base);
                 rmtree($build_base);
+            }
+            else {
+                test_cmd(
+                    $repo,
+                    [ $^X, $sw, $cmd, '-r', $repo, @{ $item->[0] }, ],
+                    @$item[ 1 .. $#$item ],
+                );
             }
         }
         else {
