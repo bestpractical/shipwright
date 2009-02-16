@@ -476,14 +476,28 @@ sub _update_branches {
 sub _is_skipped {
     my $self   = shift;
     my $module = shift;
+    my $skip;
 
-    if ( $self->skip && defined $self->skip->{$module} ) {
-        $self->log->warn("$module is skipped");
-        return 1;
+    if ( $self->skip ) {
+        if ( $self->skip->{$module} ) {
+            $skip = 1;
+        }
+        elsif ( grep { /-/ } keys %{ $self->skip } ) {
+
+       # so we have a dist skip, we need to resolve the $module to the dist name
+            my $source = Shipwright::Source->new( source => "cpan:$module" );
+            $source->_run;
+            my $name = $source->name;
+            my ($name_without_prefix) = $name =~ /^cpan-(.*)/;
+            $skip = 1
+              if $self->skip->{$name} || $self->skip->{$name_without_prefix};
+        }
+        if ($skip) {
+            $self->log->warn("$module is skipped");
+            return 1;
+        }
     }
-
     return;
-
 }
 
 sub _copy {
