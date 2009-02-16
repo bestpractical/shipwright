@@ -320,7 +320,6 @@ qr/set mandatory flags with success\s+mandatory flags of man1 is build/,
                 $shipwright->backend->export( target => $build_base );
                 chdir $build_base;
                 test_cmd(
-                    $repo,
                     [ $^X, 'bin/shipwright-builder', @{ $item->[0] } ],
                     @$item[ 1 .. $#$item ],
                 );
@@ -330,7 +329,6 @@ qr/set mandatory flags with success\s+mandatory flags of man1 is build/,
             }
             else {
                 test_cmd(
-                    $repo,
                     [ $^X, $sw, $cmd, '-r', $repo, @{ $item->[0] }, ],
                     @$item[ 1 .. $#$item ],
                 );

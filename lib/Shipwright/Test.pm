@@ -176,7 +176,6 @@ a simple wrap for test cmd like create, list ...
 =cut
 
 sub test_cmd {
-    my $repo    = shift;
     my $cmd     = shift;
     my $exp     = shift;
     my $msg     = shift || "@$cmd out";
