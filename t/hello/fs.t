@@ -9,7 +9,7 @@ use File::Spec::Functions qw/catfile catdir updir/;
 use File::Path qw/rmtree/;
 use Cwd qw/getcwd abs_path/;
 
-use Test::More tests => 31;
+use Test::More tests => 38;
 use Shipwright::Test;
 Shipwright::Test->init;
 
@@ -143,3 +143,40 @@ like(
     qr/Acme-Hello.*howdy/s,
     'updated order works'
 );
+
+my $build_base = tempdir( 'shipwright_build_XXXXXX', CLEANUP => 0, TMPDIR => 1 );
+rmdir $build_base; # export will create this dir
+$shipwright->backend->export( target => $build_base );
+my $install_base = tempdir( 'shipwright_install_XXXXXX', CLEANUP => 0, TMPDIR => 1 );
+
+for (
+    catfile( $build_base, 'shipwright', 'order.yml', ),
+    catfile( $build_base, 'etc',        'shipwright-script-wrapper' ),
+    catfile( $build_base, 'sources', 'Acme-Hello', 'vendor', ),
+    catfile( $build_base, 'sources', 'Acme-Hello', 'vendor', 'MANIFEST', ),
+    catfile( $build_base, 'scripts', 'Acme-Hello', 'build', ),
+  )
+{
+    ok( -e $_, "$_ exists" );
+}
+
+chdir( $build_base );
+system( "$^X bin/shipwright-builder --install-base $install_base" );
+for (
+    catfile(
+        $install_base, 'lib',
+        'perl5',                          'Acme',
+        'Hello.pm'
+    ),
+    catfile(
+        $install_base, 'etc',
+        'shipwright-script-wrapper'
+    ),
+  )
+{
+    ok( -e $_, "$_ exists" );
+}
+
+rmtree( $build_base );
+rmtree( $install_base );
+chdir $cwd;
