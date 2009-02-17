@@ -263,16 +263,6 @@ EOF
                     $require->{requires}{$_} = delete $require->{$_};
                 }
 
-                if (   $makefile =~ /ExtUtils::/
-                    && $self->name ne 'cpan-ExtUtils-MakeMaker' )
-                {
-                    unless ( $require->{requires}{'ExtUtils::MakeMaker'}
-                        && $require->{requires}{'ExtUtils::MakeMaker'} >= 6.31 )
-                    {
-                        $require->{build_requires}{'ExtUtils::MakeMaker'} =
-                          6.31;
-                    }
-                }
             }
             Shipwright::Util->run( [ 'make', 'clean' ] );
             Shipwright::Util->run( [ 'rm',   'Makefile.old' ] );
