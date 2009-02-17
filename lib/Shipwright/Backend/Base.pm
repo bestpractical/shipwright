@@ -76,19 +76,11 @@ sub initialize {
         $clean_inc_path )
       or confess "copy Shipwright/Util/CleanINC.pm failed: $!";
 
-    my $module_build_path = catdir( $dir, 'inc', 'Module', );
-    mkpath catdir( $module_build_path, 'Build' );
-    copy( catdir( Module::Info->new_from_module('Module::Build')->file),
-            $module_build_path ) or confess "copy Module/Build.pm failed: $!";
-    dircopy(
-        catdir(
-            Module::Info->new_from_module('Module::Build')->inc_dir, 'Module',
-            'Build'
-        ),
-        catdir( $module_build_path, 'Build' )
-      )
-      or confess "copy
-        Module/Build failed: $!";
+
+    
+    $self->_install_module_build($dir);
+
+
 
     # set proper permissions for yml under /shipwright/
     my $sw_dir = catdir( $dir, 'shipwright' );
@@ -108,6 +100,26 @@ sub initialize {
     unlink( catfile( $dir, '.exists' ) );
 
     return $dir;
+}
+
+sub _install_module_build {
+    my $self = shift;
+    my $dir = shift;
+    my $module_build_path = catdir( $dir, 'inc', 'Module', );
+    mkpath catdir( $module_build_path, 'Build' );
+    copy( catdir( Module::Info->new_from_module('Module::Build')->file),
+            $module_build_path ) or confess "copy Module/Build.pm failed: $!";
+    dircopy(
+        catdir(
+            Module::Info->new_from_module('Module::Build')->inc_dir, 'Module',
+            'Build'
+        ),
+        catdir( $module_build_path, 'Build' )
+      )
+      or confess "copy
+        Module/Build failed: $!";
+
+
 }
 
 =item import
