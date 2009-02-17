@@ -115,13 +115,6 @@ sub _follow {
 
             $source = read_file( catfile('Build.PL') )
               or confess "can't read Build.PL: $!";
-            if (   $source =~ /Module::Build/
-                && $self->name ne 'cpan-Module-Build' )
-            {
-                unless ( defined $require->{build_requires}{'Module::Build'} ) {
-                    $require->{build_requires}{'Module::Build'} = 0;
-                }
-            }
 
             Shipwright::Util->run(
                 [ './Build', 'realclean', '--allow_mb_mismatch', 1 ] );
