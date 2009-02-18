@@ -32,7 +32,7 @@ sub options {
         'test-script'         => 'test_script',
         'extra-tests'         => 'extra_tests',
         'overwrite'           => 'overwrite',
-        'min-perl-version'    => 'min_perl_version',
+        'min-perl-version=s'    => 'min_perl_version',
         'skip=s'              => 'skip',
         'version=s'           => 'version',
         'as=s'                => 'as',
