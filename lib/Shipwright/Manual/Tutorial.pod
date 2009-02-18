@@ -181,8 +181,14 @@ program such as I<tar>, e.g. by running I<tar czvf our-vessel.tar.gz
 Users can use our vessel by extracting the archive to a directory and then
 adding the following command to their shell's startup script
 (e.g. for bash users, edit F</home/user/.bashrc> on most systems): I<source
-/base/path/hello/etc/shipwright-source-bash> (for bash users). A source script
-is also provided for the tcsh shell.
+/base/path/tools/etc/shipwright-source-bash> (for bash users). A source script
+is also provided for the tcsh shell. 
+
+Here is a sourcing example:
+
+  source /home/user/myapp/tools/shipwright-source-bash /home/user/myapp
+
+This example assumes the myapp vessel was extracted to /home/user/myapp.
                                     
 After sourcing this script, users will be able to run binaries and load perl
 modules from our vessel as with normal installed programs, though they will 
