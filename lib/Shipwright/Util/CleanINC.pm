@@ -42,12 +42,6 @@ sub import {
     }
 }
 
-package inc::Shipwright::Util::CleanINC;
-# this file will be copied to inc/ in shipwright's repository
-sub import {
-    Shipwright::Util::CleanINC->import();
-}
-
 1;
 
 =head1 SYNOPSIS
