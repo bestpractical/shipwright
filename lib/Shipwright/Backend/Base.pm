@@ -358,6 +358,45 @@ sub update_order {
     $self->order($order);
 }
 
+=item graph_deps
+
+Output a dependency graph in graphviz format to stdout
+
+=cut
+
+sub graph_deps {
+    my $self = shift;
+    my %args = @_;
+
+    $self->log->info( "Outputting a graphviz order for " . $self->repository );
+
+    my @dists = @{ $args{for_dists} || [] };
+    unless (@dists) {
+        @dists = $self->dists;
+    }
+
+    s{/$}{} for @dists;
+
+    my $require = {};
+
+    for my $distname (@dists) {
+        $self->_fill_deps( %args, require => $require, name => $distname );
+    }
+
+    print 'digraph g {
+        graph [ ];
+        node [ fontsize = "18", shape = record, fontsize = 18 ];
+    ';
+
+    for my $dist (@dists) {
+        print qq{ "$dist" [shape = record, fontsize = 18, label = "$dist" ];\n};
+        for my $dep ( @{ $require->{$dist} } ) {
+            print qq{"$dist" -> "$dep";\n};
+        }
+    }
+    print "\n};\n";
+}
+
 sub _fill_deps {
     my $self    = shift;
     my %args    = @_;
