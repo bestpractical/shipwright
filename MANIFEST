@@ -83,6 +83,7 @@ t/04.source.t
 t/05.util.t
 t/06.logger.t
 t/07.script.t
+t/08.build.t
 t/10.flags.t
 t/71.script_cmds.t
 t/99.kwalitee.t
