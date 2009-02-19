@@ -44,8 +44,13 @@ sub options {
 my ( %imported, $version );
 
 sub run {
-    my $self   = shift;
-    my $source = shift;
+    my $self    = shift;
+    my @sources = @_;
+    my $source;
+    $source = $sources[0];
+    confess "--name and --as args are not supported when importing multiple sources"
+      if @sources != 1 && $self->name;
+
     if ( $self->min_perl_version ) {
         require version;
         my $version = version->new( $self->min_perl_version );
@@ -109,124 +114,129 @@ sub run {
             }
         }
 
-        my $shipwright = Shipwright->new(
-            repository          => $self->repository,
-            source              => $source,
-            name                => $self->name,
-            follow              => !$self->no_follow,
-            min_perl_version    => $self->min_perl_version,
-            skip                => $self->skip,
-            version             => $self->version,
-            skip_recommends     => $self->skip_recommends,
-            skip_all_recommends => $self->skip_all_recommends,
-        );
-
-        confess "cpan dists can't be branched"
-          if $shipwright->source->isa('Shipwright::Source::CPAN') && $self->as;
-
-        unless ( $self->overwrite ) {
-
-            # skip already imported dists
-            $shipwright->source->skip(
-                Hash::Merge::merge(
-                    $self->skip, $shipwright->backend->map || {}
-                )
-            );
-        }
-
-        Shipwright::Util::DumpFile(
-            $shipwright->source->map_path,
-            $shipwright->backend->map || {},
-        );
-
-        Shipwright::Util::DumpFile(
-            $shipwright->source->url_path,
-            $shipwright->backend->source || {},
-        );
-
-        $source = $shipwright->source->run(
-            copy => { '__require.yml' => $self->require_yml }, );
-
-        $version =
-          Shipwright::Util::LoadFile( $shipwright->source->version_path );
-
-        my ($name) = $source =~ m{.*/(.*)$};
-        print "importing $name: ";
-        $imported{$name}++;
-
-        my $base = $self->_parent_dir($source);
-
-        my $script_dir;
-        if ( -e catdir( $base, '__scripts', $name ) ) {
-            $script_dir = catdir( $base, '__scripts', $name );
-        }
-        else {
-
-     # Source part doesn't have script stuff, so we need to create by ourselves.
-            $script_dir = tempdir(
-                'shipwright_script_import_XXXXXX',
-                CLEANUP => 1,
-                TMPDIR  => 1,
+        for my $source (@sources) {
+            my $shipwright = Shipwright->new(
+                repository          => $self->repository,
+                source              => $source,
+                name                => $self->name,
+                follow              => !$self->no_follow,
+                min_perl_version    => $self->min_perl_version,
+                skip                => $self->skip,
+                version             => $self->version,
+                skip_recommends     => $self->skip_recommends,
+                skip_all_recommends => $self->skip_all_recommends,
             );
 
-            if ( my $script = $self->build_script ) {
-                copy( $self->build_script, catfile( $script_dir, 'build' ) );
+            confess "cpan dists can't be branched"
+              if $shipwright->source->isa('Shipwright::Source::CPAN')
+                  && $self->as;
+
+            unless ( $self->overwrite ) {
+
+                # skip already imported dists
+                $shipwright->source->skip(
+                    Hash::Merge::merge(
+                        $self->skip, $shipwright->backend->map || {}
+                    )
+                );
+            }
+
+            Shipwright::Util::DumpFile(
+                $shipwright->source->map_path,
+                $shipwright->backend->map || {},
+            );
+
+            Shipwright::Util::DumpFile(
+                $shipwright->source->url_path,
+                $shipwright->backend->source || {},
+            );
+
+            $source = $shipwright->source->run(
+                copy => { '__require.yml' => $self->require_yml }, );
+
+            $version =
+              Shipwright::Util::LoadFile( $shipwright->source->version_path );
+
+            my ($name) = $source =~ m{.*/(.*)$};
+            print "importing $name: ";
+            $imported{$name}++;
+
+            my $base = $self->_parent_dir($source);
+
+            my $script_dir;
+            if ( -e catdir( $base, '__scripts', $name ) ) {
+                $script_dir = catdir( $base, '__scripts', $name );
             }
             else {
-                $self->_generate_build( $source, $script_dir, $shipwright );
+
+     # Source part doesn't have script stuff, so we need to create by ourselves.
+                $script_dir = tempdir(
+                    'shipwright_script_import_XXXXXX',
+                    CLEANUP => 1,
+                    TMPDIR  => 1,
+                );
+
+                if ( my $script = $self->build_script ) {
+                    copy( $self->build_script,
+                        catfile( $script_dir, 'build' ) );
+                }
+                else {
+                    $self->_generate_build( $source, $script_dir, $shipwright );
+                }
+
             }
 
-        }
+            unless ( $self->no_follow ) {
+                $self->_import_req( $source, $shipwright, $script_dir );
 
-        unless ( $self->no_follow ) {
-            $self->_import_req( $source, $shipwright, $script_dir );
-
-            if ( -e catfile( $source, '__require.yml' ) ) {
-                move(
-                    catfile( $source,     '__require.yml' ),
-                    catfile( $script_dir, 'require.yml' )
-                ) or confess "move __require.yml failed: $!\n";
+                if ( -e catfile( $source, '__require.yml' ) ) {
+                    move(
+                        catfile( $source,     '__require.yml' ),
+                        catfile( $script_dir, 'require.yml' )
+                    ) or confess "move __require.yml failed: $!\n";
+                }
             }
-        }
 
-        my $branches =
-          Shipwright::Util::LoadFile( $shipwright->source->branches_path );
+            my $branches =
+              Shipwright::Util::LoadFile( $shipwright->source->branches_path );
 
-        $shipwright->backend->import(
-            source  => $source,
-            comment => $self->comment || 'import ' . $source,
-            overwrite => 1,                    # import anyway for the main dist
-            version   => $version->{$name},
-            as        => $self->as,
-            branches  => $branches->{$name},
-        );
-
-        $shipwright->backend->import(
-            source       => $source,
-            comment      => 'import scripts for ' . $source,
-            build_script => $script_dir,
-            overwrite    => 1,
-        );
-
-        # merge new map into map.yml in repo
-        my $new_map =
-          Shipwright::Util::LoadFile( $shipwright->source->map_path )
-          || {};
-        $shipwright->backend->map(
-            Hash::Merge::merge( $shipwright->backend->map || {}, $new_map ) );
-
-        my $new_url =
-          Shipwright::Util::LoadFile( $shipwright->source->url_path )
-          || {};
-        my $source_url = delete $new_url->{$name};
-
-        if ( $name !~ /^cpan-/ ) {
-            $shipwright->backend->source(
-                Hash::Merge::merge(
-                    $shipwright->backend->source || {},
-                    { $name => { $self->as || 'vendor' => $source_url } },
-                )
+            $shipwright->backend->import(
+                source  => $source,
+                comment => $self->comment || 'import ' . $source,
+                overwrite => 1,                # import anyway for the main dist
+                version   => $version->{$name},
+                as        => $self->as,
+                branches => $branches->{$name},
             );
+
+            $shipwright->backend->import(
+                source       => $source,
+                comment      => 'import scripts for ' . $source,
+                build_script => $script_dir,
+                overwrite    => 1,
+            );
+
+            # merge new map into map.yml in repo
+            my $new_map =
+              Shipwright::Util::LoadFile( $shipwright->source->map_path )
+              || {};
+            $shipwright->backend->map(
+                Hash::Merge::merge( $shipwright->backend->map || {}, $new_map )
+            );
+
+            my $new_url =
+              Shipwright::Util::LoadFile( $shipwright->source->url_path )
+              || {};
+            my $source_url = delete $new_url->{$name};
+
+            if ( $name !~ /^cpan-/ ) {
+                $shipwright->backend->source(
+                    Hash::Merge::merge(
+                        $shipwright->backend->source || {},
+                        { $name => { $self->as || 'vendor' => $source_url } },
+                    )
+                );
+            }
         }
 
 #        my $new_order = $shipwright->backend->fiddle_order;
