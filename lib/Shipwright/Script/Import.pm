@@ -46,8 +46,6 @@ my ( %imported, $version );
 sub run {
     my $self   = shift;
     my $source = shift;
-    my $name   = shift;
-    $self->name( $name ) if $name && ! $self->name;
     if ( $self->min_perl_version ) {
         require version;
         my $version = version->new( $self->min_perl_version );
