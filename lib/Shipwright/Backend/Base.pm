@@ -355,71 +355,8 @@ sub update_order {
       or confess $@;
     my $order = $dep->schedule_all();
 
-#    $order = $self->fiddle_order($order);
-
     $self->order($order);
 }
-
-=item fiddle_order
-
-fiddle the order a bit
-put cpan-ExtUtils-MakeMaker and cpan-Module-Build to the head of
-cpan dists.
-also put cpan-Module-Build's recommends right after it,
-since we omitted them in the $require->{'cpan-Module-Build'}
-
-if not passed order, will use the one in shipwright/order.yml.
-return fiddled order.
-
-note, this sub won't update shipwright/order.yml, you need to do it yourself.
-
-NOTE: this's going to be dropped, it's _wrong_ to fiddle order
-
-=cut
-
-#sub fiddle_order {
-#    my $self       = shift;
-#    my $orig_order = shift;
-#
-#    my $order;
-#    if ($orig_order) {
-#
-#        # don't change the argument
-#        $order = [@$orig_order];
-#    }
-#    else {
-#        $order = $self->order;
-#    }
-#
-#    for my $maker ( 'cpan-Module-Build', 'cpan-ExtUtils-MakeMaker' ) {
-#        if ( grep { $_ eq $maker } @$order ) {
-#            @$order = grep { $_ ne $maker } @$order;
-#            my $first_cpan_index = firstidx { /^cpan-/ } @$order;
-#            $first_cpan_index = scalar @$order if $first_cpan_index == -1;
-#            splice @$order, $first_cpan_index, 0, $maker;
-#
-#            if ( $maker eq 'cpan-Module-Build' ) {
-#
-#                my @maker_recommends;
-#
-#                # cpan-Regexp-Common is the dep of cpan-Pod-Readme
-#                for my $r (
-#                    'cpan-Regexp-Common', 'cpan-Pod-Readme',
-#                    'cpan-version',       'cpan-ExtUtils-CBuilder',
-#                    'cpan-Archive-Tar',   'cpan-ExtUtils-ParseXS',
-#                  )
-#                {
-#                    push @maker_recommends, $r if grep { $r eq $_ } @$order;
-#                }
-#
-#                my %maker_recommends = map { $_ => 1 } @maker_recommends;
-#                @$order = grep { $maker_recommends{$_} ? 0 : 1 } @$order;
-#                splice @$order, $first_cpan_index + 1, 0, @maker_recommends;
-#            }
-#        }
-#    }
-#    return $order;
-#}
 
 sub _fill_deps {
     my $self    = shift;

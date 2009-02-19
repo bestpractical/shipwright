@@ -74,33 +74,6 @@ if ( $args{'update-order'} ) {
       or confess $@;
     my $order = $dep->schedule_all();
 
-#    # fiddle the order a bit
-#    # put cpan-ExtUtils-MakeMaker and cpan-Module-Build to the head of
-#    # cpan dists.
-#    # also put cpan-Module-Build's recommends right after it,
-#    # since we omitted them in the $require->{'cpan-Module-Build'}
-#
-#    for my $maker ( 'cpan-Module-Build', 'cpan-ExtUtils-MakeMaker' ) {
-#        if ( grep { $_ eq $maker } @$order ) {
-#            @$order = grep { $_ ne $maker } @$order;
-#            my $first_cpan_index = firstidx { /^cpan-/ } @$order;
-#            splice @$order, $first_cpan_index, 0, $maker;
-#
-#            if ( $maker eq 'cpan-Module-Build' ) {
-#
-#                # cpan-Regexp-Common is the dep of cpan-Pod-Readme
-#                my @maker_recommends = (
-#                    'cpan-Regexp-Common', 'cpan-Pod-Readme',
-#                    'cpan-version',       'cpan-ExtUtils-CBuilder',
-#                    'cpan-Archive-Tar',   'cpan-ExtUtils-ParseXS'
-#                );
-#                my %maker_recommends = map { $_ => 1 } @maker_recommends;
-#                @$order = grep { $maker_recommends{$_} ? 0 : 1 } @$order;
-#                splice @$order, $first_cpan_index + 1, 0, @maker_recommends;
-#            }
-#        }
-#    }
-
     DumpFile( 'shipwright/order.yml', $order );
 }
 
