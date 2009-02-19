@@ -384,7 +384,7 @@ sub graph_deps {
     }
 
     print 'digraph g {
-        graph [ ];
+        graph [ overlap = scale, rankdir= LR ];
         node [ fontsize = "18", shape = record, fontsize = 18 ];
     ';
 
