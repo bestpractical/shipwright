@@ -261,6 +261,8 @@ sub install {
         no warnings 'uninitialized';
         # this dirty hack means that ExtUtils::AutoInstall won't try to recurse and run cpan
         $ENV{'PERL5_CPANPLUS_IS_RUNNING'}= 1;
+        $ENV{'AUTOMATED_TESTING'} =1; # Term::ReadLine::Perl and others
+                                      # use this to not prompt
         $ENV{DYLD_LIBRARY_PATH} =
           catdir( $args{'install-base'}, 'lib' ) . ':'
           . $ENV{DYLD_LIBRARY_PATH};
