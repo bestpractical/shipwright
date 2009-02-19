@@ -268,9 +268,9 @@ sub install {
           catdir( $args{'install-base'}, 'lib' ) . ':' . $ENV{LD_LIBRARY_PATH};
         $ENV{PERL5LIB} = join(
             ':',
-            $inc_lib,
             catdir( 'blib','lib'),
             catdir('blib','arch'),
+            $inc_lib, #BLIB COMES FIRST TO PLEASE MODULE::BUILD
             catdir( $args{'install-base'}, 'lib', 'perl5',  $arch
             
             ),
