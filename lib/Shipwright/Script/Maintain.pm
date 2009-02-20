@@ -73,6 +73,11 @@ Shipwright::Script::Maintain - Maintain a project
  --update-refs                : update refs( times a dist shows in all the require.yml )
  --graph-deps                 : output a graph of all the dependencies in your vessel
                                 suitable for rendering by dot (http://graphviz.org) 
+ --for-dists                  : limit the dists
+ --skip-requires              : skip requires when finding deps
+ --skip-recommends            : skip recommends when finding deps
+ --skip-build-requires        : skip build requires when finding deps
+
 =head1 AUTHORS
 
 sunnavy  C<< <sunnavy@bestpractical.com> >>
