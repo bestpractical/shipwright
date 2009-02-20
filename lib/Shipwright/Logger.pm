@@ -7,7 +7,7 @@ use Scalar::Util qw/blessed/;
 
 =head1 NAME
 
-Shipwright::Logger -
+Shipwright::Logger - Log
 
 =head1 SYNOPSIS
 

@@ -74,7 +74,7 @@ __END__
 
 =head1 NAME
 
-Shipwright::Source::Git - git source
+Shipwright::Source::Git - Git source
 
 
 =head1 DESCRIPTION

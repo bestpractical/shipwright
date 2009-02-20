@@ -76,7 +76,7 @@ __END__
 
 =head1 NAME
 
-Shipwright::Source::SVN - svn source
+Shipwright::Source::SVN - SVN source
 
 
 =head1 DESCRIPTION

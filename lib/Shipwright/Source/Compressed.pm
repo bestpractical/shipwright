@@ -99,7 +99,7 @@ __END__
 
 =head1 NAME
 
-Shipwright::Source::Compressed - compressed source
+Shipwright::Source::Compressed - Compressed file source
 
 
 =head1 DESCRIPTION

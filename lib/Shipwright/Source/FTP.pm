@@ -66,7 +66,7 @@ __END__
 
 =head1 NAME
 
-Shipwright::Source::FTP - ftp source
+Shipwright::Source::FTP - FTP source
 
 
 =head1 DESCRIPTION

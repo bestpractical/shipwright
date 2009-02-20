@@ -86,6 +86,10 @@ sub log {
 
 __END__
 
+=head1 NAME
+
+Shipwright::Script - Base class and dispatcher for commands
+
 =head1 AUTHOR
 
 sunnavy  C<< <sunnavy@bestpractical.com> >>

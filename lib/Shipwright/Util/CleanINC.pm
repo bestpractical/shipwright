@@ -44,6 +44,12 @@ sub import {
 
 1;
 
+__END__
+
+=head1 NAME
+
+Shipwright::Util::CleanINC - Use this to clean @INC
+
 =head1 SYNOPSIS
 
     use Shipwright::Util::CleanINC;

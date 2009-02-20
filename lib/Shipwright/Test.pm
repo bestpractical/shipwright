@@ -15,7 +15,7 @@ our @EXPORT =
 
 =head1 NAME
 
-Shipwright::Test - useful subs for tests are here
+Shipwright::Test - Test 
 
 =head1 SYNOPSIS
 

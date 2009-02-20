@@ -77,7 +77,7 @@ __END__
 
 =head1 NAME
 
-Shipwright::Source::Shipwright - shipwright source
+Shipwright::Source::Shipwright - Shipwright source
 
 
 =head1 DESCRIPTION

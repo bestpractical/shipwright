@@ -79,7 +79,7 @@ __END__
 
 =head1 NAME
 
-Shipwright::Source::Directory - directory source
+Shipwright::Source::Directory - Directory source
 
 
 =head1 DESCRIPTION

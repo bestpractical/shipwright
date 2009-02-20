@@ -19,7 +19,7 @@ __PACKAGE__->mk_accessors(
 
 =head1 NAME
 
-Shipwright::Source::Base - base class for source
+Shipwright::Source::Base - Base class of source
 
 =head1 SYNOPSIS
 

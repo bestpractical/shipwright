@@ -67,7 +67,7 @@ __END__
 
 =head1 NAME
 
-Shipwright::Source::HTTP - http source
+Shipwright::Source::HTTP - HTTP source
 
 
 =head1 DESCRIPTION

@@ -39,7 +39,7 @@ __END__
 
 =head1 NAME
 
-Shipwright::Script::Defaultbranch - set the default branch for a dist
+Shipwright::Script::Defaultbranch - Set the default branch for a dist
 
 =head1 SYNOPSIS
 

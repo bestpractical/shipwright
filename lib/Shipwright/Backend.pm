@@ -43,7 +43,7 @@ __END__
 
 =head1 NAME
 
-Shipwright::Backend - backends
+Shipwright::Backend - Backend
 
 =head1 SYNOPSIS
 

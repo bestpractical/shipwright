@@ -174,7 +174,7 @@ __END__
 
 =head1 NAME
 
-Shipwright::Util - Shipwright's Utility
+Shipwright::Util - Util
 
 =head1 DESCRIPTION
 

@@ -28,7 +28,7 @@ for (qw/map_path url_path version_path branches_path/) {
 
 =head1 NAME
 
-Shipwright::Source - source part
+Shipwright::Source - Source
 
 =head1 SYNOPSIS
 

@@ -415,7 +415,7 @@ __END__
 
 =head1 NAME
 
-Shipwright::Script::Import - import a source and its dependencies
+Shipwright::Script::Import - Import sources and their dependencies
 
 =head1 SYNOPSIS
 

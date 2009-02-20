@@ -84,7 +84,7 @@ __END__
 
 =head1 NAME
 
-Shipwright::Source::SVK - svk source
+Shipwright::Source::SVK - SVK source
 
 
 =head1 DESCRIPTION
