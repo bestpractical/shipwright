@@ -335,15 +335,7 @@ sub update_order {
     my $require = {};
 
     for (@dists) {
-
-        # bloody hack, cpan-Module-Build have recommends that will
-        # cause circular deps
-        if ( $_ eq 'cpan-Module-Build' ) {
-            $require->{'cpan-Module-Build'} = [];
-        }
-        else {
-            $self->_fill_deps( %args, require => $require, name => $_ );
-        }
+        $self->_fill_deps( %args, require => $require, name => $_ );
     }
 
     require Algorithm::Dependency::Ordered;
