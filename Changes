@@ -1,5 +1,19 @@
 Revision history for Shipwright
 
+2.1.0 Mon Jan 19 15:15:57 CST 2009
++ Git source support, with prefix "git:"
++ clean @INC when importing and building
++ downgrade ExtUtils::MakeMaker so we can use the version in core
++ version cmd
++ import multiple sources support in a single import cmd
++ --graph-deps for maintain cmd, for graphing dependencies
++ --skip-requires, --skip-build-requires, --skip-recommends for maintain cmd
+- --keep-requires, --keep-build-requires, --keep-recommends for maintain cmd
+- build cmd. it's duplicate and useless
+* no mandatory Module::Build requires when importing: we supply one in reporitory's inc/ dir
+* we can supply dist names too in --skip args for import cmd
+* turn on AUTOMATED_TESTING when building
+
 2.0.1 Mon Jan 19 15:15:57 CST 2009
 + require File::HomeDir
 

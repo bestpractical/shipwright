@@ -49,4 +49,4 @@ requires:
   version: 0
 resources:
   license: http://dev.perl.org/licenses/
-version: 2.000001
+version: 2.001
