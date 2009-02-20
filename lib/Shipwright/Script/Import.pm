@@ -357,7 +357,7 @@ sub _generate_build {
         );
     }
     elsif ( -f catfile( $source_dir, 'Makefile.PL' ) ) {
-        print "detected ExtUtils::MakeMaker build system\n";
+        print "detected ExtUtils::MakeMaker build system or alike\n";
         @commands = (
             'configure: %%PERL%% Makefile.PL LIB=%%INSTALL_BASE%%/lib/perl5/ PREFIX=%%INSTALL_BASE%%',
             'make: %%MAKE%%',
