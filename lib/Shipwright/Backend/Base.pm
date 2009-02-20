@@ -412,7 +412,7 @@ sub _fill_deps {
     if ( $req->{requires} ) {
         for (qw/requires recommends build_requires/) {
             push @{ $require->{$name} }, keys %{ $req->{$_} }
-              if $args{"keep_$_"};
+              unless $args{"skip_$_"};
         }
     }
     else {

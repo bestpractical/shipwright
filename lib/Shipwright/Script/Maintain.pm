@@ -6,21 +6,21 @@ use Carp;
 
 use base qw/App::CLI::Command Class::Accessor::Fast Shipwright::Script/;
 __PACKAGE__->mk_accessors(
-    qw/update_order keep_recommends update_refs graph_deps
-      keep_build_requires keep_requires for_dists/
+    qw/update_order update_refs graph_deps skip_recommends 
+      skip_build_requires skip_requires for_dists/
 );
 
 use Shipwright;
 
 sub options {
     (
-        'graph-deps'            => 'graph_deps',
-        'update-order'          => 'update_order',
-        'update-refs'           => 'update_refs',
-        'keep-recommends=s'     => 'keep_recommends',
-        'keep-requires=s'       => 'keep_requires',
-        'keep-build-requires=s' => 'keep_build_requires',
-        'for-dists=s'           => 'for_dists',
+        'graph-deps'          => 'graph_deps',
+        'update-order'        => 'update_order',
+        'update-refs'         => 'update_refs',
+        'skip-recommends'     => 'skip_recommends',
+        'skip-requires'       => 'skip_requires',
+        'skip-build-requires' => 'skip_build_requires',
+        'for-dists=s'         => 'for_dists',
     );
 }
 
@@ -31,33 +31,18 @@ sub run {
 
     if ( $self->update_order ) {
         $shipwright->backend->update_order(
-
-            # just for completeness, normally you never need this ;)
-            keep_requires =>
-              ( defined $self->keep_requires ? $self->keep_requires : 1 ),
-
-            keep_recommends =>
-              ( defined $self->keep_recommends ? $self->keep_recommends : 0 ),
-            keep_build_requires => (
-                defined $self->keep_build_requires
-                ? $self->keep_build_requires
-                : 1
-            ),
             for_dists => [ split /,\s*/, $self->for_dists || '' ],
+            map { $_ => $self->$_ }
+              qw/skip_requires skip_recommends skip_build_requires/,
         );
         print "updated order with success\n";
     } 
     if ($self->graph_deps)  {
         $shipwright->backend->graph_deps(
-
-            # just for completeness, normally you never need this ;)
-            keep_requires => ( defined $self->keep_requires ? $self->keep_requires : 1 ),
-            keep_recommends => ( ! defined $self->keep_recommends ? $self->keep_recommends : 1 ),
-            keep_build_requires => ( defined $self->keep_build_requires ? $self->keep_build_requires : 1),
             for_dists => [ split /,\s*/, $self->for_dists || '' ],
+            map { $_ => $self->$_ }
+              qw/skip_requires skip_recommends skip_build_requires/,
         );
-
-
     }
 
     if ( $self->update_refs ) {
