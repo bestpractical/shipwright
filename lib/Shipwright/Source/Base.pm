@@ -171,7 +171,11 @@ sub shipwright_features {
 #     ],
 # );
                for ( my $j = 0; $j < @{$mods->[$i]}; $j++ ) {
-                    if ( $mods->[$i][$j+1] =~ /^[\d\.]*$/ ) {
+                    if ( ref $mods->[$i][$j] eq 'ARRAY' ) {
+                        $shipwright_req->{recommends}{$mods->[$i][$j][0]} 
+                            = $mods->[$i][$j][1] || 0;
+                    }
+                    elsif ( $mods->[$i][$j+1] =~ /^[\d\.]*$/ ) {
                         $shipwright_req->{recommends}{$mods->[$i][$j]} 
                             = $mods->[$i][$j+1] || 0;
                         $j++;
