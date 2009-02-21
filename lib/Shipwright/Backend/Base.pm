@@ -10,6 +10,7 @@ use File::Copy qw/copy/;
 use File::Copy::Recursive qw/dircopy/;
 use File::Path;
 use List::MoreUtils qw/uniq firstidx/;
+use Module::Info;
 
 our %REQUIRE_OPTIONS = ( import => [qw/source/] );
 
@@ -63,24 +64,9 @@ sub initialize {
     dircopy( Shipwright::Util->share_root, $dir )
       or confess "copy share_root failed: $!";
 
-    # copy YAML/Tiny.pm to inc/
-    my $yaml_tiny_path = catdir( $dir, 'inc', 'YAML' );
-    mkpath $yaml_tiny_path;
-    require Module::Info;
-    copy( Module::Info->new_from_module('YAML::Tiny')->file, $yaml_tiny_path )
-      or confess "copy YAML/Tiny.pm failed: $!";
-
-    my $clean_inc_path = catdir( $dir, 'inc', 'Shipwright', 'Util' );
-    mkpath $clean_inc_path;
-    copy( Module::Info->new_from_module('Shipwright::Util::CleanINC')->file,
-        $clean_inc_path )
-      or confess "copy Shipwright/Util/CleanINC.pm failed: $!";
-
-
-    
+    $self->_install_yaml_tiny($dir);
+    $self->_install_clean_inc($dir);
     $self->_install_module_build($dir);
-
-
 
     # set proper permissions for yml under /shipwright/
     my $sw_dir = catdir( $dir, 'shipwright' );
@@ -118,8 +104,26 @@ sub _install_module_build {
       )
       or confess "copy
         Module/Build failed: $!";
+}
 
+sub _install_yaml_tiny {
+    my $self = shift;
+    my $dir = shift;
 
+    my $yaml_tiny_path = catdir( $dir, 'inc', 'YAML' );
+    mkpath $yaml_tiny_path;
+    copy( Module::Info->new_from_module('YAML::Tiny')->file, $yaml_tiny_path )
+      or confess "copy YAML/Tiny.pm failed: $!";
+}
+
+sub _install_clean_inc {
+    my $self = shift;
+    my $dir = shift;
+    my $clean_inc_path = catdir( $dir, 'inc', 'Shipwright', 'Util' );
+    mkpath $clean_inc_path;
+    copy( Module::Info->new_from_module('Shipwright::Util::CleanINC')->file,
+        $clean_inc_path )
+      or confess "copy Shipwright/Util/CleanINC.pm failed: $!";
 }
 
 =item import
