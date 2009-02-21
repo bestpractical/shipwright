@@ -6,7 +6,7 @@ use Carp;
 
 use base qw/App::CLI::Command Class::Accessor::Fast Shipwright::Script/;
 __PACKAGE__->mk_accessors(
-    qw/all follow builder utility version only_sources as/
+    qw/all follow builder utility inc version only_sources as/
 );
 
 use Shipwright;
@@ -25,6 +25,7 @@ sub options {
         'follow'       => 'follow',
         'builder'      => 'builder',
         'utility'      => 'utility',
+        'inc'          => 'inc',
         'version=s'    => 'version',
         'only-sources' => 'only_sources',
         'as=s'         => 'as',
@@ -43,6 +44,10 @@ sub run {
     }
     elsif ( $self->utility ) {
         $shipwright->backend->update( path => '/bin/shipwright-utility' );
+
+    }
+    elsif ( $self->inc ) {
+        $shipwright->backend->update( path => '/inc/' );
 
     }
     else {
@@ -244,6 +249,7 @@ Shipwright::Script::Update - Update dist(s) and scripts
  --follow                     : update one dist with all its dependencies
  --builder                    : update bin/shipwright-builder
  --utility                    : update bin/shipwright-utility
+ --inc                        : update inc/
  --only-sources               : only update sources, no build scripts
  --as                         : the branch name
 
