@@ -49,7 +49,7 @@ sub run {
     my $source;
     $source = $sources[0];
     confess "--name and --as args are not supported when importing multiple sources"
-      if @sources != 1 && $self->name;
+      if @sources > 1 && $self->name;
 
     if ( $self->min_perl_version ) {
         require version;
