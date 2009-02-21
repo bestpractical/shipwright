@@ -146,6 +146,10 @@ sub run {
                             $self->as ? ( " --as " . $self->as )
                             : ''
                           )
+                          . (
+                            $self->version ? ( " --version " . $self->version )
+                            : ''
+                          )
                           . " --name $_"
                     );
                 }
