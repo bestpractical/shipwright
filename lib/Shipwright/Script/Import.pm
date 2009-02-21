@@ -78,6 +78,7 @@ sub run {
             $source = $source_yml->{$self->name};
         }
 
+        @sources = $source;
     }
 
     confess "we need source arg\n" unless $source;
