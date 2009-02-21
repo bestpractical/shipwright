@@ -692,11 +692,31 @@ sub update {
 
     croak "need path option" unless $args{path};
 
-    croak "$args{path} seems not shipwright's own file"
-      unless -e catfile( Shipwright::Util->share_root, $args{path} );
+    if ( $args{path} =~ m{/$} ) {
+        # it's a directory
+        if ( $args{path} eq '/inc/' && ! $args{source} ) {
+            my $dir = tempdir(
+                'shipwright_backend_base_XXXXXX',
+                CLEANUP => 1,
+                TMPDIR  => 1,
+            );
+            $self->_install_yaml_tiny($dir);
+            $self->_install_clean_inc($dir);
+            $self->_install_module_build($dir);
+            $self->_update_dir( '/inc/', catdir($dir, 'inc') );
+        }
+        elsif ( $args{source} ) {
+            $self->_update_dir( $args{path}, $args{source} );
+        }
+    }
+    else {
 
-    return $self->_update_file( $args{path},
-        catfile( Shipwright::Util->share_root, $args{path} ) );
+        croak "$args{path} seems not shipwright's own file"
+          unless -e catfile( Shipwright::Util->share_root, $args{path} );
+
+        return $self->_update_file( $args{path},
+            catfile( Shipwright::Util->share_root, $args{path} ) );
+    }
 }
 
 =item test_script

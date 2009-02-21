@@ -7,6 +7,7 @@ use File::Spec::Functions qw/catfile/;
 use Shipwright::Util;
 use File::Temp qw/tempdir/;
 use File::Copy qw/copy/;
+use File::Copy::Recursive qw/dircopy/;
 
 our %REQUIRE_OPTIONS = ( import => [qw/source/] );
 
@@ -78,9 +79,9 @@ sub _cmd {
     elsif ( $type eq 'import' ) {
         if ( $args{_initialize} ) {
             @cmd = [
-                $ENV{'SHIPWRIGHT_SVN'},         'import',
-                $args{source}, $self->repository,
-                '-m',          $args{comment},
+                $ENV{'SHIPWRIGHT_SVN'}, 'import', $args{source},
+                $self->repository . ( $args{path} || '' ),
+                '-m', $args{comment},
             ];
         }
         elsif ( $args{_extra_tests} ) {
@@ -266,6 +267,16 @@ sub _update_file {
         );
     }
 }
+
+sub _update_dir {
+    my $self   = shift;
+    my $path   = shift;
+    my $latest = shift;
+
+    $self->delete( path => $path );
+    $self->import( path => $path, source => $latest, _initialize => 1 );
+}
+
 
 =back
 

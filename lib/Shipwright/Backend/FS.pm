@@ -192,6 +192,15 @@ sub _update_file {
     copy( $latest, $file );
 }
 
+sub _update_dir {
+    my $self   = shift;
+    my $path   = shift;
+    my $latest = shift;
+
+    my $dir = catfile( $self->repository, $path );
+    dircopy( $latest, $dir );
+}
+
 =item import
 
 =cut

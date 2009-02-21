@@ -7,6 +7,7 @@ use File::Spec::Functions qw/catfile/;
 use Shipwright::Util;
 use File::Temp qw/tempdir/;
 use File::Copy qw/copy/;
+use File::Copy::Recursive qw/dircopy/;
 
 our %REQUIRE_OPTIONS = ( import => [qw/source/] );
 
@@ -95,9 +96,9 @@ sub _cmd {
     elsif ( $type eq 'import' ) {
         if ( $args{_initialize} ) {
             @cmd = [
-                $ENV{'SHIPWRIGHT_SVK'},         'import',
-                $args{source}, $self->repository,
-                '-m',          $args{comment},
+                $ENV{'SHIPWRIGHT_SVK'}, 'import', $args{source},
+                $self->repository . ( $args{path} || '' ),
+                '-m', $args{comment},
             ];
         }
         elsif ( $args{_extra_tests} ) {
@@ -147,8 +148,18 @@ sub _cmd {
         }
     }
     elsif ( $type eq 'commit' ) {
-        @cmd =
-          [ $ENV{'SHIPWRIGHT_SVK'}, 'commit', '-m', $args{comment}, $args{path} ];
+        @cmd = [
+            $ENV{'SHIPWRIGHT_SVK'},
+            'commit',
+            (
+                $args{import}
+                ? '--import'
+                : ()
+            ),
+            '-m',
+            $args{comment},
+            $args{path}
+        ];
     }
     elsif ( $type eq 'delete' ) {
         @cmd = [
@@ -280,6 +291,29 @@ sub _update_file {
         comment => "updated $path",
     );
     $self->checkout( detach => 1, target => $file );
+}
+
+sub _update_dir {
+    my $self   = shift;
+    my $path   = shift;
+    my $latest = shift;
+
+    my $dir =
+      tempdir( 'shipwright_backend_svk_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
+    rmdir $dir;
+
+    $self->checkout(
+        path   => $path,
+        target => $dir,
+    );
+
+    dircopy( $latest, $dir );
+    $self->commit(
+        path    => $dir,
+        comment => "updated $path",
+        import  => 1,
+    );
+    $self->checkout( detach => 1, target => $dir );
 }
 
 =back
