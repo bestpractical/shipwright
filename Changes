@@ -1,5 +1,8 @@
 Revision history for Shipwright
 
+2.1.2 Mon Feb 23 01:14:14 CST 2009
+* don't import a source multiple times in an import cmd.
+
 2.1.1 Mon Feb 23 00:31:36 CST 2009
 + --inc arg for update so we can update inc
 * bug fixes
