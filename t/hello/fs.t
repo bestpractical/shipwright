@@ -22,8 +22,8 @@ my %source = (
     'ftp://example.com/hello.tar.gz'     => 'FTP',
     'svn:file:///home/sunnavy/svn/hello' => 'SVN',
     'svk://local/hello'                  => 'SVK',
-    'cpan:Acme::Hello'                   => 'CPAN',
-    'file:' . catfile( 't', 'hello', 'Acme-Hello-0.03.tar.gz' ) => 'Compressed',
+    'cpan:Foo::Bar'                      => 'CPAN',
+    'file:' . catfile( 't', 'hello', 'Foo-Bar-v0.01.tar.gz' ) => 'Compressed',
     'dir:' . catfile( 't', 'hello' ) => 'Directory',
 );
 
@@ -39,7 +39,7 @@ for ( keys %source ) {
 
 my $shipwright = Shipwright->new(
     repository => "fs:$repo",
-    source     => 'file:' . catfile( 't', 'hello', 'Acme-Hello-0.03.tar.gz' ),
+    source     => 'file:' . catfile( 't', 'hello', 'Foo-Bar-v0.01.tar.gz' ),
     follow     => 0,
     log_level  => 'FATAL',
     force      => 1,
@@ -62,20 +62,20 @@ is_deeply(
 
 # source
 my $source_dir = $shipwright->source->run();
-like( $source_dir, qr/\bAcme-Hello\b/, 'source name looks ok' );
+like( $source_dir, qr/\bFoo-Bar\b/, 'source name looks ok' );
 
 for (qw/source backend/) {
     isa_ok( $shipwright->$_->log, 'Log::Log4perl::Logger' );
 }
 
-ok( -e catfile( $source_dir, 'lib', 'Acme', 'Hello.pm' ),
-    'lib/Acme/Hello.pm exists in the source' );
+ok( -e catfile( $source_dir, 'lib', 'Foo', 'Bar.pm' ),
+    'lib/Foo/Bar.pm exists in the source' );
 ok( -e catfile( $source_dir, 'META.yml' ), 'META.yml exists in the source' );
 
 # import
 
 $shipwright->backend->import( name => 'hello', source => $source_dir );
-ok( grep( {/Build\.PL/} `ls $repo/sources/Acme-Hello/vendor` ), 'imported ok' );
+ok( grep( {/Makefile\.PL/} `ls $repo/sources/Foo-Bar/vendor` ), 'imported ok' );
 
 my $script_dir = tempdir( 'shipwright_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
 copy( catfile( 't', 'hello', 'scripts', 'build' ),       $script_dir );
@@ -86,7 +86,7 @@ $shipwright->backend->import(
     source       => $source_dir,
     build_script => $script_dir,
 );
-ok( grep( {/Build\.PL/} `cat $repo/scripts/Acme-Hello/build` ),
+ok( grep( {/Makefile\.PL/} `cat $repo/scripts/Foo-Bar/build` ),
     'build script ok' );
 
 # import another dist
@@ -94,7 +94,7 @@ ok( grep( {/Build\.PL/} `cat $repo/scripts/Acme-Hello/build` ),
 chdir $cwd;
 $shipwright = Shipwright->new(
     repository => "fs:$repo",
-    source     => 'file:' . catfile( 't', 'hello', 'Acme-Hello-0.03.tar.gz' ),
+    source     => 'file:' . catfile( 't', 'hello', 'Foo-Bar-v0.01.tar.gz' ),
     name       => 'howdy',
     follow     => 0,
     log_level  => 'FATAL',
@@ -104,7 +104,7 @@ $shipwright = Shipwright->new(
 $source_dir = $shipwright->source->run();
 like( $source_dir, qr/\bhowdy\b/, 'source name looks ok' );
 $shipwright->backend->import( name => 'hello', source => $source_dir );
-ok( grep( {/Build\.PL/} `ls $repo/sources/howdy/vendor` ), 'imported ok' );
+ok( grep( {/Makefile\.PL/} `ls $repo/sources/howdy/vendor` ), 'imported ok' );
 $script_dir = tempdir( 'shipwright_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
 copy( catfile( 't', 'hello', 'scripts', 'build' ), $script_dir );
 copy( catfile( 't', 'hello', 'scripts', 'howdy_require.yml' ),
@@ -115,7 +115,7 @@ $shipwright->backend->import(
     source       => $source_dir,
     build_script => $script_dir,
 );
-ok( grep( {/Build\.PL/} `cat $repo/scripts/howdy/build` ), 'build script ok' );
+ok( grep( {/Makefile\.PL/} `cat $repo/scripts/howdy/build` ), 'build script ok' );
 
 my $tempdir = tempdir( 'shipwright_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
 dircopy(
@@ -126,21 +126,21 @@ dircopy(
 # check to see if update_order works
 like(
     `cat $repo/shipwright/order.yml`,
-    qr/Acme-Hello.*howdy/s,
+    qr/Foo-Bar.*howdy/s,
     'original order is right'
 );
 
 system( 'cp -r ' . catfile( $tempdir, 'shipwright' ) . " $repo/" );
 like(
     `cat $repo/shipwright/order.yml`,
-    qr/howdy.*Acme-Hello/s,
+    qr/howdy.*Foo-Bar/s,
     'imported wrong order works'
 );
 
 $shipwright->backend->update_order;
 like(
     `cat $repo/shipwright/order.yml`,
-    qr/Acme-Hello.*howdy/s,
+    qr/Foo-Bar.*howdy/s,
     'updated order works'
 );
 
@@ -152,9 +152,9 @@ my $install_base = tempdir( 'shipwright_install_XXXXXX', CLEANUP => 0, TMPDIR =>
 for (
     catfile( $build_base, 'shipwright', 'order.yml', ),
     catfile( $build_base, 'etc',        'shipwright-script-wrapper' ),
-    catfile( $build_base, 'sources', 'Acme-Hello', 'vendor', ),
-    catfile( $build_base, 'sources', 'Acme-Hello', 'vendor', 'MANIFEST', ),
-    catfile( $build_base, 'scripts', 'Acme-Hello', 'build', ),
+    catfile( $build_base, 'sources', 'Foo-Bar', 'vendor', ),
+    catfile( $build_base, 'sources', 'Foo-Bar', 'vendor', 'MANIFEST', ),
+    catfile( $build_base, 'scripts', 'Foo-Bar', 'build', ),
   )
 {
     ok( -e $_, "$_ exists" );
@@ -165,8 +165,8 @@ system( "$^X bin/shipwright-builder --install-base $install_base" );
 for (
     catfile(
         $install_base, 'lib',
-        'perl5',                          'Acme',
-        'Hello.pm'
+        'perl5',                          'Foo',
+        'Bar.pm'
     ),
     catfile(
         $install_base, 'etc',

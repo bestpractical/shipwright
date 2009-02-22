@@ -116,17 +116,17 @@ sub start_test {
         ],
 
         [
-            [ 'import', 'file:t/hello/Acme-Hello-0.03.tar.gz', '--no-follow' ],
+            [ 'import', 'file:t/hello/Foo-Bar-v0.01.tar.gz', '--no-follow' ],
             qr/imported with success/,
             'import tar.gz file',
         ],
 
-        # here we has a dist named Acme-Hello
+        # here we has a dist named Foo-Bar
         [
             [ 'list', ],
-            qr{Acme-Hello:\s+
-        version:\s+vendor:\s+0\.03\s+
-        from:\s+vendor:\s+\Qfile:t/hello/Acme-Hello-0.03.tar.gz\E\s+
+            qr{Foo-Bar:\s+
+        version:\s+vendor:\s+0\.01\s+
+        from:\s+vendor:\s+\Qfile:t/hello/Foo-Bar-v0.01.tar.gz\E\s+
         references:\s+0\s+
             }mx,
             'list the repo'
@@ -134,16 +134,16 @@ sub start_test {
 
         # rename cmd
         [
-            [ 'rename', 'Acme-Hello', 'foo' ],
-            qr/renamed Acme-Hello to foo with success/
+            [ 'rename', 'Foo-Bar', 'foo' ],
+            qr/renamed Foo-Bar to foo with success/
         ],
 
-        # now Acme-Hello is renamed to foo
+        # now Foo-Bar is renamed to foo
         [
             [ 'list', ],
             qr{foo:\s+
-        version:\s+vendor:\s+0\.03\s+
-        from:\s+vendor:\s+\Qfile:t/hello/Acme-Hello-0.03.tar.gz\E\s+
+        version:\s+vendor:\s+0\.01\s+
+        from:\s+vendor:\s+\Qfile:t/hello/Foo-Bar-v0.01.tar.gz\E\s+
         references:\s+0\s+
             }mx,
             'list the repo'
@@ -163,7 +163,7 @@ sub start_test {
             "rename without new-name arg"
         ],
         [
-            [ 'rename', 'Acme-Hello', '@' ],
+            [ 'rename', 'Foo-Bar', '@' ],
             undef,
             undef,
             qr/invalid new-name: @/,

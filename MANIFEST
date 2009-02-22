@@ -92,7 +92,7 @@ t/dists/tbz_make.tar.bz2
 t/dists/tgz_build.tar.gz
 t/dists/version1/info
 t/dists/version2/info
-t/hello/Acme-Hello-0.03.tar.gz
+t/hello/Foo-Bar-v0.01.tar.gz
 t/hello/fs.t
 t/hello/scripts/build
 t/hello/scripts/howdy_require.yml

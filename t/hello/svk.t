@@ -25,7 +25,7 @@ SKIP: {
 
     my $shipwright = Shipwright->new(
         repository => "svk:$repo",
-        source => 'file:' . catfile( 't', 'hello', 'Acme-Hello-0.03.tar.gz' ),
+        source => 'file:' . catfile( 't', 'hello', 'Foo-Bar-v0.01.tar.gz' ),
         follow => 0,
         log_level => 'FATAL',
         force => 1,
@@ -48,7 +48,7 @@ SKIP: {
     # import
 
     $shipwright->backend->import( name => 'hello', source => $source_dir );
-    ok( grep( {/Build\.PL/} `svk ls $repo/sources/Acme-Hello/vendor` ),
+    ok( grep( {/Makefile\.PL/} `svk ls $repo/sources/Foo-Bar/vendor` ),
         'imported ok' );
 
     my $script_dir = tempdir( 'shipwright_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
@@ -60,7 +60,7 @@ SKIP: {
         source       => $source_dir,
         build_script => $script_dir,
     );
-    ok( grep( {/Build\.PL/} `svk cat $repo/scripts/Acme-Hello/build` ),
+    ok( grep( {/Makefile\.PL/} `svk cat $repo/scripts/Foo-Bar/build` ),
         'build script ok' );
 
     # import another dist
@@ -68,7 +68,7 @@ SKIP: {
     chdir $cwd;
     $shipwright = Shipwright->new(
         repository => "svk:$repo",
-        source => 'file:' . catfile( 't', 'hello', 'Acme-Hello-0.03.tar.gz' ),
+        source => 'file:' . catfile( 't', 'hello', 'Foo-Bar-v0.01.tar.gz' ),
         name   => 'howdy',
         follow => 0,
         log_level => 'FATAL',
@@ -78,7 +78,7 @@ SKIP: {
     $source_dir = $shipwright->source->run();
     like( $source_dir, qr/\bhowdy\b/, 'source name looks ok' );
     $shipwright->backend->import( name => 'hello', source => $source_dir );
-    ok( grep( {/Build\.PL/} `svk ls $repo/sources/howdy/vendor` ),
+    ok( grep( {/Makefile\.PL/} `svk ls $repo/sources/howdy/vendor` ),
         'imported ok' );
     $script_dir = tempdir( 'shipwright_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
     copy( catfile( 't', 'hello', 'scripts', 'build' ), $script_dir );
@@ -90,7 +90,7 @@ SKIP: {
         source       => $source_dir,
         build_script => $script_dir,
     );
-    ok( grep( {/Build\.PL/} `svk cat $repo/scripts/howdy/build` ),
+    ok( grep( {/Makefile\.PL/} `svk cat $repo/scripts/howdy/build` ),
         'build script ok' );
 
     my $tempdir = tempdir( 'shipwright_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
@@ -102,7 +102,7 @@ SKIP: {
     # check to see if update_order works
     like(
         `svk cat $repo/shipwright/order.yml`,
-        qr/Acme-Hello.*howdy/s,
+        qr/Foo-Bar.*howdy/s,
         'original order is right'
     );
 
@@ -111,14 +111,14 @@ SKIP: {
           . " $repo/shipwright -m ''" );
     like(
         `svk cat $repo/shipwright/order.yml`,
-        qr/howdy.*Acme-Hello/s,
+        qr/howdy.*Foo-Bar/s,
         'imported wrong order works'
     );
 
     $shipwright->backend->update_order;
     like(
         `svk cat $repo/shipwright/order.yml`,
-        qr/Acme-Hello.*howdy/s,
+        qr/Foo-Bar.*howdy/s,
         'updated order works'
     );
 
