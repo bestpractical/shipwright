@@ -33,7 +33,6 @@ requires 'IO::Uncompress::Bunzip2' => 0;
 requires 'IO::Uncompress::RawInflate' => '2.012';
 requires 'Archive::Tar' => 0;
 requires 'Archive::Extract' => 0;
-requires 'File::HomeDir' => 0;
 
 
 if ( can_cc() ) {
