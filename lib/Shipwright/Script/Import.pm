@@ -204,7 +204,8 @@ sub run {
             $shipwright->backend->import(
                 source  => $source,
                 comment => $self->comment || 'import ' . $source,
-                overwrite => 1,                # import anyway for the main dist
+# import anyway for the main dist, unless it's already imported in this run
+                overwrite => $imported{$name} ? 0 : 1, 
                 version   => $version->{$name},
                 as        => $self->as,
                 branches => $branches->{$name},
@@ -214,7 +215,7 @@ sub run {
                 source       => $source,
                 comment      => 'import scripts for ' . $source,
                 build_script => $script_dir,
-                overwrite    => 1,
+                overwrite    => $imported{$name} ? 0 : 1,
             );
 
             # merge new map into map.yml in repo
