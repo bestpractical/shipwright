@@ -1,5 +1,9 @@
 Revision history for Shipwright
 
+2.1.1 Mon Feb 23 00:31:36 CST 2009
++ --inc arg for update so we can update inc
+* bug fixes
+
 2.1.0 Mon Jan 19 15:15:57 CST 2009
 + Git source support, with prefix "git:"
 + clean @INC when importing and building
