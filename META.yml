@@ -18,6 +18,7 @@ no_index:
     - inc
     - share
     - t
+    - xt
 requires:
   Algorithm::Dependency::Ordered: 0
   Algorithm::Dependency::Source::HoA: 0
