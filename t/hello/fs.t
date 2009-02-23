@@ -77,7 +77,7 @@ ok( -e catfile( $source_dir, 'META.yml' ), 'META.yml exists in the source' );
 $shipwright->backend->import( name => 'hello', source => $source_dir );
 ok( grep( {/Makefile\.PL/} `ls $repo/sources/Foo-Bar/vendor` ), 'imported ok' );
 
-my $script_dir = tempdir( 'shipwright_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
+my $script_dir = tempdir( 'shipwright_XXXXXX', CLEANUP => 0, TMPDIR => 1 );
 copy( catfile( 't', 'hello', 'scripts', 'build' ),       $script_dir );
 copy( catfile( 't', 'hello', 'scripts', 'require.yml' ), $script_dir );
 

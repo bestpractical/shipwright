@@ -1,4 +1,4 @@
-configure: %%PERL%% Makefile.PL LIB=%%INSTALL_BASE%%/lib/perl5/ PREFIX=%%INSTALL_BASE%%
+configure: %%PERL%% Makefile.PL LIB=%%INSTALL_BASE%%/lib/perl5/ PREFIX=%%INSTALL_BASE%% %%MAKEMAKER_EXTRA%%
 make: %%MAKE%%
 test: %%MAKE%% test
 install: %%MAKE%% install
