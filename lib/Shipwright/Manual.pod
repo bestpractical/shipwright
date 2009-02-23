@@ -26,7 +26,7 @@ A guide of using Shipwright's flags feature.
 
 A guide of using Shipwright's branches feature.
 
-=item L<Shipwright::Glossary>
+=item L<Shipwright::Manual::Glossary>
 
 A Glossary of terms relevant to Shipwright and its documentation.
 
