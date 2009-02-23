@@ -1,5 +1,8 @@
 Revision history for Shipwright
 
+2.1.3 Mon Feb 23 11:52:13 CST 2009
+* when building, first try in the clean inc env, if this fails, then try in the not so clean inc env
+
 2.1.2 Mon Feb 23 01:14:14 CST 2009
 * don't import a source multiple times in an import cmd.
 
