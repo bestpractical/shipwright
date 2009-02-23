@@ -3,6 +3,7 @@ bin/shipwright
 Changes
 inc/Module/AutoInstall.pm
 inc/Module/Install.pm
+inc/Module/Install/AuthorTests.pm
 inc/Module/Install/AutoInstall.pm
 inc/Module/Install/Base.pm
 inc/Module/Install/Can.pm
@@ -86,7 +87,6 @@ t/07.script.t
 t/08.build.t
 t/10.flags.t
 t/71.script_cmds.t
-t/99.kwalitee.t
 t/dists/dir_configure/configure
 t/dists/tbz_make.tar.bz2
 t/dists/tgz_build.tar.gz
@@ -100,7 +100,8 @@ t/hello/scripts/require.yml
 t/hello/shipwright/order.yml
 t/hello/svk.t
 t/hello/svn.t
-t/perlcritic.t
-t/pod-coverage.t
-t/pod.t
 TODO
+xt/99.kwalitee.t
+xt/perlcritic.t
+xt/pod-coverage.t
+xt/pod.t
