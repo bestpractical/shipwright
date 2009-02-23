@@ -382,8 +382,12 @@ sub _install {
           $skip_test ? '--skip-test' : (), $args{'force'} ? '--force' : (),
           $args{'clean'} ? '--clean' : ();
         if ( system($cmd) ) {
-            print $log "build $dir with failure.\n";
-            confess "build $dir with failure.\n";
+            # fall back to cmd without clean inc
+            $cmd =~ s/^PERL5OPT=-MShipwright::Util::CleanINC //;
+            if ( system($cmd ) ) {
+                print $log "build $dir with failure.\n";
+                confess "build $dir with failure.\n";
+            }
         }
     }
     else {
@@ -402,25 +406,29 @@ sub _install {
 
             print "running shipwright build command: $cmd\n";
             if ( system($cmd) ) {
-                print $log "build $dir $type part with failure.\n";
-                if ( $type eq 'test' ) {
-                    if ( $args{force} ) {
-                        print $log
+                $cmd =~ s/^PERL5OPT=-MShipwright::Util::CleanINC //;
+                # fall back to cmd without clean inc
+                if ( system($cmd ) ) {
+                    print $log "build $dir $type part with failure.\n";
+                    if ( $type eq 'test' ) {
+                        if ( $args{force} ) {
+                            print $log
 "although tests failed, will install anyway since we have force arg\n";
-                        next;
-                    }
-                    ## no critic
-                    elsif ( eval "$ktf->{$dir}" ) {
-                        print $log
+                            next;
+                        }
+                        ## no critic
+                        elsif ( eval "$ktf->{$dir}" ) {
+                            print $log
 "although tests failed, will install anyway since it's a known failure\n";
-                        next;
+                            next;
+                        }
                     }
-                }
 
-                if ( $type ne 'clean' ) {
+                    if ( $type ne 'clean' ) {
 
-                    # clean is trivial, we'll just ignore if 'clean' fails
-                    confess "build $dir $type part with failure.\n";
+                        # clean is trivial, we'll just ignore if 'clean' fails
+                        confess "build $dir $type part with failure.\n";
+                    }
                 }
             }
             else {
@@ -518,9 +526,9 @@ sub substitute {
     }
 
     my $perl_archname = `$perl -MConfig -e 'print \$Config{archname}'`;
-    $text =~ s/%%PERL%%/PERL5OPT="-I$inc_lib -MShipwright::Util::CleanINC" $perl/g;
+    $text =~ s/%%PERL%%/PERL5OPT=-MShipwright::Util::CleanINC $perl/g;
     $text =~ s/%%PERL_ARCHNAME%%/$perl_archname/g;
-    $text =~ s/%%MAKE%%/PERL5OPT="-I$inc_lib -MShipwright::Util::CleanINC" $args{make}/g;
+    $text =~ s/%%MAKE%%/PERL5OPT=-MShipwright::Util::CleanINC $args{make}/g;
 
     return $text;
 }
@@ -603,8 +611,8 @@ sub _clean {
 
     if ( -e catfile( '..', '..', 'scripts', $dir, 'build.pl' ) ) {
         print $log "found build.pl for $dir, will clean $dir using that\n";
-        $cmd = join ' ', $args{perl} || $^X,
-          '-MShipwright::Util::CleanINC',
+        $cmd = join ' ',
+           'PERL5OPT=-MShipwright::Util::CleanINC', $args{perl} || $^X,
           catfile( '..', '..', 'scripts', $dir, 'build.pl' ),
           '--install-base' => $args{'install-base'},
           '--flags'        => join( ',', keys %{ $args{flags} } ),
@@ -623,7 +631,10 @@ sub _clean {
     }
 
     if ( system($cmd) ) {
-        print $log "clean $dir with failure.\n";
+        $cmd =~ s/PERL5OPT=-MShipwright::Util::CleanINC //;
+        if ( system($cmd) ) {
+            print $log "clean $dir with failure.\n";
+        }
     }
     else {
         print $log "clean $dir with success.\n";
