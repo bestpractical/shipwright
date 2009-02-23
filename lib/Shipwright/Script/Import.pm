@@ -155,11 +155,11 @@ sub run {
             $source = $shipwright->source->run(
                 copy => { '__require.yml' => $self->require_yml }, );
 
+            next unless $source; # if running the source returned undef, we should skip
+
             $version =
               Shipwright::Util::LoadFile( $shipwright->source->version_path );
-
             my ($name) = $source =~ m{.*/(.*)$};
-            print "importing $name: ";
             $imported{$name}++;
 
             my $base = $self->_parent_dir($source);

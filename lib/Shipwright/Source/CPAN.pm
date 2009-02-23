@@ -80,12 +80,14 @@ sub new {
 sub run {
     my $self = shift;
     $self->log->info( "prepare to run source: " . $self->source );
-    if ( $self->_run ) {
+
+    my $result = $self->_run;
+    if ( $result == 1) { 
         my $compressed =
           Shipwright::Source::Compressed->new( %$self, _no_update_url => 1 );
         $compressed->run(@_);
     }
-    elsif ( $self->source =~ /\S/ ) {
+    elsif ( !$result &&  $self->source =~ /\S/ ) {
         my $error = q{invalid source: can't find '} . $self->source . q{'};
         if ( $self->version ) {
             $error .= ' version ' . $self->version;
@@ -93,6 +95,9 @@ sub run {
        
         $error .= ' in your CPAN mirror(s)' . " [@{$CPAN::Config->{urllist}}].";
         confess $error;
+    } else {
+            $self->log->warn("Removing source ".$self->source);
+            return undef;
     }
 }
 
@@ -154,7 +159,8 @@ sub _run {
     my $name = CPAN::DistnameInfo->new( $distribution->{ID} )->dist;
 
     if ( $name eq 'perl' ) {
-        confess 'perl itself contains ' . $self->source . ', will not process';
+        $self->log->warn( 'perl itself contains ' . $self->source . ', will not process');
+        return -1;
     }
 
     Shipwright::Util->select('stdout');
