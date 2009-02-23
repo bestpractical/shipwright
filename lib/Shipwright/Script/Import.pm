@@ -351,7 +351,7 @@ sub _generate_build {
     if ( -f catfile( $source_dir, 'Build.PL' ) &&  $source_dir !~ /Module-Build/ ) { # M::B should be bootstrapped with MakeMaker
         print "detected Module::Build build system\n";
         @commands = (
-            'configure: %%PERL%% Build.PL --install_base=%%INSTALL_BASE%%',
+            'configure: %%PERL%% Build.PL --install_base=%%INSTALL_BASE%% %%MODULE_BUILD_EXTRA%%',
             'make: %%PERL%% Build',
             'test: %%PERL%% Build test',
             'install: %%PERL%% Build install',
@@ -361,7 +361,7 @@ sub _generate_build {
     elsif ( -f catfile( $source_dir, 'Makefile.PL' ) ) {
         print "detected ExtUtils::MakeMaker build system or alike\n";
         @commands = (
-            'configure: %%PERL%% Makefile.PL LIB=%%INSTALL_BASE%%/lib/perl5/ PREFIX=%%INSTALL_BASE%%',
+            'configure: %%PERL%% Makefile.PL LIB=%%INSTALL_BASE%%/lib/perl5/ PREFIX=%%INSTALL_BASE%% %%MAKEMAKER_EXTRA%%',
             'make: %%MAKE%%',
             'test: %%MAKE%% test',
             'install: %%MAKE%% install',

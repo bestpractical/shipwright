@@ -26,72 +26,85 @@ confess "unknown option"
     'perl=s',                 'skip=s',
     'flags=s',                'skip-test',
     'skip-test-except-final', 'only-test',
+    'skip-man-pages',
     'force',                  'clean',
-    'name=s',                 'help',
+    'name=s',                 'help', 'advanced-help',
     'noclean',                'only=s',
     'with=s',                 'noclean-after-install',
     'make=s',                 'branches=s',
   );
 
-my $USAGE = <<'END'
+my $USAGE = <<'END';
 run: ./bin/shipwright-builder
 
-options: 
+Commonly used options: 
+  
+  --install-base            Where this vessel should be built.  Defaults to
+                            a directory inside your system's default 'temp'
+                            directory.  (Note that vessels are relocatable 
+                            once built) 
+                            Ex: --install-base /home/local/mydist
+  --skip-test               Don't run any tests at all
+  --skip-test-except-final  Only run tests for the final package built
+  --skip-man-pages          Don't install man pages for perl modules
+  --force                   Install this vessel, even if some tests fail
+  --advanced-help           Show additional command-line options you're
+                            less likely to use.
 
-help: print this usage
-
-install-base: where we will install
-    defaults: a temp dir below your system's tmp
-    e.g. --install-base /home/local/mydist
-
-name: the name of the project. used to create a better named dir if
-    install_base is not supplied
-    e.g. --name mydist
-
-perl: which perl to use for the to be installed dists
-    defaults: if we have perl in the source, it will use that one
-              otherwise, it will use the one which runs this builder script
-    e.g. --perl /usr/bin/perl
-
-skip: dists we don't want to install, comma-separated
-    e.g. --skip perl,Module-Build
-
-only:  dists we want to install only, comma-separated
-    e.g. --only perl,Module-Build
-
-flags: set flags we need, comma-separated
-    e.g.  --flags mysql,standalone
-
-skip-test: skip all the tests
-
-skip-test-except-final: skip all the tests except the final dist
-
-force: if tests fail, install anyway
-
-only-test: test for the installed dists
-    it's used to be sure everything is ok after we install with success,
-    need to specify --install-base if nothing find in __install_base.
-
-clean: clean the source
-
-noclean: don't clean before build
-
-with: don't build the dist of the name in repo, use the one specified here instead.
-    e.g. --with svn=dir:/home/foo/svn
-    'svn' is the dist name, 'dir:/home/foo/svn' is its source, with the format of Shipwright::Source
-
-make: specify the path of your make command, default is 'make'.
-    e.g. --make /usr/bin/make
-
-branches: specify the branch you want to build.
-    e.g. --branches Foo,trunk,Bar,2.0
 
 END
-  ;
+
+my $ADVANCED_USAGE = <<END;
+
+Less commonly needed options:
+  --help        Print this usage
+  --skip        Dists we don't want to install, comma-separated
+                Ex: --skip perl,Module-Build
+  --perl        Which perl to use for the to be installed vessel
+                If this vessel includes a perl build, shipwright will 
+                use that by default. Otherwise, it will default to the 
+                perl used to run this script.
+                Ex: --perl /usr/bin/perl
+  --only        Skip all dists except those in this comma-separated list
+                Ex: --only perl,Module-Build
+  --name        The name of the project. used to create a better named dir if
+                install_base is not supplied
+                Ex: --name mydist
+  --flags       Set shipwright build flags we need, comma-separated
+                Ex:  --flags mysql,standalone
+
+  --only-test   Test for the installed dists
+                We use this to be sure everything is ok after successful 
+                installation.  This option requires that you specify 
+                --install-base if no __install_base from a previous
+                Shipwright run is available.
+  --clean       Remove vestiges of a previous build from a vessel
+  --noclean     Don't automatically run a "clean" pass before building
+  --with        Skip a distribution from the vessel, using one specified on 
+                the commandline instead.
+                Ex: --with svn=dir:/home/foo/svn
+                'svn' is the dist name, 'dir:/home/foo/svn' is its source code,
+                in the format of a Shipwright source distribution.
+  --make        The path of your make command, default is 'make'.
+                Ex: --make /usr/bin/make
+  --branches    Specify the branch of a given package in the vessel you want 
+                to build.
+                Ex: --branches Foo,trunk,Bar,2.0
+END
 
 if ( $args{'help'} ) {
     print $USAGE;
     exit 0;
+}
+
+if ($args{'advanced-help'}) {
+        print $ADVANCED_USAGE;
+        exit 0;
+}
+
+unless (-d 'shipwright') {
+        print "$0 expects to be run in a directory with a 'shipwright' subdirectory\n";
+        exit -1;
 }
 
 $args{skip} = { map { $_ => 1 } split /\s*,\s*/, $args{skip} || '' };
@@ -382,12 +395,8 @@ sub _install {
           $skip_test ? '--skip-test' : (), $args{'force'} ? '--force' : (),
           $args{'clean'} ? '--clean' : ();
         if ( system($cmd) ) {
-            # fall back to cmd without clean inc
-            $cmd =~ s/^PERL5OPT=-MShipwright::Util::CleanINC //;
-            if ( system($cmd ) ) {
-                print $log "build $dir with failure.\n";
-                confess "build $dir with failure.\n";
-            }
+            print $log "build $dir with failure.\n";
+            confess "build $dir with failure.\n";
         }
     }
     else {
@@ -406,29 +415,25 @@ sub _install {
 
             print "running shipwright build command: $cmd\n";
             if ( system($cmd) ) {
-                $cmd =~ s/^PERL5OPT=-MShipwright::Util::CleanINC //;
-                # fall back to cmd without clean inc
-                if ( system($cmd ) ) {
-                    print $log "build $dir $type part with failure.\n";
-                    if ( $type eq 'test' ) {
-                        if ( $args{force} ) {
-                            print $log
+                print $log "build $dir $type part with failure.\n";
+                if ( $type eq 'test' ) {
+                    if ( $args{force} ) {
+                        print $log
 "although tests failed, will install anyway since we have force arg\n";
-                            next;
-                        }
-                        ## no critic
-                        elsif ( eval "$ktf->{$dir}" ) {
-                            print $log
+                        next;
+                    }
+                    ## no critic
+                    elsif ( eval "$ktf->{$dir}" ) {
+                        print $log
 "although tests failed, will install anyway since it's a known failure\n";
-                            next;
-                        }
+                        next;
                     }
+                }
 
-                    if ( $type ne 'clean' ) {
+                if ( $type ne 'clean' ) {
 
-                        # clean is trivial, we'll just ignore if 'clean' fails
-                        confess "build $dir $type part with failure.\n";
-                    }
+                    # clean is trivial, we'll just ignore if 'clean' fails
+                    confess "build $dir $type part with failure.\n";
                 }
             }
             else {
@@ -526,9 +531,18 @@ sub substitute {
     }
 
     my $perl_archname = `$perl -MConfig -e 'print \$Config{archname}'`;
-    $text =~ s/%%PERL%%/PERL5OPT=-MShipwright::Util::CleanINC $perl/g;
+    $text =~ s/%%PERL%%/PERL5OPT="-I$inc_lib -MShipwright::Util::CleanINC" $perl/g;
     $text =~ s/%%PERL_ARCHNAME%%/$perl_archname/g;
-    $text =~ s/%%MAKE%%/PERL5OPT=-MShipwright::Util::CleanINC $args{make}/g;
+    $text =~ s/%%MODULE_BUILD_EXTRA%%//g;
+    $text =~ s/%%MAKE%%/PERL5OPT="-I$inc_lib -MShipwright::Util::CleanINC" $args{make}/g;
+
+    `$perl -MShipwright::Util::CleanINC -e'eval { require Pod::Man}; if (\$@) { exit 1} else { exit 0 }' `;
+    my $no_podman = ! $!;
+    if ($no_podman || $args{'skip-man-pages'}) {
+         $text =~ s/%%MAKEMAKER_EXTRA%%/INSTALLMAN1DIR=none INSTALLMAN3DIR=none/;
+    } else {
+         $text =~ s/%%MAKEMAKER_EXTRA%%//;
+    }
 
     return $text;
 }
@@ -611,8 +625,8 @@ sub _clean {
 
     if ( -e catfile( '..', '..', 'scripts', $dir, 'build.pl' ) ) {
         print $log "found build.pl for $dir, will clean $dir using that\n";
-        $cmd = join ' ',
-           'PERL5OPT=-MShipwright::Util::CleanINC', $args{perl} || $^X,
+        $cmd = join ' ', $args{perl} || $^X,
+          '-MShipwright::Util::CleanINC',
           catfile( '..', '..', 'scripts', $dir, 'build.pl' ),
           '--install-base' => $args{'install-base'},
           '--flags'        => join( ',', keys %{ $args{flags} } ),
@@ -631,10 +645,7 @@ sub _clean {
     }
 
     if ( system($cmd) ) {
-        $cmd =~ s/PERL5OPT=-MShipwright::Util::CleanINC //;
-        if ( system($cmd) ) {
-            print $log "clean $dir with failure.\n";
-        }
+        print $log "clean $dir with failure.\n";
     }
     else {
         print $log "clean $dir with success.\n";
