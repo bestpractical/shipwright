@@ -278,7 +278,6 @@ sub install {
             ),
             catdir( $args{'install-base'}, 'lib', 'perl5', 'site_perl' ),
             catdir( $args{'install-base'}, 'lib', 'perl5' ),
-            $ENV{PERL5LIB}
         );
 
         $ENV{PATH} =
@@ -286,6 +285,8 @@ sub install {
           . catdir( $args{'install-base'}, 'sbin' ) . ':'
           . $ENV{PATH};
         $ENV{PERL_MM_USE_DEFAULT} = 1;
+        $ENV{PERL_MM_OPT} = '';
+        $ENV{MODULEBUILDRC} = '';
         $ENV{LDFLAGS} .= ' -L' . catdir( $args{'install-base'}, 'lib' );
         $ENV{CFLAGS}  .= ' -I' . catdir( $args{'install-base'}, 'include' );
     }
