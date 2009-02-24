@@ -541,10 +541,12 @@ sub substitute {
     my $no_podman = ! $!;
     if ($no_podman || $args{'skip-man-pages'}) {
         $text =~ s/%%MODULE_BUILD_BEFORE_BUILD_PL%%/-MShipwright::Util::PatchModuleBuild/;
+        $text =~ s/%%MODULE_BUILD_BEFORE_BUILD%%/-MShipwright::Util::PatchModuleBuild/;
          $text =~ s/%%MAKEMAKER_CONFIGURE_EXTRA%%/INSTALLMAN1DIR=none INSTALLMAN3DIR=none/;
     } else {
          $text =~ s/%%MAKEMAKER_CONFIGURE_EXTRA%%//;
          $text =~ s/%%MODULE_BUILD_BEFORE_BUILD_PL%%//;
+         $text =~ s/%%MODULE_BUILD_BEFORE_BUILD%%//;
     }
 
 

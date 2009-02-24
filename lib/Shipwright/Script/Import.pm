@@ -354,7 +354,7 @@ sub _generate_build {
         print "detected Module::Build build system\n";
         @commands = (
             'configure: %%PERL%% %%MODULE_BUILD_BEFORE_BUILD_PL%% Build.PL --install_base=%%INSTALL_BASE%%',
-            'make: %%PERL%% Build',
+            'make: %%PERL%% %%MODULE_BUILD_BEFORE_BUILD%% Build',
             'test: %%PERL%% Build test',
             'install: %%PERL%% Build install',
             'clean: %%PERL%% Build realclean',
