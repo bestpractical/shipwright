@@ -540,10 +540,13 @@ sub substitute {
     `$perl -MShipwright::Util::CleanINC -e'eval { require Pod::Man}; if (\$@) { exit 1} else { exit 0 }' `;
     my $no_podman = ! $!;
     if ($no_podman || $args{'skip-man-pages'}) {
-         $text =~ s/%%MAKEMAKER_EXTRA%%/INSTALLMAN1DIR=none INSTALLMAN3DIR=none/;
+        $text =~ s/%%MODULE_BUILD_BEFORE_BUILD_PL%%/-MShipwright::Util::PatchModuleBuild/;
+         $text =~ s/%%MAKEMAKER_CONFIGURE_EXTRA%%/INSTALLMAN1DIR=none INSTALLMAN3DIR=none/;
     } else {
-         $text =~ s/%%MAKEMAKER_EXTRA%%//;
+         $text =~ s/%%MAKEMAKER_CONFIGURE_EXTRA%%//;
+         $text =~ s/%%MODULE_BUILD_BEFORE_BUILD_PL%%//;
     }
+
 
     return $text;
 }
