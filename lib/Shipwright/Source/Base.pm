@@ -14,6 +14,7 @@ use base qw/Class::Accessor::Fast/;
 __PACKAGE__->mk_accessors(
     qw/source directory scripts_directory download_directory follow
       min_perl_version map_path skip map skip_recommends skip_all_recommends
+      include_dual_lifed
       keep_build_requires name log url_path version_path branches_path version/
 );
 
@@ -292,20 +293,15 @@ EOF
 
 #$module shouldn't be undefined, but it _indeed_ happens in reality sometimes
                 next unless $module;
-
                 # we don't want to require perl
                 if ( $module eq 'perl' ) {
                     delete $require->{$type}{$module};
                     next;
                 }
 
-                if (
-                    Module::CoreList->first_release( $module,
-                        $require->{$type}{$module}{version} )
-                    && Module::CoreList->first_release( $module,
-                        $require->{$type}{$module}{version} ) <=
-                    $self->min_perl_version
-                  )
+                if ( !$self->include_dual_lifed 
+                    && Module::CoreList->first_release( $module, $require->{$type}{$module}{version} )
+                    && Module::CoreList->first_release( $module, $require->{$type}{$module}{version} ) <= $self->min_perl_version)
                 {
                     delete $require->{$type}{$module};
                     next;
