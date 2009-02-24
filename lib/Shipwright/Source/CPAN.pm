@@ -161,6 +161,10 @@ sub _run {
     if ( $name eq 'perl' ) {
         $self->log->warn( 'perl itself contains ' . $self->source . ', will not process');
         return -1;
+    } 
+    if (!$name ) {
+        $self->log->warn("You asked to install ".$self->source. " but it isn't on the CPAN. Skipping");
+        return -1;
     }
 
     Shipwright::Util->select('stdout');
