@@ -6,7 +6,7 @@ use Carp;
 
 use base qw/App::CLI::Command Class::Accessor::Fast Shipwright::Script/;
 __PACKAGE__->mk_accessors(
-    qw/comment no_follow build_script require_yml
+    qw/comment no_follow build_script require_yml include_dual_lifed
       name test_script extra_tests overwrite min_perl_version skip version as
       skip_recommends skip_all_recommends/
 );
@@ -38,6 +38,7 @@ sub options {
         'as=s'                => 'as',
         'skip-recommends=s'   => 'skip_recommends',
         'skip-all-recommends' => 'skip_all_recommends',
+        'include-dual-lifed'  => 'include_dual_lifed'
     );
 }
 
@@ -122,6 +123,7 @@ sub run {
                 name                => $self->name,
                 follow              => !$self->no_follow,
                 min_perl_version    => $self->min_perl_version,
+                include_dual_lifed  => $self->include_dual_lifed,
                 skip                => $self->skip,
                 version             => $self->version,
                 skip_recommends     => $self->skip_recommends,
@@ -351,7 +353,7 @@ sub _generate_build {
     if ( -f catfile( $source_dir, 'Build.PL' ) &&  $source_dir !~ /Module-Build/ ) { # M::B should be bootstrapped with MakeMaker
         print "detected Module::Build build system\n";
         @commands = (
-            'configure: %%PERL%% Build.PL --install_base=%%INSTALL_BASE%% %%MODULE_BUILD_EXTRA%%',
+            'configure: %%PERL%% %%MODULE_BUILD_BEFORE_BUILD_PL%% Build.PL --install_base=%%INSTALL_BASE%%',
             'make: %%PERL%% Build',
             'test: %%PERL%% Build test',
             'install: %%PERL%% Build install',
@@ -361,7 +363,7 @@ sub _generate_build {
     elsif ( -f catfile( $source_dir, 'Makefile.PL' ) ) {
         print "detected ExtUtils::MakeMaker build system or alike\n";
         @commands = (
-            'configure: %%PERL%% Makefile.PL LIB=%%INSTALL_BASE%%/lib/perl5/ PREFIX=%%INSTALL_BASE%% %%MAKEMAKER_EXTRA%%',
+            'configure: %%PERL%% Makefile.PL LIB=%%INSTALL_BASE%%/lib/perl5/ PREFIX=%%INSTALL_BASE%% %%MAKEMAKER_CONFIGURE_EXTRA%%',
             'make: %%MAKE%%',
             'test: %%MAKE%% test',
             'install: %%MAKE%% install',
@@ -444,12 +446,12 @@ Shipwright::Script::Import - Import sources and their dependencies
  --overwrite                    : import dependency dists anyway even if they
                                   are already in the repository
  --version                      : specify the source's version
-
  --skip-recommends              : specify a list of modules/dist names of
                                   which recommends we don't want to import
-
  --skip-all-recommends          : skip all the recommends to import
-
+ --include-dual-lifed           : include modules which live both in the perl core 
+                                  and on CPAN
+ 
 =head1 DESCRIPTION
 
 The import command imports a new dist into a shipwright repository from any of
