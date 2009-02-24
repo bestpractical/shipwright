@@ -63,7 +63,7 @@ sub run {
     run3( $cmd, \*STDIN, \$out, \$err );
     Shipwright::Util->select('stdout');
 
-    $log->info("run output:\n$out") if $out;
+    $log->debug("run output:\n$out") if $out;
     $log->error("run err:\n$err")   if $err;
 
     if ($?) {
