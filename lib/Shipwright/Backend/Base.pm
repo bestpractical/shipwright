@@ -119,11 +119,12 @@ sub _install_yaml_tiny {
 sub _install_clean_inc {
     my $self = shift;
     my $dir = shift;
-    my $clean_inc_path = catdir( $dir, 'inc', 'Shipwright', 'Util' );
-    mkpath $clean_inc_path;
-    copy( Module::Info->new_from_module('Shipwright::Util::CleanINC')->file,
-        $clean_inc_path )
-      or confess "copy Shipwright/Util/CleanINC.pm failed: $!";
+    my $util_inc_path = catdir( $dir, 'inc', 'Shipwright', 'Util' );
+    mkpath $util_inc_path;
+    for my $mod qw(Shipwright::Util::CleanINC Shipwright::Util::PatchModuleBuild) {
+        copy( Module::Info->new_from_module($mod)->file, $util_inc_path )
+            or confess "copy $mod failed: $!";
+    }
 }
 
 =item import
