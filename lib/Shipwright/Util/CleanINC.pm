@@ -14,7 +14,7 @@ sub import {
     my @inc_libs = grep {/inc$/}  split( /:/,($ENV{'PERL5LIB'} ||''));
     # if the libs are explicitly specified, don't pull them from @INC
     my @new_base_inc = grep { !$skip_lib_path{$_}++ } (  @explicit_libs, @INC,@inc_libs);
-    @INC = ( @new_base_inc, $Config::Config{privlibexp}, $Config::Config{archlibexp});
+    @INC = map { /^(.*)$/ ; $1 }  ( @new_base_inc, $Config::Config{privlibexp}, $Config::Config{archlibexp});
 }
 
 
@@ -33,11 +33,10 @@ sub import {
         local $ENV{PERL5DB} = '';
         local $ENV{PERL5OPT} = '';
         local $ENV{PERL5ENV} = '';
-
-
-        my $perl =  $^X;
+        local $ENV{PATH} = $1 if $ENV{PATH} =~ /^(.*)$/;
+        my $perl =  $1 if $^X =~ /^(.*)$/;
         # Avoid using -l for the benefit of Perl 6
-        chomp( @inc = `$perl -e "print join qq[\\n], \@INC, q[]"` );
+        chomp( @inc = map { /^(.*)$/ && $1 }  `$perl -e "print join qq[\\n], \@INC, q[]"` );
         return @inc;
     }
 }
