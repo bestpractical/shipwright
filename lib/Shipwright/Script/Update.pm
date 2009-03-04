@@ -6,7 +6,7 @@ use Carp;
 
 use base qw/App::CLI::Command Class::Accessor::Fast Shipwright::Script/;
 __PACKAGE__->mk_accessors(
-    qw/all follow builder utility inc version only_sources as/
+    qw/all follow builder utility inc version only_sources as add_deps/
 );
 
 use Shipwright;
@@ -29,6 +29,7 @@ sub options {
         'version=s'    => 'version',
         'only-sources' => 'only_sources',
         'as=s'         => 'as',
+        'add-deps=s'   => 'add_deps',
     );
 }
 
@@ -49,6 +50,31 @@ sub run {
     elsif ( $self->inc ) {
         $shipwright->backend->update( path => '/inc/' );
 
+    }
+    elsif ( $self->add_deps ) {
+        my @deps = split /\s*,\s*/, $self->add_deps;
+        my $name = shift or confess 'need name arg';
+        my $requires = $shipwright->backend->requires( name => $name ) || {};
+        for my $dep ( @deps ) {
+            my $new_dep;
+            my $version = 0;
+            if ( $dep =~ /(.*)=(.*)/ ) {
+                $dep = $1;
+                $version = $2;
+            }
+
+            $new_dep = 1 unless $requires->{requires}{$dep};
+            $requires->{requires}{$dep} = { version => $version };
+            $shipwright->backend->_yml( "/scripts/$name/require.yml", $requires );
+
+            if ($new_dep) {
+
+                # we need to update refs.yml
+                my $refs = $shipwright->backend->refs;
+                $refs->{$dep}++;
+                $shipwright->backend->refs($refs);
+            }
+        }
     }
     else {
         $map    = $shipwright->backend->map    || {};
@@ -252,6 +278,7 @@ Shipwright::Script::Update - Update dist(s) and scripts
  --inc                        : update inc/
  --only-sources               : only update sources, no build scripts
  --as                         : the branch name
+ --add-deps                   : add requires deps for a dist e.g. cpan-Foo=0.30,cpan-Bar,cpan-Baz=2.34
 
 =head1 DESCRIPTION
 
