@@ -538,7 +538,7 @@ sub substitute {
     $text =~ s/%%MAKE%%/PERL5OPT="-I$inc_lib -MShipwright::Util::CleanINC" $args{make}/g;
 
     `$perl -MShipwright::Util::CleanINC -e'eval { require Pod::Man}; if (\$@) { exit 1} else { exit 0 }' `;
-    my $no_podman = ! $!;
+    my $no_podman = $?>>8;
     if ($no_podman || $args{'skip-man-pages'}) {
         $text =~ s/%%MODULE_BUILD_BEFORE_BUILD_PL%%/-MShipwright::Util::PatchModuleBuild/;
         $text =~ s/%%MODULE_BUILD_BEFORE_BUILD%%/-MShipwright::Util::PatchModuleBuild/;
