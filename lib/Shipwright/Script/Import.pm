@@ -355,9 +355,9 @@ sub _generate_build {
         @commands = (
             'configure: %%PERL%% %%MODULE_BUILD_BEFORE_BUILD_PL%% Build.PL --install_base=%%INSTALL_BASE%%',
             'make: %%PERL%% %%MODULE_BUILD_BEFORE_BUILD%% Build',
-            'test: %%PERL%% Build test',
-            'install: %%PERL%% Build install',
-            'clean: %%PERL%% Build realclean',
+            'test: %%PERL%% %%MODULE_BUILD_BEFORE_BUILD%% Build test',
+            'install: %%PERL%% %%MODULE_BUILD_BEFORE_BUILD%% Build install',
+            'clean: %%PERL%% %%MODULE_BUILD_BEFORE_BUILD%% Build realclean',
         );
     }
     elsif ( -f catfile( $source_dir, 'Makefile.PL' ) ) {
