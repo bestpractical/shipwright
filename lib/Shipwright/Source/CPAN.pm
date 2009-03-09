@@ -130,7 +130,8 @@ sub _run {
     else {
 
         # it's a module
-        my $module = CPAN::Shell->expand( 'Module', $self->source );
+        my $type = $self->source =~ /^Bundle/ ? 'Bundle' : 'Module';
+        my $module = CPAN::Shell->expand( $type, $self->source );
 
         unless ($module) {
             $self->log->warn( "can't find "
@@ -173,6 +174,7 @@ sub _run {
     $self->_update_map( $self->source, 'cpan-' . $name );
 
     $self->source($distribution->get_file_onto_local_disk);
+
     return 1;
 }
 

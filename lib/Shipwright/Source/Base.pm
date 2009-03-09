@@ -99,7 +99,51 @@ sub _follow {
         my $require = {};
         chdir catdir($path);
 
-        if ( -e 'Build.PL' ) {
+        if ( $path =~ /\bcpan-Bundle-(.*)/ ) {
+
+            my $file = $1;
+            $file =~ s!-!/!;
+            $file .= '.pm';
+
+            # so it's a bundle module
+            open my $fh, '<', 'MANIFEST' or confess "no manifest found: $!";
+            while (<$fh>) {
+                chomp;
+                if (/$file/) {
+                    $file = $_;
+                    last;
+                }
+            }
+            open $fh, '<', $file or confess "can't open $file: $!";
+            my $flip;
+            while (<$fh>) {
+                chomp;
+                next if /^\s*$/;
+
+                if (/^=head1\s+CONTENTS/) {
+                    $flip = 1;
+                    next;
+                }
+                elsif (/^=(?!head1\s+CONTENTS)/) {
+                    $flip = 0;
+                }
+
+                next unless $flip;
+                my $info;
+                if (/(.*?)-/) {
+
+                    # things following '-' are comments which we don't want here
+                    $info = $1;
+                }
+                else {
+                    $info = $_;
+                }
+                my ( $module, $version ) = split /\s+/, $info;
+                $require->{requires}{$module} = $version || 0;
+            }
+
+        }
+        elsif ( -e 'Build.PL' ) {
             Shipwright::Util->run(
                 [
                     $^X,               '-Mversion',
@@ -324,7 +368,6 @@ EOF
 
                     opendir my $dir, $self->directory;
                     my @sources = readdir $dir;
-
                     close $dir;
 
                     #reload map
