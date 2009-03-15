@@ -1,5 +1,13 @@
 Revision history for Shipwright
 
+2.1.5 Sun Mar 15 19:51:49 CST 2009
++ support Bundle:: modules
++ --add-deps for update cmd to update deps of dists
+
+2.1.4 Sun Mar 24
+* revert back, build in the *not so clean* env is not right
++ support dual-lifed modules when building
+
 2.1.3 Mon Feb 23 11:52:13 CST 2009
 * when building, first try in the clean inc env, if this fails, then try in the not so clean inc env
 
