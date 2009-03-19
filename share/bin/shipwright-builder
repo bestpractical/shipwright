@@ -33,6 +33,7 @@ confess "unknown option"
     'noclean',                'only=s',
     'with=s',                 'noclean-after-install',
     'make=s',                 'branches=s',
+    'verbose',
   );
 
 my $USAGE = <<'END';
@@ -51,6 +52,8 @@ Commonly used options:
   --force                   Install this vessel, even if some tests fail
   --advanced-help           Show additional command-line options you're
                             less likely to use.
+  --verbose                 more output to stdout.
+
 
 
 END
@@ -210,6 +213,14 @@ else {
 @$order = grep { !$installed_hash->{$_} } @$order;
 
 my $log;
+my $build_log_file = abs_path( 'build.log' );
+my $system_cmd_pipe;
+if ( $args{'verbose'} ) {
+    $system_cmd_pipe = '';
+}
+else {
+    $system_cmd_pipe = " >>$build_log_file 2>&1";
+}
 
 if ( $args{'only-test'} ) {
     open $log, '>', 'test.log' or confess $!;
@@ -230,7 +241,7 @@ else {
 sub install {
 
     # for install
-    open $log, '>', 'build.log' or confess $!;
+    open $log, '>', $build_log_file or confess $!;
 
     # set clean flag again
     if ( $args{'noclean-after-install'} ) {
@@ -395,7 +406,7 @@ sub _install {
           '--flags'        => join( ',', keys %{ $args{flags} } ),
           $skip_test ? '--skip-test' : (), $args{'force'} ? '--force' : (),
           $args{'clean'} ? '--clean' : ();
-        if ( system($cmd) ) {
+        if ( system($cmd . $system_cmd_pipe) ) {
             print $log "build $dir with failure.\n";
             confess "build $dir with failure.\n";
         }
@@ -414,8 +425,8 @@ sub _install {
 
             print $log "build $type part in $dir with cmd: $cmd\n";
 
-            print "running shipwright build command: $cmd\n";
-            if ( system($cmd) ) {
+            print $log "running shipwright build command: $cmd\n";
+            if ( system($cmd . $system_cmd_pipe) ) {
                 print $log "build $dir $type part with failure.\n";
                 if ( $type eq 'test' ) {
                     if ( $args{force} ) {
@@ -444,7 +455,7 @@ sub _install {
     }
 
     print $log "build $dir with success!\n";
-    print '=' x 80, "\n";
+    print '=' x 80, "\n" if $args{verbose};
 }
 
 sub wrap_bin {
@@ -657,7 +668,7 @@ sub _clean {
         print $log "clean $dir with success.\n";
     }
 
-    print '=' x 80, "\n";
+    print '=' x 80, "\n" if $args{verbose};
 }
 
 sub get_install_base {
