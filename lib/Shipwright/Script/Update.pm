@@ -6,7 +6,7 @@ use Carp;
 
 use base qw/App::CLI::Command Class::Accessor::Fast Shipwright::Script/;
 __PACKAGE__->mk_accessors(
-    qw/all follow builder utility inc version only_sources as add_deps/
+    qw/all follow builder utility inc version only_sources as add_deps delete_deps/
 );
 
 use Shipwright;
@@ -21,15 +21,16 @@ Hash::Merge::set_behavior('RIGHT_PRECEDENT');
 
 sub options {
     (
-        'a|all'        => 'all',
-        'follow'       => 'follow',
-        'builder'      => 'builder',
-        'utility'      => 'utility',
-        'inc'          => 'inc',
-        'version=s'    => 'version',
-        'only-sources' => 'only_sources',
-        'as=s'         => 'as',
-        'add-deps=s'   => 'add_deps',
+        'a|all'         => 'all',
+        'follow'        => 'follow',
+        'builder'       => 'builder',
+        'utility'       => 'utility',
+        'inc'           => 'inc',
+        'version=s'     => 'version',
+        'only-sources'  => 'only_sources',
+        'as=s'          => 'as',
+        'add-deps=s'    => 'add_deps',
+        'delete-deps=s' => 'delete_deps',
     );
 }
 
@@ -74,6 +75,21 @@ sub run {
                 $refs->{$dep}++;
                 $shipwright->backend->refs($refs);
             }
+        }
+    }
+    elsif ( $self->delete_deps ) {
+        my @deps = split /\s*,\s*/, $self->delete_deps;
+        my $name = shift or confess 'need name arg';
+        my $requires = $shipwright->backend->requires( name => $name ) || {};
+        for my $dep ( @deps ) {
+            for my $type ( qw/requires build_requires recommends/ ) {
+                delete $requires->{$type}{$dep} if $requires->{$type};
+            }
+
+            $shipwright->backend->_yml( "/scripts/$name/require.yml", $requires );
+            my $refs = $shipwright->backend->refs;
+            $refs->{$dep}-- if $refs->{$dep} > 0;
+            $shipwright->backend->refs($refs);
         }
     }
     else {
