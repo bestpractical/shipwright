@@ -20,13 +20,14 @@ my $build_base = getcwd;
 my $inc_lib = catdir( $build_base, 'inc' );
 
 if ( @ARGV )  {
-    open my $fh, '>', '__default_option'
-      or confess "can't write to __default_option: $!";
+    open my $fh, '>', '__default_builder_options'
+      or confess "can't write to __default_builder_options: $!";
+    print $fh '# one argument per line' . "\n";
     print $fh $_, "\n" for @ARGV;
     close $fh;
 }
 else {
-    @ARGV = get_default_option();
+    @ARGV = get_default_builder_options();
 }
 
 my %args;
@@ -691,11 +692,13 @@ sub get_install_base {
     }
 }
 
-sub get_default_option {
+sub get_default_builder_options {
     my @argv;
-    if ( open my $fh, '<', '__default_option' ) {
+    if ( open my $fh, '<', '__default_builder_options' ) {
         while( <$fh> ) {
             chomp;
+            next if /^\s*#/;
+            next unless /\S/;
             push @argv, $_;
         }
         close $fh;
