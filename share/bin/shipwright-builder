@@ -19,8 +19,19 @@ use Carp qw/confess/;
 my $build_base = getcwd;
 my $inc_lib = catdir( $build_base, 'inc' );
 
+if ( @ARGV )  {
+    open my $fh, '>', '__default_option'
+      or confess "can't write to __default_option: $!";
+    print $fh $_, "\n" for @ARGV;
+    close $fh;
+}
+else {
+    @ARGV = get_default_option();
+}
+
 my %args;
 
+use Getopt::Long;
 confess "unknown option"
   unless GetOptions(
     \%args,                   'install-base=s',
@@ -677,6 +688,17 @@ sub get_install_base {
         close $fh;
         chomp $install_base;
         return $install_base;
+    }
+}
+
+sub get_default_option {
+    my @argv;
+    if ( open my $fh, '<', '__default_option' ) {
+        while( <$fh> ) {
+            chomp;
+            push @argv, $_;
+        }
+        close $fh;
     }
 }
 
