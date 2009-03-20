@@ -694,6 +694,7 @@ sub get_default_builder_options {
         }
         close $fh;
     }
+    return @argv;
 }
 
 sub process_tmp_dists {
