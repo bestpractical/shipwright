@@ -19,16 +19,7 @@ use Carp qw/confess/;
 my $build_base = getcwd;
 my $inc_lib = catdir( $build_base, 'inc' );
 
-if ( @ARGV )  {
-    open my $fh, '>', '__default_builder_options'
-      or confess "can't write to __default_builder_options: $!";
-    print $fh '# one argument per line' . "\n";
-    print $fh $_, "\n" for @ARGV;
-    close $fh;
-}
-else {
-    @ARGV = get_default_builder_options();
-}
+@ARGV = get_default_builder_options() unless @ARGV;
 
 my %args;
 
