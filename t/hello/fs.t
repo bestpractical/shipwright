@@ -56,7 +56,7 @@ opendir $dh, $repo;
 my @dirs = sort grep { !/^\./ } readdir $dh;
 is_deeply(
     [@dirs],
-    [ 'bin', 'etc', 'inc', 'scripts', 'shipwright', 'sources', 't' ],
+    [ '__default_builder_options', 'bin', 'etc', 'inc', 'scripts', 'shipwright', 'sources', 't' ],
     'initialize works'
 );
 
