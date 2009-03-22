@@ -56,31 +56,17 @@ sub _initialize_log4perl {
     }
 
     $log_level = uc $log_level || 'FATAL';
-    my %default;
-
-    if ($log_file) {
-        %default = (
-            'log4perl.rootLogger'             => "$log_level,File",
-            'log4perl.appender.File.filename' => $log_file,
-            'log4perl.appender.File'        => 'Log::Log4perl::Appender::File',
-            'log4perl.appender.File.stderr' => 1,
-            'log4perl.appender.File.layout' =>
-              'Log::Log4perl::Layout::PatternLayout',
-            'log4perl.appender.File.layout.ConversionPattern' =>
-              '%d %p> %F{1}:%L %M - %m%n',
-        );
-    }
-    else {
-        %default = (
-            'log4perl.rootLogger'      => "$log_level,Screen",
-            'log4perl.appender.Screen' => 'Log::Log4perl::Appender::Screen',
-            'log4perl.appender.Screen.stderr' => 1,
-            'log4perl.appender.Screen.layout' =>
-              'Log::Log4perl::Layout::PatternLayout',
-            'log4perl.appender.Screen.layout.ConversionPattern' =>
-              '%d %p> %F{1}:%L %M - %m%n',
-        );
-    }
+    $log_file ||= '-';
+    my %default = (
+        'log4perl.rootLogger'             => "$log_level,File",
+        'log4perl.appender.File.filename' => $log_file,
+        'log4perl.appender.File'          => 'Log::Log4perl::Appender::File',
+        'log4perl.appender.File.stderr'   => 1,
+        'log4perl.appender.File.layout' =>
+          'Log::Log4perl::Layout::PatternLayout',
+        'log4perl.appender.File.layout.ConversionPattern' =>
+        $log_file eq '-' ? '%m%n' : '%d %p> %F{1}:%L %M - %m%n',
+    );
 
     Log::Log4perl->init( \%default );
 }
