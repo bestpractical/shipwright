@@ -239,32 +239,32 @@ sub start_test {
         # set flags dir_configure to 'configure'
         [
             [ 'flags', 'dir_configure', ],
-            qr/flags of dir_configure is \*nothing\*/,
+            qr/flags of dir_configure are \*nothing\*/,
             'default is no flags',
         ],
         [
             [ 'flags', 'dir_configure', '--set', 'configure,foo', ],
-qr/set flags with success\s+flags of dir_configure is configure, foo/,
+qr/set flags with success\s+flags of dir_configure are configure, foo/,
             'set flags with success',
         ],
         [
             [ 'flags', 'dir_configure', '--add', 'bar', ],
-qr/set flags with success\s+flags of dir_configure is bar, configure, foo/,
+qr/set flags with success\s+flags of dir_configure are bar, configure, foo/,
             'add flags to dir_configure',
         ],
         [
             [ 'flags', 'dir_configure', '--delete', 'foo,bar', ],
-            qr/set flags with success\s+flags of dir_configure is configure/,
+            qr/set flags with success\s+flags of dir_configure are configure/,
             'delete flags to dir_configure',
         ],
         [
             [ 'flags', 'tgz_build', '--set', 'build' ],
-            qr/set flags with success\s+flags of tgz_build is build/,
+            qr/set flags with success\s+flags of tgz_build are build/,
             'set flags to tgz_build',
         ],
         [
             [ 'flags', 'man1', '--set', 'build', '--mandatory' ],
-qr/set mandatory flags with success\s+mandatory flags of man1 is build/,
+qr/set mandatory flags with success\s+mandatory flags of man1 are build/,
             'set mandatory flag man1',
         ],
         [

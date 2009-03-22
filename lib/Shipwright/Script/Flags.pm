@@ -92,7 +92,7 @@ sub _show_flags {
         else {
             $flags_info = '*nothing*';
         }
-        $self->log->fatal( "mandatory flags of $name is $flags_info" );
+        $self->log->fatal( "mandatory flags of $name are $flags_info" );
     }
     else {
         $self->log->fatal( 'set flags with success' ) if $changed;
@@ -102,7 +102,7 @@ sub _show_flags {
         else {
             $flags_info = '*nothing*';
         }
-        $self->log->fatal( "flags of $name is $flags_info" );
+        $self->log->fatal( "flags of $name are $flags_info" );
     }
 
 }
