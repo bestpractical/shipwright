@@ -35,19 +35,20 @@ sub run {
             map { $_ => $self->$_ }
               qw/skip_requires skip_recommends skip_build_requires/,
         );
-        print "updated order with success\n";
+        $self->log->fatal( 'updated order with success' );
     } 
     if ($self->graph_deps)  {
-        $shipwright->backend->graph_deps(
+        my $out = $shipwright->backend->graph_deps(
             for_dists => [ split /,\s*/, $self->for_dists || '' ],
             map { $_ => $self->$_ }
               qw/skip_requires skip_recommends skip_build_requires/,
         );
+        $self->log->fatal( $out );
     }
 
     if ( $self->update_refs ) {
         $shipwright->backend->update_refs;
-        print "updated refs with success\n";
+        $self->log->fatal( 'updated refs with success' );
     }
 }
 

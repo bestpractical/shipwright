@@ -68,7 +68,7 @@ sub run {
     $shipwright->backend->refs($refs);
     $shipwright->backend->branches($branches) if $branches;
 
-    print "renamed $name to $new_name with success\n";
+    $self->log->fatal( "renamed $name to $new_name with success" );
 }
 
 1;

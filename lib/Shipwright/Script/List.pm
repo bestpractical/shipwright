@@ -103,63 +103,74 @@ sub run {
         }
 
         if ($flip) {
-            print $name, ': ', "\n";
-            print ' ' x 4 . 'version: ';
+            $self->log->fatal( $name, ':' );
+            my $version_info;
             if ( ref $versions->{$name} ) {
 
                 if ( $name =~ /^cpan-/ ) {
-                    print $versions->{$name}{'vendor'}, "\n";
+                    $version_info = $versions->{$name}{'vendor'};
                 }
                 else {
-                    print "\n";
+                    $version_info = "\n";
                     for my $branch ( keys %{ $versions->{$name} } ) {
-                        print ' ' x 8, $branch, ': ',
-                          $versions->{$name}{$branch} || '', "\n";
+                        $version_info .= ' ' x 8 .
+                          $branch . ': ' . $versions->{$name}{$branch}
+                          || '' . "\n";
                     }
+                    chomp $version_info;
                 }
             }
             else {
-                print $versions->{$name} || '', "\n";
+                $version_info = $versions->{$name} || '';
             }
+            $self->log->fatal( ' ' x 4 . 'version: ' . $version_info );
 
-            print ' ' x 4 . 'from: ';
+            my $from_info;
             if ( ref $source->{$name} ) {
-                print "\n";
+                $from_info = "\n";
                 for my $branch ( keys %{ $source->{$name} } ) {
-                    print ' ' x 8, $branch, ': ',
-                      $source->{$name}{$branch} || '', "\n";
+                    $from_info .= ' ' x 8 . $branch .
+                      ': ' . $source->{$name}{$branch} || '' . "\n";
                 }
+                chomp $from_info;
             }
             else {
-                print $source->{$name} || 'CPAN', "\n",;
+                $from_info = $source->{$name} || 'CPAN';
             }
+            $self->log->fatal( ' ' x 4 . 'from: ' . $from_info );
 
-            print ' ' x 4 . 'references: ',
-              defined $refs->{$name} ? $refs->{$name} : 'unknown', "\n";
+            $self->log->fatal( ' ' x 4 . 'references: ',
+              defined $refs->{$name} ? $refs->{$name} : 'unknown' );
 
             if ( $self->with_latest_version ) {
-                print ' ' x 4, 'latest_version: ';
+                my $latest_version_info;
                 if ( ref $source->{$name} ) {
-                    print "\n";
+                    $latest_version_info = "\n";
                     for my $branch ( keys %{ $source->{$name} } ) {
-                        print ' ' x 8, $branch, ': ',
-                          $latest_version->{$name}{$branch} || 'unknown', "\n";
+                        $latest_version_info .=
+                            ' ' x 8 
+                          . $branch . ': '
+                          . ( $latest_version->{$name}{$branch} || 'unknown' )
+                          . "\n";
                     }
+                    chomp $latest_version_info;
                 }
                 else {
-                    print $latest_version->{$name} || 'unknown', "\n";
+                    $latest_version_info = $latest_version->{$name} || 'unknown';
                 }
+                $self->log->fatal( ' ' x 4,
+                    'latest_version: ' . $latest_version_info );
             }
 
             if ($branches && $name !~ /^cpan-/) {
-                print ' ' x 4 . 'branches: ',
-                  join( ', ', @{ $branches->{$name} } ), "\n";
+                $self->log->fatal( ' ' x 4 . 'branches: ',
+                    join ', ', @{ $branches->{$name} } );
             }
         }
     }
 
     if ( $name && keys %$versions == 0 ) {
-        print $name, " doesn't exist\n";
+        $self->log->fatal( "$name doesn't exist" );
     }
 }
 

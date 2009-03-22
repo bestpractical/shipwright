@@ -55,13 +55,13 @@ sub run {
     }
 
     if ( $self->check_only ) {
-        print "dists to be deleted are: @names\n";
+        $self->log->info( "dists to be deleted are: @names" );
     }
     else {
         for my $name (@names) {
             $shipwright->backend->trim( name => $name );
         }
-        print "deleted @names with success\n";
+        $self->log->fatal( "deleted @names with success" );
     }
 
 }

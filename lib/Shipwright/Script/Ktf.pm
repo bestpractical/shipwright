@@ -46,14 +46,15 @@ sub _show_ktf {
     my $name = shift;
 
     if ( $self->delete ) {
-        print "deleted known test failure for $name\n";
+        $self->log->fatal( "deleted known test failure for $name" );
     }
     else {
         if ( defined $self->set ) {
-            print "set known test failure condition for $name with success\n";
+            $self->log->fatal(
+                "set known test failure condition for $name with success");
         }
 
-        print 'the condition is: ' . ( $ktf->{$name} || 'undef' ) . "\n";
+        $self->log->info( 'the condition is: ' . ( $ktf->{$name} || 'undef' ) );
     }
 }
 

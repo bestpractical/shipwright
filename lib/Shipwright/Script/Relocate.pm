@@ -47,7 +47,9 @@ sub run {
             || $source->{$name} eq $new_source
           )
         {
-            print "the new source is the same as old source, won't update\n";
+            $self->log->fatal(
+                "the new source is the same as old source, won't update"
+            );
         }
         else {
             if ( ref $source->{$name} ) {
@@ -61,11 +63,11 @@ sub run {
             }
 
             $shipwright->backend->source($source);
-            print "relocated $name to $new_source with success\n";
+            $self->log->fatal( "relocated $name to $new_source with success" );
         }
     }
     else {
-        print "haven't found $name in source.yml, won't relocate\n";
+        $self->log->fatal( "haven't found $name in source.yml, won't relocate" );
     }
 
 }

@@ -14,7 +14,7 @@ sub run {
 
     my $shipwright = Shipwright->new( repository => $self->repository, );
     $shipwright->backend->initialize();
-    print "created with success\n";
+    $self->log->fatal( 'created with success' );
 }
 
 1;

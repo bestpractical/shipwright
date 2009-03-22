@@ -86,7 +86,7 @@ sub run {
 
     if ( $self->extra_tests ) {
 
-        print "going to import extra_tests\n";
+        $self->log->info( 'going to import extra_tests' );
         $shipwright->backend->import(
             source       => $source,
             comment      => 'import extra tests',
@@ -94,7 +94,7 @@ sub run {
         );
     }
     elsif ( $self->test_script ) {
-        print "going to import test_script\n";
+        $self->log->info('going to import test_script');
         $shipwright->backend->test_script( source => $source );
     }
     else {
@@ -203,6 +203,7 @@ sub run {
             my $branches =
               Shipwright::Util::LoadFile( $shipwright->source->branches_path );
 
+            $self->log->fatal( "importing $name" );
             $shipwright->backend->import(
                 source  => $source,
                 comment => $self->comment || 'import ' . $source,
@@ -245,7 +246,7 @@ sub run {
 
     }
 
-    print "imported with success\n";
+    $self->log->fatal( 'imported with success' );
 
 }
 
@@ -293,7 +294,7 @@ sub _import_req {
                         next;
                     }
 
-                    print "importing $name: ";
+                    $self->log->fatal( "importing $name" );
                     my $s = catdir( $dir, $name );
 
                     my $script_dir;
@@ -351,7 +352,7 @@ sub _generate_build {
 
     my @commands;
     if ( -f catfile( $source_dir, 'Build.PL' ) ) { # &&  $source_dir !~ /Module-Build/ ) { # M::B should be bootstrapped with MakeMaker
-        print "detected Module::Build build system\n";
+        $self->log->info( 'detected Module::Build build system' );
         @commands = (
             'configure: %%PERL%% %%MODULE_BUILD_BEFORE_BUILD_PL%% Build.PL --install_base=%%INSTALL_BASE%%',
             'make: %%PERL%% %%MODULE_BUILD_BEFORE_BUILD%% Build',
@@ -361,7 +362,7 @@ sub _generate_build {
         );
     }
     elsif ( -f catfile( $source_dir, 'Makefile.PL' ) ) {
-        print "detected ExtUtils::MakeMaker build system or alike\n";
+        $self->log->info( 'detected ExtUtils::MakeMaker build system or alike' );
         @commands = (
             'configure: %%PERL%% Makefile.PL LIB=%%INSTALL_BASE%%/lib/perl5/ PREFIX=%%INSTALL_BASE%% %%MAKEMAKER_CONFIGURE_EXTRA%%',
             'make: %%MAKE%%',
@@ -371,7 +372,7 @@ sub _generate_build {
         );
     }
     elsif ( -f catfile( $source_dir, 'configure' ) ) {
-        print "detected autoconf build system\n";
+        $self->log->info( 'detected autoconf build system' );
         @commands = (
             'configure: ./configure --prefix=%%INSTALL_BASE%%',
             'make: %%MAKE%%',
@@ -381,9 +382,10 @@ sub _generate_build {
     }
     else {
         my ($name) = $source_dir =~ /([-\w.]+)$/;
-        print "unknown build system for this dist; you MUST manually edit\n";
-        print "/scripts/$name/build or provide a build.pl file or this dist\n";
-        print "will not be built!\n";
+        $self->log->warn(<<EOF);
+unknown build system for this dist; you MUST manually edit /scripts/$name/build 
+or provide a build.pl file or this dist will not be built!
+EOF
         $self->log->warn("I have no idea how to build this distribution");
 
         # stub build file to provide the user something to go from

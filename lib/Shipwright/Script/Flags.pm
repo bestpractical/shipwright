@@ -26,7 +26,7 @@ sub run {
     confess "need name arg\n" unless $name;
 
     if ( $name =~ /^__/ ) {
-        print "$name can't start as __\n";
+        $self->log->fatal( "$name can't start as __" );
         return;
     }
 
@@ -83,25 +83,26 @@ sub _show_flags {
     my $changed;
     $changed = 1 if $self->add || $self->delete || $self->set;
 
+    my $flags_info;
     if ( $self->mandatory ) {
-        print "set mandatory flags with success\n" if $changed;
-        print "mandatory flags of $name is ";
+        $self->log->fatal( 'set mandatory flags with success' ) if $changed;
         if ( @{ $flags->{__mandatory}{$name} || [] } ) {
-            print join( ', ', @{ $flags->{__mandatory}{$name} } ) . "\n";
+            $flags_info = join ', ', @{ $flags->{__mandatory}{$name} };
         }
         else {
-            print "*nothing*\n";
+            $flags_info = '*nothing*';
         }
+        $self->log->fatal( "mandatory flags of $name is $flags_info" );
     }
     else {
-        print "set flags with success\n" if $changed;
-        print "flags of $name is ";
+        $self->log->fatal( 'set flags with success' ) if $changed;
         if ( @{ $flags->{$name} || [] } ) {
-            print join( ', ', @{ $flags->{$name} } ) . "\n";
+            $flags_info =  join ', ', @{ $flags->{$name} };
         }
         else {
-            print "*nothing*\n";
+            $flags_info = '*nothing*';
         }
+        $self->log->fatal( "flags of $name is $flags_info" );
     }
 
 }
