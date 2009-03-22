@@ -27,11 +27,7 @@ sub new {
     );
     $args{log_level} = uc $args{log_level} || 'FATAL';
 
-    unless ( $args{log_file} ) {
-        # a better named log_file, in the name of repository
-        my $info = join '', map { /\w/ ? $_ : '_' } split //, $args{repository};
-        $args{log_file} = catfile( tmpdir(), "shipwright_$info.log" );
-    }
+    $args{log_file} = '-' unless $args{log_file};
 
     my $self = {
         log_level => $args{log_level},
