@@ -357,7 +357,7 @@ sub update_order {
 
 =item graph_deps
 
-Output a dependency graph in graphviz format to stdout
+return a dependency graph in graphviz format
 
 =cut
 
@@ -380,18 +380,19 @@ sub graph_deps {
         $self->_fill_deps( %args, require => $require, name => $distname );
     }
 
-    print 'digraph g {
+    my $out = 'digraph g {
         graph [ overlap = scale, rankdir= LR ];
         node [ fontsize = "18", shape = record, fontsize = 18 ];
     ';
 
     for my $dist (@dists) {
-        print qq{ "$dist" [shape = record, fontsize = 18, label = "$dist" ];\n};
+        $out .= qq{ "$dist" [shape = record, fontsize = 18, label = "$dist" ];\n};
         for my $dep ( @{ $require->{$dist} } ) {
-            print qq{"$dist" -> "$dep";\n};
+            $out .= qq{"$dist" -> "$dep";\n};
         }
     }
-    print "\n};\n";
+    $out .= "\n};";
+    return $out;
 }
 
 sub _fill_deps {
