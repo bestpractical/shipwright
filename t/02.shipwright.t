@@ -11,7 +11,7 @@ my $sw = Shipwright->new(
 isa_ok( $sw->backend, 'Shipwright::Backend::SVK', '$sw->backend' );
 isa_ok( $sw->source,  'Shipwright::Source::CPAN', '$sw->source' );
 
-like( $sw->log_file, qr/svk__test_foo\.log$/, 'default log_file' );
+is( $sw->log_file, '-', 'default log_file' );
 is( $sw->log_level, 'FATAL', 'default log_level is FATAL' );
 
 $sw = Shipwright->new(
