@@ -397,10 +397,10 @@ sub _install {
         $skip_test = 0;
     }
 
-    print "start to build and install $dir\n";
+    print "Building $dir\n";
 
     if ( -e catfile( '..', '..', 'scripts', $dir, 'build.pl' ) ) {
-        print $log "found build.pl for $dir, will install $dir using that\n";
+        print $log "Found build.pl for $dir, will install $dir using that\n";
         my $cmd = join ' ', 
            'PERL5OPT=-MShipwright::Util::CleanINC',
             $args{perl} || $^X,
@@ -410,8 +410,8 @@ sub _install {
           $skip_test ? '--skip-test' : (), $args{'force'} ? '--force' : (),
           $args{'clean'} ? '--clean' : ();
         if ( system($cmd . $system_cmd_pipe) ) {
-            print $log "build $dir with failure.\n";
-            confess "build $dir with failure.\n";
+            print $log "Build $dir failed: $!.\n";
+            confess "Build $dir failed: $!.\n";
         }
     }
     else {
@@ -426,11 +426,11 @@ sub _install {
                 next;
             }
 
-            print $log "build $type part in $dir with cmd: $cmd\n";
+            print $log "Build $type part in $dir with cmd: $cmd\n";
 
-            print $log "running shipwright build command: $cmd\n";
+            print $log "Running shipwright build command: $cmd\n";
             if ( system($cmd . $system_cmd_pipe) ) {
-                print $log "build $dir $type part with failure.\n";
+                print $log "build $dir $type failed: $!.\n";
                 if ( $type eq 'test' ) {
                     if ( $args{force} ) {
                         print $log
@@ -448,16 +448,16 @@ sub _install {
                 if ( $type ne 'clean' ) {
 
                     # clean is trivial, we'll just ignore if 'clean' fails
-                    confess "build $dir $type part with failure.\n";
+                    confess "build $dir $type part failed.\n";
                 }
             }
             else {
-                print $log "build $dir $type part with success!\n";
+                print $log "build $dir $type part succeeded!\n";
             }
         }
     }
 
-    print $log "build $dir with success!\n";
+    print $log "build $dir succeeded\n";
     print '=' x 80, "\n" if $args{verbose};
 }
 
@@ -578,10 +578,10 @@ sub test {
             confess "something wrong when execute $cmd.";
         }
         else {
-            print $log "run test $type part with success\n";
+            print $log "Run test $type succeeded\n";
         }
     }
-    print $log "run tests with success\n";
+    print $log "Ran tests successfully\n";
 }
 
 sub cmds {
@@ -644,7 +644,7 @@ sub _clean {
     chdir catdir( 'dists', $dir );
 
     if ( -e catfile( '..', '..', 'scripts', $dir, 'build.pl' ) ) {
-        print $log "found build.pl for $dir, will clean $dir using that\n";
+        print $log "Using build.pl to clean $dir\n";
         $cmd = join ' ', $args{perl} || $^X,
           '-MShipwright::Util::CleanINC',
           catfile( '..', '..', 'scripts', $dir, 'build.pl' ),
@@ -665,10 +665,10 @@ sub _clean {
     }
 
     if ( system($cmd) ) {
-        print $log "clean $dir with failure.\n";
+        print $log "clean $dir failed.\n";
     }
     else {
-        print $log "clean $dir with success.\n";
+        print $log "clean $dir succeeded.\n";
     }
 
     print '=' x 80, "\n" if $args{verbose};
@@ -703,7 +703,7 @@ sub process_tmp_dists {
     for my $name ( keys %{ $args{with} } ) {
         my $cmd = cmd( $name, $args{with}{$name} );
         if ($cmd) {
-            system($cmd) && confess "run $cmd with failure";
+            system($cmd) && confess "$cmd failed: $!";
         }
     }
 }
