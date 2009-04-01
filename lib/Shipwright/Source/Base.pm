@@ -434,6 +434,7 @@ EOF
                             # if run returns false, we should skip trying to install it.
                             # this lets us skip explicit dependencies that are actually part of the perl core
                             #delete $require->{$type}{$module};
+                            chdir $cwd;
                             next;
 
                         }
