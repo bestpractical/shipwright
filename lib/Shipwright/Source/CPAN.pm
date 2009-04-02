@@ -97,7 +97,7 @@ sub run {
         confess $error;
     } else {
             $self->log->warn("Removing source ".$self->source);
-            return undef;
+            return;
     }
 }
 
