@@ -189,7 +189,13 @@ sub run {
 
             }
 
-            unless ( $self->no_follow ) {
+            if ( $self->no_follow ) {
+                open my $fh, '>', catfile( $script_dir, 'require.yml' ) or
+                    confess "can't write to $script_dir/require.yml: $!\n";
+                print $fh "---\n";
+                close $fh;
+            }
+            else {
                 $self->_import_req( $source, $shipwright, $script_dir );
 
                 if ( -e catfile( $source, '__require.yml' ) ) {
