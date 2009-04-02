@@ -402,10 +402,7 @@ sub _fill_deps {
     my $name    = $args{name};
 
     return if $require->{$name};
-    my $out = Shipwright::Util->run(
-        $self->_cmd( 'cat', path => "/scripts/$name/require.yml" ), 1 );
-
-    my $req = Shipwright::Util::Load($out) || {};
+    my $req = $self->requires( name => $name ) || {};
 
     if ( $req->{requires} ) {
         for (qw/requires recommends build_requires/) {
@@ -818,10 +815,7 @@ sub update_refs {
         # initialize here, in case we don't have $name entry in $refs
         $refs->{$name} ||= 0;
 
-        my $out = Shipwright::Util->run(
-            $self->_cmd( 'cat', path => "/scripts/$name/require.yml" ), 1 );
-
-        my $req = Shipwright::Util::Load($out) || {};
+        my $req = $self->requires( name => $name ) || {};
 
         my @deps;
         if ( $req->{requires} ) {
