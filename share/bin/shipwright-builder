@@ -410,7 +410,7 @@ sub _install {
           $skip_test ? '--skip-test' : (), $args{'force'} ? '--force' : (),
           $args{'clean'} ? '--clean' : ();
         if ( system($cmd . $system_cmd_pipe) ) {
-            print $log "build $dir $type failed" . (
+            print $log "build $dir failed" . (
                 $? == -1
                 ? ": $!"
                 : ( ' with value ' . ( $? >> 8 ) )
