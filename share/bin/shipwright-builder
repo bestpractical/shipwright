@@ -410,8 +410,12 @@ sub _install {
           $skip_test ? '--skip-test' : (), $args{'force'} ? '--force' : (),
           $args{'clean'} ? '--clean' : ();
         if ( system($cmd . $system_cmd_pipe) ) {
-            print $log "Build $dir failed: $!.\n";
-            confess "Build $dir failed: $!.\n";
+            print $log "build $dir $type failed" . (
+                $? == -1
+                ? ": $!"
+                : ( ' with value ' . ( $? >> 8 ) )
+            ) . "\n";
+            confess "Build $dir failed\n";
         }
     }
     else {
@@ -430,7 +434,11 @@ sub _install {
 
             print $log "Running shipwright build command: $cmd\n";
             if ( system($cmd . $system_cmd_pipe) ) {
-                print $log "build $dir $type failed: $!.\n";
+                print $log "build $dir $type failed" . (
+                    $? == -1
+                    ? ": $!"
+                    : ( ' with value ' . ( $? >> 8 ) )
+                ) . "\n";
                 if ( $type eq 'test' ) {
                     if ( $args{force} ) {
                         print $log
@@ -703,7 +711,7 @@ sub process_tmp_dists {
     for my $name ( keys %{ $args{with} } ) {
         my $cmd = cmd( $name, $args{with}{$name} );
         if ($cmd) {
-            system($cmd) && confess "$cmd failed: $!";
+            system($cmd) && confess "$cmd failed";
         }
     }
 }
