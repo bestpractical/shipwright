@@ -35,7 +35,8 @@ sub import {
         local $ENV{PERL5OPT} = '';
         local $ENV{PERL5ENV} = '';
         local $ENV{PATH} = $1 if $ENV{PATH} =~ /^(.*)$/;
-        my $perl =  $1 if $^X =~ /^(.*)$/;
+        my $perl;
+        $perl =  $1 if $^X =~ /^(.*)$/;
         # Avoid using -l for the benefit of Perl 6
         chomp( @inc = map { /^(.*)$/ && $1 }  `$perl -e "print join qq[\\n], \@INC, q[]"` );
         return @inc;

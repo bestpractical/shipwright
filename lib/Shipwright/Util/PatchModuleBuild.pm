@@ -6,8 +6,8 @@ sub import {
  
     use Module::Build::Base;
     no warnings qw'redefine';
-    sub Module::Build::Base::ACTION_manpages  {}
-    sub Module::Build::Base::ACTION_docs  {}
+    sub Module::Build::Base::ACTION_manpages  {} ## no critic
+    sub Module::Build::Base::ACTION_docs  {} ## no critic
 
 }
 
