@@ -37,7 +37,7 @@ sub initialize {
 
     $self->delete;    # clean repository in case it exists
 
-    dircopy( $dir, $self->repository );
+    dircopy( $dir, $self->repository ) or confess "can't copy $dir to " .  $self->repository . ": $!";
 }
 
 # a cmd generating factory
@@ -189,7 +189,7 @@ sub _update_file {
 
     my $file = catfile( $self->repository, $path );
 
-    copy( $latest, $file );
+    copy( $latest, $file ) or confess "can't copy $latest to $file: $!";
 }
 
 sub _update_dir {
@@ -198,7 +198,7 @@ sub _update_dir {
     my $latest = shift;
 
     my $dir = catfile( $self->repository, $path );
-    dircopy( $latest, $dir );
+    dircopy( $latest, $dir ) or confess "can't copy $latest to $dir: $!";
 }
 
 =item import

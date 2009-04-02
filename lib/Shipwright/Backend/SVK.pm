@@ -285,7 +285,7 @@ sub _update_file {
         target => $file,
     );
 
-    copy( $latest, $file );
+    copy( $latest, $file ) or confess "can't copy $latest to $file: $!";
     $self->commit(
         path    => $file,
         comment => "updated $path",
@@ -307,7 +307,7 @@ sub _update_dir {
         target => $dir,
     );
 
-    dircopy( $latest, $dir );
+    dircopy( $latest, $dir ) or confess "can't copy $latest to $dir: $!";
     $self->commit(
         path    => $dir,
         comment => "updated $path",
