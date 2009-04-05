@@ -9,6 +9,9 @@ open FH, '<', $manifest;
 my @pms = map { s|^lib/||; chomp; $_ } grep { m|^lib/.*pm$| } <FH>;
 
 plan tests => scalar @pms;
+my @tmp;
+@pms = grep { /CleanINC/ ? ( ( push @tmp, $_) && undef ) : $_} @pms;
+push @pms, @tmp;
 for my $pm (@pms) {
     $pm =~ s|\.pm$||;
     $pm =~ s|/|::|g;
