@@ -52,6 +52,8 @@ sub prepare {
     my $cmd = $self->SUPER::prepare(@_);
 
     unless ( ref $cmd eq 'Shipwright::Script::Help' ) {
+        $cmd->repository( $ENV{SHIPWRIGHT_REPOSITORY} )
+          if !$cmd->repository && $ENV{SHIPWRIGHT_REPOSITORY};
         if ( $cmd->repository ) {
             my $backend =
               Shipwright::Backend->new( repository => $cmd->repository );
