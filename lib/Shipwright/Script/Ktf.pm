@@ -21,13 +21,13 @@ sub run {
     my $self  = shift;
     my @names = @_;
 
-    confess "need name arg\n" unless @names;
-
     my $shipwright = Shipwright->new( repository => $self->repository, );
 
     my $ktf = $shipwright->backend->ktf;
 
     if ( $self->delete || defined $self->set ) {
+        confess "need name arg\n" unless @names;
+
         if ( $self->delete ) {
             delete $ktf->{$_} for @names;
         }
@@ -37,7 +37,12 @@ sub run {
         $shipwright->backend->ktf($ktf);
     }
 
-    $self->_show_ktf( $ktf, $_ ) for @names;
+    if ( @names ) {
+        $self->_show_ktf( $ktf, $_ ) for @names;
+    }
+    else {
+        $self->_show_ktf( $ktf, $_ ) for sort keys %$ktf;
+    }
 }
 
 sub _show_ktf {
