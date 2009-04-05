@@ -18,10 +18,10 @@ sub options {
 }
 
 sub run {
-    my $self = shift;
-    my $name = shift;
+    my $self  = shift;
+    my @names = @_;
 
-    confess "need name arg\n" unless $name;
+    confess "need name arg\n" unless @names;
 
     my $shipwright = Shipwright->new( repository => $self->repository, );
 
@@ -29,15 +29,15 @@ sub run {
 
     if ( $self->delete || defined $self->set ) {
         if ( $self->delete ) {
-            delete $ktf->{$name};
+            delete $ktf->{$_} for @names;
         }
         if ( defined $self->set ) {
-            $ktf->{$name} = $self->set;
+            $ktf->{$_} = $self->set for @names;
         }
         $shipwright->backend->ktf($ktf);
     }
 
-    $self->_show_ktf( $ktf, $name );
+    $self->_show_ktf( $ktf, $_ ) for @names;
 }
 
 sub _show_ktf {
@@ -54,7 +54,7 @@ sub _show_ktf {
                 "set known test failure condition for $name with success");
         }
 
-        $self->log->info( 'the condition is: ' . ( $ktf->{$name} || 'undef' ) );
+        $self->log->fatal( "the condition of $name is: " . ( $ktf->{$name} || 'undef' ) );
     }
 }
 
@@ -68,7 +68,7 @@ Shipwright::Script::Ktf - Maintain a dist's known test failure conditions
 
 =head1 SYNOPSIS
 
- ktf NAME --set '$^O eq "darwin"'
+ ktf NAME1 NAME2 ... --set '$^O eq "darwin"'
 
 =head1 OPTIONS
 
