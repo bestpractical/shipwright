@@ -1,2 +1,1 @@
-* better log support 
 * should be possible to build a bindist that runs on macos, linux, solaris and windows using lib path tricks. (windows may need special love).
