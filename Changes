@@ -1,5 +1,23 @@
 Revision history for Shipwright
 
+2.1.6 Sun Apr  5 13:38:59 CST 2009
+
+update for modules use Module::Install:
++ test_requires support( it's the same as build_requires )
++ recommends and feature support
+
+update for cmds:
++ env SHIPWRIGHT_REPOSITORY support so we do not need to write -r ... in each cmd all the time
++ --delete-deps for update cmd
+* refactor ktf cmd so we can set or show multiple dists at a time
+* refactor log part
+
+update for builder: 
++ default_options support so we don't need to reinput the args( one line per arg in repository's file: __default_builder_options )
++ --verbose for shipwright-builder
+* make archlibexp be in front of privlibexp in @INC
+* tweak Module::Build related stuff so we don't need some pod modules which are not in core sometimes.
+
 2.1.5 Sun Mar 15 19:51:49 CST 2009
 + support Bundle:: modules
 + --add-deps for update cmd to update deps of dists
