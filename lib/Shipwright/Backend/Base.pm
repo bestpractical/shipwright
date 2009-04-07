@@ -81,7 +81,7 @@ sub initialize {
     for (qw/scripts sources/) {
         mkdir catdir( $dir, $_ );
     }
-    chmod 0644, catfile( 't', 'test' );
+    chmod 0644, catfile( $dir, 't', 'test' );
 
     # hack for share_root living under blib/
     unlink( catfile( $dir, '.exists' ) );
