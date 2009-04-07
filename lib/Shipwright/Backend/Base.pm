@@ -78,9 +78,10 @@ sub initialize {
     closedir $sw_dh;
 
     # share_root can't keep empty dirs, we have to create them manually
-    for (qw/scripts t sources/) {
+    for (qw/scripts sources/) {
         mkdir catdir( $dir, $_ );
     }
+    chmod 0644, catfile( 't', 'test' );
 
     # hack for share_root living under blib/
     unlink( catfile( $dir, '.exists' ) );
