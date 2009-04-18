@@ -50,4 +50,4 @@ requires:
   version: 0
 resources:
   license: http://dev.perl.org/licenses/
-version: 2.001006
+version: 2.001007
