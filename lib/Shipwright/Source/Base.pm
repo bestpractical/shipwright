@@ -213,8 +213,7 @@ sub shipwright_recommends {
 }
 
 sub shipwright_feature {
-    my $name = shift;
-    my @mods = @_;
+    my ( $name, @mods ) = @_;
     for ( my $i = 0 ; $i < @mods ; $i++ ) {
         if ( $mods[$i] eq '-default' ) {
             $i++;    # skip the -default value
