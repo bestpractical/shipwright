@@ -152,7 +152,7 @@ sub _follow {
                 ],
                 1, # don't die if this fails
             );
-            Shipwright::Util->run( [ $^X, 'Build.PL' ] );
+            Shipwright::Util->run( [ $^X, 'Build.PL' ] ) if $? || !-e 'Build';
             my $source = read_file( catfile( '_build', 'prereqs' ) )
               or confess "can't read _build/prereqs: $!";
             my $eval = '$require = ' . $source;
@@ -302,7 +302,7 @@ EOF
                     1, # don't die if this fails
                 );
                 Shipwright::Util->run( [ $^X, 'shipwright_makefile.pl' ] )
-                  if $?;
+                  if $? || !-e 'Makefile';
                 my $prereqs = read_file( catfile('shipwright_prereqs') )
                   or confess "can't read prereqs: $!";
                 eval $prereqs or confess "eval error: $@";    ## no critic
@@ -321,12 +321,8 @@ EOF
                     ],
                     1, # don't die if this fails
                 );
-                Shipwright::Util->run(
-                    [
-                        $^X,
-                        'Makefile.PL'
-                    ]
-                ) if $?;
+                Shipwright::Util->run( [ $^X, 'Makefile.PL' ] )
+                  if $? || !-e 'Makefile';
 
                 my ($source) = grep { /PREREQ_PM/ } read_file('Makefile');
                 if ( $source && $source =~ /({.*})/ ) {
