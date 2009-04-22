@@ -45,7 +45,6 @@ else {
 
 no_index( directory => 't' );
 no_index( directory => 'xt' );
-no_index( directory => 'docs' );
 
 install_script('bin/shipwright');
 install_share;
