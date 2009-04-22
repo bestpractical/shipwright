@@ -94,7 +94,7 @@ sub _install_module_build {
     my $dir = shift;
     my $module_build_path = catdir( $dir, 'inc', 'Module', );
     mkpath catdir( $module_build_path, 'Build' );
-    copy( catdir( Module::Info->new_from_module('Module::Build')->file),
+    copy( Module::Info->new_from_module('Module::Build')->file,
             $module_build_path ) or confess "copy Module/Build.pm failed: $!";
     dircopy(
         catdir(
