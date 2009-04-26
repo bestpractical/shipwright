@@ -28,6 +28,10 @@ sub new {
         $args{repository} = $abs_path if $abs_path;
         $module = 'Shipwright::Backend::FS';
     }
+    elsif ( $args{repository} =~ m{^\s*git:} ) {
+        $args{repository} =~ s{^\s*git:}{};
+        $module = 'Shipwright::Backend::Git';
+    }
     else {
         croak "invalid repository: $args{repository}\n";
     }

@@ -79,7 +79,10 @@ sub initialize {
 
     # share_root can't keep empty dirs, we have to create them manually
     for (qw/scripts sources/) {
-        mkdir catdir( $dir, $_ );
+        my $sub_dir = catdir( $dir, $_ );
+        mkdir $sub_dir;
+        open my $fh, '>', catfile( $sub_dir, '.exists' ) or confess $!;
+        close $fh;
     }
     chmod 0644, catfile( $dir, 't', 'test' );
 
@@ -854,7 +857,7 @@ sub has_branch_support {
     return;
 }
 
-*_cmd = *_update_file = *_subclass_method;
+*_cmd = *_update_file = *_update_dir = *_subclass_method;
 
 =back
 

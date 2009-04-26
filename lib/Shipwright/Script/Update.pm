@@ -39,7 +39,11 @@ my ( $shipwright, $map, $source, $branches );
 sub run {
     my $self = shift;
 
-    $shipwright = Shipwright->new( repository => $self->repository, );
+    $shipwright = Shipwright->new(
+        repository => $self->repository,
+        log_level  => $self->log_level,
+        log_file   => $self->log_file
+    );
 
     if ( $self->builder ) {
         $shipwright->backend->update( path => '/bin/shipwright-builder' );

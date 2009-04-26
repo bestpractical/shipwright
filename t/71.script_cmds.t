@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 106;
+use Test::More tests => 140;
 
 use Shipwright;
 use Shipwright::Test;
@@ -15,11 +15,16 @@ Shipwright::Test->init;
 
 my $install_base = catdir( tmpdir(), 'vessel_71_scripts_cmds' );
 my $build_base   = catdir( tmpdir(), 'shipwright_build_71_scripts_cmds' );
-
 {
 
     # fs backend
     start_test( 'fs:' . create_fs_repo() );
+}
+
+SKIP: {
+    skip "git: no git found or env SHIPWRIGHT_TEST_GIT not set", 34
+      if skip_git();
+    start_test( 'git:' . create_git_repo() );
 }
 
 SKIP: {

@@ -9,9 +9,11 @@ use File::Temp qw/tempdir/;
 use IPC::Cmd qw/can_run/;
 use File::Spec::Functions qw/catfile catdir/;
 use Shipwright::Util;
+use Cwd 'getcwd';
 
 our @EXPORT =
-  qw/has_svk has_svn skip_svk skip_svn create_fs_repo create_svk_repo create_svn_repo devel_cover_enabled test_cmd/;
+  qw/has_svk has_svn skip_svk skip_svn create_fs_repo create_svk_repo
+  create_svn_repo devel_cover_enabled test_cmd skip_git create_git_repo/;
 
 =head1 NAME
 
@@ -61,6 +63,19 @@ sub has_svn {
     return;
 }
 
+=head2 has_git
+
+check to see if we have git or not
+
+=cut
+
+sub has_git {
+    if (   can_run( $ENV{'SHIPWRIGHT_GIT'} ) ) {
+        return 1;
+    }
+    return;
+}
+
 =head2 skip_svn
 
 if skip svn when test.
@@ -87,6 +102,20 @@ sub skip_svk {
     return 1;
 }
 
+=head2 skip_git
+
+if skip git when test.
+skip test git unless env SHIPWRIGHT_TEST_GIT is set to true and
+the system has git
+
+=cut
+
+sub skip_git {
+    return if $ENV{'SHIPWRIGHT_TEST_GIT'} && has_git();
+    return 1;
+}
+
+
 =head2 create_fs_repo 
 
 create a repo for fs
@@ -95,6 +124,21 @@ create a repo for fs
 
 sub create_fs_repo {
     return tempdir( 'shipwright_test_fs_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
+}
+
+=head2 create_fs_repo 
+
+create a repo for git
+
+=cut
+
+sub create_git_repo {
+    my $dir = tempdir( 'shipwright_test_git_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
+    my $cwd = getcwd();
+    chdir $dir;
+    Shipwright::Util->run( [$ENV{'SHIPWRIGHT_GIT'}, 'init' ] );
+    chdir $cwd;
+    return 'file://' . catdir( $dir, '.git' );
 }
 
 =head2 create_svk_repo 
