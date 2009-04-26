@@ -302,7 +302,7 @@ Shipwright::Script::Update - Update dist(s) and scripts
 
 =head1 DESCRIPTION
 
-The update command updates one or multiple svk, svn, or CPAN dists in a
+The update command updates one or multiple svk, svn, git or CPAN dists in a
 Shipwright repository to the latest version. 
 To update other types of sources, you must re-import the new version, using the same name in order to overwrite.
 
