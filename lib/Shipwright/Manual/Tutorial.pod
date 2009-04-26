@@ -8,13 +8,14 @@ In this tutorial, we'll create a vessel to represent basic stuff of Shipwright.
 
 =head1 DESCRIPTION
 
-Currently, Shipwright supports 3 kinds of backends: I<SVK>, I<SVN> and I<plain
+Currently, Shipwright supports 3 kinds of backends: I<SVK>, I<SVN>, I<Git> and I<plain
 file system>. e.g.
 
     svn:file:///tmp/svnrepo/foo
     svn:http://svn.example.com/foo
     svk://foo
     svk:/test/foo
+    git:file:///tmp/shipwright.git
     fs:/tmp/foo
 
 Note: since we need C<svk>/C<svn>/C<svnadmin> cmds in in backends, sources or 
