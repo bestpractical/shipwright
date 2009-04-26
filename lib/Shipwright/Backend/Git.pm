@@ -141,14 +141,18 @@ sub import {
 sub DESTROY {
     my $self = shift;
     my $cwd  = getcwd;
-    chdir $self->cloned_dir;
+    if ( $self->cloned_dir ) {
+        chdir $self->cloned_dir or return;
 
-    Shipwright::Util->run( [ $ENV{'SHIPWRIGHT_GIT'}, 'add', '.' ] );
-#    TODO comment need to be something special
-    Shipwright::Util->run(
-        [ $ENV{'SHIPWRIGHT_GIT'}, 'commit', '-m', 'comment', '-a' ], 1 );
-    Shipwright::Util->run( [ $ENV{'SHIPWRIGHT_GIT'}, 'push' ] );
-    chdir $cwd;
+        Shipwright::Util->run( [ $ENV{'SHIPWRIGHT_GIT'}, 'add', '.' ] );
+
+        #    TODO comment need to be something special
+        Shipwright::Util->run(
+            [ $ENV{'SHIPWRIGHT_GIT'}, 'commit', '-m', 'comment' ], 1 );
+        Shipwright::Util->run( [ $ENV{'SHIPWRIGHT_GIT'}, 'push' ] );
+        chdir $cwd;
+
+    }
 }
 
 =back
