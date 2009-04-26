@@ -115,7 +115,11 @@ sub _cmd {
 
 sub _yml {
     my $self = shift;
-    return $self->fs_backend->_yml(@_);
+    my $return = $self->fs_backend->_yml(@_);
+    if ( @_ > 1 ) {
+        $self->commit;
+    }
+    return $return;
 }
 
 sub info {
@@ -125,12 +129,14 @@ sub info {
 
 sub _update_dir {
     my $self = shift;
-    return $self->fs_backend->_update_dir(@_);
+    $self->fs_backend->_update_dir(@_);
+    $self->commit;
 }
 
 sub _update_file {
     my $self = shift;
-    return $self->fs_backend->_update_file(@_);
+    $self->fs_backend->_update_file(@_);
+    $self->commit;
 }
 
 sub import {
@@ -138,22 +144,42 @@ sub import {
     return $self->fs_backend->import(@_);
 }
 
-sub DESTROY {
+sub commit {
     my $self = shift;
-    my $cwd  = getcwd;
+    my %args =
+      ( comment => 'comment', @_ );    # git doesn't allow comment to be blank
+
     if ( $self->cloned_dir ) {
+        my $cwd = getcwd;
         chdir $self->cloned_dir or return;
 
         Shipwright::Util->run( [ $ENV{'SHIPWRIGHT_GIT'}, 'add', '.' ] );
 
         #    TODO comment need to be something special
         Shipwright::Util->run(
-            [ $ENV{'SHIPWRIGHT_GIT'}, 'commit', '-m', 'comment' ], 1 );
+            [ $ENV{'SHIPWRIGHT_GIT'}, 'commit', '-m', $args{comment} ], 1 );
         Shipwright::Util->run( [ $ENV{'SHIPWRIGHT_GIT'}, 'push' ] );
         chdir $cwd;
-
     }
+    return;
 }
+
+#sub DESTROY {
+#    my $self = shift;
+#    my $cwd  = getcwd;
+#    if ( $self->cloned_dir ) {
+#        chdir $self->cloned_dir or return;
+#
+#        Shipwright::Util->run( [ $ENV{'SHIPWRIGHT_GIT'}, 'add', '.' ] );
+#
+#            TODO comment need to be something special
+#        Shipwright::Util->run(
+#            [ $ENV{'SHIPWRIGHT_GIT'}, 'commit', '-m', 'comment' ], 1 );
+#        Shipwright::Util->run( [ $ENV{'SHIPWRIGHT_GIT'}, 'push' ] );
+#        chdir $cwd;
+#
+#    }
+#}
 
 =back
 
