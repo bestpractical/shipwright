@@ -143,15 +143,14 @@ sub DESTROY {
     my $cwd  = getcwd;
     chdir $self->cloned_dir;
 
-    Shipwright::Logger->_initialize_log4perl(
-        log_level => $self->{log_level},
-        log_file  => $self->{log_file}
-    );
-    Shipwright::Util->run( [ $ENV{'SHIPWRIGHT_GIT'}, 'add', '.' ] );
-    #TODO comment need to be something special
-    Shipwright::Util->run(
-        [ $ENV{'SHIPWRIGHT_GIT'}, 'commit', '-m', 'comment', '-a' ], 1 );
-    Shipwright::Util->run( [ $ENV{'SHIPWRIGHT_GIT'}, 'push' ] );
+#    Shipwright::Util->run( [ $ENV{'SHIPWRIGHT_GIT'}, 'add', '.' ] );
+#    TODO comment need to be something special
+#    Shipwright::Util->run(
+#        [ $ENV{'SHIPWRIGHT_GIT'}, 'commit', '-m', 'comment', '-a' ], 1 );
+#    Shipwright::Util->run( [ $ENV{'SHIPWRIGHT_GIT'}, 'push' ] );
+    system( $ENV{'SHIPWRIGHT_GIT'}, 'add', '.' );
+    system( $ENV{'SHIPWRIGHT_GIT'}, 'commit', '-m', 'comment', '-a' );
+    system( $ENV{'SHIPWRIGHT_GIT'}, 'push' );
     chdir $cwd;
 }
 
