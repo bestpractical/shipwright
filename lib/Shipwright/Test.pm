@@ -126,7 +126,7 @@ sub create_fs_repo {
     return tempdir( 'shipwright_test_fs_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
 }
 
-=head2 create_fs_repo 
+=head2 create_git_repo 
 
 create a repo for git
 

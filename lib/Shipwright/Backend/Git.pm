@@ -55,6 +55,14 @@ sub initialize {
     chdir $cwd;
 }
 
+=item cloned_dir
+
+since nearly all the time we need to clone first to use git, it's good that
+we keep a cloned dir.
+this returns the cloned_dir, will also clone if it's not cloned yet
+
+=cut
+
 my $cloned_dir;
 
 sub cloned_dir {
@@ -97,6 +105,13 @@ sub check_repository {
     return;
 }
 
+=item fs_backend
+
+git's local clone is nearly the same as a fs backend, this returns
+a Shipwright::Backend::FS object which reflects the cloned_dir repository.
+
+=cut
+
 sub fs_backend {
     my $self = shift;
     return $self->{fs_backend} if $self->{fs_backend};
@@ -122,6 +137,10 @@ sub _yml {
     return $return;
 }
 
+=item info
+
+=cut
+
 sub info {
     my $self = shift;
     return $self->fs_backend->info(@_);
@@ -139,10 +158,18 @@ sub _update_file {
     $self->commit;
 }
 
+=item import
+
+=cut 
+
 sub import {
     my $self = shift;
     return $self->fs_backend->import(@_);
 }
+
+=item commit
+
+=cut
 
 sub commit {
     my $self = shift;
@@ -163,23 +190,6 @@ sub commit {
     }
     return;
 }
-
-#sub DESTROY {
-#    my $self = shift;
-#    my $cwd  = getcwd;
-#    if ( $self->cloned_dir ) {
-#        chdir $self->cloned_dir or return;
-#
-#        Shipwright::Util->run( [ $ENV{'SHIPWRIGHT_GIT'}, 'add', '.' ] );
-#
-#            TODO comment need to be something special
-#        Shipwright::Util->run(
-#            [ $ENV{'SHIPWRIGHT_GIT'}, 'commit', '-m', 'comment' ], 1 );
-#        Shipwright::Util->run( [ $ENV{'SHIPWRIGHT_GIT'}, 'push' ] );
-#        chdir $cwd;
-#
-#    }
-#}
 
 =back
 
