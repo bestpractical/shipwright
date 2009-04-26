@@ -55,21 +55,20 @@ sub run {
     my $cmd            = shift;
     my $ignore_failure = shift;
 
-    my $log; # = Log::Log4perl->get_logger('Shipwright::Util');
+    my $log = Log::Log4perl->get_logger('Shipwright::Util');
 
     my ( $out, $err );
-    $log->info( "run cmd: " . join ' ', @$cmd ) if $log;
+    $log->info( "run cmd: " . join ' ', @$cmd );
     Shipwright::Util->select('null');
     run3( $cmd, \*STDIN, \$out, \$err );
     Shipwright::Util->select('stdout');
 
-    $log->debug("run output:\n$out") if $out && $log;
-    $log->error("run err:\n$err")   if $err && $log;
+    $log->debug("run output:\n$out") if $out;
+    $log->error("run err:\n$err")   if $err;
 
     if ($?) {
         $log->error(
-            'failed to run ' . join( ' ', @$cmd ) . " with exit number $?" )
-            if $log;
+            'failed to run ' . join( ' ', @$cmd ) . " with exit number $?" );
         unless ($ignore_failure) {
             confess <<"EOF";
 something wrong when execute @$cmd: $?
