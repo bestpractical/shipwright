@@ -132,7 +132,7 @@ sub _yml {
     my $self = shift;
     my $return = $self->fs_backend->_yml(@_);
     if ( @_ > 1 ) {
-        $self->commit;
+        $self->commit( comment => 'update ' . $_[0] );
     }
     return $return;
 }
@@ -149,13 +149,13 @@ sub info {
 sub _update_dir {
     my $self = shift;
     $self->fs_backend->_update_dir(@_);
-    $self->commit;
+    $self->commit( comment => 'update ' . $_[0] );
 }
 
 sub _update_file {
     my $self = shift;
     $self->fs_backend->_update_file(@_);
-    $self->commit;
+    $self->commit( comment => 'update ' . $_[0] );
 }
 
 =item import
@@ -164,7 +164,11 @@ sub _update_file {
 
 sub import {
     my $self = shift;
-    return $self->fs_backend->import(@_);
+    $self->fs_backend->import(@_);
+    my %args = @_;
+    my $name = $args{source};
+    $name =~ s!.*/!!;
+    $self->commit( comment => 'import ' . $name );
 }
 
 =item commit
@@ -189,6 +193,30 @@ sub commit {
         chdir $cwd;
     }
     return;
+}
+
+=item delete
+
+=cut 
+
+sub delete {
+    my $self = shift;
+    $self->fs_backend->delete(@_);
+    my %args = @_;
+    $self->commit( comment => 'delete ' . $args{path} );
+}
+
+=item move
+
+=cut 
+
+sub move {
+    my $self = shift;
+    $self->fs_backend->move(@_);
+    my %args     = @_;
+    my $path     = $args{path};
+    my $new_path = $args{new_path};
+    $self->commit( comment => "move $path to $new_path" );
 }
 
 =back
