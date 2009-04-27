@@ -43,7 +43,7 @@ sub prepare {
         $ARGV[0] = 'help';
     }
     elsif ( $ARGV[0] =~ /^(-v|--version|version)$/ ) {
-        $self->log->fatal( "This is Shipwright, version $Shipwright::VERSION" );
+        print( "This is Shipwright, version $Shipwright::VERSION" . "\n" );
         exit 0;
     }
 
