@@ -139,7 +139,7 @@ import a dist.
 
 sub import {
     my $self = shift;
-    return unless @_;
+    return unless ref $self; # get rid of class->import
     my %args = @_;
     my $name = $args{source};
     $name =~ s{.*/}{};

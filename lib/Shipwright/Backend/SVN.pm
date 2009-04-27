@@ -50,7 +50,7 @@ sub initialize {
 
 sub import {
     my $self = shift;
-    return unless @_;
+    return unless ref $self; # get rid of class->import
     return $self->SUPER::import( @_, delete => 1 );
 }
 

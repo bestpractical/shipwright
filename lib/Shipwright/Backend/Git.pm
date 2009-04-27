@@ -164,6 +164,7 @@ sub _update_file {
 
 sub import {
     my $self = shift;
+    return unless ref $self; # get rid of class->import
     $self->fs_backend->import(@_);
     my %args = @_;
     my $name = $args{source};
