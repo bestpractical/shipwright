@@ -19,6 +19,7 @@ lib/Shipwright.pm
 lib/Shipwright/Backend.pm
 lib/Shipwright/Backend/Base.pm
 lib/Shipwright/Backend/FS.pm
+lib/Shipwright/Backend/Git.pm
 lib/Shipwright/Backend/SVK.pm
 lib/Shipwright/Backend/SVN.pm
 lib/Shipwright/Logger.pm
