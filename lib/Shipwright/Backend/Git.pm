@@ -17,7 +17,7 @@ use base qw/Shipwright::Backend::Base/;
 
 =head1 NAME
 
-Shipwright::Backend::Git - git repository backend
+Shipwright::Backend::Git - Git repository backend
 
 =head1 DESCRIPTION
 

@@ -1,6 +1,6 @@
 =head1 NAME
 
-Shipwright::Manual::Tutorial - introduction to Shipwright
+Shipwright::Manual::Tutorial - Tutorial to Shipwright
 
 =head1 SYNOPSIS
 
