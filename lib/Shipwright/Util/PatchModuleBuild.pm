@@ -18,7 +18,7 @@ __END__
 
 =head1 NAME
 
-Shipwright::Util::PatchModuleBuild - Use this to clean @INC
+Shipwright::Util::PatchModuleBuild - use this to ignore man pages generation
 
 =head1 SYNOPSIS
 
@@ -26,9 +26,9 @@ Shipwright::Util::PatchModuleBuild - Use this to clean @INC
 
 =head1 DESCRIPTION
 
-This stops Module::Build from failing to (or succeeding at) generating
-man pages during installation.  It does this by replacing Module::Build::Base::ACTION_manpages 
-with a noop
+This stops Module::Build from failing to (or succeeding at) generating man pages 
+during installation.
+It does this by replacing Module::Build::Base::ACTION_manpages with a noop
 
 =head1 AUTHOR
 
