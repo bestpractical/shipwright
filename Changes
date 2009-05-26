@@ -1,5 +1,9 @@
 Revision history for Shipwright
 
+2.2.1 Tue May 26 16:37:31 CST 2009
+
++ generate-tar-file option for shipwright-utility
+
 2.2.0 Mon Apr 27 13:40:25 CST 2009
 
 + git backend support
