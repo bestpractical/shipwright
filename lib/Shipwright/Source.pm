@@ -66,6 +66,7 @@ sub new {
 sub type {
     my $source = shift;
 
+    _translate_source( $source );
     # prefix that can't be omitted
     if ( $$source =~ /^file:.*\.(tar\.gz|tgz|tar\.bz2)$/ ) {
         $$source =~ s/^file://i;
@@ -96,6 +97,15 @@ sub type {
         return 'SVK';
     }
 
+}
+
+sub _translate_source {
+    my $source = shift;
+    if ( $$source =~ /^(file|dir(ectory)?|shipwright):~/i ) {
+
+        # replace prefix ~ with real home dir
+        $$source =~ s/~/(getpwuid $<)[7]/e;
+    }
 }
 
 1;

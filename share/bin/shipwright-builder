@@ -130,6 +130,9 @@ if ( $args{only} ) {
 
 $args{'install-base'} = get_install_base() unless $args{'install-base'};
 
+# replace prefix ~ with real home dir
+$args{'install-base'} =~ s/^~/(getpwuid $<)[7]/e;
+
 unless ( $args{name} ) {
     if ( $build_base =~ m{([-.\w]+)[\\/]([.\d]+)$} ) {
         $args{name} = "$1-$2";
