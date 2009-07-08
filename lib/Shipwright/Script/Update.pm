@@ -220,7 +220,7 @@ sub _update {
         $shipwright->source(
             Shipwright::Source->new(
                 name    => $name,
-                source  => $source->{$name},
+                source  => $source->{$name}{$as||$branches->{$name}[0]},
                 follow  => 0,
                 version => $version,
             )
