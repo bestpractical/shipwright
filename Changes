@@ -1,5 +1,10 @@
 Revision history for Shipwright
 
+2.2.2 Wed Jul  8 19:11:21 CST 2009
+
+* expand ~ in path
+* update cmd bug fix
+
 2.2.1 Tue May 26 16:37:31 CST 2009
 
 + generate-tar-file option for shipwright-utility
