@@ -162,7 +162,6 @@ sub run {
             $version =
               Shipwright::Util::LoadFile( $shipwright->source->version_path );
             my ($name) = $source =~ m{.*/(.*)$};
-            $imported{$name}++;
 
             my $base = $self->_parent_dir($source);
 
@@ -226,6 +225,7 @@ sub run {
                 build_script => $script_dir,
                 overwrite    => $imported{$name} ? 0 : 1,
             );
+            $imported{$name}++;
 
             # merge new map into map.yml in repo
             my $new_map =
