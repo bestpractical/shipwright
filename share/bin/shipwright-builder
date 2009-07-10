@@ -132,6 +132,8 @@ $args{'install-base'} = get_install_base() unless $args{'install-base'};
 
 # replace prefix ~ with real home dir
 $args{'install-base'} =~ s/^~/(getpwuid $<)[7]/e;
+# remove last / or \
+$args{'install-base'} =~ s![/\\]$!!;
 
 unless ( $args{name} ) {
     if ( $build_base =~ m{([-.\w]+)[\\/]([.\d]+)$} ) {
@@ -312,8 +314,10 @@ sub install {
         );
 
         $ENV{PATH} =
-            catdir( $args{'install-base'}, 'bin' ) . ':'
-          . catdir( $args{'install-base'}, 'sbin' ) . ':'
+            catdir( $args{'install-base'}, 'sbin' ) . ':'
+          . catdir( $args{'install-base'}, 'bin' ) . ':'
+          . catdir( $args{'install-base'}, 'usr', 'sbin' ) . ':'
+          . catdir( $args{'install-base'}, 'usr', 'bin' ) . ':'
           . $ENV{PATH};
         $ENV{PERL_MM_USE_DEFAULT} = 1;
         $ENV{PERL_MM_OPT} = '';
@@ -486,15 +490,19 @@ sub wrap_bin {
             return;
         }
 
-        my $dir = ( splitdir($File::Find::dir) )[-1];
-        mkdir catdir( $args{'install-base'},       "$dir-wrapped" )
-          unless -d catdir( $args{'install-base'}, "$dir-wrapped" );
+        my $wrapped_dir = "$File::Find::dir-wrapped";
+        my $wrapped_file = catfile( $wrapped_dir, $file );
+        my $tmp = $File::Find::dir;
+        $tmp =~ s/$args{'install-base'}//g;
+        my $wrapped_depth =
+          scalar( splitdir($File::Find::dir) ) -
+          scalar( splitdir( $args{'install-base'} ) );
 
-        if ( -e catfile( $args{'install-base'}, "$dir-wrapped", $file ) ) {
-            print $log 'found old '
-              . catfile( $args{'install-base'}, "$dir-wrapped", $file )
-              . ', deleting' . "\n";
-            unlink catfile( $args{'install-base'}, "$dir-wrapped", $file );
+        mkdir $wrapped_dir unless -d $wrapped_dir;
+
+        if ( -e $wrapped_file ) {
+            print $log 'found old ' . $wrapped_file . ', deleting' . "\n";
+            unlink $wrapped_file;
         }
 
         my $type;
@@ -513,21 +521,26 @@ sub wrap_bin {
         }
 
         chmod oct 755, $file;
-        move( $file => catdir( $args{'install-base'}, "$dir-wrapped" ) )
-          or confess $!;
+        move( $file => $wrapped_dir ) or confess $!;
 
     # if we have this $type(e.g. perl) installed and have that specific wrapper,
     # then link to it, else link to the normal one
-        if (   $type
-            && -e catfile( '..', 'bin', $type )
-            && -e catfile( '..', 'etc', "shipwright-$type-wrapper" ) )
+        if (
+            $type
+            && (   -e catfile( '..', 'bin', $type )
+                || -e catfile( ('..') x $wrapped_depth, 'bin', $type ) )
+            && -e catfile( ('..') x $wrapped_depth, 'etc',
+                "shipwright-$type-wrapper" )
+          )
         {
-            symlink catfile( '..', 'etc', "shipwright-$type-wrapper" ) => $file
+            symlink catfile( ('..') x $wrapped_depth,
+                'etc', "shipwright-$type-wrapper" ) => $file
               or confess $!;
         }
         else {
 
-            symlink catfile( '..', 'etc', 'shipwright-script-wrapper' ) => $file
+            symlink catfile( ('..') x $wrapped_depth,
+                'etc', 'shipwright-script-wrapper' ) => $file
               or confess $!;
         }
         chmod oct 755, $file;
@@ -535,7 +548,8 @@ sub wrap_bin {
 
     my @dirs =
       grep { -d $_ }
-      map { catdir( $args{'install-base'}, $_ ) } qw/bin sbin/;
+      map { catdir( $args{'install-base'}, $_ ) } 'bin', 'sbin',
+      catdir( 'usr', 'bin' ), catdir( 'usr', 'sbin' );
     find( $sub, @dirs ) if @dirs;
 
 }
