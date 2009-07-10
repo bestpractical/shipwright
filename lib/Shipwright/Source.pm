@@ -7,6 +7,7 @@ use UNIVERSAL::require;
 use Hash::Merge qw/merge/;
 use File::Temp qw/tempdir/;
 use File::Spec::Functions qw/catfile catdir/;
+use Shipwright::Util;
 
 Hash::Merge::set_behavior('RIGHT_PRECEDENT');
 
@@ -104,7 +105,7 @@ sub _translate_source {
     if ( $$source =~ /^(file|dir(ectory)?|shipwright):~/i ) {
 
         # replace prefix ~ with real home dir
-        $$source =~ s/~/(getpwuid $<)[7]/e;
+        $$source =~ s/~/Shipwright::Util->user_home/e;
     }
 }
 

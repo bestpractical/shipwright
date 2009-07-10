@@ -168,6 +168,16 @@ sub select {
     }
 }
 
+=head2 user_home
+
+return current user's home directory
+
+=cut
+
+sub user_home {
+    return (getpwuid $<)[7];
+}
+
 1;
 
 __END__

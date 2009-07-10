@@ -5,6 +5,7 @@ use strict;
 use Carp;
 use UNIVERSAL::require;
 use Cwd qw/abs_path/;
+use Shipwright::Util;
 
 sub new {
     my $class = shift;
@@ -24,7 +25,7 @@ sub new {
     }
     elsif ( $args{repository} =~ m{^\s*fs:} ) {
         $args{repository} =~ s{^\s*fs:}{};
-        $args{repository} =~ s/^~/(getpwuid $<)[7]/e;
+        $args{repository} =~ s/^~/Shipwright::Util->user_home/e;
         my $abs_path = abs_path($args{repository});
         $args{repository} = $abs_path if $abs_path;
         $module = 'Shipwright::Backend::FS';
