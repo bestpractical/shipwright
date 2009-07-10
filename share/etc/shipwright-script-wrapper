@@ -6,7 +6,7 @@ else
     LINK=`readlink $0`
 fi
 
-if [ "$LINK" = '' ] || [[ $LINK =~ '../etc/shipwright-script-wrapper' ]]; then
+if [ "$LINK" = '' ] || [ $LINK = '../etc/shipwright-script-wrapper' ] || [ $LINK = '../../etc/shipwright-script-wrapper' ]; then
     BASE=$0
     BASE_DIR=`dirname "$BASE"`
     BASE_DIR=` (cd "$BASE_DIR"; pwd) `
