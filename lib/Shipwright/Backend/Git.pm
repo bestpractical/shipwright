@@ -41,6 +41,12 @@ sub initialize {
     my $cwd = getcwd;
     chdir $dir;
     Shipwright::Util->run( [ $ENV{'SHIPWRIGHT_GIT'}, 'init' ] );
+    Shipwright::Util->run(
+        [
+            $ENV{'SHIPWRIGHT_GIT'},      'config',
+            'receive.denyCurrentBranch', 'ignore',
+        ]
+    );
     Shipwright::Util->run( [ $ENV{'SHIPWRIGHT_GIT'}, 'add', '.' ] );
     Shipwright::Util->run(
         [ $ENV{'SHIPWRIGHT_GIT'}, 'commit', '-m', 'creating repository' ] );
@@ -75,6 +81,12 @@ sub cloned_dir {
     my $target = catdir( $base_dir, 'clone' );
     Shipwright::Util->run(
         [ $ENV{'SHIPWRIGHT_GIT'}, 'clone', $self->repository, $target ] );
+    my $cwd = getcwd;
+    chdir $target; 
+    # git 1.6.3.3 will warn if we don't specify push.default
+    Shipwright::Util->run(
+        [ $ENV{'SHIPWRIGHT_GIT'}, 'config', 'push.default', 'matching' ] );
+    chdir $cwd;
     return $cloned_dir = $target;
 }
 
