@@ -27,10 +27,20 @@ if ( $args{'help'} ) {
     print $USAGE;
     exit 0;
 }
+
 if ( $args{'remove-pod'} ) {
+    my @regex = get_pod_ignores();
     find(
         sub {
             return unless -f && /\.pm$/;
+            for my $regex (@regex) {
+                my $return = eval { $File::Find::name =~ /$regex/ };
+                if ( $@ ) {
+                    warn "the regex $regex in __pod_ignores is not so right";
+                }
+                return if $return;
+            }
+
             open my $fh, '<', $_
               or return;    # die is not cool: it's just a filter
             my $content = do { local $/; <$fh> };
@@ -88,3 +98,11 @@ sub get_install_base {
     }
 }
 
+sub get_pod_ignores {
+    my @regex;
+    if ( open my $fh, '<', '__pod_ignores' ) {
+        @regex = <$fh>;
+        chomp @regex;
+    }
+    return grep { /\S/ } @regex;
+}
