@@ -53,6 +53,7 @@ if ( $args{'remove-pod'} ) {
         },
         get_install_base() || @ARGV
     );
+    print "removing pods finished.\n";
 }
 
 # this sub is stolen from PAR::Filter::PodStrip
