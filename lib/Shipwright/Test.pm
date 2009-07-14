@@ -136,9 +136,9 @@ sub create_git_repo {
     my $dir = tempdir( 'shipwright_test_git_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
     my $cwd = getcwd();
     chdir $dir;
-    Shipwright::Util->run( [$ENV{'SHIPWRIGHT_GIT'}, 'init' ] );
+    Shipwright::Util->run( [$ENV{'SHIPWRIGHT_GIT'}, 'init', '--bare' ] );
     chdir $cwd;
-    return 'file://' . catdir( $dir, '.git' );
+    return "file://$dir";
 }
 
 =head2 create_svk_repo 
