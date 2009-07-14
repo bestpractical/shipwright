@@ -1,0 +1,90 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+
+use Getopt::Long;
+use Carp;
+use File::Find;
+
+my %args;
+
+confess "unknown option"
+  unless GetOptions( \%args, 'remove-pod', 'help' );
+
+my $USAGE = <<'END'
+run: ./bin/shipwright-utility --remove-pod
+
+options: 
+
+help: print this usage
+
+remove-pod: remove .pm files' pod
+
+END
+  ;
+
+if ( $args{'help'} ) {
+    print $USAGE;
+    exit 0;
+}
+if ( $args{'remove-pod'} ) {
+    find(
+        sub {
+            return unless -f && /\.pm$/;
+            open my $fh, '<', $_
+              or return;    # die is not cool: it's just a filter
+            my $content = do { local $/; <$fh> };
+            apply( \$content, $_ );
+            chmod oct 755, $_;
+            open $fh, '>', $_ or return;
+            print $fh $content;
+            close $fh;
+            chmod oct 444 , $_;
+        },
+        get_install_base() || @ARGV
+    );
+}
+
+# this sub is stolen from PAR::Filter::PodStrip
+sub apply {
+    my ( $ref, $filename, $name ) = @_;
+
+    no warnings 'uninitialized';
+
+    my $data = '';
+    $data = $1 if $$ref =~ s/((?:^__DATA__\r?\n).*)//ms;
+
+    my $line = 1;
+    if ( $$ref =~ /^=(?:head\d|pod|begin|item|over|for|back|end|cut)\b/ ) {
+        $$ref = "\n$$ref";
+        $line--;
+    }
+    $$ref =~ s{(
+	(.*?\n)
+	(?:=(?:head\d|pod|begin|item|over|for|back|end)\b
+    .*?\n)
+	(?:=cut[\t ]*[\r\n]*?|\Z)
+	(\r?\n)?
+    )}{
+	my ($pre, $post) = ($2, $3);
+        "$pre#line " . (
+	    $line += ( () = ( $1 =~ /\n/g ) )
+	) . $post;
+    }gsex;
+
+    $$ref =~ s{^=encoding\s+\S+\s*$}{\n}mg;
+    $$ref = '#line 1 "' . ($filename) . "\"\n" . $$ref
+      if length $filename;
+    $$ref =~ s/^#line 1 (.*\n)(#!.*\n)/$2#line 2 $1/g;
+    $$ref .= $data;
+}
+
+sub get_install_base {
+    if ( open my $fh, '<', '__install_base' ) {
+        my $install_base = <$fh>;
+        close $fh;
+        chomp $install_base;
+        return $install_base;
+    }
+}
+
