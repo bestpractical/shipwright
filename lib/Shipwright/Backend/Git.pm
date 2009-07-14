@@ -190,7 +190,7 @@ sub commit {
         my $cwd = getcwd;
         chdir $self->cloned_dir or return;
 
-        Shipwright::Util->run( [ $ENV{'SHIPWRIGHT_GIT'}, '-f', 'add', '.' ] );
+        Shipwright::Util->run( [ $ENV{'SHIPWRIGHT_GIT'}, 'add', '-f', '.' ] );
 
         #    TODO comment need to be something special
         Shipwright::Util->run(
