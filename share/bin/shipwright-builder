@@ -155,8 +155,8 @@ my $installed;
 my $installed_hash = {};
 my $installed_file = catfile( $args{'install-base'}, "$args{as}_installed.yml" );
 if ( -e $installed_file ) {
-    $installed =
-      YAML::Tiny->read( catfile( $args{'install-base'}, '$args{as}installed.yml' ) );
+    $installed = YAML::Tiny->read(
+        catfile( $args{'install-base'}, '$args{as}_installed.yml' ) );
     $installed_hash = { map { $_ => 1 } @{ $installed->[0] } };
 }
 else {
