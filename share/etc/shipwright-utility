@@ -8,10 +8,11 @@ use Cwd;
 use Carp;
 
 my %args;
-GetOptions( \%args, 'install-links=s', 'help' );
+GetOptions( \%args, 'install-links=s', 'switch=s', 'help' );
 
 my $USAGE = <<'END'
-run: ./tools/shipwright-utility --install-links
+run: ./tools/shipwright-utility --install-links /usr/local
+run: ./tools/shipwright-utility --switch ubuntu
 
 options: 
 
@@ -19,6 +20,9 @@ help: print this usage
 
 install-links: link files in bin, sbin, or libexec to other places
     e.g. --install-links /usr/local
+
+switch: switch to the lib below as/$name
+    e.g. --switch ubuntu
 
 END
   ;
@@ -45,4 +49,15 @@ elsif ( $args{'install-links'} ) {
         }
     }
 }
-
+elsif ( $args{'switch'} ) {
+    my $name = $args{'switch'};
+    my $as_dir = catdir( 'as', $name );
+    if ( -e $as_dir ) {
+        unlink 'lib';
+        symlink $as_dir, 'lib';
+        print "switched to $name with success.\n";
+    }
+    else {
+        print "no switch name $name exists\n";
+    }
+}
