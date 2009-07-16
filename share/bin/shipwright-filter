@@ -12,7 +12,7 @@ confess "unknown option"
   unless GetOptions( \%args, 'remove-pod', 'help' );
 
 my $USAGE = <<'END'
-run: ./bin/shipwright-utility --remove-pod
+run: ./bin/shipwright-filter --remove-pod
 
 options: 
 
