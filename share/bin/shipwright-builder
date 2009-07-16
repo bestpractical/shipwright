@@ -25,19 +25,19 @@ my %args;
 
 use Getopt::Long;
 confess "unknown option"
-  unless GetOptions(
+unless GetOptions(
     \%args,                   'install-base=s',
     'perl=s',                 'skip=s',
     'flags=s',                'skip-test',
     'skip-test-except-final', 'only-test',
-    'skip-man-pages',
-    'force',                  'clean',
-    'name=s',                 'help', 'advanced-help',
+    'skip-man-pages',         'force',
+    'clean',                  'name=s',
+    'help',                   'advanced-help',
     'noclean',                'only=s',
     'with=s',                 'noclean-after-install',
     'make=s',                 'branches=s',
-    'verbose',
-  );
+    'verbose',                'as=s',
+);
 
 my $USAGE = <<'END';
 run: ./bin/shipwright-builder
@@ -123,6 +123,7 @@ $args{flags} = {
 $args{with} = { map { split /=/ } split /\s*,\s*/, $args{with} || '' };
 $args{branches} = { map { split /=/ } split /\s*,\s*/, $args{branches} || '' };
 $args{make} ||= 'make';
+$args{as} ||= '';
 
 if ( $args{only} ) {
     $args{only} = { map { $_ => 1 } split /\s*,\s*/, $args{only} };
@@ -152,10 +153,10 @@ unless ( $args{'install-base'} ) {
 
 my $installed;
 my $installed_hash = {};
-my $installed_file = catfile( $args{'install-base'}, 'installed.yml' );
+my $installed_file = catfile( $args{'install-base'}, "$args{as}_installed.yml" );
 if ( -e $installed_file ) {
     $installed =
-      YAML::Tiny->read( catfile( $args{'install-base'}, 'installed.yml' ) );
+      YAML::Tiny->read( catfile( $args{'install-base'}, '$args{as}installed.yml' ) );
     $installed_hash = { map { $_ => 1 } @{ $installed->[0] } };
 }
 else {
@@ -348,6 +349,13 @@ sub install {
     chmod oct 755,
       catfile( $args{'install-base'}, 'tools', 'shipwright-utility' );
 
+    my $lib_dir = catfile( $args{'install-base'}, 'lib' );
+
+    if ( $args{as} ) {
+        # remove lib/ if it's symbolic link
+        unlink $lib_dir if -l $lib_dir;
+    }
+
     mkdir 'dists' unless -e 'dists';
     for my $dist (@$order) {
         _install( $dist, $log );
@@ -365,6 +373,23 @@ sub install {
     }
 
     wrap_bin($log) unless $^O =~ /MSWin/;
+
+    if ( $args{as} ) {
+        my $cwd = getcwd;
+        chdir $args{'install-base'};
+        mkdir 'as';
+        my $as_dir = catdir( 'as', $args{as} );
+        if ( -e $as_dir ) {
+            warn "$as_dir already exists, won't overwrite";
+        }
+        else {
+            my $cwd = getcwd;
+            system("mv lib $as_dir");
+            symlink $as_dir, 'lib';
+        }
+        chdir $cwd;
+    }
+
     print "install finished, the dists are at $args{'install-base'}\n";
     print $log "install finished, the dists are at $args{'install-base'}\n";
 }
