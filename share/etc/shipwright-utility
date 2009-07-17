@@ -3,10 +3,10 @@ use strict;
 use warnings;
 
 use Getopt::Long;
-use File::Spec::Functions qw/catfile catdir/;
+use File::Spec::Functions qw/catfile catdir splitdir/;
 use Cwd;
 use Carp;
-
+use File::Find;
 my %args;
 GetOptions( \%args, 'install-links=s', 'switch=s', 'help' );
 
@@ -75,10 +75,86 @@ elsif ( $args{'switch'} ) {
             symlink catdir( '..', $dir ), catfile( 'usr', "$r-wrapped" );
         }
 
+        # remove old ones
+        for my $dir ( 'bin', 'sbin', catdir( 'usr', 'bin' ),
+            catdir( 'usr', 'sbin' ) )
+        {
+            if ( -e $dir ) {
+                system( "rm -rf $dir" );
+            }
+        }
+        wrap_bin();
         print "switched to $name with success.\n";
 
     }
     else {
         print "no switch name $name exists\n";
     }
+}
+
+sub wrap_bin {
+    my $install_base = getcwd();
+    my $sub = sub {
+        my $file = $_;
+
+        return unless -f $file;
+
+        my $wrap_dir = $File::Find::dir;
+        $wrap_dir =~ s/-wrapped$//;
+
+        my $wrap_file = catfile( $wrap_dir, $file );
+        my $wrapped_depth =
+          scalar( splitdir($File::Find::dir) ) -
+          scalar( splitdir($install_base) );
+        mkdir $wrap_dir unless -d $wrap_dir;
+
+        # return if it's been wrapped already
+        if ( -l $wrap_file ) {
+            print "seems $file has been already wrapped, skipping\n";
+            return;
+        }
+
+        my $type;
+        if ( -T $file ) {
+            open my $fh, '<', $file or confess "can't open $file: $!";
+            my $shebang = <$fh>;
+            if (
+                $shebang =~ m{
+\Q$install_base\E(?:/|\\)(?:s?bin)(?:/|\\)(\w+)
+|\benv\s+(\w+)
+}x
+              )
+            {
+                $type = $1 || $2;
+            }
+        }
+
+    # if we have this $type(e.g. perl) installed and have that specific wrapper,
+    # then link to it, else link to the normal one
+        if (
+            $type
+            && (   -e catfile( '..', 'bin', $type )
+                || -e catfile( ('..') x $wrapped_depth, 'bin', $type ) )
+            && -e catfile( ('..') x $wrapped_depth, 'etc',
+                "shipwright-$type-wrapper" )
+          )
+        {
+            symlink catfile( ('..') x $wrapped_depth,
+                'etc', "shipwright-$type-wrapper" ) => $wrap_file
+              or confess $!;
+        }
+        else {
+
+            symlink catfile( ('..') x $wrapped_depth,
+                'etc', 'shipwright-script-wrapper' ) => $wrap_file
+              or confess $!;
+        }
+        chmod oct 755, $wrap_file;
+    };
+
+    my @dirs =
+      grep { -e $_ } map { catdir( $install_base, $_ ) } 'bin-wrapped',
+      'sbin-wrapped',
+      catdir( 'usr', 'bin-wrapped' ), catdir( 'usr', 'sbin-wrapped' );
+    find( { wanted => $sub, follow => 1 }, @dirs ) if @dirs;
 }
