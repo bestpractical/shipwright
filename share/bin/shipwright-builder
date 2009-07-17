@@ -349,16 +349,29 @@ sub install {
     chmod oct 755,
       catfile( $args{'install-base'}, 'tools', 'shipwright-utility' );
 
-        # remove bin-wrapped, sbin-wrapped and lib if it's symbolic link
+    # remove (usr/)?bin-wrapped, (usr/)?sbin-wrapped and lib if 
+    # they are symbolic links
     for my $r (
         'bin-wrapped', 'sbin-wrapped', 'lib',
         catdir( 'usr', 'bin-wrapped' ),
-        catdir( 'usr', 'sbin-wrapped' )
+        catdir( 'usr', 'sbin-wrapped' ),
       )
     {
-        my $dir = catfile( $args{'install-base'}, $r );
+        my $dir = catdir( $args{'install-base'}, $r );
         unlink $dir if -l $dir;
     }
+
+    # remove (usr/)?s?bin if it's an install from start
+    unless ( keys %$installed_hash ) {
+        for my $r ( 'bin', 'sbin', catdir( 'usr', 'bin' ),
+            catdir( 'usr', 'sbin' ), )
+        {
+            my $dir = catdir( $args{'install-base'}, $r );
+            next unless -e $dir;
+            system("rm -rf $dir");
+        }
+    }
+
 
     mkdir 'dists' unless -e 'dists';
     for my $dist (@$order) {
