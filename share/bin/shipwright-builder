@@ -349,12 +349,15 @@ sub install {
     chmod oct 755,
       catfile( $args{'install-base'}, 'tools', 'shipwright-utility' );
 
-    if ( $args{as} ) {
         # remove bin-wrapped, sbin-wrapped and lib if it's symbolic link
-        for my $r ( qw/bin-wrapped sbin-wrapped lib/ ) {
-            my $dir = catfile( $args{'install-base'}, $r );
-            unlink $dir if -l $dir;
-        }
+    for my $r (
+        'bin-wrapped', 'sbin-wrapped', 'lib',
+        catdir( 'usr', 'bin-wrapped' ),
+        catdir( 'usr', 'sbin-wrapped' )
+      )
+    {
+        my $dir = catfile( $args{'install-base'}, $r );
+        unlink $dir if -l $dir;
     }
 
     mkdir 'dists' unless -e 'dists';
