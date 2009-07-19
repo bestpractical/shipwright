@@ -181,6 +181,10 @@ sub _follow {
                 $makefile =~ s/^\s*recommends(?!\w)/shipwright_recommends/mg;
                 $makefile =~ s/^\s*features(?!\w)/shipwright_features/mg;
                 $makefile =~ s/^\s*feature(?!\w)/shipwright_feature/mg;
+                $makefile =~
+                    s/^\s*requires_from(?!\w)/shipwright_requires_from/mg;
+                $makefile =~
+                    s/^\s*test_requires_from(?!\w)/shipwright_test_requires_from/mg;
                 my $shipwright_makefile = <<'EOF';
 my $shipwright_req = {};
 
@@ -205,6 +209,32 @@ sub shipwright_build_requires {
 sub shipwright_test_requires {
     _shipwright_requires( 'build_requires', @_ == 1 ? ( @_, 0 ) : @_ );
     goto &test_requires;
+}
+
+sub _shipwright_requires_from {
+    my $type = shift;
+    my $file = shift;
+
+    open my $fh, '<', $file or return;
+    my $content = do { local $/; <$fh> };
+# the following lines in this sub are mostly stolen from Module::Install::Metadata
+    my @requires = $content =~ m/^use\s+([^\W\d]\w*(?:::\w+)*)\s+([\d\.]+)/mg;
+
+    while ( @requires ) {
+        my $module  = shift @requires;
+        my $version = shift @requires;
+        _shipwright_requires( $type, $module, $version || 0 );
+    }
+}
+
+sub shipwright_test_requires_from {
+    _shipwright_requires_from( 'build_requires', @_ );
+    goto &test_requires_from;
+}
+
+sub shipwright_requires_from {
+    _shipwright_requires_from( 'requires', @_ );
+    goto &requires_from;
 }
 
 sub shipwright_recommends {
