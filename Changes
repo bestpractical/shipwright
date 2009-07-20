@@ -1,5 +1,15 @@
 Revision history for Shipwright
 
+2.3.0 Mon Jul 20 15:40:50 CST 2009
+
+* add multi-arch dists support
+* add --switch option to tools/shipwright-utility in installed dir
+* add shipwright-filter script to trim the installed dist
+    ( currently it's just --remove-pod )
+* update bin wrapper stuff( not back compatible )
+* support requires_from and test_requires_from of Module::Install
+* tweak git backend stuff, e.g. don't ignore things list in .gitignore 
+
 2.2.2 Wed Jul  8 19:11:21 CST 2009
 
 * expand ~ in path
