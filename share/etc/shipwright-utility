@@ -53,26 +53,14 @@ elsif ( $args{'switch'} ) {
     my $name = $args{'switch'};
     my $as_dir = catdir( 'as', $name );
     if ( -e $as_dir ) {
-        for my $r ( qw/bin sbin lib/ ) {
+        for my $r ( qw/lib/ ) {
             my $dir = catdir( $as_dir, $r );
             next unless -e $dir;
 
-            if ( $r =~ /bin/ ) {
-                unlink "$r-wrapped";
-                symlink $dir, "$r-wrapped";
-            }
-            else {
+            if ( $r !~ /bin/ ) {
                 unlink $r;
                 symlink $dir, $r;
             }
-        }
-
-        # in usr dir
-        for my $r ( qw/bin sbin/ ) {
-            my $dir = catdir( $as_dir, 'usr', $r );
-            next unless -e $dir;
-            unlink catfile( 'usr', "$r-wrapped" );
-            symlink catdir( '..', $dir ), catfile( 'usr', "$r-wrapped" );
         }
 
         # remove old ones
@@ -100,12 +88,12 @@ sub wrap_bin {
         return unless -f $file;
 
         my $wrap_dir = $File::Find::dir;
-        $wrap_dir =~ s/-wrapped$//;
+        $wrap_dir =~ s!as/$args{switch}/!!;
 
         my $wrap_file = catfile( $wrap_dir, $file );
         my $wrapped_depth =
           scalar( splitdir($File::Find::dir) ) -
-          scalar( splitdir($install_base) );
+          scalar( splitdir($install_base) ) - 2;
         mkdir $wrap_dir unless -d $wrap_dir;
 
         # return if it's been wrapped already
@@ -153,8 +141,8 @@ sub wrap_bin {
     };
 
     my @dirs =
-      grep { -e $_ } map { catdir( $install_base, $_ ) } 'bin-wrapped',
-      'sbin-wrapped',
-      catdir( 'usr', 'bin-wrapped' ), catdir( 'usr', 'sbin-wrapped' );
+      grep { -e $_ } map { catdir( $install_base, 'as', $args{switch}, $_ ) } 'bin',
+      'sbin', catdir( 'usr', 'bin' ), catdir( 'usr', 'sbin' );
     find( { wanted => $sub, follow => 1 }, @dirs ) if @dirs;
 }
+

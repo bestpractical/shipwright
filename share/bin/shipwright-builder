@@ -244,7 +244,12 @@ else {
         print "seems it has been built before, need to clean first\n";
         clean();
     }
-    install();
+    if ( @$order ) {
+        install();
+    }
+    else {
+        print "all dists are intalled already\n";
+    }
 }
 
 sub install {
@@ -349,14 +354,8 @@ sub install {
     chmod oct 755,
       catfile( $args{'install-base'}, 'tools', 'shipwright-utility' );
 
-    # remove (usr/)?bin-wrapped, (usr/)?sbin-wrapped and lib if 
-    # they are symbolic links
-    for my $r (
-        'bin-wrapped', 'sbin-wrapped', 'lib',
-        catdir( 'usr', 'bin-wrapped' ),
-        catdir( 'usr', 'sbin-wrapped' ),
-      )
-    {
+    # remove lib it's symbolic link
+    for my $r ( 'lib' ) {
         my $dir = catdir( $args{'install-base'}, $r );
         unlink $dir if -l $dir;
     }
@@ -380,7 +379,7 @@ sub install {
         chdir $build_base;
     }
 
-    mkdir catdir( $args{'install-base'},       'bin' )
+    mkdir catdir( $args{'install-base'}, 'bin' )
       unless -e catdir( $args{'install-base'}, 'bin' );
 
     # in case wrappers are overwritten by accident
@@ -389,37 +388,35 @@ sub install {
             catfile( $args{'install-base'}, 'etc', $_ ) );
     }
 
-    if ( $args{as} ) {
-        my $cwd = getcwd;
-        chdir $args{'install-base'};
-        mkdir 'as';
-        my $as_dir = catdir( 'as', $args{as} );
-        mkdir $as_dir;
+    my $cwd = getcwd;
+    chdir $args{'install-base'};
+    open my $tmp_fh, '>', '__as',
+      or confess "can't wriite to $args{'install-base'}/__as: $!";
+    print $tmp_fh $args{as};
+    close $tmp_fh;
 
-        for my $r ( 'lib', 'bin', 'sbin' ) {
-            next unless -e $r;
-            my $dir = catdir( $as_dir, $r );
-            system( "mv $r $as_dir" );
+    mkdir 'as';
+    my $as_dir = catdir( 'as', $args{as} );
+    mkdir $as_dir;
 
-            if ( $r =~ /bin/ ) {
-                symlink $dir, "$r-wrapped";
-            }
-            else {
-                symlink $dir, $r;
-            }
+    for my $r ( 'lib', 'bin', 'sbin' ) {
+        next unless -e $r;
+        my $dir = catdir( $as_dir, $r );
+        system("mv $r $as_dir");
+
+        if ( $r !~ /bin/ ) {
+            symlink $dir, $r;
         }
-
-        # in usr dir
-        my $usr_dir = catdir( $as_dir, 'usr' );
-        mkdir $usr_dir;
-        for my $r ( 'bin', 'sbin' ) {
-            next unless -e catdir( 'usr', $r );
-            system( "mv " . catdir( 'usr', $r ) . ' ' . $usr_dir ); 
-            my $dir = catdir( '..', $as_dir, 'usr', $r );
-            symlink $dir, catdir( 'usr', "$r-wrapped" );
-        }
-        chdir $cwd;
     }
+
+    # in usr dir
+    my $usr_dir = catdir( $as_dir, 'usr' );
+    mkdir $usr_dir;
+    for my $r ( 'bin', 'sbin' ) {
+        next unless -e catdir( 'usr', $r );
+        system( "mv " . catdir( 'usr', $r ) . ' ' . $usr_dir );
+    }
+    chdir $cwd;
 
     wrap_bin($log) unless $^O =~ /MSWin/;
 
@@ -543,14 +540,14 @@ sub wrap_bin {
         return unless -f $file;
 
         my $wrap_dir = $File::Find::dir;
-        $wrap_dir =~ s/-wrapped$//;
+        $wrap_dir =~ s!as/$args{as}/!!;
 
         my $wrap_file = catfile( $wrap_dir, $file );
         my $tmp = $File::Find::dir;
         $tmp =~ s/$args{'install-base'}//g;
         my $wrapped_depth =
           scalar( splitdir($File::Find::dir) ) -
-          scalar( splitdir( $args{'install-base'} ) );
+          scalar( splitdir( $args{'install-base'} ) ) - 2;
 
         mkdir $wrap_dir unless -d $wrap_dir;
 
@@ -600,8 +597,9 @@ sub wrap_bin {
 
     my @dirs =
       grep { -e $_ }
-      map { catdir( $args{'install-base'}, $_ ) } 'bin-wrapped', 'sbin-wrapped',
-      catdir( 'usr', 'bin-wrapped' ), catdir( 'usr', 'sbin-wrapped' );
+      map { catdir( $args{'install-base'}, 'as', $args{as}, $_ ) } 'bin',
+      'sbin',
+      catdir( 'usr', 'bin' ), catdir( 'usr', 'sbin' );
     find( { wanted => $sub, follow => 1 }, @dirs ) if @dirs;
 
 }
