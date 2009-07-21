@@ -5,18 +5,16 @@ if [ -z `which readlink` ]; then
 else
     LINK=`readlink $0`
 fi
-
-AS=`cat $0/../../__as`;
-if [ "$AS" = '' ]; then
-    AS=`cat $0/../../../__as`;
-fi
-
 if [ "$LINK" = '' ] || [ $LINK = '../etc/shipwright-script-wrapper' ] || [ $LINK = '../../etc/shipwright-script-wrapper' ]; then
     BASE=$0
     BASE_DIR=`dirname "$BASE"`
     BASE_DIR=` (cd "$BASE_DIR"; pwd) `
     FILENAME=`basename "$BASE"`
     WRAPPED_DIR=`basename "$BASE_DIR"`
+    AS=`cat $BASE_DIR/../__as 2>/dev/null`;
+    if [ "$AS" = '' ]; then
+        AS=`cat $BASE_DIR/../../__as 2>/dev/null`;
+    fi
     if [ "$LINK" = '../../etc/shipwright-script-wrapper' ]; then
         PARENT_BASE_DIR=` (cd "$BASE_DIR/.."; pwd) `
         PARENT_WRAPPED_DIR=`basename "$PARENT_BASE_DIR"`
