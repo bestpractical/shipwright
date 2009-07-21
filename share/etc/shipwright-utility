@@ -72,6 +72,11 @@ elsif ( $args{'switch'} ) {
             }
         }
         wrap_bin();
+
+        open my $fh, '>', '__as' or die $!;
+        print $fh $name;
+        close $fh;
+
         print "switched to $name with success.\n";
 
     }
