@@ -8,11 +8,12 @@ use Cwd;
 use Carp;
 use File::Find;
 my %args;
-GetOptions( \%args, 'install-links=s', 'switch=s', 'help' );
+GetOptions( \%args, 'install-links=s', 'switch=s', 'auto-switch', 'help' );
 
 my $USAGE = <<'END'
 run: ./tools/shipwright-utility --install-links /usr/local
 run: ./tools/shipwright-utility --switch ubuntu
+run: ./tools/shipwright-utility --auto-switch 
 
 options: 
 
@@ -23,6 +24,8 @@ install-links: link files in bin, sbin, or libexec to other places
 
 switch: switch to the lib below as/$name
     e.g. --switch ubuntu
+
+auto-switch: swith automatically by the uname
 
 END
   ;
@@ -49,8 +52,10 @@ elsif ( $args{'install-links'} ) {
         }
     }
 }
-elsif ( $args{'switch'} ) {
-    my $name = $args{'switch'};
+elsif ( $args{'switch'} || $args{'auto-switch' } ) {
+    my $name = $args{'switch'} || `uname 2>/dev/null`;
+    chomp $name;
+
     my $as_dir = catdir( 'as', $name );
     if ( -e $as_dir ) {
         for my $r ( qw/lib/ ) {
@@ -71,7 +76,7 @@ elsif ( $args{'switch'} ) {
                 system( "rm -rf $dir" );
             }
         }
-        wrap_bin();
+        wrap_bin($name);
 
         open my $fh, '>', '__as' or die $!;
         print $fh $name;
@@ -86,6 +91,7 @@ elsif ( $args{'switch'} ) {
 }
 
 sub wrap_bin {
+    my $name = shift;
     my $install_base = getcwd();
     my $sub = sub {
         my $file = $_;
@@ -93,7 +99,7 @@ sub wrap_bin {
         return unless -f $file;
 
         my $wrap_dir = $File::Find::dir;
-        $wrap_dir =~ s!as/$args{switch}/!!;
+        $wrap_dir =~ s!as/$name/!!;
 
         my $wrap_file = catfile( $wrap_dir, $file );
         my $wrapped_depth =
@@ -146,7 +152,7 @@ sub wrap_bin {
     };
 
     my @dirs =
-      grep { -e $_ } map { catdir( $install_base, 'as', $args{switch}, $_ ) } 'bin',
+      grep { -e $_ } map { catdir( $install_base, 'as', $name, $_ ) } 'bin',
       'sbin', catdir( 'usr', 'bin' ), catdir( 'usr', 'sbin' );
     find( { wanted => $sub, follow => 1 }, @dirs ) if @dirs;
 }
