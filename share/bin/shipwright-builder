@@ -123,7 +123,9 @@ $args{flags} = {
 $args{with} = { map { split /=/ } split /\s*,\s*/, $args{with} || '' };
 $args{branches} = { map { split /=/ } split /\s*,\s*/, $args{branches} || '' };
 $args{make} ||= 'make';
-$args{as} ||= 'default';
+my $uname = `uname 2>/dev/null`;
+chomp $uname;
+$args{as} ||= $uname || 'default';
 
 if ( $args{only} ) {
     $args{only} = { map { $_ => 1 } split /\s*,\s*/, $args{only} };
