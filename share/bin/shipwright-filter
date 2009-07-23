@@ -5,20 +5,25 @@ use warnings;
 use Getopt::Long;
 use Carp;
 use File::Find;
+use File::Spec::Functions qw/catfile catdir splitdir/;
+use lib 'inc';
 
 my %args;
 
 confess "unknown option"
-  unless GetOptions( \%args, 'remove-pod', 'help' );
+  unless GetOptions( \%args, 'remove-pod', 'squeeze', 'help' );
 
 my $USAGE = <<'END'
 run: ./bin/shipwright-filter --remove-pod
+run: ./bin/shipwright-filter --squeeze
 
 options: 
 
 help: print this usage
 
 remove-pod: remove .pm files' pod
+squeeze: squeeze lib files. this is done by replace duplicate files by
+linking
 
 END
   ;
@@ -53,7 +58,42 @@ if ( $args{'remove-pod'} ) {
         },
         get_install_base() || @ARGV
     );
-    print "removing pods finished.\n";
+    print "removing pod finished.\n";
+}
+elsif ( $args{'squeeze'} ) {
+    my $as_dir = catdir( get_install_base(), 'as' );
+    my $dh;
+    opendir $dh, $as_dir or die $!;
+    my @as = grep { $_ !~ /^\.\.?$/ } readdir $dh;
+    if ( @as >= 1 ) {
+        require File::Compare
+          or die "can't require File::Compare, you need to install this module";
+
+        my $first_as = shift @as;
+        my $sub = sub {
+            my $name = $File::Find::name;
+            return unless -f $name;
+            my $name_under_lib = $name;
+            $name_under_lib =~ s!\Q$as_dir\E[/\\]\Q$first_as\E[/\\]lib[/\\]!!;
+            for my $as ( @as ) {
+                my $another = $name;
+                $another =~ s!(?<=\Q$as_dir\E[/\\])\Q$first_as\E!$as!;
+                # compare return 0 to indicate the two files are equal
+                unless ( File::Compare::compare( $name, $another ) ) {
+                    my $depth = scalar( splitdir($File::Find::dir) ) -
+                        scalar( splitdir( $as_dir ) );
+                    unlink $another;
+                    link catfile( ('..') x $depth,
+                        $first_as, 'lib', $name_under_lib ),
+                      $another;
+                }
+            }
+        };
+        find( $sub, catdir( $as_dir, $first_as, 'lib' ) );
+    }
+
+
+    print "sequeeze finished.\n";
 }
 
 # this sub is stolen from PAR::Filter::PodStrip

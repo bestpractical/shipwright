@@ -67,6 +67,7 @@ sub initialize {
     $self->_install_yaml_tiny($dir);
     $self->_install_clean_inc($dir);
     $self->_install_module_build($dir);
+    $self->_install_file_compare($dir);
 
     # set proper permissions for yml under /shipwright/
     my $sw_dir = catdir( $dir, 'shipwright' );
@@ -129,6 +130,16 @@ sub _install_clean_inc {
         copy( Module::Info->new_from_module($mod)->file, $util_inc_path )
             or confess "copy $mod failed: $!";
     }
+}
+
+sub _install_file_compare {
+    my $self = shift;
+    my $dir = shift;
+
+    my $path = catdir( $dir, 'inc', 'File' );
+    mkpath $path;
+    copy( Module::Info->new_from_module('File::Compare')->file, $path )
+      or confess "copy File/Compare.pm failed: $!";
 }
 
 =item import
