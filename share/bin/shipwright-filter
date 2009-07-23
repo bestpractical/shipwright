@@ -11,7 +11,7 @@ use lib 'inc';
 my %args;
 
 confess "unknown option"
-  unless GetOptions( \%args, 'remove-pod', 'squeeze', 'help' );
+  unless GetOptions( \%args, 'remove-pod', 'squeeze', 'verbose', 'help' );
 
 my $USAGE = <<'END'
 run: ./bin/shipwright-filter --remove-pod
@@ -24,6 +24,7 @@ help: print this usage
 remove-pod: remove .pm files' pod
 squeeze: squeeze lib files. this is done by replace duplicate files by
 linking
+verbose: show more info to stdout
 
 END
   ;
@@ -49,6 +50,7 @@ if ( $args{'remove-pod'} ) {
             open my $fh, '<', $_
               or return;    # die is not cool: it's just a filter
             my $content = do { local $/; <$fh> };
+            print "removing pod from $File::Find::name\n" if $args{verbose};
             apply( \$content, $_ );
             chmod oct 755, $_;
             open $fh, '>', $_ or return;
@@ -82,6 +84,7 @@ elsif ( $args{'squeeze'} ) {
                 unless ( File::Compare::compare( $name, $another ) ) {
                     my $depth = scalar( splitdir($File::Find::dir) ) -
                         scalar( splitdir( $as_dir ) );
+                    print "squeeze $another\n" if $args{verbose};
                     unlink $another;
                     link catfile( ('..') x $depth,
                         $first_as, 'lib', $name_under_lib ),
