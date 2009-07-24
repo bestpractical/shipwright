@@ -21,9 +21,12 @@ options:
 
 help: print this usage
 
-remove-pod: remove .pm files' pod
+remove-pod: remove .pm files' pod, this will ignore files that match lines in
+    file __pod_ignores, which contains a list of regex line by line
+
 squeeze: squeeze lib files. this is done by replace duplicate files by
 linking
+
 verbose: show more info to stdout
 
 END

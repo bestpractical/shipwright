@@ -97,6 +97,8 @@ Less commonly needed options:
   --branches    Specify the branch of a given package in the vessel you want 
                 to build.
                 Ex: --branches Foo,trunk,Bar,2.0
+  --as          for multi-arch dists, you can use this to specify the arch name.
+                By default it's the uname.
 END
 
 if ( $args{'help'} ) {
