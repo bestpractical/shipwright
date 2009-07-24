@@ -24,6 +24,7 @@ lib/Shipwright/Backend/SVK.pm
 lib/Shipwright/Backend/SVN.pm
 lib/Shipwright/Logger.pm
 lib/Shipwright/Manual.pod
+lib/Shipwright/Manual/BuildMultiArchVessel.pod
 lib/Shipwright/Manual/CustomizeBuild.pod
 lib/Shipwright/Manual/Glossary.pod
 lib/Shipwright/Manual/Tutorial.pod
@@ -63,6 +64,7 @@ META.yml
 README
 share/__default_builder_options
 share/bin/shipwright-builder
+share/bin/shipwright-filter
 share/bin/shipwright-utility
 share/etc/shipwright-perl-wrapper
 share/etc/shipwright-script-wrapper
@@ -97,6 +99,7 @@ t/dists/version1/info
 t/dists/version2/info
 t/hello/Foo-Bar-v0.01.tar.gz
 t/hello/fs.t
+t/hello/git.t
 t/hello/scripts/build
 t/hello/scripts/howdy_require.yml
 t/hello/scripts/require.yml

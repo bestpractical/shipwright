@@ -1,5 +1,11 @@
 Revision history for Shipwright
 
+2.3.1 Fri Jul 24 14:11:11 CST 2009
+
+* add --squeeze and --verbose args for shipwright-filter
+* make --as as `uname` by default
+* doc update
+
 2.3.0 Mon Jul 20 15:40:50 CST 2009
 
 * add multi-arch dists support
