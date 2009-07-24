@@ -96,7 +96,7 @@ elsif ( $args{'generate-tar-file'} ) {
 	chmod 0755, $tar_file; ## no critic
 	print $tar_out <<'EOF';
 #!/usr/bin/env perl
-open (my $tar,'|tar xz 2>/dev/null');
+open my $tar, '|-', 'tar xz 2>/dev/null';
 while (<DATA>) {
     print $tar $_; 
 }
@@ -106,7 +106,7 @@ EOF
 exec("cd $name; bin/shipwright-builder \@ARGV");
 __DATA__
 EOF
-	open my $tar_in, "tar cz $name |" or die $!;
+	open my $tar_in, '-|', "tar cz $name" or die $!;
 	while ( <$tar_in> ) {
 		print $tar_out $_;
 	}
