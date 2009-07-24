@@ -16,8 +16,9 @@ Since then, all installed bin dirs and lib will live in as/$arch_name, instead o
 
 the vessel source is exactly the same as normal one.
 The only different part is the way we build vessel with I<bin/shipwright-builder>
-We need to build the vessel on both Mac and Ubuntu, let's do this on
-Mac first:
+We need to build the vessel on both Mac and Ubuntu.
+
+Let's do this on Mac first:
 
     $ ./bin/shipwright-builder --install-base /tmp/foo --as Mac
 
@@ -40,11 +41,11 @@ in not less redundance in vessel, we can use shipwright-filter to squeeze it:
 
     $ ./bin/shipwright-filter --squeeze
 
-This will remove redundant files and link to the only left file.
+This will remove redundant files and link to the left files.
 
 e.g. as/Mac/lib/perl5/App/SD.pm and as/Ubuntu/lib/perl5/App/SD.pm have the
-same content, after the above cmd, the latter one will be deleted and linked
-to the former one.
+same content, after the above cmd, the latter one will be deleted and (hard)
+linked to the former one.
 
 =head2 use
 
