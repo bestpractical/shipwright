@@ -8,7 +8,7 @@ In this tutorial, we'll create a vessel to represent basic stuff of Shipwright.
 
 =head1 DESCRIPTION
 
-Currently, Shipwright supports 3 kinds of backends: I<SVK>, I<SVN>, I<Git> and I<plain
+Currently, Shipwright supports 4 kinds of backends: I<SVK>, I<SVN>, I<Git> and I<plain
 file system>. e.g.
 
     svn:file:///tmp/svnrepo/foo
@@ -18,11 +18,10 @@ file system>. e.g.
     git:file:///tmp/shipwright.git
     fs:/tmp/foo
 
-Note: since we need C<svk>/C<svn>/C<svnadmin> cmds in in backends, sources or 
-other places, we can tell shipwright the location of C<svk>/C<svn> cmds by 
-setting ENV C<SHIPWRIGHT_SVK> or C<SHIPWRIGHT_SVN>.
+Note: since we need C<svk>/C<svn>/C<svnadmin>/C<git> cmds in in backends, sources or 
+other places, we can tell shipwright the location of C<svk>/C<svn>/C<git> cmds by 
+setting ENV C<SHIPWRIGHT_SVK>/C<SHIPWRIGHT_SVN>/C<SHIPWRIGHT_GIT>.
 C<svnadmin> is assumed in the same directory of svn. 
-
 
 we'll use C<svn:file:///tmp/svnrepo/foo> as the repository for the rest tutorial.
 
@@ -74,7 +73,6 @@ B<Caveat>: for files, we only support I<.tar.gz>(I<.tgz>) and I<.tar.bz2> format
 
 =item SVK
     
-    svn:file:///tmp/svnrepo/foo>
     svk:/test/foo
 
 =item SVN
@@ -88,7 +86,7 @@ B<Caveat>: for files, we only support I<.tar.gz>(I<.tgz>) and I<.tar.bz2> format
     cpan:Module::Install
 
 It's ok, Shipwright will find the download link automatically for us,
-with L<CPAN>'s help.
+with L<CPAN>'s help. thanks, L<CPAN>!
 
 =item Shipwright
 
@@ -130,7 +128,7 @@ For more information on build scripts, see L<Shipwright::Manual::CustomizeBuild>
 
 =head2 update
 
-For dists with I<CPAN>, I<SVK>, I<SVN> and I<Shipwright> types,
+For dists with I<CPAN>, I<SVK>, I<SVN>, I<Git> and I<Shipwright> types,
 we can simply use the I<update> cmd to update:
 
     $ shipwright update -r svn:file:///tmp/svnrepo/foo cpan-XML-LibXML
@@ -157,10 +155,9 @@ in F</scripts/cpan-XML-LibXML/require.yml> there's no such entry,
 because F<require.yml> is created automatically, filled with perl module dists,
 no extra dependence will be set.
 
-So we have to do it manually, edit F</scripts/cpan-XML-LibXML/require.yml>
-ourselves, at least by now.
+So we need to do it manually, e.g. use the following cmd to do so
 
-Hey, you know how to edit that file, right? ;)
+    $ shipwright update -r svn:file:///tmp/svnrepo/foo apache --add-deps libxml
 
 =head2 build
 
@@ -169,7 +166,13 @@ then I<chdir> there, and run:
 
 $ ./bin/shipwright-builder 
 
-Run I<./bin/shipwright-builder --help> to see more options.
+Run I<./bin/shipwright-builder --help> to see more options and
+I<./bin/shipwright-builder --advanced-help> to see even more options.
+
+=head2 fiddle the vessel
+
+we can use bin/shipwright-filter to fiddle the vessel, e.g. removing pods.
+Run I<./bin/shipwright-filter --help> to see more options
 
 =head2 ship our vessel
 
