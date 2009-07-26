@@ -4,6 +4,7 @@ use inc::Module::Install 0.76;
 name 'Shipwright';
 author 'sunnavy <sunnavy@bestpractical.com>';
 all_from 'lib/Shipwright.pm';
+repository 'git://github.com/bestpractical/shipwright.git';
 perl_version '5.008008';
 build_requires 'Module::Build' => 0;
 build_requires 'IPC::Cmd' => 0;
