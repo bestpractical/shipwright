@@ -186,6 +186,7 @@ sub _follow {
                 $makefile =~
                     s/^\s*test_requires_from(?!\w)/shipwright_test_requires_from/mg;
                 my $shipwright_makefile = <<'EOF';
+use Data::Dumper;
 my $shipwright_req = {};
 
 sub _shipwright_requires {
@@ -311,7 +312,6 @@ sub shipwright_features {
 }
 
 END {
-require Data::Dumper;
 open my $tmp_fh, '>', 'shipwright_prereqs';
 print $tmp_fh Data::Dumper->Dump( [$shipwright_req], [qw/require/] );
 }
