@@ -52,4 +52,4 @@ requires:
   version: 0
 resources:
   license: http://dev.perl.org/licenses/
-version: 2.003001
+version: 2.003002

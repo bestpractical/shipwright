@@ -1,5 +1,9 @@
 Revision history for Shipwright
 
+2.3.2 Mon Jul 27 18:41:41 CST 2009
+
+* improvements version, mostly for windows
+
 2.3.1 Fri Jul 24 14:11:11 CST 2009
 
 * add --squeeze and --verbose args for shipwright-filter
