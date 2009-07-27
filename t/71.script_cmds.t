@@ -1,14 +1,20 @@
 use strict;
 use warnings;
 
-use Test::More tests => 140;
+use Test::More;
+if ( $^O =~ /MSWin/ ) {
+    plan tests => 136;
+}
+else {
+    plan tests => 140;
+}
 
 use Shipwright;
 use Shipwright::Test;
 use File::Spec::Functions qw/catdir tmpdir/;
 use File::Path qw/rmtree/;
 use Cwd qw/getcwd/;
-my $sw = Shipwright::Test->shipwright_bin;
+my $sw  = Shipwright::Test->shipwright_bin;
 my $cwd = getcwd;
 
 Shipwright::Test->init;
@@ -22,13 +28,15 @@ my $build_base   = catdir( tmpdir(), 'shipwright_build_71_scripts_cmds' );
 }
 
 SKIP: {
-    skip "git: no git found or env SHIPWRIGHT_TEST_GIT not set", 34
+    skip "git: no git found or env SHIPWRIGHT_TEST_GIT not set", ( $^O =~
+        /MSWin/ ? 33 : 34 )
       if skip_git();
     start_test( 'git:' . create_git_repo() );
 }
 
 SKIP: {
-    skip "svn: no svn found or env SHIPWRIGHT_TEST_SVN not set", 36
+    skip "svn: no svn found or env SHIPWRIGHT_TEST_SVN not set", ( $^O =~
+        /MSWin/ ? 35 : 36 )
       if skip_svn();
 
     my $repo = 'svn:' . create_svn_repo() . '/hello';
@@ -52,7 +60,8 @@ SKIP: {
 }
 
 SKIP: {
-    skip "svk: no svk found or env SHIPWRIGHT_TEST_SVK not set", 36
+    skip "svk: no svk found or env SHIPWRIGHT_TEST_SVK not set", ( $^O =~
+        /MSWin/ ? 35 : 36 )
       if skip_svk();
 
     create_svk_repo();
@@ -278,15 +287,6 @@ qr/set mandatory flags with success\s+mandatory flags of man1 are build/,
             'Build.PL and Makefile.PL are run',
         ],
         [
-            [
-                'build',     '--flags',
-                'configure', '--install-base',
-                $install_base, '--verbose',
-            ],
-            qr/run, run, configure/,
-            'configure is run',
-        ],
-        [
             [ 'update', '--builder' ],
             qr/updated with success/,
             "updated builder",
@@ -296,9 +296,18 @@ qr/set mandatory flags with success\s+mandatory flags of man1 are build/,
             qr/updated with success/,
             "updated utility",
         ],
-
-        $source
-        ? (
+        $^O =~ /MSWin/
+        ? ()
+        : [
+            [
+                'build',       '--flags',
+                'configure',   '--install-base',
+                $install_base, '--verbose',
+            ],
+            qr/run, run, configure/,
+            'configure is run',
+        ],
+        $source ? (
 
             # import an svn or svk dist named foo
             [
@@ -319,13 +328,18 @@ qr/set mandatory flags with success\s+mandatory flags of man1 are build/,
         if ( ref $item->[0] eq 'ARRAY' ) {
             my $cmd = shift @{ $item->[0] };
             if ( $cmd eq 'build' ) {
-# it's not really a build cmd, we need to export first, cd to it, 
-# then run bin/shipwright-builder
+
+               # it's not really a build cmd, we need to export first, cd to it,
+               # then run bin/shipwright-builder
                 my $shipwright = Shipwright->new( repository => $repo );
                 $shipwright->backend->export( target => $build_base );
                 chdir $build_base;
                 test_cmd(
-                    [ $^X, 'bin/shipwright-builder', @{ $item->[0] } ],
+                    [
+                        $^X, 'bin/shipwright-builder',
+                        @{ $item->[0] },
+                        $^O =~ /MSWin/ ? ( '--make', 'dmake' ) : ()
+                    ],
                     @$item[ 1 .. $#$item ],
                 );
                 chdir $cwd;

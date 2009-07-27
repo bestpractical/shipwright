@@ -161,7 +161,7 @@ sub run {
 
             $version =
               Shipwright::Util::LoadFile( $shipwright->source->version_path );
-            my ($name) = $source =~ m{.*/(.*)$};
+            my $name = ( splitdir( $source ) )[-1];
 
             my $base = $self->_parent_dir($source);
 

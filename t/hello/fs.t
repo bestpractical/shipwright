@@ -130,7 +130,7 @@ like(
     'original order is right'
 );
 
-system( 'cp -r ' . catfile( $tempdir, 'shipwright' ) . " $repo/" );
+system( 'cp -r ' . catdir( $tempdir, 'shipwright' ) . " $repo" );
 like(
     `cat $repo/shipwright/order.yml`,
     qr/howdy.*Foo-Bar/s,
@@ -161,7 +161,8 @@ for (
 }
 
 chdir( $build_base );
-system( "$^X bin/shipwright-builder --install-base $install_base" );
+system( "$^X bin/shipwright-builder --install-base $install_base"
+      . ( $^O =~ /MSWin/ ? ' --make dmake' : '' ) );
 for (
     catfile(
         $install_base, 'lib',

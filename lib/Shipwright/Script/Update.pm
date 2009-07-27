@@ -207,7 +207,6 @@ sub run {
             }
         }
     }
-
     $self->log->fatal( 'updated with success' );
 }
 

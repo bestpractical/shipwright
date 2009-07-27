@@ -14,7 +14,7 @@ Shipwright::Test->init;
 my $cwd = getcwd;
 my ( $shipwright_root, $share_root );
 
-if ( grep { m{blib/lib} } @INC ) {
+if ( grep { m{blib[/\\]lib} } @INC ) {
 
     # found blib/lib, so we're probably in `make test` or something like that.
     $shipwright_root = catfile( $cwd, 'blib', 'lib' );

@@ -4,7 +4,7 @@ use warnings;
 use strict;
 use Carp;
 use UNIVERSAL::require;
-use Cwd qw/abs_path/;
+use File::Spec::Functions qw/rel2abs/;
 use Shipwright::Util;
 
 sub new {
@@ -26,7 +26,7 @@ sub new {
     elsif ( $args{repository} =~ m{^\s*fs:} ) {
         $args{repository} =~ s{^\s*fs:}{};
         $args{repository} =~ s/^~/Shipwright::Util->user_home/e;
-        my $abs_path = abs_path($args{repository});
+        my $abs_path = rel2abs($args{repository});
         $args{repository} = $abs_path if $abs_path;
         $module = 'Shipwright::Backend::FS';
     }

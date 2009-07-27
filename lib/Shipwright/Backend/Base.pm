@@ -3,7 +3,7 @@ package Shipwright::Backend::Base;
 use warnings;
 use strict;
 use Carp;
-use File::Spec::Functions qw/catfile catdir/;
+use File::Spec::Functions qw/catfile catdir splitpath/;
 use Shipwright::Util;
 use File::Temp qw/tempdir/;
 use File::Copy qw/copy/;
@@ -152,8 +152,7 @@ sub import {
     my $self = shift;
     return unless ref $self; # get rid of class->import
     my %args = @_;
-    my $name = $args{source};
-    $name =~ s{.*/}{};
+    my $name = ( splitpath( $args{source} ) )[-1];
 
     if ( $self->has_branch_support ) {
         if ( $args{branches} ) {

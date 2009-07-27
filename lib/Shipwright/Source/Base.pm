@@ -162,7 +162,7 @@ sub _follow {
               or confess "can't read Build.PL: $!";
 
             Shipwright::Util->run(
-                [ './Build', 'realclean', '--allow_mb_mismatch', 1 ] );
+                [ $^X, 'Build', 'realclean', '--allow_mb_mismatch', 1 ] );
         }
         elsif ( -e 'Makefile.PL' ) {
             my $makefile = read_file('Makefile.PL')
@@ -656,7 +656,7 @@ return true if the source is compressed file, i.e. tar.gz(tgz) and tar.bz2
 
 sub is_compressed {
     my $self = shift;
-    return 1 if $self->source =~ m{.*/.+\.(tar.(gz|bz2)|tgz)$};
+    return 1 if $self->source =~ m{\.(tar.(gz|bz2)|tgz)$};
     return;
 }
 

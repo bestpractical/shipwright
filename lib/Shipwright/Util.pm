@@ -4,7 +4,7 @@ use warnings;
 use strict;
 use Carp;
 use IPC::Run3;
-use File::Spec::Functions qw/catfile catdir splitpath splitdir tmpdir/;
+use File::Spec::Functions qw/catfile catdir splitpath splitdir tmpdir rel2abs/;
 use File::Temp qw/tempfile/;
 use Cwd qw/abs_path/;
 
@@ -60,7 +60,7 @@ sub run {
     my ( $out, $err );
     $log->info( "run cmd: " . join ' ', @$cmd );
     Shipwright::Util->select('null');
-    run3( $cmd, \*STDIN, \$out, \$err );
+    run3( $cmd, undef, \$out, \$err );
     Shipwright::Util->select('stdout');
 
     $log->debug("run output:\n$out") if $out;
@@ -94,7 +94,7 @@ sub shipwright_root {
 
     unless ($SHIPWRIGHT_ROOT) {
         my $dir = ( splitpath( $INC{"Shipwright.pm"} ) )[1];
-        $SHIPWRIGHT_ROOT = abs_path($dir);
+        $SHIPWRIGHT_ROOT = rel2abs($dir);
     }
 
     return ($SHIPWRIGHT_ROOT);
@@ -113,7 +113,10 @@ sub share_root {
     unless ($SHARE_ROOT) {
         my @root = splitdir( $self->shipwright_root );
 
-        if ( $root[-2] ne 'blib' && $root[-1] eq 'lib' ) {
+        if (   $root[-2] ne 'blib'
+            && $root[-1] eq 'lib'
+            && ( $^O !~ /MSWin/ || $root[-2] ne 'site' ) )
+        {
 
             # so it's -Ilib in the Shipwright's source dir
             $root[-1] = 'share';

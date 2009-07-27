@@ -3,7 +3,7 @@ package Shipwright::Backend::FS;
 use warnings;
 use strict;
 use Carp;
-use File::Spec::Functions qw/catfile splitdir/;
+use File::Spec::Functions qw/catfile splitdir catdir/;
 use Shipwright::Util;
 use File::Copy qw/copy/;
 use File::Copy::Recursive qw/dircopy/;
@@ -37,7 +37,8 @@ sub initialize {
 
     $self->delete;    # clean repository in case it exists
 
-    dircopy( $dir, $self->repository ) or confess "can't copy $dir to " .  $self->repository . ": $!";
+    dircopy( $dir, $self->repository )
+      or confess "can't copy $dir to " . $self->repository . ": $!";
 }
 
 # a cmd generating factory
@@ -58,51 +59,54 @@ sub _cmd {
     }
     elsif ( $type eq 'import' ) {
         if ( $args{_extra_tests} ) {
-            @cmd =
-              [ 'cp', '-r', $args{source}, $self->repository . '/t/extra' ];
+            @cmd = [
+                'cp', '-r',
+                $args{source}, catdir( $self->repository, 't', 'extra' )
+            ];
         }
         else {
             if ( my $script_dir = $args{build_script} ) {
                 push @cmd,
                   [
-                    'cp', '-r', "$script_dir/",
-                    $self->repository . "/scripts/$args{name}",
+                    'cp', '-r', catdir($script_dir),
+                    catdir( $self->repository, 'scripts', $args{name} )
                   ];
             }
             else {
                 if ( $self->has_branch_support ) {
                     my @dirs = splitdir( $args{as} );
                     unless (
-                          -e $self->repository
-                        . "/sources/$args{name}/"
-                        . join '/',
-                        @dirs[ 0 .. $#dirs - 1 ]
+                        -e catdir(
+                            $self->repository, 'sources',
+                            $args{name},       @dirs[ 0 .. $#dirs - 1 ]
+                        )
                       )
                     {
                         push @cmd,
                           [
-                            'mkdir',
-                            '-p',
-                            $self->repository
-                              . "/sources/$args{name}/"
-                              . join '/',
-                            @dirs[ 0 .. $#dirs - 1 ]
+                            'mkdir', '-p',
+                            catdir(
+                                $self->repository, 'sources',
+                                $args{name},       @dirs[ 0 .. $#dirs - 1 ]
+                            )
                           ];
                     }
 
                     push @cmd,
                       [
-                        'cp', '-r', "$args{source}/",
-                        $self->repository . "/sources/$args{name}/$args{as}",
+                        'cp', '-r',
+                        catdir( $args{source} ),
+                        catdir(
+                            $self->repository, 'sources',
+                            $args{name},       $args{as}
+                        )
                       ];
                 }
                 else {
-                    push @cmd,
-                      [
-                        'cp', '-r', "$args{source}/",
-                        $self->repository . "/dists/$args{name}",
-                      ];
-
+                    push @cmd, [
+                        'cp', '-r', catdir( $args{source} ),
+                        catdir( $self->repository, 'dists', $args{name} )
+                    ];
                 }
             }
         }
@@ -166,7 +170,7 @@ sub info {
         return $info, $err;
     }
     else {
-        return if $info =~ /no such file or directory/;
+        return if $info =~ /no such file or directory/i;
         return $info;
     }
 }
@@ -188,7 +192,7 @@ sub _update_file {
     my $latest = shift;
 
     my $file = catfile( $self->repository, $path );
-
+    unlink $file;
     copy( $latest, $file ) or confess "can't copy $latest to $file: $!";
 }
 
@@ -207,7 +211,7 @@ sub _update_dir {
 
 sub import {
     my $self = shift;
-    return unless ref $self; # get rid of class->import
+    return unless ref $self;    # get rid of class->import
     return $self->SUPER::import( @_, delete => 1 );
 }
 
