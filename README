@@ -10,11 +10,11 @@ To install this module, run the following commands:
     make test
     make install
 
+NOTES FOR USERS ON WINDOWS
 
-
-DEPENDENCIES
-
-None.
+Shipwright depends many UNIX shell cmds( e.g. ls, rm, mv ), so if you are
+on Windows, you need to install a UNIX Utility software that supplied those
+cmds, e.g. http://sourceforge.net/projects/unxutils/ can do this.
 
 
 COPYRIGHT AND LICENCE
