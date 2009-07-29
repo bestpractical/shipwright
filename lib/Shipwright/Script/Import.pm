@@ -369,6 +369,8 @@ sub _generate_build {
     }
     elsif ( -f catfile( $source_dir, 'Makefile.PL' ) ) {
         $self->log->info( 'detected ExtUtils::MakeMaker build system or alike' );
+# XXX when only support 5.8.9+, we can change it to INSTALL_BASE=%%INSTALL_BASE%%
+# because LIB=.../lib/perl5 is so ugly and not so right
         @commands = (
             'configure: %%PERL%% Makefile.PL LIB=%%INSTALL_BASE%%/lib/perl5/ PREFIX=%%INSTALL_BASE%% %%MAKEMAKER_CONFIGURE_EXTRA%%',
             'make: %%MAKE%%',
