@@ -10,12 +10,15 @@ sub import {
     
     my %skip_lib_path = map { $_ => 1 } _default_inc();
     delete $skip_lib_path{'.'}; # . is important
-    my @explicit_libs = grep {!/inc$/}  split( /:/,($ENV{'PERL5LIB'} ||''));
-    my @inc_libs = grep {/inc$/}  split( /:/,($ENV{'PERL5LIB'} ||''));
+    my @explicit_libs = grep {!/inc$/}  split( /[:;]/,($ENV{'PERL5LIB'} ||''));
+    my @inc_libs = grep {/inc$/}  split( /[:;]/,($ENV{'PERL5LIB'} ||''));
     # if the libs are explicitly specified, don't pull them from @INC
     my @new_base_inc = grep { !$skip_lib_path{$_}++ } (  @explicit_libs, @INC,@inc_libs);
-    @INC = map { /^(.*)$/ ; $1 }  ( @new_base_inc,
-            $Config::Config{archlibexp}, $Config::Config{privlibexp}, );
+    @INC = map { /(.+)/; $1 } (
+        @new_base_inc,               $Config::Config{archlibexp},
+        $Config::Config{privlibexp}, $Config::Config{updatesarch},
+        $Config::Config{updateslib},
+    );
 }
 
 
@@ -57,8 +60,10 @@ Shipwright::Util::CleanINC - Use this to clean @INC
 
 =head1 DESCRIPTION
 
-this will limit the @INC to only contain Core ( technically, they are
-$Config::Config{privlibexp} and $Config::Config{archlibexp} ) and PERL5LIB
+this will limit the @INC to only contain "Core" ( technically, they are
+$Config::Config{privlibexp} and $Config::Config{archlibexp}, also 
+$Config::Config{updatesarch} and $Config::Config{updateslib}, which are
+used in Mac ) and PERL5LIB
 
 =head1 AUTHOR
 
