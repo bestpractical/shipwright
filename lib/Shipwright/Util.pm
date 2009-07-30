@@ -55,6 +55,17 @@ sub run {
     my $cmd            = shift;
     my $ignore_failure = shift;
 
+    if ( ref $cmd eq 'CODE' ) {
+        my @returns;
+        if ( $ignore_failure ) {
+            @returns = eval { $cmd->() };
+        }
+        else {
+            @returns = $cmd->();
+        }
+        return wantarray ? @returns : $returns[0];
+    }
+
     my $log = Log::Log4perl->get_logger('Shipwright::Util');
 
     my ( $out, $err );
