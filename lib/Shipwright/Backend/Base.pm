@@ -6,8 +6,7 @@ use Carp;
 use File::Spec::Functions qw/catfile catdir splitpath/;
 use Shipwright::Util;
 use File::Temp qw/tempdir/;
-use File::Copy qw/copy/;
-use File::Copy::Recursive qw/dircopy/;
+use File::Copy::Recursive qw/rcopy/;
 use File::Path;
 use List::MoreUtils qw/uniq firstidx/;
 use Module::Info;
@@ -61,7 +60,7 @@ sub initialize {
     my $dir =
       tempdir( 'shipwright_backend_base_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
 
-    dircopy( Shipwright::Util->share_root, $dir )
+    rcopy( Shipwright::Util->share_root, $dir )
       or confess "copy share_root failed: $!";
 
     $self->_install_yaml_tiny($dir);
@@ -78,17 +77,7 @@ sub initialize {
     }
     closedir $sw_dh;
 
-    # share_root can't keep empty dirs, we have to create them manually
-    for (qw/scripts sources/) {
-        my $sub_dir = catdir( $dir, $_ );
-        mkdir $sub_dir;
-        open my $fh, '>', catfile( $sub_dir, '.exists' ) or confess $!;
-        close $fh;
-    }
     chmod 0644, catfile( $dir, 't', 'test' );
-
-    # hack for share_root living under blib/
-    unlink( catfile( $dir, '.exists' ) );
 
     return $dir;
 }
@@ -98,17 +87,16 @@ sub _install_module_build {
     my $dir = shift;
     my $module_build_path = catdir( $dir, 'inc', 'Module', );
     mkpath catdir( $module_build_path, 'Build' );
-    copy( Module::Info->new_from_module('Module::Build')->file,
+    rcopy( Module::Info->new_from_module('Module::Build')->file,
             $module_build_path ) or confess "copy Module/Build.pm failed: $!";
-    dircopy(
+    rcopy(
         catdir(
             Module::Info->new_from_module('Module::Build')->inc_dir, 'Module',
             'Build'
         ),
         catdir( $module_build_path, 'Build' )
       )
-      or confess "copy
-        Module/Build failed: $!";
+      or confess "copy Module/Build failed: $!";
 }
 
 sub _install_yaml_tiny {
@@ -117,7 +105,7 @@ sub _install_yaml_tiny {
 
     my $yaml_tiny_path = catdir( $dir, 'inc', 'YAML' );
     mkpath $yaml_tiny_path;
-    copy( Module::Info->new_from_module('YAML::Tiny')->file, $yaml_tiny_path )
+    rcopy( Module::Info->new_from_module('YAML::Tiny')->file, $yaml_tiny_path )
       or confess "copy YAML/Tiny.pm failed: $!";
 }
 
@@ -127,7 +115,7 @@ sub _install_clean_inc {
     my $util_inc_path = catdir( $dir, 'inc', 'Shipwright', 'Util' );
     mkpath $util_inc_path;
     for my $mod qw(Shipwright::Util::CleanINC Shipwright::Util::PatchModuleBuild) {
-        copy( Module::Info->new_from_module($mod)->file, $util_inc_path )
+        rcopy( Module::Info->new_from_module($mod)->file, $util_inc_path )
             or confess "copy $mod failed: $!";
     }
 }
@@ -138,7 +126,7 @@ sub _install_file_compare {
 
     my $path = catdir( $dir, 'inc', 'File' );
     mkpath $path;
-    copy( Module::Info->new_from_module('File::Compare')->file, $path )
+    rcopy( Module::Info->new_from_module('File::Compare')->file, $path )
       or confess "copy File/Compare.pm failed: $!";
 }
 

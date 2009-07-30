@@ -8,6 +8,7 @@ use File::Spec::Functions qw/catfile catdir/;
 use base qw/Shipwright::Source::Base/;
 use Archive::Extract;
 use File::Temp qw/tempdir/;
+use File::Copy::Recursive qw/rmove/;
 
 =head2 run
 
@@ -87,7 +88,9 @@ sub _cmd {
     push @cmds, sub { $ae->extract( to => $self->directory ) };
 
     if ( $from ne $to ) {
-        push @cmds, [ 'mv', $from, $to ];
+        push @cmds, sub {
+            rmove( $from, $to );
+        };
     }
 
     return @cmds;

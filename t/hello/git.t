@@ -4,10 +4,11 @@ use warnings;
 use Shipwright;
 use File::Temp qw/tempdir/;
 use File::Copy;
-use File::Copy::Recursive qw/dircopy/;
+use File::Copy::Recursive qw/rcopy/;
 use File::Spec::Functions qw/catfile catdir updir/;
 use File::Path qw/rmtree/;
 use Cwd qw/getcwd abs_path/;
+use File::Slurp;
 
 use Test::More tests => 10;
 use Shipwright::Test;
@@ -37,11 +38,13 @@ SKIP: {
 
 
     my $cloned_dir = $shipwright->backend->cloned_dir;
-    my @dirs = sort `ls $cloned_dir`;
+    my $dh;
+    opendir $dh, $cloned_dir or die $!;
+    my @dirs = grep { /^[^.]/ } sort readdir( $dh );
     chomp @dirs;
     is_deeply(
         [@dirs],
-        [ '__default_builder_options', 'bin', 'etc', 'inc', 'scripts', 'shipwright', 'sources', 't' ],
+        [ '__default_builder_options', 'bin', 'etc', 'inc', 'shipwright', 't' ],
         'initialize works'
     );
 
@@ -51,8 +54,11 @@ SKIP: {
     # import
 
     $shipwright->backend->import( name => 'hello', source => $source_dir );
-    ok( grep( {/Makefile\.PL/} `ls $cloned_dir/sources/Foo-Bar/vendor` ),
-        'imported ok' );
+    ok(
+        -e catfile( $cloned_dir, 'sources', 'Foo-Bar', 'vendor',
+            'Makefile.PL' ),
+        'imported ok'
+    );
 
     my $script_dir = tempdir( 'shipwright_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
     copy( catfile( 't', 'hello', 'scripts', 'build' ),       $script_dir );
@@ -63,8 +69,14 @@ SKIP: {
         source       => $source_dir,
         build_script => $script_dir,
     );
-    ok( grep( {/Makefile\.PL/} `cat $cloned_dir/scripts/Foo-Bar/build` ),
-        'build script ok' );
+    ok(
+        grep { /Makefile\.PL/ } read_file(
+            catfile(
+                $cloned_dir, 'scripts', 'Foo-Bar', 'build'
+            )
+        ),
+        'build script ok'
+    );
 
     # import another dist
 
@@ -81,8 +93,11 @@ SKIP: {
     $source_dir = $shipwright->source->run();
     like( $source_dir, qr/\bhowdy\b/, 'source name looks ok' );
     $shipwright->backend->import( name => 'hello', source => $source_dir );
-    ok( grep( {/Makefile\.PL/} `ls $cloned_dir/sources/howdy/vendor` ),
-        'imported ok' );
+    ok(
+        -e catfile( $cloned_dir, 'sources', 'Foo-Bar', 'vendor',
+            'Makefile.PL' ),
+        'imported ok'
+    );
     $script_dir = tempdir( 'shipwright_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
     copy( catfile( 't', 'hello', 'scripts', 'build' ), $script_dir );
     copy( catfile( 't', 'hello', 'scripts', 'howdy_require.yml' ),
@@ -93,33 +108,45 @@ SKIP: {
         source       => $source_dir,
         build_script => $script_dir,
     );
-    ok( grep( {/Makefile\.PL/} `cat $cloned_dir/scripts/howdy/build` ),
-        'build script ok' );
+    ok(
+        grep( {/Makefile\.PL/}
+            read_file( catfile( $cloned_dir, 'scripts', 'howdy', 'build' ) ),
+            'build script ok' )
+    );
 
     my $tempdir = tempdir( 'shipwright_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
-    dircopy(
+    rcopy(
         catfile( 't',      'hello', 'shipwright' ),
         catfile( $tempdir, 'shipwright' )
     );
 
     # check to see if update_order works
     like(
-        `cat $cloned_dir/shipwright/order.yml`,
+        scalar(
+            read_file( catfile( $cloned_dir, 'shipwright', 'order.yml' ) )
+        ),
         qr/Foo-Bar.*howdy/s,
         'original order is right'
     );
 
-    system( 'cp -r ' . catfile( $tempdir, 'shipwright' ) . " $cloned_dir/" );
+    rcopy(
+        catdir( $tempdir,    'shipwright' ),
+        catdir( $cloned_dir, 'shipwright' )
+    );
     $shipwright->backend->commit( comment => 'update shipwright/' );
     like(
-        `cat $cloned_dir/shipwright/order.yml`,
+        scalar(
+            read_file( catfile( $cloned_dir, 'shipwright', 'order.yml' ) )
+        ),
         qr/howdy.*Foo-Bar/s,
         'imported wrong order works'
     );
 
     $shipwright->backend->update_order;
     like(
-        `cat $cloned_dir/shipwright/order.yml`,
+        scalar(
+            read_file( catfile( $cloned_dir, 'shipwright', 'order.yml' ) )
+        ),
         qr/Foo-Bar.*howdy/s,
         'updated order works'
     );

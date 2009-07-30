@@ -4,7 +4,7 @@ use warnings;
 use Shipwright;
 use File::Temp qw/tempdir/;
 use File::Copy;
-use File::Copy::Recursive qw/dircopy/;
+use File::Copy::Recursive qw/rcopy/;
 use File::Spec::Functions qw/catfile catdir updir/;
 use File::Path qw/rmtree/;
 use Cwd qw/getcwd abs_path/;
@@ -34,11 +34,10 @@ SKIP: {
 
     # init
     $shipwright->backend->initialize();
-    my @dirs = sort `svk ls $repo`;
-    chomp @dirs;
+    my @dirs = map { s{/?\s*$}{}; $_ } sort `svk ls $repo`;
     is_deeply(
         [@dirs],
-        [ '__default_builder_options', 'bin', 'etc', 'inc', 'scripts', 'shipwright', 'sources', 't' ],
+        [ '__default_builder_options', 'bin', 'etc', 'inc', 'shipwright', 't' ],
         'initialize works'
     );
 
@@ -94,7 +93,7 @@ SKIP: {
         'build script ok' );
 
     my $tempdir = tempdir( 'shipwright_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
-    dircopy(
+    rcopy(
         catfile( 't',      'hello', 'shipwright' ),
         catfile( $tempdir, 'shipwright' )
     );

@@ -37,18 +37,18 @@ for ( 1 .. 2 ) {
 }
 
 my ( $out, $err );
-$out = Shipwright::Util->run( [ 'ls', 'lib' ] );
-like( $out, qr/Shipwright/, "run 'ls lib' get right output" );
+$out = Shipwright::Util->run( [ $^X, '-e', 'print "ok"' ] );
+like( $out, qr/ok/, "normal run" );
 
-eval { Shipwright::Util->run( [ 'ls', 'lalala' ] ) };
-like( $@, qr/something wrong/i, 'run "ls lalala" results in death' );
-
-( undef, $err ) = Shipwright::Util->run( [ 'ls', 'lalala' ], 1 );
+( undef, $err ) = Shipwright::Util->run( [ $^X, '-e', 'die "error"' ], 1 );
 like(
     $err,
-    qr/ls:|no such file/i,
-    "run 'ls lalala' get warning if ignore_failure"
+    qr/error/i,
+    "run with error again, also with ignore_failure"
 );
+
+$out = Shipwright::Util->run( sub { 'ok' } );
+like( $out, qr/ok/, "normal code run" );
 
 my $hashref = { foo => 'bar' };
 my $string = <<EOF;

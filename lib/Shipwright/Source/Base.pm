@@ -9,6 +9,7 @@ use Module::CoreList;
 use Shipwright::Source;
 use Shipwright::Util;
 use Cwd qw/getcwd/;
+use File::Copy::Recursive qw/rcopy/;
 
 use base qw/Class::Accessor::Fast/;
 __PACKAGE__->mk_accessors(
@@ -597,14 +598,15 @@ sub _copy {
     my %file = @_;
     for ( keys %file ) {
         if ( $file{$_} ) {
-            my $cmd = [
-                'cp',
-                $file{$_},
-                catfile(
-                    $self->directory,
-                    $self->name || $self->just_name( $self->path ), $_
-                )
-            ];
+            my $cmd = sub {
+                rcopy(
+                    $file{$_},
+                    catfile(
+                        $self->directory,
+                        $self->name || $self->just_name( $self->path ), $_
+                    )
+                );
+            };
             Shipwright::Util->run($cmd);
         }
     }

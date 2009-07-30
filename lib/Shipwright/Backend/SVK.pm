@@ -6,8 +6,7 @@ use Carp;
 use File::Spec::Functions qw/catfile/;
 use Shipwright::Util;
 use File::Temp qw/tempdir/;
-use File::Copy qw/copy/;
-use File::Copy::Recursive qw/dircopy/;
+use File::Copy::Recursive qw/rcopy/;
 
 our %REQUIRE_OPTIONS = ( import => [qw/source/] );
 
@@ -285,7 +284,7 @@ sub _update_file {
         target => $file,
     );
 
-    copy( $latest, $file ) or confess "can't copy $latest to $file: $!";
+    rcopy( $latest, $file ) or confess "can't copy $latest to $file: $!";
     $self->commit(
         path    => $file,
         comment => "updated $path",
@@ -307,7 +306,7 @@ sub _update_dir {
         target => $dir,
     );
 
-    dircopy( $latest, $dir ) or confess "can't copy $latest to $dir: $!";
+    rcopy( $latest, $dir ) or confess "can't copy $latest to $dir: $!";
     $self->commit(
         path    => $dir,
         comment => "updated $path",

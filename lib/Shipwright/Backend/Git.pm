@@ -6,8 +6,7 @@ use Carp;
 use File::Spec::Functions qw/catfile catdir/;
 use Shipwright::Util;
 use File::Temp qw/tempdir/;
-use File::Copy qw/copy/;
-use File::Copy::Recursive qw/dircopy/;
+use File::Copy::Recursive qw/rcopy/;
 use Cwd qw/getcwd/;
 use Shipwright::Backend::FS;
 
@@ -48,7 +47,7 @@ sub initialize {
     chdir $path;
     Shipwright::Util->run( [ $ENV{'SHIPWRIGHT_GIT'}, '--bare', 'init' ] );
 
-    dircopy( $dir, $self->cloned_dir )
+    rcopy( $dir, $self->cloned_dir )
       or confess "can't copy $dir to " . $path . ": $!";
     $self->commit( comment => 'create project' );
     chdir $cwd;

@@ -5,8 +5,8 @@ use strict;
 use Carp;
 use File::Spec::Functions qw/catfile splitdir catdir/;
 use Shipwright::Util;
-use File::Copy qw/copy/;
-use File::Copy::Recursive qw/dircopy/;
+use File::Copy::Recursive qw/rcopy rmove/;
+use File::Path;
 
 our %REQUIRE_OPTIONS = ( import => [qw/source/] );
 
@@ -37,7 +37,7 @@ sub initialize {
 
     $self->delete;    # clean repository in case it exists
 
-    dircopy( $dir, $self->repository )
+    rcopy( $dir, $self->repository )
       or confess "can't copy $dir to " . $self->repository . ": $!";
 }
 
@@ -55,22 +55,23 @@ sub _cmd {
     my @cmd;
 
     if ( $type eq 'checkout' || $type eq 'export' ) {
-        @cmd = [ 'cp', '-r', $self->repository . $args{path}, $args{target} ];
+        @cmd = sub {
+            rcopy( $self->repository . $args{path}, $args{target} );
+        };
     }
     elsif ( $type eq 'import' ) {
         if ( $args{_extra_tests} ) {
-            @cmd = [
-                'cp', '-r',
-                $args{source}, catdir( $self->repository, 't', 'extra' )
-            ];
+            @cmd = sub {
+                rcopy( $args{source},
+                    catdir( $self->repository, 't', 'extra' ) );
+            };
         }
         else {
             if ( my $script_dir = $args{build_script} ) {
-                push @cmd,
-                  [
-                    'cp', '-r', catdir($script_dir),
-                    catdir( $self->repository, 'scripts', $args{name} )
-                  ];
+                push @cmd, sub {
+                    rcopy( catdir($script_dir),
+                        catdir( $self->repository, 'scripts', $args{name} ) );
+                };
             }
             else {
                 if ( $self->has_branch_support ) {
@@ -82,50 +83,77 @@ sub _cmd {
                         )
                       )
                     {
-                        push @cmd,
-                          [
-                            'mkdir', '-p',
-                            catdir(
-                                $self->repository, 'sources',
-                                $args{name},       @dirs[ 0 .. $#dirs - 1 ]
-                            )
-                          ];
+                        push @cmd, sub {
+                            mkpath(
+                                catdir(
+                                    $self->repository,
+                                    'sources',
+                                    $args{name},
+                                    @dirs[ 0 .. $#dirs - 1 ]
+                                )
+                            );
+                        };
                     }
 
-                    push @cmd,
-                      [
-                        'cp', '-r',
-                        catdir( $args{source} ),
-                        catdir(
-                            $self->repository, 'sources',
-                            $args{name},       $args{as}
-                        )
-                      ];
+                    push @cmd, sub {
+                        rcopy(
+                            catdir( $args{source} ),
+                            catdir(
+                                $self->repository, 'sources',
+                                $args{name},       $args{as}
+                            )
+                        );
+                    };
                 }
                 else {
-                    push @cmd, [
-                        'cp', '-r', catdir( $args{source} ),
-                        catdir( $self->repository, 'dists', $args{name} )
-                    ];
+                    push @cmd, sub {
+                        rcopy( catdir( $args{source} ),
+                            catdir( $self->repository, 'dists', $args{name} ) );
+                    };
                 }
             }
         }
     }
     elsif ( $type eq 'delete' ) {
-        @cmd = [ 'rm', '-rf', $self->repository . $args{path}, ];
+        @cmd = sub { rmtree( $self->repository . $args{path} ) };
     }
     elsif ( $type eq 'move' ) {
-        @cmd = [
-            'mv',
-            $self->repository . $args{path},
-            $self->repository . $args{new_path}
-        ];
+        @cmd = sub {
+            rmove(
+                $self->repository . $args{path},
+                $self->repository . $args{new_path}
+            );
+        };
     }
-    elsif ( $type eq 'info' || $type eq 'list' ) {
-        @cmd = [ 'ls', $self->repository . $args{path} ];
+    elsif ( $type eq 'info' ) {
+        @cmd = sub { -e $self->repository . $args{path} };
+    }
+    elsif ( $type eq 'list' ) {
+        @cmd = sub {
+            my $path = $self->repository . $args{path};
+            return 'No such file or directory' unless -e $path;
+
+            if ( -d $path ) {
+                my $dh;
+                opendir $dh, $path or die $!;
+                my $dirs = join "\t", grep { /^[^.]/ } readdir $dh;
+                return $dirs;
+            }
+            else {
+                return $path;
+            }
+        };
     }
     elsif ( $type eq 'cat' ) {
-        @cmd = [ 'cat', $self->repository . $args{path} ];
+        @cmd = sub {
+            my $path = $self->repository . $args{path};
+            return ( 'No such file or directory' ) unless -e $path;
+            return ( '', 'Is a directory' ) unless -f $path;
+            local $/;
+            open my $fh, '<', $path or die $!;
+            my $c = <$fh>;
+            return $c;
+        };
     }
     else {
         croak "invalid command: $type";
@@ -170,7 +198,6 @@ sub info {
         return $info, $err;
     }
     else {
-        return if $info =~ /no such file or directory/i;
         return $info;
     }
 }
@@ -193,7 +220,7 @@ sub _update_file {
 
     my $file = catfile( $self->repository, $path );
     unlink $file;
-    copy( $latest, $file ) or confess "can't copy $latest to $file: $!";
+    rcopy( $latest, $file ) or confess "can't copy $latest to $file: $!";
 }
 
 sub _update_dir {
@@ -202,7 +229,7 @@ sub _update_dir {
     my $latest = shift;
 
     my $dir = catfile( $self->repository, $path );
-    dircopy( $latest, $dir ) or confess "can't copy $latest to $dir: $!";
+    rcopy( $latest, $dir ) or confess "can't copy $latest to $dir: $!";
 }
 
 =item import
