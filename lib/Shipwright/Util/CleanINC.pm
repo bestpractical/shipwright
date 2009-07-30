@@ -14,7 +14,7 @@ sub import {
     my @inc_libs = grep {/inc$/}  split( /[:;]/,($ENV{'PERL5LIB'} ||''));
     # if the libs are explicitly specified, don't pull them from @INC
     my @new_base_inc = grep { !$skip_lib_path{$_}++ } (  @explicit_libs, @INC,@inc_libs);
-    @INC = map { /(.+)/; $1 } (
+    @INC = map { /(.+)/; $1 } grep { defined } (
         @new_base_inc,               $Config::Config{archlibexp},
         $Config::Config{privlibexp}, $Config::Config{updatesarch},
         $Config::Config{updateslib},
