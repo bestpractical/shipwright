@@ -9,6 +9,7 @@ use File::Temp qw/tempdir/;
 use File::Copy::Recursive qw/rcopy/;
 use Cwd qw/getcwd/;
 use Shipwright::Backend::FS;
+use File::Path qw/remove_tree make_path/;
 
 our %REQUIRE_OPTIONS = ( import => [qw/source/] );
 
@@ -40,8 +41,8 @@ sub initialize {
     my $path = $self->repository;
     $path =~ s!^file://!!;    # this is always true since we check that before
 
-    Shipwright::Util->run( [ 'rm', '-rf', $path ] );
-    Shipwright::Util->run( [ 'mkdir', '-p', $path ] );
+    Shipwright::Util->run( sub { remove_tree( $path ) } );
+    Shipwright::Util->run( sub { make_path( $path ) } );
 
     my $cwd = getcwd;
     chdir $path;

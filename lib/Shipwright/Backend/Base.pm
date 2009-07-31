@@ -7,7 +7,7 @@ use File::Spec::Functions qw/catfile catdir splitpath/;
 use Shipwright::Util;
 use File::Temp qw/tempdir/;
 use File::Copy::Recursive qw/rcopy/;
-use File::Path;
+use File::Path qw/make_path remove_tree/;
 use List::MoreUtils qw/uniq firstidx/;
 use Module::Info;
 
@@ -87,7 +87,7 @@ sub _install_module_build {
     my $self = shift;
     my $dir = shift;
     my $module_build_path = catdir( $dir, 'inc', 'Module', );
-    mkpath catdir( $module_build_path, 'Build' );
+    make_path( catdir( $module_build_path, 'Build' ) );
     rcopy( Module::Info->new_from_module('Module::Build')->file,
             $module_build_path ) or confess "copy Module/Build.pm failed: $!";
     rcopy(
@@ -105,7 +105,7 @@ sub _install_yaml_tiny {
     my $dir = shift;
 
     my $yaml_tiny_path = catdir( $dir, 'inc', 'YAML' );
-    mkpath $yaml_tiny_path;
+    make_path( $yaml_tiny_path );
     rcopy( Module::Info->new_from_module('YAML::Tiny')->file, $yaml_tiny_path )
       or confess "copy YAML/Tiny.pm failed: $!";
 }
@@ -114,7 +114,7 @@ sub _install_clean_inc {
     my $self = shift;
     my $dir = shift;
     my $util_inc_path = catdir( $dir, 'inc', 'Shipwright', 'Util' );
-    mkpath $util_inc_path;
+    make_path( $util_inc_path );
     for my $mod qw(Shipwright::Util::CleanINC Shipwright::Util::PatchModuleBuild) {
         rcopy( Module::Info->new_from_module($mod)->file, $util_inc_path )
             or confess "copy $mod failed: $!";
@@ -126,7 +126,7 @@ sub _install_file_compare {
     my $dir = shift;
 
     my $path = catdir( $dir, 'inc', 'File' );
-    mkpath $path;
+    make_path( $path );
     rcopy( Module::Info->new_from_module('File::Compare')->file, $path )
       or confess "copy File/Compare.pm failed: $!";
 }
@@ -136,7 +136,7 @@ sub _install_file_copy_recursive {
     my $dir = shift;
 
     my $path = catdir( $dir, 'inc', 'File', 'Copy' );
-    mkpath $path;
+    make_path( $path );
     rcopy( Module::Info->new_from_module('File::Copy::Recursive')->file, $path )
       or confess "copy File/Copy/Recursive.pm failed: $!";
 }

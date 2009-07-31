@@ -4,6 +4,7 @@ use warnings;
 use strict;
 use Carp;
 use File::Spec::Functions qw/catdir/;
+use File::Path qw/remove_tree/;
 
 use base qw/Shipwright::Source::Base/;
 
@@ -58,11 +59,9 @@ sub _run {
 
 # TODO handle the version stuff
 
-    push @cmds,
-    [
-        'rm', '-rf',
-        catdir( $self->download_directory, $self->name, '.git' ),
-    ];
+    push @cmds, sub {
+        remove_tree( catdir( $self->download_directory, $self->name, '.git' ) );
+    };
 
     $self->source( catdir( $self->download_directory, $self->name ) );
     Shipwright::Util->run($_) for @cmds;

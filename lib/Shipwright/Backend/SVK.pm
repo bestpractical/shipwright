@@ -7,6 +7,7 @@ use File::Spec::Functions qw/catfile/;
 use Shipwright::Util;
 use File::Temp qw/tempdir/;
 use File::Copy::Recursive qw/rcopy/;
+use File::Path qw/remove_tree/;
 
 our %REQUIRE_OPTIONS = ( import => [qw/source/] );
 
@@ -125,10 +126,10 @@ sub _cmd {
                 my $tmp_dir =
                   tempdir( 'shipwright_backend_svk_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
                 @cmd = (
-                    [ 'rm', '-rf', "$tmp_dir" ],
+                    sub { remove_tree( $tmp_dir ) },
                     [ $ENV{'SHIPWRIGHT_SVK'}, 'checkout', $self->repository . $path, $tmp_dir ],
-                    [ 'rm',  '-rf',      "$tmp_dir" ],
-                    [ 'cp', '-r', $source, "$tmp_dir" ],
+                    sub { remove_tree( $tmp_dir ) },
+                    sub { rcopy( $source, $tmp_dir ) },
                     [
                         $ENV{'SHIPWRIGHT_SVK'},      'commit',
                         '--import', $tmp_dir,

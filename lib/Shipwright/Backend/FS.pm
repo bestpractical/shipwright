@@ -6,7 +6,7 @@ use Carp;
 use File::Spec::Functions qw/catfile splitdir catdir/;
 use Shipwright::Util;
 use File::Copy::Recursive qw/rcopy rmove/;
-use File::Path;
+use File::Path qw/remove_tree make_path/;
 
 our %REQUIRE_OPTIONS = ( import => [qw/source/] );
 
@@ -84,7 +84,7 @@ sub _cmd {
                       )
                     {
                         push @cmd, sub {
-                            mkpath(
+                            make_path(
                                 catdir(
                                     $self->repository,
                                     'sources',
@@ -115,7 +115,7 @@ sub _cmd {
         }
     }
     elsif ( $type eq 'delete' ) {
-        @cmd = sub { rmtree( $self->repository . $args{path} ) };
+        @cmd = sub { remove_tree( $self->repository . $args{path} ) };
     }
     elsif ( $type eq 'move' ) {
         @cmd = sub {
