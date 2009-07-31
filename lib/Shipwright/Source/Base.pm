@@ -337,8 +337,7 @@ EOF
                   or confess "can't read prereqs: $!";
                 eval $prereqs or confess "eval error: $@";    ## no critic
 
-                Shipwright::Util->run( [ 'rm', 'shipwright_makefile.pl' ] );
-                Shipwright::Util->run( [ 'rm', 'shipwright_prereqs' ] );
+                unlink 'shipwright_makefile.pl', 'shipwright_prereqs';
             }
             else {
 
@@ -366,8 +365,9 @@ EOF
                 }
 
             }
-            Shipwright::Util->run( [ 'make', 'clean' ] );
-            Shipwright::Util->run( [ 'rm',   'Makefile.old' ] );
+            Shipwright::Util->run(
+                [ ( $^O =~ /MSWin/ ? 'dmake' : 'make' ), 'clean' ] );
+            unlink 'Makefile.old';
         }
 
         for my $type ( @types ) {

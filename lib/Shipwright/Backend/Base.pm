@@ -67,6 +67,7 @@ sub initialize {
     $self->_install_clean_inc($dir);
     $self->_install_module_build($dir);
     $self->_install_file_compare($dir);
+    $self->_install_file_copy_recursive($dir);
 
     # set proper permissions for yml under /shipwright/
     my $sw_dir = catdir( $dir, 'shipwright' );
@@ -128,6 +129,16 @@ sub _install_file_compare {
     mkpath $path;
     rcopy( Module::Info->new_from_module('File::Compare')->file, $path )
       or confess "copy File/Compare.pm failed: $!";
+}
+
+sub _install_file_copy_recursive {
+    my $self = shift;
+    my $dir = shift;
+
+    my $path = catdir( $dir, 'inc', 'File', 'Copy' );
+    mkpath $path;
+    rcopy( Module::Info->new_from_module('File::Copy::Recursive')->file, $path )
+      or confess "copy File/Copy/Recursive.pm failed: $!";
 }
 
 =item import

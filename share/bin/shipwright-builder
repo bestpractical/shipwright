@@ -6,7 +6,7 @@ use strict;
 use lib 'inc';
 use File::Spec::Functions qw/catfile catdir splitdir rel2abs/;
 use File::Temp qw/tempdir/;
-use File::Copy qw/move copy/;
+use File::Copy::Recursive qw/rmove rcopy/;
 use File::Find qw/find/;
 use File::Path;
 use Config;
@@ -126,13 +126,14 @@ $args{flags} = {
 $args{with}     = { map { split /=/ } split /\s*,\s*/, $args{with}     || '' };
 $args{branches} = { map { split /=/ } split /\s*,\s*/, $args{branches} || '' };
 $args{make} ||= 'make';
-my $uname_cmd = 'uname';
-if ( $^O !~ /MSWin/ ) {
-    $uname_cmd .= ' 2>/dev/null';
+if ( $^O =~ /MSWin/ ) {
+    $args{as} ||= 'MSWin';
 }
-my $uname = `$uname_cmd`;
-chomp $uname;
-$args{as} ||= $uname || 'default';
+else {
+    my $uname = `uname 2>/dev/null`;
+    chomp $uname;
+    $args{as} ||= $uname || 'default';
+}
 
 if ( $args{only} ) {
     $args{only} = { map { $_ => 1 } split /\s*,\s*/, $args{only} };
@@ -356,14 +357,14 @@ sub install {
       unless -e catdir( $args{'install-base'}, 'tools' );
 
     for ( 'shipwright-script-wrapper', 'shipwright-perl-wrapper' ) {
-        copy( catfile( 'etc', $_ ),
+        rcopy( catfile( 'etc', $_ ),
             catfile( $args{'install-base'}, 'etc', $_ ) );
     }
 
     for ( 'shipwright-utility', 'shipwright-source-bash',
         'shipwright-source-tcsh' )
     {
-        copy( catfile( 'etc', $_ ),
+        rcopy( catfile( 'etc', $_ ),
             catfile( $args{'install-base'}, 'tools', $_ ) );
     }
 
@@ -383,7 +384,7 @@ sub install {
         {
             my $dir = catdir( $args{'install-base'}, $r );
             next unless -e $dir;
-            `rm -rf $dir`;
+            remove_tree( $dir );
         }
     }
 
@@ -399,7 +400,7 @@ sub install {
 
     # in case wrappers are overwritten by accident
     for ( 'shipwright-script-wrapper', 'shipwright-perl-wrapper' ) {
-        copy( catfile( 'etc', $_ ),
+        rcopy( catfile( 'etc', $_ ),
             catfile( $args{'install-base'}, 'etc', $_ ) );
     }
 
@@ -418,7 +419,7 @@ sub install {
         for my $r ( 'lib', 'bin', 'sbin' ) {
             next unless -e $r;
             my $dir = catdir( $as_dir, $r );
-            system("mv $r $as_dir");
+            rmove( $r, catdir( $as_dir, $r ) );
 
             if ( $r !~ /bin/ ) {
                 symlink $dir, $r;
@@ -430,7 +431,7 @@ sub install {
         mkdir $usr_dir;
         for my $r ( 'bin', 'sbin' ) {
             next unless -e catdir( 'usr', $r );
-            system( "mv " . catdir( 'usr', $r ) . ' ' . $usr_dir );
+            rmove( catdir( 'usr', $r ), catdir( $usr_dir, $r ) );
         }
         chdir $cwd;
 
@@ -459,10 +460,9 @@ sub _install {
             if ( !$branch && -d catdir( 'sources', $dir, 'vendor' ) ) {
                 $branch = 'vendor';
             }
-            system( "cp -r "
-                  . catdir( 'sources', $dir, split /\//, $branch ) . ' '
-                  . catdir( 'dists', $dir ) )
-              && confess "cp sources/$dir/$branch to dists/$dir failed";
+            rcopy( catdir( 'sources', $dir, split /\//, $branch ),
+                catdir( 'dists', $dir ) )
+              or confess "copy sources/$dir/$branch to dists/$dir failed: $!";
         }
         chdir catdir( 'dists', $dir );
     }
@@ -725,11 +725,11 @@ sub cmds {
 sub clean {
     open my $log, '>', 'clean.log' or confess $!;
 
-    system('rm -rf tmp_dists') && confess "rm tmp_dists failed\n";
+    remove_tree( 'tmp_dists');
     print $log "removed tmp_dists\n";
 
     if ($branches) {
-        system('rm -rf dists') && confess "rm dists failed\n";
+        remove_tree('dists');
         print $log "removed dists\n";
     }
     else {
@@ -809,7 +809,10 @@ sub process_tmp_dists {
 
     for my $name ( keys %{ $args{with} } ) {
         my $cmd = cmd( $name, $args{with}{$name} );
-        if ($cmd) {
+        if ( ref $cmd eq 'CODE' ) {
+            $cmd->run();
+        }
+        else {
             system($cmd) && confess "$cmd failed";
         }
     }
@@ -823,7 +826,7 @@ sub cmd {
     my ( $name, $source ) = @_;
 
     if ( $source =~ s/^dir(ectory)?://i ) {
-        return "cp -r $source tmp_dists/$name";
+        return sub { rcopy( $source, catdir( 'tmp_dists', $name ) ); };
     }
     elsif ( $source =~ /^svn:/i ) {
         $source =~ s{^svn:(?!//)}{}i;

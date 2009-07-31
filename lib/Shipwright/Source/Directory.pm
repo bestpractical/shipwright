@@ -4,6 +4,7 @@ use warnings;
 use Carp;
 use File::Spec::Functions qw/catdir/;
 use File::Basename;
+use File::Copy::Recursive qw/rcopy/;
 
 use base qw/Shipwright::Source::Base/;
 
@@ -70,7 +71,7 @@ sub _cmd {
         $self->name || $self->just_name( $self->path ) );
     return if -e $to;
 
-    return [ 'cp', '-r', $self->source, $to ];
+    return sub { rcopy( $self->source, $to ) };
 }
 
 1;
