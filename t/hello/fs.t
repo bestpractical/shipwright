@@ -173,8 +173,7 @@ for (
 }
 
 chdir( $build_base );
-system( "$^X bin/shipwright-builder --install-base $install_base"
-      . ( $^O =~ /MSWin/ ? ' --make dmake' : '' ) );
+system( "$^X bin/shipwright-builder --install-base $install_base" );
 for (
     catfile(
         $install_base, 'lib',

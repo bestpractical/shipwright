@@ -92,7 +92,7 @@ Less commonly needed options:
                 Ex: --with svn=dir:/home/foo/svn
                 'svn' is the dist name, 'dir:/home/foo/svn' is its source code,
                 in the format of a Shipwright source distribution.
-  --make        The path of your make command, default is 'make'.
+  --make        The path of your make command, default is \$ENV{SHIPWRIGHT_MAKE}' if that's defined, else 'make'
                 Ex: --make /usr/bin/make
   --branches    Specify the branch of a given package in the vessel you want 
                 to build.
@@ -126,6 +126,7 @@ $args{flags} = {
 $args{with}     = { map { split /=/ } split /\s*,\s*/, $args{with}     || '' };
 $args{branches} = { map { split /=/ } split /\s*,\s*/, $args{branches} || '' };
 
+$args{make} ||= $ENV{SHIPWRIGHT_MAKE};
 unless ( $args{make} ) {
     if ( is_on_windows() ) {
         $args{make} ||= 'dmake'; # strawberry perl distribution has dmake.exe

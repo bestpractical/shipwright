@@ -338,7 +338,6 @@ qr/set mandatory flags with success\s+mandatory flags of man1 are build/,
                     [
                         $^X, 'bin/shipwright-builder',
                         @{ $item->[0] },
-                        $^O =~ /MSWin/ ? ( '--make', 'dmake' ) : ()
                     ],
                     @$item[ 1 .. $#$item ],
                 );

@@ -366,7 +366,7 @@ EOF
 
             }
             Shipwright::Util->run(
-                [ ( $^O =~ /MSWin/ ? 'dmake' : 'make' ), 'clean' ] );
+                [ $ENV{SHIPWRIGHT_MAKE}, 'clean' ] );
             unlink 'Makefile.old';
         }
 

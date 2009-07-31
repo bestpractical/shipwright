@@ -9,6 +9,7 @@ use Cwd;
 local $SIG{INT} = sub { warn "Stopped\n"; exit; };
 
 my $cwd = getcwd;
+$ENV{SHIPWRIGHT_MAKE} ||= 'make';
 $ENV{SHIPWRIGHT_SVK} ||= 'svk';
 $ENV{SHIPWRIGHT_SVN} ||= 'svn';
 $ENV{SHIPWRIGHT_GIT} ||= 'git';
