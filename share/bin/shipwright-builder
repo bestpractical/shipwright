@@ -125,8 +125,18 @@ $args{flags} = {
 
 $args{with}     = { map { split /=/ } split /\s*,\s*/, $args{with}     || '' };
 $args{branches} = { map { split /=/ } split /\s*,\s*/, $args{branches} || '' };
-$args{make} ||= 'make';
-if ( $^O =~ /MSWin/ ) {
+
+unless ( $args{make} ) {
+    if ( is_on_windows() ) {
+        $args{make} ||= 'dmake'; # strawberry perl distribution has dmake.exe
+    }
+    else {
+        $args{make} ||= 'make';
+    }
+}
+
+
+if ( is_on_windows() ) {
     $args{as} ||= 'MSWin';
 }
 else {
@@ -236,7 +246,7 @@ else {
 my $log;
 my $build_log_file  = rel2abs('build.log');
 my $system_cmd_pipe = '';
-if ( $^O !~ /MSWin/ && !$args{'verbose'} ) {
+unless ( is_on_windows() || $args{'verbose'} ) {
     $system_cmd_pipe = " >>$build_log_file 2>&1";
 }
 
@@ -304,7 +314,7 @@ sub install {
     {
 
         my $arch_command = $args{perl} || $^X;
-        if ( $^O =~ /MSWin/ ) {
+        if ( is_on_windows() ) {
             $arch_command .= q{ -MConfig -e "print $Config{archname}"};
         }
         else {
@@ -415,7 +425,7 @@ sub install {
     my $as_dir = catdir( 'as', $args{as} );
     mkdir $as_dir;
 
-    if ( $^O !~ /MSWin/ ) {
+    unless( is_on_windows() ) {
         for my $r ( 'lib', 'bin', 'sbin' ) {
             next unless -e $r;
             my $dir = catdir( $as_dir, $r );
@@ -643,7 +653,7 @@ sub substitute {
     }
 
     my $perl_archname;
-    if ( $^O =~ /MSWin/ ) {
+    if ( is_on_windows() ) {
         $perl_archname = `$perl -MConfig -e "print \$Config{archname}"`;
     }
     else {
@@ -655,7 +665,7 @@ sub substitute {
     $text =~ s/%%MODULE_BUILD_EXTRA%%//g;
     $text =~ s/%%MAKE%%/$args{make}/g;
 
-    if ( $^O =~ /MSWin/ ) {
+    if ( is_on_windows() ) {
 `$perl -I$inc_lib -MShipwright::Util::CleanINC -e"eval { require Pod::Man}; if (\$@) { exit 1} else { exit 0 }" `;
     }
     else {
@@ -844,5 +854,9 @@ sub _record {
     my $dist = shift;
     push @{ $installed->[0] }, $dist;
     $installed->write($installed_file);
+}
+
+sub is_on_windows {
+    return $^O =~ /MSWin/;
 }
 
