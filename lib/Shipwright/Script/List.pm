@@ -8,6 +8,9 @@ use base qw/App::CLI::Command Class::Accessor::Fast Shipwright::Script/;
 __PACKAGE__->mk_accessors(qw/with_latest_version only_update/);
 
 use Shipwright;
+use Cwd qw/getcwd/;
+use File::Temp qw/tempdir/;
+use File::Spec::Functions qw/catdir/;
 
 sub options {
     (
@@ -58,11 +61,12 @@ sub run {
                 $latest_version->{ $map->{$module} } =
                   $self->_latest_version( name => $module );
             }
-
             for my $name ( keys %$source ) {
                 next if exists $latest_version->{$name};
-                if ( $source->{$name} =~ m{^(sv[nk]|shipwright):} ) {
-                    for my $branch ( keys %{ $source->{$name} } ) {
+                for my $branch ( keys %{ $source->{$name} } ) {
+                    if ( $source->{$name}{$branch} =~
+                        m{^(sv[nk]|git|shipwright):} )
+                    {
                         $latest_version->{$name}{$branch} =
                           $self->_latest_version(
                             url => $source->{$name}{$branch} );
@@ -187,20 +191,48 @@ sub _latest_version {
             $args{url} =~ s!/[^/]+$!!;
         }
 
-        # has url, meaning svn or svk
+        # has url, meaning svn, svk or git
         if ( $args{url} =~ /^svn[:+]/ ) {
             $args{url} =~ s{^svn:(?!//)}{};
             $cmd = [ $ENV{'SHIPWRIGHT_SVN'}, 'info', $args{url} ];
+            $cmd = [ $ENV{'SHIPWRIGHT_SVK'}, 'info', $args{url} ];
+            ($out) = Shipwright::Util->run( $cmd, 1 );    # ignore failure
+            if ( $out =~ /^Revision:\s*(\d+)/m ) {
+                return $1;
+            }
         }
         elsif ( $args{url} =~ m{^(svk:|//)} ) {
             $args{url} =~ s/^svk://;
             $cmd = [ $ENV{'SHIPWRIGHT_SVK'}, 'info', $args{url} ];
+            ($out) = Shipwright::Util->run( $cmd, 1 );    # ignore failure
+            if ( $out =~ /^Revision:\s*(\d+)/m ) {
+                return $1;
+            }
+        }
+        elsif ( $args{url} =~ /^git:/ ) {
+            $args{url} =~ s{^git:(?!//)}{};
+
+         # TODO XXX is there a better way that we can get latest version of git?
+         # current way is not too heavy: it needs clone and log
+
+            my $cwd = getcwd();
+            my $dir = tempdir(
+                'shipwright_list_git_XXXXXX',
+                CLEANUP => 1,
+                TMPDIR  => 1
+            );
+            my $path = catdir( $dir, 'git' );
+            Shipwright::Util->run(
+                [ $ENV{SHIPWRIGHT_GIT}, 'clone', $args{url}, $path, ] );
+            chdir $path;
+            ($out) = Shipwright::Util->run( [ $ENV{SHIPWRIGHT_GIT}, 'log' ] );
+            chdir $cwd;
+
+            if ( $out =~ /^commit\s+(\w+)/m ) {
+                return $1;
+            }
         }
 
-        ($out) = Shipwright::Util->run( $cmd, 1 );    # ignore failure
-        if ( $out =~ /^Revision:\s*(\d+)/m ) {
-            return $1;
-        }
     }
     elsif ( $args{name} ) {
 

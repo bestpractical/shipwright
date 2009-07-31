@@ -575,7 +575,7 @@ sub wrap_bin {
 
         my $wrap_file = catfile( $wrap_dir, $file );
         my $tmp = $File::Find::dir;
-        $tmp =~ s/$args{'install-base'}//g;
+        $tmp =~ s/\Q$args{'install-base'}\E//g;
         my $wrapped_depth =
           scalar( splitdir($File::Find::dir) ) -
           scalar( splitdir( $args{'install-base'} ) ) - 2;
@@ -830,7 +830,7 @@ sub process_tmp_dists {
 }
 
 # this's a simpler version compared to shipwright's source part, only
-# dir, svn and svk are supported currently.
+# dir, svn, svk and git are supported currently.
 # warn: dist in svn and svk must be a dir instead of a compressed file.
 
 sub cmd {
@@ -846,6 +846,10 @@ sub cmd {
     elsif ( $source =~ m{^(//|svk:)}i ) {
         $source =~ s/^svk://i;
         return "svk co $source tmp_dists/$name";
+    }
+    elsif ( $source =~ m{^git:}i ) {
+        $source =~ s{^git:(?!//)}{}i;
+        return "git clone $source tmp_dists/$name";
     }
 
     return;
