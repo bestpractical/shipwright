@@ -192,6 +192,18 @@ sub user_home {
     return (getpwuid $<)[7];
 }
 
+=head2 shipwright_user_root
+
+the user's own shipwright root where we put internal files in.
+it's ~/.shipwright by default.
+it can be overwritten by $ENV{SHIPWRIGHT_USER_ROOT}
+
+=cut
+
+sub shipwright_user_root {
+    return $ENV{SHIPWRIGHT_USER_ROOT} || catdir( user_home, '.shipwright' );
+}
+
 1;
 
 __END__
