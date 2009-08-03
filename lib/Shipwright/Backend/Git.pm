@@ -10,6 +10,7 @@ use File::Copy::Recursive qw/rcopy/;
 use Cwd qw/getcwd/;
 use Shipwright::Backend::FS;
 use File::Path qw/remove_tree make_path/;
+use MIME::Base64::URLSafe;
 
 our %REQUIRE_OPTIONS = ( import => [qw/source/] );
 
@@ -48,6 +49,7 @@ sub initialize {
     chdir $path;
     Shipwright::Util->run( [ $ENV{'SHIPWRIGHT_GIT'}, '--bare', 'init' ] );
 
+    $self->initialize_cloned_dir;
     rcopy( $dir, $self->cloned_dir )
       or confess "can't copy $dir to " . $path . ": $!";
     $self->commit( comment => 'create project' );
@@ -58,20 +60,54 @@ sub initialize {
 
 since nearly all the time we need to clone first to use git, it's good that
 we keep a cloned dir.
-this returns the cloned_dir, will also clone if it's not cloned yet
+returns the cloned_dir
 
 =cut
 
-my $cloned_dir;
-
 sub cloned_dir {
+    my $self      = shift;
+    my $need_init = shift;
+    my $base_dir  = $self->cloned_base_dir;
+    my $target = catdir( $base_dir, 'clone.git' );
+
+# if explicitly defined $need_init, we should do exactly what it asks
+# else, if the $target is not existed yet, we do the init thing
+    if ( defined $need_init ) {
+        if ( $need_init ) {
+            $self->initialize_cloned_dir;
+        }
+        else {
+            return $target;
+        }
+    }
+    elsif ( !-e $target ) {
+        $self->initialize_cloned_dir;
+    }
+    return $target;
+}
+
+=item cloned_base_dir
+
+=cut
+
+sub cloned_base_dir {
     my $self = shift;
-    return $cloned_dir if $cloned_dir;
+    my $dir  = catdir( Shipwright::Util->shipwright_user_root(),
+        'repositories', urlsafe_b64encode( $self->repository ) );
+    make_path($dir) unless -e $dir;
+    return $dir;
+}
 
-    my $base_dir =
-      tempdir( 'shipwright_backend_git_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
+=item initialize_cloned_dir
 
-    my $target = catdir( $base_dir, 'clone' );
+=cut
+
+sub initialize_cloned_dir {
+    my $self = shift;
+    # the 0 is very important, or it may results in recursion
+    my $target = $self->cloned_dir( 0 ); 
+    remove_tree( $target ) if -e $target;
+
     Shipwright::Util->run(
         [ $ENV{'SHIPWRIGHT_GIT'}, 'clone', $self->repository, $target ] );
     my $cwd = getcwd;
@@ -80,7 +116,7 @@ sub cloned_dir {
     Shipwright::Util->run(
         [ $ENV{'SHIPWRIGHT_GIT'}, 'config', 'push.default', 'matching' ] );
     chdir $cwd;
-    return $cloned_dir = $target;
+    return $target;
 }
 
 =item check_repository
