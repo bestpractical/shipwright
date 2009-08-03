@@ -184,6 +184,8 @@ sub init {
     $ENV{'SHIPWRIGHT_SVK'} ||= 'svk';
     $ENV{'SHIPWRIGHT_SVN'} ||= 'svn';
     $ENV{'SHIPWRIGHT_GIT'} ||= 'git';
+    $ENV{'SHIPWRIGHT_USER_ROOT'} =
+      tempdir( 'shipwright_user_root_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
 }
 
 =head2 shipwright_bin
