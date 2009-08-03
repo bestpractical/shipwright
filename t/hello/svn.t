@@ -9,7 +9,6 @@ use File::Spec::Functions qw/catfile catdir updir/;
 use Cwd qw/getcwd abs_path/;
 use Test::More tests => 10;
 use Shipwright::Test;
-use File::Path qw/rmtree/;
 Shipwright::Test->init;
 
 SKIP: {

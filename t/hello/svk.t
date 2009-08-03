@@ -6,7 +6,6 @@ use File::Temp qw/tempdir/;
 use File::Copy;
 use File::Copy::Recursive qw/rcopy/;
 use File::Spec::Functions qw/catfile catdir updir/;
-use File::Path qw/rmtree/;
 use Cwd qw/getcwd abs_path/;
 
 use Test::More tests => 10;
