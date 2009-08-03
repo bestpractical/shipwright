@@ -43,6 +43,7 @@ requires:
   LWP::UserAgent: 0
   List::MoreUtils: 0
   Log::Log4perl: 0
+  MIME::Base64::URLSafe: 0
   Module::CoreList: 0
   Module::Info: 0
   UNIVERSAL::require: 0
@@ -52,4 +53,5 @@ requires:
   version: 0
 resources:
   license: http://dev.perl.org/licenses/
+  repository: git://github.com/bestpractical/shipwright.git
 version: 2.003003
