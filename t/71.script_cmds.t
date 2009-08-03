@@ -12,7 +12,7 @@ else {
 use Shipwright;
 use Shipwright::Test;
 use File::Spec::Functions qw/catdir tmpdir/;
-use File::Path qw/rmtree/;
+use File::Path qw/remove_tree/;
 use Cwd qw/getcwd/;
 my $sw  = Shipwright::Test->shipwright_bin;
 my $cwd = getcwd;
@@ -342,8 +342,8 @@ qr/set mandatory flags with success\s+mandatory flags of man1 are build/,
                     @$item[ 1 .. $#$item ],
                 );
                 chdir $cwd;
-                rmtree($install_base);
-                rmtree($build_base);
+                remove_tree($install_base);
+                remove_tree($build_base);
             }
             else {
                 test_cmd(

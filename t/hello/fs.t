@@ -6,7 +6,7 @@ use File::Temp qw/tempdir/;
 use File::Copy;
 use File::Copy::Recursive qw/rcopy/;
 use File::Spec::Functions qw/catfile catdir updir/;
-use File::Path qw/rmtree/;
+use File::Path qw/remove_tree/;
 use Cwd qw/getcwd abs_path/;
 use File::Slurp;
 
@@ -190,5 +190,5 @@ for (
 }
 
 chdir $cwd;
-rmtree( $build_base );
-rmtree( $install_base );
+remove_tree( $build_base );
+remove_tree( $install_base );
