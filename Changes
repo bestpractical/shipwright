@@ -1,5 +1,8 @@
 Revision history for Shipwright
 
+2.3.4 Mon Aug  3 20:37:36 CST 2009
+* add dep File::Path with version 2
+
 2.3.3 Fri Jul 31 17:23:07 CST 2009
 * not rely on system cmds like ls, cp, mv, rm any more
 * version support for git source
