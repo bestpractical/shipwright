@@ -85,13 +85,13 @@ sub _cmd {
     elsif ( $type eq 'export' ) {
         @cmd = (
             [
-                'svn',                           'export',
+                $ENV{'SHIPWRIGHT_SVN'},                           'export',
                 $self->_svnroot . $args{path}, $args{target}
             ],
         );
     }
     elsif ( $type eq 'list' ) {
-        @cmd = [ 'svn', 'list', $self->_svnroot . $args{path} ];
+        @cmd = [ $ENV{'SHIPWRIGHT_SVN'}, 'list', $self->_svnroot . $args{path} ];
     }
     elsif ( $type eq 'import' ) {
         if ( $args{_initialize} ) {
@@ -182,7 +182,7 @@ sub _cmd {
         @cmd = [ $ENV{'SHIPWRIGHT_SVK'}, 'info', $self->repository . $args{path} ];
     }
     elsif ( $type eq 'cat' ) {
-        @cmd = [ 'svn', 'cat', $self->_svnroot . $args{path} ];
+        @cmd = [ $ENV{'SHIPWRIGHT_SVN'}, 'cat', $self->_svnroot . $args{path} ];
     }
     else {
         croak "invalid command: $type";
