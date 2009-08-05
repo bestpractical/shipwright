@@ -159,23 +159,23 @@ open $null_fh, '>', '/dev/null';
 $cpan_log_path = catfile( tmpdir(), 'shipwright_cpan.log');
 
 open $cpan_fh, '>>', $cpan_log_path;
-$stdout_fh = select;
+$stdout_fh = CORE::select();
 
 sub select {
     my $self = shift;
     my $type = shift;
 
     if ( $type eq 'null' ) {
-        select $null_fh;
+        CORE::select $null_fh;
     }
     elsif ( $type eq 'stdout' ) {
-        select $stdout_fh;
+        CORE::select $stdout_fh;
     }
     elsif ( $type eq 'cpan' ) {
         warn "CPAN related output will be at $cpan_log_path\n"
           unless $cpan_fh_flag;
         $cpan_fh_flag = 1;
-        select $cpan_fh;
+        CORE::select $cpan_fh;
     }
     else {
         confess "unknown type: $type";
