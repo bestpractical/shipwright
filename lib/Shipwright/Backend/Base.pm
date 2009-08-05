@@ -10,7 +10,6 @@ use File::Copy::Recursive qw/rcopy/;
 use File::Path qw/make_path remove_tree/;
 use List::MoreUtils qw/uniq firstidx/;
 use Module::Info;
-use MIME::Base64::URLSafe;
 
 our %REQUIRE_OPTIONS = ( import => [qw/source/] );
 
@@ -882,7 +881,10 @@ sub local_dir {
     my $base_dir =
       catdir( Shipwright::Util->shipwright_user_root(), 'backends' );
     make_path( $base_dir ) unless -e $base_dir;
-    my $target = catdir( $base_dir, urlsafe_b64encode( $self->repository ) );
+    my $repo = $self->repository;
+    $repo =~ s/:/-/g;
+    $repo =~ s![/\\]!_!g;
+    my $target = catdir( $base_dir, $repo );
 
 # if explicitly defined $need_init, we should do exactly what it asks
 # else, if the $target is not existed yet, we do the init thing
