@@ -10,8 +10,6 @@ __PACKAGE__->mk_accessors(qw/backend source build log_level log_file/);
 
 use Shipwright::Logger;
 use Shipwright::Util;
-use Shipwright::Backend;
-use Shipwright::Source;
 use File::Temp qw/tempfile/;
 use File::Spec::Functions qw/catfile tmpdir/;
 
@@ -39,10 +37,12 @@ sub new {
     Shipwright::Logger->new($self);
 
     if ( $args{repository} ) {
+        require Shipwright::Backend;
         $self->backend( Shipwright::Backend->new(%args) );
     }
 
     if ( $args{source} ) {
+        require Shipwright::Source;
         $self->source( Shipwright::Source->new(%args) );
     }
 

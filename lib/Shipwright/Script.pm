@@ -55,6 +55,7 @@ sub prepare {
         $cmd->repository( $ENV{SHIPWRIGHT_REPOSITORY} )
           if !$cmd->repository && $ENV{SHIPWRIGHT_REPOSITORY};
         if ( $cmd->repository ) {
+            require Shipwright::Backend;
             my $backend =
               Shipwright::Backend->new( repository => $cmd->repository );
 
