@@ -1,5 +1,9 @@
 Revision history for Shipwright
 
+2.3.5 Wed Aug  5 08:59:03 CST 2009
+
+* need File::Path 2.07 or above
+
 2.3.4 Mon Aug  3 20:37:36 CST 2009
 * add dep File::Path with version 2
 

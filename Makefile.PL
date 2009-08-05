@@ -35,7 +35,7 @@ requires 'Archive::Tar' => 0;
 requires 'Archive::Extract' => 0;
 requires 'File::Compare' => 0;
 requires 'MIME::Base64::URLSafe' => 0;
-requires 'File::Path' => 2;
+requires 'File::Path' => 2.07;
 
 
 if ( can_cc() ) {
