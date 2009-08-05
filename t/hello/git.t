@@ -36,7 +36,7 @@ SKIP: {
     $shipwright->backend->initialize();
 
 
-    my $cloned_dir = $shipwright->backend->cloned_dir;
+    my $cloned_dir = $shipwright->backend->local_dir;
     my $dh;
     opendir $dh, $cloned_dir or die $!;
     my @dirs = grep { /^[^.]/ } sort readdir( $dh );
