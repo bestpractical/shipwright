@@ -5,7 +5,6 @@ use strict;
 use Carp;
 use File::Spec::Functions qw/catfile/;
 use Shipwright::Util;
-use File::Temp qw/tempdir/;
 use File::Copy::Recursive qw/rcopy/;
 
 our %REQUIRE_OPTIONS = ( import => [qw/source/] );
@@ -132,8 +131,8 @@ sub _cmd {
     }
     elsif ( $type eq 'delete' ) {
         @cmd = [
-            $ENV{'SHIPWRIGHT_SVN'}, 'delete', '-m',
-            'delete ' . $args{path},
+            $ENV{'SHIPWRIGHT_SVN'}, 'delete',
+            '-m',                   'delete ' . $args{path},
             $self->repository . $args{path},
         ];
     }
@@ -165,30 +164,21 @@ sub _yml {
     my $path = shift;
     my $yml  = shift;
 
-    $path = '/' . $path unless $path =~ m{^/};
-
-    my ( $p_dir, $f );
-    if ( $path =~ m{(.*)/(.*)$} ) {
-        $p_dir = $1;
-        $f     = $2;
-    }
+    my $file = $self->local_dir . $path;
 
     if ($yml) {
-        my $dir =
-          tempdir( 'shipwright_backend_svn_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
-        my $file = catfile( $dir, $f );
-
-        $self->checkout(
-            path   => $p_dir,
-            target => $dir,
-        );
-
+        if ( $path =~ /scripts/ ) {
+            $self->_sync_local_dir('/scripts');
+        }
+        else {
+            $self->_sync_local_dir($path);
+        }
         Shipwright::Util::DumpFile( $file, $yml );
         $self->commit( path => $file, comment => "updated $path" );
     }
     else {
-        my ($out) =
-          Shipwright::Util->run( [ $ENV{'SHIPWRIGHT_SVN'}, 'cat', $self->repository . $path ] );
+        my ($out) = Shipwright::Util->run(
+            [ $ENV{'SHIPWRIGHT_SVN'}, 'cat', $self->repository . $path ] );
         return Shipwright::Util::Load($out);
     }
 }
@@ -249,22 +239,13 @@ sub _update_file {
     my $path   = shift;
     my $latest = shift;
 
-    if ( $path =~ m{(.*)/(.*)$} ) {
-        my $dir =
-          tempdir( 'shipwright_backend_svn_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
-        my $file = catfile( $dir, $2 );
-
-        $self->checkout(
-            path   => $1,
-            target => $dir,
-        );
-
-        rcopy( $latest, $file ) or confess "can't copy $latest to $file: $!";
-        $self->commit(
-            path    => $file,
-            comment => "updated $path",
-        );
-    }
+    $self->_sync_local_dir( $path );
+    my $file = $self->local_dir . $path;
+    rcopy( $latest, $file ) or confess "can't copy $latest to $file: $!";
+    $self->commit(
+        path => $file,
+        comment => "updated $path",
+    );
 }
 
 sub _update_dir {
@@ -276,6 +257,23 @@ sub _update_dir {
     $self->import( path => $path, source => $latest, _initialize => 1 );
 }
 
+sub _initialize_local_dir {
+    my $self = shift;
+    # the 0 is very important, or it may results in recursion
+    my $target = $self->local_dir( 0 ); 
+    remove_tree( $target ) if -e $target;
+
+    Shipwright::Util->run(
+        [ $ENV{'SHIPWRIGHT_SVN'}, 'checkout', $self->repository, $target ] );
+    return $target;
+}
+
+sub _sync_local_dir {
+    my $self = shift;
+    my $path = shift || '';
+    Shipwright::Util->run(
+        [ $ENV{'SHIPWRIGHT_SVN'}, 'update', $self->local_dir . $path ], 1 );
+}
 
 =back
 
