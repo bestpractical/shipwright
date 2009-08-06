@@ -8,6 +8,7 @@ use Hash::Merge qw/merge/;
 use File::Temp qw/tempdir/;
 use File::Spec::Functions qw/catfile catdir/;
 use Shipwright::Util;
+use File::Path qw/make_path/;
 
 Hash::Merge::set_behavior('RIGHT_PRECEDENT');
 
@@ -16,7 +17,8 @@ our %DEFAULT = ( follow => 1, );
 $DEFAULT{directory} =
   tempdir( 'shipwright_source_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
 $DEFAULT{scripts_directory}  = catdir( $DEFAULT{directory}, '__scripts' );
-$DEFAULT{download_directory} = catdir( $DEFAULT{directory}, '__download' );
+$DEFAULT{download_directory} =
+  catdir( Shipwright::Util->shipwright_user_root, 'downloads' );
 $DEFAULT{map_path}           = catfile( $DEFAULT{directory}, 'map.yml' );
 $DEFAULT{url_path}           = catfile( $DEFAULT{directory}, 'url.yml' );
 $DEFAULT{version_path}       = catfile( $DEFAULT{directory}, 'version.yml' );
@@ -48,7 +50,7 @@ sub new {
     croak "need source arg" unless exists $args{source};
 
     for my $dir (qw/directory download_directory scripts_directory/) {
-        mkdir $args{$dir} unless -e $args{$dir};
+        make_path( $args{$dir} ) unless -e $args{$dir};
     }
 
     my $type = type( \$args{source} );
