@@ -670,7 +670,7 @@ sub _lwp_get {
     $ua->timeout(1200);
 
     if ( -e $self->source ) {
-        my $size = ( stat $self->source )[7];
+        my $size = -s $self->source;
         my $res  = $ua->head($source);
         if (   $res->is_success
             && $res->header('content-length') == $size )
