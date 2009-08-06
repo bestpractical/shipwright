@@ -173,8 +173,15 @@ sub _run {
     $self->name( 'cpan-' . $name );
     $self->_update_map( $self->source, 'cpan-' . $name );
 
-    $self->source($distribution->get_file_onto_local_disk);
+    my ($file) = catfile( $CPAN::Config->{keep_source_where},
+        "authors", "id", split /\//, $distribution->id );
 
+    if ( -e $file && -s $file ) {
+        $self->source($file);
+    }
+    else {
+        $self->source($distribution->get_file_onto_local_disk);
+    }
     return 1;
 }
 
