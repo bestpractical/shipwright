@@ -39,21 +39,7 @@ sub _run {
         my $src_dir = $self->download_directory;
         mkdir $src_dir unless -e $src_dir;
         $self->source( catfile( $src_dir, $file ) );
-
-        require LWP::UserAgent;
-        my $ua = LWP::UserAgent->new;
-        $ua->timeout(1200);
-
-        my $response = $ua->get($source);
-
-        if ( $response->is_success ) {
-            open my $fh, '>', $self->source
-              or confess "can't open file " . $self->source . ": $!";
-            print $fh $response->content;
-        }
-        else {
-            croak "failed to get $source: " . $response->status_line;
-        }
+        $self->_lwp_get($source);
     }
     else {
         croak "invalid source: $source";

@@ -58,7 +58,8 @@ sub new {
 
         # be careful, if you use minicpan, then the source won't be copied to
         # $CPAN::Config->{keep_source_where}
-        $CPAN::Config->{keep_source_where} = catdir( $cpan_dir, 'sources' );
+        $CPAN::Config->{keep_source_where} =
+          catdir( $self->download_directory, 'cpan' );
         $CPAN::Config->{prefs_dir}         = catdir( $cpan_dir, 'prefs' );
         $CPAN::Config->{prerequisites_policy} = 'follow';
         unless ( $CPAN::Config->{urllist} && @{ $CPAN::Config->{urllist} } ) {

@@ -662,6 +662,35 @@ sub is_compressed {
     return;
 }
 
+sub _lwp_get {
+    my $self   = shift;
+    my $source = shift;
+    require LWP::UserAgent;
+    my $ua = LWP::UserAgent->new;
+    $ua->timeout(1200);
+
+    if ( -e $self->source ) {
+        my $size = ( stat $self->source )[7];
+        my $res  = $ua->head($source);
+        if (   $res->is_success
+            && $res->header('content-length') == $size )
+        {
+            return 1;
+        }
+    }
+
+    my $response = $ua->get($source);
+
+    if ( $response->is_success ) {
+        open my $fh, '>', $self->source
+          or confess "can't open file " . $self->source . ": $!";
+        print $fh $response->content;
+    }
+    else {
+        croak "failed to get $source: " . $response->status_line;
+    }
+}
+
 1;
 
 __END__
