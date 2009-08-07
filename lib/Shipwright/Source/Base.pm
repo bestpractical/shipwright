@@ -667,7 +667,8 @@ sub _lwp_get {
     my $source = shift;
     require LWP::UserAgent;
     my $ua = LWP::UserAgent->new;
-    $ua->timeout(1200);
+    $ua->timeout( $ENV{SHIPWRIHGT_LWP_TIMEOUT} )
+      if $ENV{SHIPWRIGHT_LWP_TIMEOUT};
 
     if ( -e $self->source ) {
         my $size = -s $self->source;
