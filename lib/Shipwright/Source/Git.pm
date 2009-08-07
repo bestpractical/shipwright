@@ -5,6 +5,7 @@ use strict;
 use Carp;
 use File::Spec::Functions qw/catdir/;
 use File::Path qw/remove_tree/;
+use File::Copy::Recursive qw/rcopy/;
 
 use base qw/Shipwright::Source::Base/;
 use Cwd qw/getcwd/;
@@ -52,12 +53,32 @@ sub _run {
     my $source = $self->source;
 
     my $path = catdir( $self->download_directory, $self->name );
-    my @cmds = ( [ $ENV{'SHIPWRIGHT_GIT'}, 'clone', $self->source, $path, ] );
+
+    my $canonical_name = $source;
+    $canonical_name =~ s/:/-/g;
+    $canonical_name =~ s![/\\]!_!g;
+
+    my $cloned_path = catdir( $self->download_directory, $canonical_name );
+    my @cmds;
+
+    if ( -e $cloned_path ) {
+        @cmds = sub {
+            my $cwd = getcwd();
+            chdir $cloned_path;
+            Shipwright::Util->run(
+                [ $ENV{'SHIPWRIGHT_GIT'}, 'pull' ] );
+            chdir $cwd;
+        };
+    }
+    else {
+        @cmds =
+          ( [ $ENV{'SHIPWRIGHT_GIT'}, 'clone', $self->source, $cloned_path ] );
+    }
 
     # work out the version stuff
     push @cmds, sub {
         my $cwd = getcwd();
-        chdir $path;
+        chdir $cloned_path;
         if ( $self->version ) {
             Shipwright::Util->run(
                 [ $ENV{'SHIPWRIGHT_GIT'}, 'checkout', $self->version ] );
@@ -70,13 +91,12 @@ sub _run {
             }
         }
         chdir $cwd;
+        remove_tree( $path ) if -e $path;
+        rcopy( $cloned_path, $path ) or die $!;
+        remove_tree( catdir( $path, '.git' ) );
     };
 
-    push @cmds, sub {
-        remove_tree( catdir( $self->download_directory, $self->name, '.git' ) );
-    };
-
-    $self->source( catdir( $self->download_directory, $self->name ) );
+    $self->source( $path );
     Shipwright::Util->run($_) for @cmds;
 }
 
