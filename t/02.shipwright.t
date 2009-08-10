@@ -3,6 +3,8 @@ use warnings;
 
 use Test::More tests => 9;
 use Shipwright;
+use Shipwright::Test;
+Shipwright::Test->init;
 
 my $sw = Shipwright->new(
     repository => 'svk:/test/foo',
