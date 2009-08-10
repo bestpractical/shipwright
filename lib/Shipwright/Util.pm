@@ -189,7 +189,15 @@ return current user's home directory
 =cut
 
 sub user_home {
-    return (getpwuid $<)[7];
+    return $ENV{HOME} if $ENV{HOME};
+
+    my $home = eval { (getpwuid $<)[7] };
+    if ( $@ ) {
+        confess "can't find user's home, please set it by env HOME";    
+    }
+    else {
+        return $home;
+    }
 }
 
 =head2 shipwright_user_root
