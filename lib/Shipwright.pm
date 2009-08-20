@@ -10,7 +10,6 @@ __PACKAGE__->mk_accessors(qw/backend source build log_level log_file/);
 
 use Shipwright::Logger;
 use Shipwright::Util;
-use File::Temp qw/tempfile/;
 use File::Spec::Functions qw/catfile tmpdir/;
 
 sub new {

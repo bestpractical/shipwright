@@ -5,7 +5,6 @@ use strict;
 use Carp;
 use IPC::Run3;
 use File::Spec::Functions qw/catfile catdir splitpath splitdir tmpdir rel2abs/;
-use File::Temp qw/tempfile/;
 use Cwd qw/abs_path/;
 
 use Shipwright;    # we need this to find where Shipwright.pm lives
