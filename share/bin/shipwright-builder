@@ -395,7 +395,7 @@ sub install {
         {
             my $dir = catdir( $args{'install-base'}, $r );
             next unless -e $dir;
-            remove_tree( $dir );
+            rmtree( $dir );
         }
     }
 
@@ -736,11 +736,11 @@ sub cmds {
 sub clean {
     open my $log, '>', 'clean.log' or confess $!;
 
-    remove_tree( 'tmp_dists');
+    rmtree( 'tmp_dists');
     print $log "removed tmp_dists\n";
 
     if ($branches) {
-        remove_tree('dists');
+        rmtree('dists');
         print $log "removed dists\n";
     }
     else {
