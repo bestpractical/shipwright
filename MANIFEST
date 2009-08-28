@@ -26,6 +26,7 @@ lib/Shipwright/Logger.pm
 lib/Shipwright/Manual.pod
 lib/Shipwright/Manual/BuildMultiArchVessel.pod
 lib/Shipwright/Manual/CustomizeBuild.pod
+lib/Shipwright/Manual/ENV.pod
 lib/Shipwright/Manual/Glossary.pod
 lib/Shipwright/Manual/Tutorial.pod
 lib/Shipwright/Manual/UsingBranches.pod

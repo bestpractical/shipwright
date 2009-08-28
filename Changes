@@ -1,5 +1,12 @@
 Revision history for Shipwright
 
+2.4.0 Fri Aug 28 07:50:22 CST 2009
+
+* add env SHIPWRIGHT_USER_ROOT and SHIPWRIGHT_LWP_TIMEOUT
+* keep downloads and backends caches in ~/.shipwright/, to speed things up
+* add Shipwright/Manual/ENV.pod
+* use legacy rmtree in shipwright-builder
+
 2.3.5 Wed Aug  5 08:59:03 CST 2009
 
 * need File::Path 2.07 or above
