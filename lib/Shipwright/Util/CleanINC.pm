@@ -15,9 +15,9 @@ sub import {
     # if the libs are explicitly specified, don't pull them from @INC
     my @new_base_inc = grep { !$skip_lib_path{$_}++ } (  @explicit_libs, @INC,@inc_libs);
     @INC = map { /(.+)/; $1 } grep { defined } (
-        @new_base_inc,               $Config::Config{archlibexp},
-        $Config::Config{privlibexp}, $Config::Config{updatesarch},
-        $Config::Config{updateslib},
+        @new_base_inc,               $Config::Config{updatesarch},
+        $Config::Config{updateslib}, $Config::Config{archlibexp},
+        $Config::Config{privlibexp},
     );
 }
 
