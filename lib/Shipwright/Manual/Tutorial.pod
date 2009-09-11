@@ -2,30 +2,27 @@
 
 Shipwright::Manual::Tutorial - Tutorial to Shipwright
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 In this tutorial, we'll create a vessel to represent basic stuff of Shipwright.
 
-=head1 DESCRIPTION
+=head1 TUTORIAL
 
-Currently, Shipwright supports 4 kinds of backends: I<SVK>, I<SVN>, I<Git> and I<plain
-file system>. e.g.
+=head1 Introduction
 
-    svn:file:///tmp/svnrepo/foo
-    svn:http://svn.example.com/foo
-    svk://foo
-    svk:/test/foo
-    git:file:///tmp/shipwright.git
-    fs:/tmp/foo
+Shipwright is shipped with command line tool F<shipwright> which allow you to manage
+shipwright repositories: L<create|/Create a new repository>,
+L<import dists|/Importing dists into the repository> and L</update>.
 
-Note: since we need C<svk>/C<svn>/C<svnadmin>/C<git> cmds in in backends, sources or 
-other places, we can tell shipwright the location of C<svk>/C<svn>/C<git> cmds by 
-setting ENV C<SHIPWRIGHT_SVK>/C<SHIPWRIGHT_SVN>/C<SHIPWRIGHT_GIT>.
-C<svnadmin> is assumed in the same directory of svn. 
+Let's start from a new repository.
 
-we'll use C<svn:file:///tmp/svnrepo/foo> as the repository for the rest tutorial.
+=head2 Create a new repository
 
-=head2 create
+Repository - the backend, where all stuff lives, e.g. metadata, sources, etc...
+Shipwright supports several backends: L<SVK|Shipwright::Backend::SVK>,
+L<SVN|Shipwright::Backend::SVN>, L<Git|Shipwright::Backend::Git> and
+L<plain file system|Shipwright::Backend::FS>. We'll use SVN backend for
+our repository in this tutorial.
 
 We need to create the svn repo first:
 
@@ -35,17 +32,26 @@ Then we can initialize the repository of our Shipwright project:
 
     $ shipwright create -r svn:file:///tmp/svnrepo/foo
 
-For the layout of shipwright's source, see L<Shipwright>.
+If F<svn> executable is not under PATH then you can tell shipwright
+the location of it by setting enviroment variable "SHIPWRIGHT_SVN".
+F<svnadmin> is assumed in the same directory as F<svn>.
 
-=head2 import
+=head2 Don't repeat -r argument
 
-It's worthless if we don't import some dists to Shipwright, let's do it now.
+To avoid typing I<-r svn:file:///tmp/svnrepo/foo> all the time you
+can use "SHIPWRIGHT_REPOSITORY" environment variable.
 
-Shipwright supports 8 kinds of sources:
+    export SHIPWRIGHT_REPOSITORY="svn:file:///tmp/svnrepo/foo"
 
-here're some examples:
+Done. No more -r ... for the session.
 
-B<Caveat>: for files, we only support I<.tar.gz>(I<.tgz>) and I<.tar.bz2> format currently.
+=head2 Import dists into the repository
+
+Our repository is worthless if we don't import some dists. let's do
+it now.
+
+Shipwright supports different sources you can import things from.
+Here're some examples:
 
 =over 4
 
@@ -53,6 +59,8 @@ B<Caveat>: for files, we only support I<.tar.gz>(I<.tgz>) and I<.tar.bz2> format
 
     file:/tmp/foo.tar.gz
     file:/home/ross/dinosaur-0.01.tar.bz2
+
+B<Caveat>: for files, we only support I<.tar.gz>(I<.tgz>) and I<.tar.bz2> format currently.
 
 =item plain directory
 
@@ -101,13 +109,13 @@ dist name we want to import.
 We'll import apache 2.2.9, perl 5.10, mod_perl 2.0, libxml and XML::LibXML
 in this tutorial one by one.
 
-    $ shipwright import -r svn:file:///tmp/svnrepo/foo http://www.apache.org/dist/httpd/httpd-2.2.9.tar.gz --name apache
-    $ shipwright import -r svn:file:///tmp/svnrepo/foo http://www.cpan.org/authors/id/R/RG/RGARCIA/perl-5.10.0.tar.gz
-    $ shipwright import -r svn:file:///tmp/svnrepo/foo http://perl.apache.org/dist/mod_perl-2.0-current.tar.gz --name mod_perl --no-follow
+    $ shipwright import http://www.apache.org/dist/httpd/httpd-2.2.9.tar.gz --name apache
+    $ shipwright import http://www.cpan.org/authors/id/R/RG/RGARCIA/perl-5.10.0.tar.gz
+    $ shipwright import http://perl.apache.org/dist/mod_perl-2.0-current.tar.gz --name mod_perl --no-follow
     ( use --no-follow is because run Makefile.PL will hung if we don't have
       apache installed )
-    $ shipwright import -r svn:file:///tmp/svnrepo/foo ftp://xmlsoft.org/libxml2/libxml2-2.6.32.tar.gz --name libxml
-    $ shipwright import -r svn:file:///tmp/svnrepo/foo cpan:XML::LibXML
+    $ shipwright import ftp://xmlsoft.org/libxml2/libxml2-2.6.32.tar.gz --name libxml
+    $ shipwright import cpan:XML::LibXML
 
 Run I<shipwright help import> to see more options.
 
@@ -131,12 +139,12 @@ For more information on build scripts, see L<Shipwright::Manual::CustomizeBuild>
 For dists with I<CPAN>, I<SVK>, I<SVN>, I<Git> and I<Shipwright> types,
 we can simply use the I<update> cmd to update:
 
-    $ shipwright update -r svn:file:///tmp/svnrepo/foo cpan-XML-LibXML
+    $ shipwright update cpan-XML-LibXML
     (yeah, that's right, cpan:XML::LibXML will be named cpan-XML-LibXML)
 
 we can also specify the version we want to update to with --version arg:
 
-    $ shipwright update -r svn:file:///tmp/svnrepo/foo cpan-XML-LibXML --version 1.60
+    $ shipwright update cpan-XML-LibXML --version 1.60
 
 For other types, Shipwright can't find the latest version, so we have to tell 
 Shipwright where it is by I<relocate> cmd.
@@ -145,8 +153,8 @@ e.g. apache 2.2.10 is released one day, with download link
 L<http://apache.mirror.phpchina.com/httpd/httpd-2.2.10.tar.gz>, we need to 
 set the source url first before update.
 
-    $ shipwright relocate -r svn:file:///tmp/svnrepo/foo apache http://www.apache.org/dist/httpd/httpd-2.2.10.tar.gz 
-    $ shipwright update -r svn:file:///tmp/svnrepo/foo apache
+    $ shipwright relocate apache http://www.apache.org/dist/httpd/httpd-2.2.10.tar.gz 
+    $ shipwright update apache
 
 =head2 tweak manually 
 
@@ -157,7 +165,7 @@ no extra dependence will be set.
 
 So we need to do it manually, e.g. use the following cmd to do so
 
-    $ shipwright update -r svn:file:///tmp/svnrepo/foo apache --add-deps libxml
+    $ shipwright update apache --add-deps libxml
 
 =head2 build
 
@@ -168,6 +176,8 @@ $ ./bin/shipwright-builder
 
 Run I<./bin/shipwright-builder --help> to see more options and
 I<./bin/shipwright-builder --advanced-help> to see even more options.
+
+For the layout of shipwright's source, see L<Shipwright>.
 
 =head2 fiddle the vessel
 
