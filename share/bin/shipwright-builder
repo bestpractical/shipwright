@@ -197,18 +197,16 @@ my ( $flags, $ktf, $branches );
 if ( -e catfile( 'shipwright', 'flags.yml' ) ) {
     $flags = ( YAML::Tiny->read( catfile( 'shipwright', 'flags.yml' ) ) )->[0];
 }
-else {
-    $flags = {};
-}
+
+$flags ||= {};
 
 if ( -e catfile( 'shipwright', 'known_test_failures.yml' ) ) {
     $ktf =
       ( YAML::Tiny->read( catfile( 'shipwright', 'known_test_failures.yml' ) ) )
       ->[0];
 }
-else {
-    $ktf = {};
-}
+
+$ktf ||= {};
 
 if ( -e catfile( 'shipwright', 'branches.yml' ) ) {
     $branches =
