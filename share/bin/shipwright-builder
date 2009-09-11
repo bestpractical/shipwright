@@ -152,6 +152,13 @@ if ( $args{only} ) {
 
 $args{'install-base'} = get_install_base() unless $args{'install-base'};
 
+unless ( $args{'install-base'} ) {
+    my $dir = tempdir( 'vessel_' . $args{name} . '-XXXXXX', TMPDIR => 1 );
+    $args{'install-base'} = catdir( $dir, $args{name} );
+    print "no default install-base, will set it to $args{'install-base'}\n";
+}
+
+
 # replace prefix ~ with real home dir
 $args{'install-base'} =~ s/^~/(getpwuid $<)[7]/e;
 
@@ -165,12 +172,6 @@ unless ( $args{name} ) {
     elsif ( $build_base =~ m{([-.\w]+)$} ) {
         $args{name} = $1;
     }
-}
-
-unless ( $args{'install-base'} ) {
-    my $dir = tempdir( 'vessel_' . $args{name} . '-XXXXXX', TMPDIR => 1 );
-    $args{'install-base'} = catdir( $dir, $args{name} );
-    print "no default install-base, will set it to $args{'install-base'}\n";
 }
 
 my $installed;
