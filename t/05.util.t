@@ -52,7 +52,7 @@ like( $out, qr/ok/, "normal code run" );
 
 my $hashref = { foo => 'bar' };
 my $string = <<EOF;
---- 
+---
 foo: bar
 EOF
 

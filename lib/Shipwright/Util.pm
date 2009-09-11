@@ -8,39 +8,20 @@ use File::Spec::Functions qw/catfile catdir splitpath splitdir tmpdir rel2abs/;
 use Cwd qw/abs_path/;
 
 use Shipwright;    # we need this to find where Shipwright.pm lives
+use YAML::Tiny;
 
 our ( $SHIPWRIGHT_ROOT, $SHARE_ROOT );
 
 BEGIN {
-    local $@;
-    eval { require YAML::Syck; };
-    if ($@) {
-        require YAML;
-        *Load     = *YAML::Load;
-        *Dump     = *YAML::Dump;
-        *LoadFile = *YAML::LoadFile;
-        *DumpFile = *YAML::DumpFile;
-    }
-    else {
-        *Load     = *YAML::Syck::Load;
-        *Dump     = *YAML::Syck::Dump;
-        *LoadFile = *YAML::Syck::LoadFile;
-        *DumpFile = *YAML::Syck::DumpFile;
-    }
+    *Load     = *YAML::Tiny::Load;
+    *Dump     = *YAML::Tiny::Dump;
+    *LoadFile = *YAML::Tiny::LoadFile;
+    *DumpFile = *YAML::Tiny::DumpFile;
 }
 
-=head2 Load
+=head2 Load, LoadFile, Dump, DumpFile
 to make pod-coverage.t happy.
 Load, LoadFile, Dump and DumpFile are just dropped in from YAML or YAML::Syck
-=cut
-
-=head2 LoadFile
-=cut
-
-=head2 Dump
-=cut
-
-=head2 DumpFile
 =cut
 
 =head2 run

@@ -35,15 +35,6 @@ requires 'Archive::Extract' => 0;
 requires 'File::Compare' => 0;
 requires 'File::Path' => 2.07;
 
-
-if ( can_cc() ) {
-    requires( 'YAML::Syck' => 0.71 );
-}
-else {
-    requires( 'YAML' => 0.35 ) unless can_use( 'YAML::Syck' => 0.71 );
-}
-
-
 no_index( directory => 't' );
 no_index( directory => 'xt' );
 

@@ -37,7 +37,6 @@ requires:
   File::Slurp: 0
   File::Spec: 0
   File::Temp: 0
-  Hash::Merge: 0
   IO::Uncompress::Bunzip2: 0
   IO::Uncompress::RawInflate: 2.012
   IPC::Run3: 0
@@ -47,7 +46,6 @@ requires:
   Module::CoreList: 0
   Module::Info: 0
   UNIVERSAL::require: 0
-  YAML::Syck: 0.71
   YAML::Tiny: 0
   perl: 5.8.8
   version: 0
