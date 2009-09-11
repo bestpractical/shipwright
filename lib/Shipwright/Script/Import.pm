@@ -17,10 +17,7 @@ use Shipwright::Util;
 use File::Copy qw/copy move/;
 use File::Temp qw/tempdir/;
 use Config;
-use Hash::Merge;
 use List::MoreUtils qw/firstidx/;
-
-Hash::Merge::set_behavior('RIGHT_PRECEDENT');
 
 sub options {
     (
@@ -138,9 +135,7 @@ sub run {
 
                 # skip already imported dists
                 $shipwright->source->skip(
-                    Hash::Merge::merge(
-                        $self->skip, $shipwright->backend->map || {}
-                    )
+                    { %{ $self->skip }, %{ $shipwright->backend->map || {} } }
                 );
             }
 
@@ -232,8 +227,7 @@ sub run {
               Shipwright::Util::LoadFile( $shipwright->source->map_path )
               || {};
             $shipwright->backend->map(
-                Hash::Merge::merge( $shipwright->backend->map || {}, $new_map )
-            );
+                { %{ $shipwright->backend->map || {} }, %$new_map } );
 
             my $new_url =
               Shipwright::Util::LoadFile( $shipwright->source->url_path )
@@ -241,12 +235,9 @@ sub run {
             my $source_url = delete $new_url->{$name};
 
             if ( $name !~ /^cpan-/ ) {
-                $shipwright->backend->source(
-                    Hash::Merge::merge(
-                        $shipwright->backend->source || {},
-                        { $name => { $self->as || 'vendor' => $source_url } },
-                    )
-                );
+                my $source = $shipwright->backend->source || {};
+                $source->{$name}{$self->as||'vendor'} = $source_url;
+                $shipwright->backend->source( $source );
             }
         }
 

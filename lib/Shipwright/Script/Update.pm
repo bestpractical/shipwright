@@ -15,9 +15,6 @@ use Shipwright::Util;
 use File::Copy qw/copy move/;
 use File::Temp qw/tempdir/;
 use Config;
-use Hash::Merge;
-
-Hash::Merge::set_behavior('RIGHT_PRECEDENT');
 
 sub options {
     (

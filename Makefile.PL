@@ -19,7 +19,6 @@ requires 'File::Copy' => 0;
 requires 'File::Copy::Recursive' => 0;
 requires 'File::Spec' => 0;
 requires 'File::Slurp' => 0;
-requires 'Hash::Merge' => 0;
 requires 'IPC::Run3' => 0;
 requires 'List::MoreUtils' => 0;
 requires 'Log::Log4perl' => 0;
