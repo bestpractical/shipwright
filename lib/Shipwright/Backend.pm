@@ -67,7 +67,7 @@ add a new one.
 
 =head1 SUPPORTED BACKENDS
 
-Currently, the supported backends are L<FS|Shipwright::Backend::FS>, L<Git|Shipwright::Backend::Git>, L<SVK|Shipwright::Backend::SVK> and L<SVN|Shipwright::Backend::SVN>.
+Currently, the supported backends are L<FS|Shipwright::BACKEND::FS>, L<Git|Shipwright::BACKEND::Git>, L<SVK|Shipwright::BACKEND::SVK> and L<SVN|Shipwright::BACKEND::SVN>.
 
 =head1 IMPLEMENTING BACKENDS
 

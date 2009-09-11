@@ -15,7 +15,13 @@ Shipwright::Source - Source
 
 =head1 SYNOPSIS
 
+    shipwright import -r ... cpan:XML::LibXML
+
     use Shipwright::Source;
+
+=head1 SUPPORTED SOURCES
+
+Currently, the supported sources are L<CPAN|Shipwright::SOURCE::CPAN>, L<Compressed|Shipwright::SOURCE::Compressed>, L<Directory|Shipwright::SOURCE::Directory>, L<FTP|Shipwright::SOURCE::FTP>, L<Git|Shipwright::SOURCE::Git>, L<HTTP|Shipwright::SOURCE::HTTP>, L<SVK|Shipwright::SOURCE::SVK>, L<SVN|Shipwright::SOURCE::SVN> and L<Shipwright|Shipwright::SOURCE::Shipwright>.
 
 =head1 METHODS
 
