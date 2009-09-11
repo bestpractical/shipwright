@@ -41,6 +41,7 @@ sub new {
     $args{branches_path} ||= catfile( $args{directory}, 'branches.yml' );
 
     for (qw/map_path url_path version_path branches_path/) {
+        next if -e $args{$_};
         open my $fh, '>', $args{$_} or confess "can't write to $args{$_}: $!";
         close $fh;
     }
