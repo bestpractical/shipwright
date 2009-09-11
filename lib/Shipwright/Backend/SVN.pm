@@ -15,9 +15,24 @@ use base qw/Shipwright::Backend::Base/;
 
 Shipwright::Backend::SVN - SVN repository backend
 
+=head1 SYNOPSIS
+
+    svnadmin create /home/me/shipwright/my_proj
+    shipwright create -r svn:file:///home/me/shipwright/my_proj
+
 =head1 DESCRIPTION
 
-This module implements a SVN repository backend for Shipwright.
+This module implements a SVN based backend
+for Shipwright L<repository|Shipwright::Manual::Glossary/repository>.
+
+=head1 ENVIRONMENT VARIABLES
+
+=over 4
+
+=item SHIPWRIGHT_SVN - path of F<svn> command, default value is F<svn>.
+F<svnadmin> command is expected to be in the same directory as F<svn>.
+
+=back
 
 =head1 METHODS
 

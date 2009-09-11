@@ -16,9 +16,24 @@ use base qw/Shipwright::Backend::Base/;
 
 Shipwright::Backend::SVK - SVK repository backend
 
+=head1 SYNOPSIS
+
+    shipwright create -r svk:/depot/shipwright/my_proj
+
 =head1 DESCRIPTION
 
-This module implements an SVK repository backend for Shipwright.
+This module implements an L<SVK> based backend
+for Shipwright L<repository|Shipwright::Manual::Glossary/repository>.
+
+=head1 ENVIRONMENT VARIABLES
+
+=over 4
+
+=item SHIPWRIGHT_SVK - path of F<svk> command, default value is F<svk>.
+
+=back
+
+L<Shipwright::Manual::ENV/SHIPWRIGHT_SVN> can be used as well.
 
 =head1 METHODS
 

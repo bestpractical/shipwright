@@ -19,9 +19,22 @@ use base qw/Shipwright::Backend::Base/;
 
 Shipwright::Backend::Git - Git repository backend
 
+=head1 SYNOPSIS
+
+    shipwright create -r git:file:///home/me/shipwright/my_proj.git
+
 =head1 DESCRIPTION
 
-This module implements an Git repository backend for Shipwright.
+This module implements a Git based backend
+for Shipwright L<repository|Shipwright::Manual::Glossary/repository>.
+
+=head1 ENVIRONMENT VARIABLES
+
+=over 4
+
+=item SHIPWRIGHT_GIT - path of F<git> command, default value is F<git>.
+
+=back
 
 =head1 METHODS
 

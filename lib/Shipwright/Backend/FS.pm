@@ -16,9 +16,14 @@ use base qw/Shipwright::Backend::Base/;
 
 Shipwright::Backend::FS - File System backend
 
+=head1 SYNOPSIS
+
+    shipwright create -r fs:/home/me/shipwright/my_project
+
 =head1 DESCRIPTION
 
-This module implements file system backend
+This module implements file system based backend with version control
+for Shipwright L<repository|Shipwright::Manual::Glossary/repository>.
 
 =head1 METHODS
 
