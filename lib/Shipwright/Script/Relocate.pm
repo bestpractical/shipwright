@@ -85,6 +85,7 @@ Shipwright::Script::Relocate - Relocate source of a dist(not cpan)
  relocate NAME SOURCE
 
 =head1 OPTIONS
+
    -r [--repository] REPOSITORY    : specify the repository of our project
    -l [--log-level] LOGLEVEL       : specify the log level
    --log-file FILENAME             : specify the log file
