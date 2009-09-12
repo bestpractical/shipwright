@@ -3,7 +3,7 @@ use strict;
 use warnings;
 
 use Getopt::Long;
-use YAML::Syck;
+use YAML::Tiny;
 use List::MoreUtils qw/uniq firstidx/;
 use Carp;
 
@@ -120,7 +120,7 @@ sub fill_deps {
     my $name    = $args{name};
 
     my $string;
-    my $req = LoadFile("scripts/$name/require.yml");
+    my $req = YAML::Tiny::LoadFile("scripts/$name/require.yml");
 
     if ( $req->{requires} ) {
         for (qw/requires recommends build_requires/) {
