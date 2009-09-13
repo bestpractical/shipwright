@@ -79,6 +79,7 @@ Shipwright::Script::Delete - Delete a dist
  delete NAME
 
 =head1 OPTIONS
+
  -r [--repository] REPOSITORY   : specify the repository of our project
  -l [--log-level] LOGLEVEL      : specify the log level
                                   (info, debug, warn, error, or fatal)
