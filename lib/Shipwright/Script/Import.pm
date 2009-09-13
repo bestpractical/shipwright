@@ -351,7 +351,7 @@ sub _generate_build {
     if ( -f catfile( $source_dir, 'Build.PL' ) ) { # &&  $source_dir !~ /Module-Build/ ) { # M::B should be bootstrapped with MakeMaker
         $self->log->info( 'detected Module::Build build system' );
         @commands = (
-            'configure: %%PERL%% %%MODULE_BUILD_BEFORE_BUILD_PL%% Build.PL --install_base=%%INSTALL_BASE%%',
+            'configure: %%PERL%% %%MODULE_BUILD_BEFORE_BUILD_PL%% Build.PL --install_base=%%INSTALL_BASE%% --install_path lib=%%INSTALL_BASE%%/lib/perl5 --install_path arch=%%INSTALL_BASE%%/lib/perl5',
             'make: %%PERL%% %%MODULE_BUILD_BEFORE_BUILD%% Build',
             'test: %%PERL%% %%MODULE_BUILD_BEFORE_BUILD%% Build test',
             'install: %%PERL%% %%MODULE_BUILD_BEFORE_BUILD%% Build install',
@@ -363,7 +363,7 @@ sub _generate_build {
 # XXX when only support 5.8.9+, we can change it to INSTALL_BASE=%%INSTALL_BASE%%
 # because LIB=.../lib/perl5 is so ugly and not so right
         @commands = (
-            'configure: %%PERL%% Makefile.PL LIB=%%INSTALL_BASE%%/lib/perl5/ PREFIX=%%INSTALL_BASE%% %%MAKEMAKER_CONFIGURE_EXTRA%%',
+            'configure: %%PERL%% Makefile.PL LIB=%%INSTALL_BASE%%/lib/perl5/ PREFIX=%%INSTALL_BASE%% INSTALLSITEARCH=%%INSTALL_BASE%%/lib/perl5 INSTALLARCHLIB=%%INSTALL_BASE%%/lib/perl5 %%MAKEMAKER_CONFIGURE_EXTRA%%',
             'make: %%MAKE%%',
             'test: %%MAKE%% test',
             'install: %%MAKE%% install',
