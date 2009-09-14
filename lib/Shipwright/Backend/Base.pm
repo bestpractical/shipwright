@@ -35,10 +35,13 @@ the constructor
 =cut
 
 sub new {
-    my $class = shift;
-    my $self  = {@_};
+    my $proto = shift;
+    my $self = bless {@_}, ref $proto || $proto;
+    return $self->build;
+}
 
-    bless $self, $class;
+sub build {
+    my $self = shift;
     $self->log( Log::Log4perl->get_logger( ref $self ) );
     return $self;
 }
