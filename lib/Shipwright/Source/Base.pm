@@ -101,6 +101,7 @@ sub _follow {
         chdir catdir($path);
 
         if ( $path =~ /\bcpan-Bundle-(.*)/ ) {
+            $self->log->info("is a CPAN Bundle");
 
             my $file = $1;
             $file =~ s!-!/!;
@@ -145,6 +146,8 @@ sub _follow {
 
         }
         elsif ( -e 'Build.PL' ) {
+            $self->log->info("is a Module::Build based dist");
+
             Shipwright::Util->run(
                 [
                     $^X,               '-Mversion',
@@ -170,6 +173,7 @@ sub _follow {
               or confess "can't read Makefile.PL: $!";
 
             if ( $makefile =~ /inc::Module::Install/ ) {
+                $self->log->info("is a Module::Install based dist");
 
   # PREREQ_PM in Makefile is not good enough for inc::Module::Install, which
   # will omit features(..). we'll put deps in features(...) into recommends part
