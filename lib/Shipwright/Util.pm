@@ -118,6 +118,38 @@ sub select {
     }
 }
 
+=head3 find_module
+
+Takes perl modules name space and name of a module in the space.
+Finds and returns matching module name using case insensetive search, for
+example:
+
+    Shipwright::Util->find_module('Shipwright::Backend', 'svn');
+    # returns 'Shipwright::Backend::SVN'
+
+    Shipwright::Util->find_module('Shipwright::Backend', 'git');
+    # returns 'Shipwright::Backend::Git'
+
+Returns undef if there is no module matching criteria.
+
+=cut
+
+sub find_module {
+    my $self = shift;
+    my $space = shift;
+    my $name = shift;
+
+    my @space = split /::/, $space;
+    my @globs = map File::Spec->catfile($_, @space, '*.pm'), @INC;
+    foreach my $glob ( @globs ) {
+        foreach my $module ( map /([^\\\/]+)\.pm$/ glob $glob ) {
+            return join '::', @space, $module
+                if lc $name eq lc $module;
+        }
+    }
+    return undef;
+}
+
 =head2 PATHS
 
 =head3 shipwright_root
