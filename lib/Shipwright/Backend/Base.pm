@@ -912,6 +912,14 @@ sub local_dir {
     return $target;
 }
 
+sub strip_reposiotry {
+    my $self = shift;
+    my $repo = $self->repository;
+    $repo =~ s/^[a-z+]+://;
+    $self->repository($repo);
+    return;
+}
+
 =back
 
 =cut
