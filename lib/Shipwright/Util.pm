@@ -19,12 +19,18 @@ BEGIN {
     *DumpFile = *YAML::Tiny::DumpFile;
 }
 
-=head2 Load, LoadFile, Dump, DumpFile
-to make pod-coverage.t happy.
-Load, LoadFile, Dump and DumpFile are just dropped in from YAML or YAML::Syck
-=cut
+=head1 LIST
 
-=head2 run
+=head2 YAML
+
+=head3 Load, LoadFile, Dump, DumpFile
+
+Load, LoadFile, Dump and DumpFile are just dropped in from L<YAML> or L<YAML::Syck>.
+
+
+=head2 GENERAL HELPERS
+
+=head3 run
 
 a wrapper of run3 sub in IPC::Run3.
 
@@ -73,57 +79,7 @@ EOF
 
 }
 
-=head2 shipwright_root
-
-Returns the root directory that Shipwright has been installed into.
-Uses %INC to figure out where Shipwright.pm is.
-
-=cut
-
-sub shipwright_root {
-    my $self = shift;
-
-    unless ($SHIPWRIGHT_ROOT) {
-        my $dir = ( splitpath( $INC{"Shipwright.pm"} ) )[1];
-        $SHIPWRIGHT_ROOT = rel2abs($dir);
-    }
-
-    return ($SHIPWRIGHT_ROOT);
-}
-
-=head2 share_root
-
-Returns the 'share' directory of the installed Shipwright module. This is
-currently only used to store the initial files in project.
-
-=cut
-
-sub share_root {
-    my $self = shift;
-
-    unless ($SHARE_ROOT) {
-        my @root = splitdir( $self->shipwright_root );
-
-        if (   $root[-2] ne 'blib'
-            && $root[-1] eq 'lib'
-            && ( $^O !~ /MSWin/ || $root[-2] ne 'site' ) )
-        {
-
-            # so it's -Ilib in the Shipwright's source dir
-            $root[-1] = 'share';
-        }
-        else {
-            push @root, qw/auto share dist Shipwright/;
-        }
-
-        $SHARE_ROOT = catdir(@root);
-    }
-
-    return ($SHARE_ROOT);
-
-}
-
-=head2 select
+=head3 select
 
 wrapper for the select in core
 
@@ -162,7 +118,59 @@ sub select {
     }
 }
 
-=head2 user_home
+=head2 PATHS
+
+=head3 shipwright_root
+
+Returns the root directory that Shipwright has been installed into.
+Uses %INC to figure out where Shipwright.pm is.
+
+=cut
+
+sub shipwright_root {
+    my $self = shift;
+
+    unless ($SHIPWRIGHT_ROOT) {
+        my $dir = ( splitpath( $INC{"Shipwright.pm"} ) )[1];
+        $SHIPWRIGHT_ROOT = rel2abs($dir);
+    }
+
+    return ($SHIPWRIGHT_ROOT);
+}
+
+=head3 share_root
+
+Returns the 'share' directory of the installed Shipwright module. This is
+currently only used to store the initial files in project.
+
+=cut
+
+sub share_root {
+    my $self = shift;
+
+    unless ($SHARE_ROOT) {
+        my @root = splitdir( $self->shipwright_root );
+
+        if (   $root[-2] ne 'blib'
+            && $root[-1] eq 'lib'
+            && ( $^O !~ /MSWin/ || $root[-2] ne 'site' ) )
+        {
+
+            # so it's -Ilib in the Shipwright's source dir
+            $root[-1] = 'share';
+        }
+        else {
+            push @root, qw/auto share dist Shipwright/;
+        }
+
+        $SHARE_ROOT = catdir(@root);
+    }
+
+    return ($SHARE_ROOT);
+
+}
+
+=head3 user_home
 
 return current user's home directory
 
@@ -180,7 +188,7 @@ sub user_home {
     }
 }
 
-=head2 shipwright_user_root
+=head3 shipwright_user_root
 
 the user's own shipwright root where we put internal files in.
 it's ~/.shipwright by default.
