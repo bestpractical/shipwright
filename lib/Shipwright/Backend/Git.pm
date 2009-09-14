@@ -38,7 +38,16 @@ for Shipwright L<repository|Shipwright::Manual::Glossary/repository>.
 
 =head1 METHODS
 
-=over
+=cut
+
+sub build {
+    my $self = shift;
+    $self->strip_repository
+        if $self->repository =~ m{^git:[a-z]+(?:\+[a-z]+)?://};
+    $self->SUPER::build(@_);
+}
+
+=over 4
 
 =item initialize
 

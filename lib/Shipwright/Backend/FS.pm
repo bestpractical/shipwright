@@ -3,7 +3,7 @@ package Shipwright::Backend::FS;
 use warnings;
 use strict;
 use Carp;
-use File::Spec::Functions qw/catfile splitdir catdir/;
+use File::Spec::Functions qw/catfile splitdir catdir rel2abs/;
 use Shipwright::Util;
 use File::Copy::Recursive qw/rcopy rmove/;
 use File::Path qw/remove_tree make_path/;
@@ -27,7 +27,22 @@ for Shipwright L<repository|Shipwright::Manual::Glossary/repository>.
 
 =head1 METHODS
 
-=over
+=cut
+
+sub build {
+    my $self = shift;
+    $self->strip_repository;
+
+    my $repo = $self->repository;
+    $repo =~ s/^~/Shipwright::Util->user_home/e;
+    my $abs_path = rel2abs($repo);
+    $repo = $abs_path if $abs_path;
+    $self->repository($repo);
+
+    $self->SUPER::build(@_);
+}
+
+=over 4
 
 =item initialize
 

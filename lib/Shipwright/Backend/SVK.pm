@@ -37,7 +37,15 @@ L<Shipwright::Manual::ENV/SHIPWRIGHT_SVN> can be used as well.
 
 =head1 METHODS
 
-=over
+=cut
+
+sub build {
+    my $self = shift;
+    $self->strip_repository;
+    $self->SUPER::build(@_);
+}
+
+=over 4
 
 =item initialize
 

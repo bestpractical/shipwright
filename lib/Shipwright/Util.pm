@@ -142,7 +142,7 @@ sub find_module {
     my @space = split /::/, $space;
     my @globs = map File::Spec->catfile($_, @space, '*.pm'), @INC;
     foreach my $glob ( @globs ) {
-        foreach my $module ( map /([^\\\/]+)\.pm$/ glob $glob ) {
+        foreach my $module ( map { /([^\\\/]+)\.pm$/; $1 } glob $glob ) {
             return join '::', @space, $module
                 if lc $name eq lc $module;
         }

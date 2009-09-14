@@ -912,7 +912,7 @@ sub local_dir {
     return $target;
 }
 
-sub strip_reposiotry {
+sub strip_repository {
     my $self = shift;
     my $repo = $self->repository;
     $repo =~ s/^[a-z+]+://;

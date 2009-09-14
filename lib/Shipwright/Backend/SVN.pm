@@ -36,7 +36,16 @@ F<svnadmin> command is expected to be in the same directory as F<svn>.
 
 =head1 METHODS
 
-=over
+=cut
+
+sub build {
+    my $self = shift;
+    $self->strip_repository
+        if $self->repository =~ m{^svn:[a-z]+(?:\+[a-z]+)?://};
+    $self->SUPER::build(@_);
+}
+
+=over 4
 
 =item initialize
 

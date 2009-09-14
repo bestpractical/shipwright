@@ -4,42 +4,37 @@ use warnings;
 use strict;
 use Carp;
 use UNIVERSAL::require;
-use File::Spec::Functions qw/rel2abs/;
 use Shipwright::Util;
 
 sub new {
     my $class = shift;
     my %args  = @_;
 
-    my $module;
-
     croak 'need repository arg' unless exists $args{repository};
 
-    if ( $args{repository} =~ m{^\s*(svk:|//)} ) {
-        $args{repository} =~ s{^\s*svk:}{};
-        $module = 'Shipwright::Backend::SVK';
-    }
-    elsif ( $args{repository} =~ m{^\s*svn[:+]} ) {
-        $args{repository} =~ s{^\s*svn:(?!//)}{};
-        $module = 'Shipwright::Backend::SVN';
-    }
-    elsif ( $args{repository} =~ m{^\s*fs:} ) {
-        $args{repository} =~ s{^\s*fs:}{};
-        $args{repository} =~ s/^~/Shipwright::Util->user_home/e;
-        my $abs_path = rel2abs($args{repository});
-        $args{repository} = $abs_path if $abs_path;
-        $module = 'Shipwright::Backend::FS';
-    }
-    elsif ( $args{repository} =~ m{^\s*git:} ) {
-        $args{repository} =~ s{^\s*git:}{};
-        $module = 'Shipwright::Backend::Git';
-    }
-    else {
-        croak "invalid repository: $args{repository}\n";
+    $args{repository} =~ s/^\s+//;
+    $args{repository} =~ s/\s+$//;
+
+    # exception for svk repos, they can start with //
+    if ( $args{repository} =~ m{^//} ) {
+        $args{repository} = 'svk:'. $args{repository};
     }
 
-    $module->require;
+    my ($backend, $subtype);
+    if ( $args{repository} =~ /^([a-z]+)(?:\+([a-z]+))?:/ ) {
+        ($backend, $subtype) = ($1, $2);
+    } else {
+        croak "invalid repository, doesn't start from xxx: or xxx+yyy:";
+    }
 
+    my $module = Shipwright::Util->find_module(__PACKAGE__, $backend);
+    unless ( $module ) {
+        croak "Couldn't find backend implementing '$backend'";
+    }
+
+    $module->require
+        or croak "Couldn't load module '$module'"
+            ." implementing backend '$backend': $@";
     return $module->new(%args);
 }
 
@@ -62,7 +57,7 @@ Shipwright::Backend - Backend
 =head1 DESCRIPTION
 
 See <Shipwright::Manual::Glossary/repository> to understand concept. Look
-at list of </SUPPORTED BACKENDS> and L<IMPLEMENTING BACKENDS> if you want
+at list of </SUPPORTED BACKENDS> or L<IMPLEMENTING BACKENDS> if you want
 add a new one.
 
 =head1 SUPPORTED BACKENDS
