@@ -411,6 +411,7 @@ EOF
                     && Module::CoreList->first_release( $module, $require->{$type}{$module}{version} )
                     && Module::CoreList->first_release( $module, $require->{$type}{$module}{version} ) <= $self->min_perl_version)
                 {
+                    $self->log->info("$module is skipped becasue it's in core");
                     delete $require->{$type}{$module};
                     next;
                 }
@@ -589,8 +590,9 @@ sub _is_skipped {
             $skip = 1
               if $self->skip->{$name} || $self->skip->{$name_without_prefix};
         }
+
         if ($skip) {
-            $self->log->warn("$module is skipped");
+            $self->log->info("$module is skipped");
             return 1;
         }
     }
