@@ -419,6 +419,8 @@ EOF
                 my $name = $module;
 
                 if ( $self->_is_skipped($module) ) {
+                    # skipped contains all modules imported before,
+                    # so we need to check if they are imported ones
                     unless ( defined $map->{$module}
                         || defined $url->{$module} )
                     {
