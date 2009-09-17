@@ -12,6 +12,13 @@ use Shipwright::Logger;
 use Shipwright::Util;
 use File::Spec::Functions qw/catfile tmpdir/;
 
+$ENV{SHIPWRIGHT_MAKE} ||= 'make';
+$ENV{SHIPWRIGHT_SVK} ||= 'svk';
+$ENV{SHIPWRIGHT_SVN} ||= 'svn';
+$ENV{SHIPWRIGHT_GIT} ||= 'git';
+$ENV{PERL_MM_USE_DEFAULT} ||= 1;
+$ENV{SHIPWRIGHT_LWP_TIMEOUT} ||= 1200;
+
 sub new {
     my $class = shift;
 
