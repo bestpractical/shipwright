@@ -675,7 +675,7 @@ sub _lwp_get {
     my $source = shift;
     require LWP::UserAgent;
     my $ua = LWP::UserAgent->new;
-    $ua->timeout( $ENV{SHIPWRIHGT_LWP_TIMEOUT} )
+    $ua->timeout( $ENV{SHIPWRIGHT_LWP_TIMEOUT} )
       if $ENV{SHIPWRIGHT_LWP_TIMEOUT};
 
     if ( -e $self->source ) {
