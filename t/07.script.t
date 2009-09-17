@@ -7,6 +7,7 @@ use Shipwright::Script;
 use Shipwright;
 use Shipwright::Test;
 Shipwright::Test->init;
+delete $ENV{SHIPWRIGHT_REPOSITORY};
 
 is_deeply(
     {
