@@ -16,8 +16,15 @@ $ENV{SHIPWRIGHT_MAKE} ||= 'make';
 $ENV{SHIPWRIGHT_SVK} ||= 'svk';
 $ENV{SHIPWRIGHT_SVN} ||= 'svn';
 $ENV{SHIPWRIGHT_GIT} ||= 'git';
-$ENV{PERL_MM_USE_DEFAULT} ||= 1;
 $ENV{SHIPWRIGHT_LWP_TIMEOUT} ||= 1200;
+
+$ENV{PERL_MM_USE_DEFAULT} = 1; # always true
+
+# FTP_PASSIVE is true by default,
+# since many sites use this nowadays.
+unless ( defined $ENV{FTP_PASSIVE} ) {
+    $ENV{FTP_PASSIVE} = 1;
+}
 
 sub new {
     my $class = shift;
