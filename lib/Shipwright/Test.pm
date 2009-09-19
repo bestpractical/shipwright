@@ -143,7 +143,7 @@ sub create_git_repo {
 
 =head2 create_svk_repo 
 
-create a repo for svk, will set $ENV{SVKROOT} accrodingly.
+create a repo for svk, will set $ENV{SVKROOT} accordingly.
 return $ENV{SVKROOT}
 
 =cut

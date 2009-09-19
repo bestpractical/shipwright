@@ -33,7 +33,7 @@ Then we can initialize the repository of our Shipwright project:
     $ shipwright create -r svn:file:///tmp/svnrepo/foo
 
 If F<svn> executable is not under PATH then you can tell shipwright
-the location of it by setting enviroment variable "SHIPWRIGHT_SVN".
+the location of it by setting environment variable "SHIPWRIGHT_SVN".
 F<svnadmin> is assumed in the same directory as F<svn>.
 
 =head2 Don't repeat -r argument

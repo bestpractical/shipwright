@@ -121,7 +121,7 @@ sub select {
 =head3 find_module
 
 Takes perl modules name space and name of a module in the space.
-Finds and returns matching module name using case insensetive search, for
+Finds and returns matching module name using case insensitive search, for
 example:
 
     Shipwright::Util->find_module('Shipwright::Backend', 'svn');
