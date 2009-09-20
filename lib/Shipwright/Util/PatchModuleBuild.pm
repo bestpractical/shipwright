@@ -4,7 +4,7 @@ use warnings;
 
 sub import {
  
-    use Module::Build::Base;
+    use Module::Build;
     no warnings qw'redefine';
     sub Module::Build::Base::ACTION_manpages  {} ## no critic
     sub Module::Build::Base::ACTION_docs  {} ## no critic
