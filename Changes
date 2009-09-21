@@ -1,5 +1,7 @@
 Revision history for Shipwright
 
+2.4.3
+
 2.4.2 Mon Sep 21 09:46:38 CST 2009
 
 * Shipwright::Util::PatchModuleBuild tweak( thanks to rbuels++ )
