@@ -470,8 +470,9 @@ sub _install {
             if ( !$branch && -d catdir( 'sources', $dir, 'vendor' ) ) {
                 $branch = 'vendor';
             }
-            rcopy( catdir( 'sources', $dir, split /\//, $branch ),
-                catdir( 'dists', $dir ) )
+            my $dist_dir = catdir( 'dists', $dir );
+            rmtree( $dist_dir ) if -e $dist_dir;
+            rcopy( catdir( 'sources', $dir, split /\//, $branch ), $dist_dir )
               or confess "copy sources/$dir/$branch to dists/$dir failed: $!";
         }
         chdir catdir( 'dists', $dir );
