@@ -1,6 +1,14 @@
 Revision history for Shipwright
 
-2.4.2
+2.4.2 Mon Sep 21 09:46:38 CST 2009
+
+* Shipwright::Util::PatchModuleBuild tweak( thanks to rbuels++ )
+* backend part refactor( thanks to ruz++ ): 
+    possibility in Backend.pm to load external implementations
+* pod and doc update( thanks to ruz++ )
+* abandon perl's archlib:
+    i.e. all perl modules live in as/blabla/lib/perl5, no 'darwin-2level'
+    subdir or alike any more
 
 2.4.1 Sat Sep 12 00:29:00 CST 2009
 
