@@ -3,7 +3,7 @@ package Shipwright::Source::CPAN;
 use warnings;
 use strict;
 use Carp;
-use File::Spec::Functions qw/catfile catdir/;
+use File::Spec::Functions qw/catfile catdir rootdir/;
 use Shipwright::Source::Compressed;
 use CPAN;
 use Data::Dumper;
@@ -82,7 +82,7 @@ sub run {
     $self->log->info( "prepare to run source: " . $self->source );
 
     my $result = $self->_run;
-    if ( $result == 1) { 
+    if ( $result && $result == 1) {
         my $compressed =
           Shipwright::Source::Compressed->new( %$self, _no_update_url => 1 );
         $compressed->run(@_);
@@ -92,8 +92,10 @@ sub run {
         if ( $self->version ) {
             $error .= ' version ' . $self->version;
         }
-       
         $error .= ' in your CPAN mirror(s)' . " [@{$CPAN::Config->{urllist}}].";
+        chdir rootdir(); #< chdir to root dir in case CPAN has chdir'd
+                         #into one of the temp dirs, preventing its
+                         #deletion
         confess $error;
     } else {
             $self->log->warn("Removing source ".$self->source);

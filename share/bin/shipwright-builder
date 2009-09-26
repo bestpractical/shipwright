@@ -267,7 +267,7 @@ else {
         install();
     }
     else {
-        print "all dists are intalled already\n";
+        print "all dists are installed already\n";
     }
 }
 
@@ -592,7 +592,7 @@ sub wrap_bin {
         if ( -T $file ) {
             open my $fh, '<', $file or confess "can't open $file: $!";
             my $shebang = <$fh>;
-            if (
+            if ( defined($shebang) &&
                 $shebang =~ m{
 \Q$args{'install-base'}\E(?:/|\\)(?:s?bin)(?:/|\\)(\w+)
 |\benv\s+(\w+)

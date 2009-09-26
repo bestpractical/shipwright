@@ -61,8 +61,8 @@ In a normal build script, the following types of commands are specified:
 configure, make, install, clean, and sometimes test. Their functions should be
 self-explanatory for anyone familiar with building perl modules.
 
-Three template substitutions are available for use in the command:
-%%PERL%%, %%PERL_ARCHNAME%%, %%INSTALL_BASE%% and %%MAKE%%.
+Four template substitutions are available for use in the command:
+C<%%PERL%%>, C<%%PERL_ARCHNAME%%>, C<%%INSTALL_BASE%%> and C<%%MAKE%%>.
 These can be used in cases where the path to perl, the perl archname (e.g.
 'i486-linux-gnu-thread-multi'), the base install path or make command 
 are needed, since they are not known beforehand or need to choose one later.
