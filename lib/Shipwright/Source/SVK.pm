@@ -4,6 +4,7 @@ use warnings;
 use strict;
 use Carp;
 use File::Spec::Functions qw/catdir/;
+use File::Path qw/remove_tree/;
 
 use base qw/Shipwright::Source::Base/;
 
@@ -51,19 +52,14 @@ sub _run {
     my $source = $self->source;
 
     my @cmds;
+    my $path = catdir( $self->download_directory, $self->name );
     push @cmds,
       [
-        $ENV{'SHIPWRIGHT_SVK'},
-        'co',
-        $self->source,
-        catdir( $self->download_directory, $self->name ),
+        $ENV{'SHIPWRIGHT_SVK'}, 'co',
+        $self->source,          $path,
         $self->version ? ( '-r', $self->version ) : ()
       ];
-    push @cmds,
-      [
-        $ENV{'SHIPWRIGHT_SVK'}, 'co', '-d',
-        catdir( $self->download_directory, $self->name ),
-      ];
+    push @cmds, [ $ENV{'SHIPWRIGHT_SVK'}, 'co', '-d', $path, ];
 
     unless ( $self->version ) {
         my ($out) = Shipwright::Util->run(
@@ -74,7 +70,9 @@ sub _run {
         }
     }
 
-    $self->source( catdir( $self->download_directory, $self->name ) );
+    remove_tree($path) if -e $path;
+
+    $self->source( $path );
     Shipwright::Util->run($_) for @cmds;
 }
 
