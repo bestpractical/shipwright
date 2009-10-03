@@ -4,7 +4,7 @@ use warnings;
 use strict;
 use Carp;
 use File::Spec::Functions qw/catdir/;
-use File::Path;
+use File::Path qw/remove_tree/;
 
 use base qw/Shipwright::Source::Base/;
 
@@ -50,12 +50,10 @@ sub _run {
     my $self   = shift;
     my $source = $self->source;
 
-    my $export_dir = catdir( $self->download_directory, $self->name );
+    my $path = catdir( $self->download_directory, $self->name );
     my $cmd = [
-        $ENV{'SHIPWRIGHT_SVN'},
-        'export',
-        $self->source,
-	$export_dir,
+        $ENV{'SHIPWRIGHT_SVN'}, 'export',
+        $self->source,          $path,
         $self->version ? ( '-r', $self->version ) : (),
     ];
 
@@ -68,12 +66,8 @@ sub _run {
         }
     }
 
-    if( -d $export_dir ) {
-      File::Path::rmtree($export_dir);
-      -d $export_dir
-	and confess "could not remove old export dir '$export_dir'";
-    }
-    $self->source( $export_dir );
+    remove_tree($path) if -e $path;
+    $self->source( $path );
     Shipwright::Util->run($cmd);
 }
 
