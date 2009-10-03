@@ -67,10 +67,13 @@ sub run {
         $log->error(
             'failed to run ' . join( ' ', @$cmd ) . " with exit number $?" );
         unless ($ignore_failure) {
+	    $out = "\n$out" if length $out;
+	    $err = "\n$err" if length $err;
             confess <<"EOF";
-something wrong when execute @$cmd: $?
-the output is: $out
-the error is: $err
+command failed: @$cmd
+\$?: $?
+stdout was: $out
+stderr was: $err
 EOF
         }
     }
