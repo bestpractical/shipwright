@@ -424,7 +424,7 @@ Shipwright::Script::Import - Import sources and their dependencies
 
 =head1 SYNOPSIS
 
- import SOURCE [NAME]
+ import SOURCE [ SOURCE ] ...
 
 =head1 OPTIONS
 
