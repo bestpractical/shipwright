@@ -84,28 +84,45 @@ sub _init_new_git_repos {
     chdir $new_repos_dir;
     Shipwright::Util->run( [ $ENV{'SHIPWRIGHT_GIT'}, '--bare', 'init' ] );
 
-    ### make a temporary non-bare repos to initialize the new bare
-    ### repos with, pushing from the regular repos to the bare one
-    my $dir =
-      tempdir( 'shipwright_backend_git_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
+    my ($output) =
+      Shipwright::Util->run( [ $ENV{'SHIPWRIGHT_GIT'}, '--version' ] );
+    my ($version) = $output =~ /(\d+\.\d+\.\d+)/;
+    if ( $version && $version lt '1.6.2' ) {
 
-    chdir $dir;
-    Shipwright::Util->run( [ $ENV{'SHIPWRIGHT_GIT'}, 'init' ] );
+        ### git doesn't allow to clone an empty repo before 1.6.2
+        ### make a temporary non-bare repos to initialize the new bare
+        ### repos with, pushing from the regular repos to the bare one
+        my $dir =
+          tempdir( 'shipwright_backend_git_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
 
-    # touch a file in the non-bare repos
-    my $initial_file = '.shipwright_git_initial';
-    { open my $f, '>', $initial_file or confess "$! writing $dir/$initial_file" }
+        chdir $dir;
+        Shipwright::Util->run( [ $ENV{'SHIPWRIGHT_GIT'}, 'init' ] );
 
-    Shipwright::Util->run(
-        [ $ENV{'SHIPWRIGHT_GIT'}, 'add',  $initial_file ] );
-    Shipwright::Util->run(
-        [ $ENV{'SHIPWRIGHT_GIT'}, 'commit', -m => 'initial commit, shipwright creating new git repository' ] );
-    Shipwright::Util->run(
-        [ $ENV{'SHIPWRIGHT_GIT'}, 'push', $new_repos_dir, 'master' ] );
+        # touch a file in the non-bare repos
+        my $initial_file = '.shipwright_git_initial';
+        {
+            open my $f,
+              '>', $initial_file
+              or confess "$! writing $dir/$initial_file"
+        }
 
-    chdir $cwd;
+        Shipwright::Util->run(
+            [ $ENV{'SHIPWRIGHT_GIT'}, 'add', $initial_file ] );
+        Shipwright::Util->run(
+            [
+                $ENV{'SHIPWRIGHT_GIT'},
+                'commit',
+                -m => 'initial commit, shipwright creating new git repository'
+            ]
+        );
+        Shipwright::Util->run(
+            [ $ENV{'SHIPWRIGHT_GIT'}, 'push', $new_repos_dir, 'master' ] );
 
-    Shipwright::Util->run(sub{ remove_tree( $dir ) }); #< would not be necessary if used File::Temp->newdir instead
+        chdir $cwd;
+
+        Shipwright::Util->run( sub { remove_tree($dir) } )
+          ;    #< would not be necessary if used File::Temp->newdir instead
+    }
 
     return $new_repos_dir;
 }
