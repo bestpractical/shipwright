@@ -119,9 +119,6 @@ sub _init_new_git_repos {
             [ $ENV{'SHIPWRIGHT_GIT'}, 'push', $new_repos_dir, 'master' ] );
 
         chdir $cwd;
-
-        Shipwright::Util->run( sub { remove_tree($dir) } )
-          ;    #< would not be necessary if used File::Temp->newdir instead
     }
 
     return $new_repos_dir;
