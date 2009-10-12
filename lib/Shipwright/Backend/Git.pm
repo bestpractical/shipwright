@@ -61,20 +61,53 @@ sub initialize {
     my $dir = $self->SUPER::initialize(@_);
 
     my $path = $self->repository;
-    $path =~ s!^file://!!;    # this is always true since we check that before
+    $path =~ s!^file://!!    # this should always true since we check that before
+        or die 'sanity check failed';
 
     Shipwright::Util->run( sub { remove_tree( $path ) } );
     Shipwright::Util->run( sub { make_path( $path ) } );
 
+    $self->_init_new_git_repos( $path );
+
+    rcopy( $dir, $self->local_dir )
+      or confess "can't copy $dir to $path: $!";
+    $self->commit( comment => 'create project' );
+}
+
+sub _init_new_git_repos {
+    my $self = shift;
+    my $new_repos_dir = shift;
+
     my $cwd = getcwd;
-    chdir $path;
+
+    # make  a new bare repos at the target path
+    chdir $new_repos_dir;
     Shipwright::Util->run( [ $ENV{'SHIPWRIGHT_GIT'}, '--bare', 'init' ] );
 
-    $self->_initialize_local_dir;
-    rcopy( $dir, $self->local_dir )
-      or confess "can't copy $dir to " . $path . ": $!";
-    $self->commit( comment => 'create project' );
+    ### make a temporary non-bare repos to initialize the new bare
+    ### repos with, pushing from the regular repos to the bare one
+    my $dir =
+      tempdir( 'shipwright_backend_git_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
+
+    chdir $dir;
+    Shipwright::Util->run( [ $ENV{'SHIPWRIGHT_GIT'}, 'init' ] );
+
+    # touch a file in the non-bare repos
+    my $initial_file = '.shipwright_git_initial';
+    { open my $f, '>', $initial_file or confess "$! writing $dir/$initial_file" }
+
+    Shipwright::Util->run(
+        [ $ENV{'SHIPWRIGHT_GIT'}, 'add',  $initial_file ] );
+    Shipwright::Util->run(
+        [ $ENV{'SHIPWRIGHT_GIT'}, 'commit', -m => 'initial commit, shipwright creating new git repository' ] );
+    Shipwright::Util->run(
+        [ $ENV{'SHIPWRIGHT_GIT'}, 'push', $new_repos_dir, 'master' ] );
+
     chdir $cwd;
+
+    Shipwright::Util->run(sub{ remove_tree( $dir ) }); #< would not be necessary if used File::Temp->newdir instead
+
+    return $new_repos_dir;
 }
 
 sub _initialize_local_dir {
