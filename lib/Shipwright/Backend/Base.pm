@@ -40,6 +40,10 @@ sub new {
     return $self->build;
 }
 
+=item build
+
+=cut
+
 sub build {
     my $self = shift;
     $self->log( Log::Log4perl->get_logger( ref $self ) );
@@ -911,6 +915,10 @@ sub local_dir {
     }
     return $target;
 }
+
+=item strip_repository
+
+=cut
 
 sub strip_repository {
     my $self = shift;

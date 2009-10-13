@@ -29,6 +29,12 @@ for Shipwright L<repository|Shipwright::Manual::Glossary/repository>.
 
 =cut
 
+=over 4
+
+=item build
+
+=cut
+
 sub build {
     my $self = shift;
     $self->strip_repository;
@@ -41,8 +47,6 @@ sub build {
 
     $self->SUPER::build(@_);
 }
-
-=over 4
 
 =item initialize
 

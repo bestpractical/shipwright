@@ -36,6 +36,10 @@ F<svnadmin> command is expected to be in the same directory as F<svn>.
 
 =head1 METHODS
 
+=over 4
+
+=item build
+
 =cut
 
 sub build {
