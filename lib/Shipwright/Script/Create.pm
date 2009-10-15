@@ -9,6 +9,12 @@ use base qw/App::CLI::Command Shipwright::Script/;
 use Shipwright;
 use Shipwright::Util;
 
+__PACKAGE__->mk_accessors('force');
+
+sub options {
+    ( 'f|force' => 'force' );
+}
+
 sub run {
     my $self = shift;
 
@@ -41,6 +47,7 @@ Shipwright::Script::Create - Create a project
  -l [--log-level] LOGLEVEL      : specify the log level
                                   (info, debug, warn, error, or fatal)
  --log-file FILENAME            : specify the log file
+ -f [--force]                   : delete the old one if exists
 
 =head1 AUTHORS
 

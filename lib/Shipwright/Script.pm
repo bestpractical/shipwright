@@ -65,8 +65,12 @@ sub prepare {
                 log_level  => $cmd->log_level,
                 log_file   => $cmd->log_file,
             );
-            confess 'invalid repository: ' . $cmd->repository
-              unless $backend->check_repository( action => $action );
+            confess 'invalid repository: '
+              . $cmd->repository
+              unless $backend->check_repository(
+                action => $action,
+                $action eq 'create' ? ( force => $cmd->force ) : ()
+              );
         }
         else {
             confess "need repository arg\n";
