@@ -1,6 +1,12 @@
 Revision history for Shipwright
 
-2.4.3
+2.4.3 Thu Oct 15 05:53:14 GMT 2009
+
+* fix git backend:
+    before 1.6.2, git clone an empty repo doesn't work(thanks to rbuels++)
+* add -f ( --force ) argument to create cmd.
+    now shipwright will confess if repository or path already exists when
+    create without -f
 
 2.4.2 Mon Sep 21 09:46:38 CST 2009
 
