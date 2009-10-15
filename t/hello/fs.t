@@ -79,7 +79,7 @@ $shipwright->backend->import( name => 'hello', source => $source_dir );
 ok( -e catfile( $repo, 'sources', 'Foo-Bar', 'vendor', 'Makefile.PL' ),
     'imported ok' );
 
-my $script_dir = tempdir( 'shipwright_XXXXXX', CLEANUP => 0, TMPDIR => 1 );
+my $script_dir = tempdir( 'shipwright_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
 copy( catfile( 't', 'hello', 'scripts', 'build' ),       $script_dir );
 copy( catfile( 't', 'hello', 'scripts', 'require.yml' ), $script_dir );
 
