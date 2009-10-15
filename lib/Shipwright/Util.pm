@@ -152,7 +152,7 @@ sub find_module {
                 if lc $name eq lc $module;
         }
     }
-    return undef;
+    return;
 }
 
 =head2 PATHS
