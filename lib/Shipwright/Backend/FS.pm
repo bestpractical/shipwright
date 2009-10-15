@@ -234,7 +234,18 @@ Check if the given repository is valid.
 
 sub check_repository {
     my $self = shift;
-    return $self->SUPER::check_repository(@_);
+    my %args = @_;
+    if ( $args{action} eq 'create' ) {
+        my $repo = $self->repository;
+        if ( $args{force} || !-e $repo ) {
+            return 1;
+        }
+        $self->log->fatal("$repo exists already");
+        return;
+    }
+    else {
+        return $self->SUPER::check_repository(@_);
+    }
 }
 
 sub _update_file {

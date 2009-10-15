@@ -42,14 +42,14 @@ F<svnadmin> command is expected to be in the same directory as F<svn>.
 
 =cut
 
+
+
 sub build {
     my $self = shift;
     $self->strip_repository
         if $self->repository =~ m{^svn:[a-z]+(?:\+[a-z]+)?://};
     $self->SUPER::build(@_);
 }
-
-=over 4
 
 =item initialize
 
@@ -253,8 +253,12 @@ sub check_repository {
         # $err like
         # file:///tmp/svn/foo:  (Not a valid URL)
         # usually means foo doesn't exist, which is valid for create
-        return 1 if $info || $err && $err =~ m{^\Q$repo\E:}m;
-
+        if ($info) {
+            return 1 if $args{force} || $info =~ /Revision: 0/;
+            $self->log->fatal("$repo has commits already");
+            return;
+        }
+        return 1 if $err && $err =~ m{^\Q$repo\E:}m;
     }
     else {
         return $self->SUPER::check_repository(@_);

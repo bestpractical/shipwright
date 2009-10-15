@@ -63,8 +63,7 @@ sub initialize {
     my $dir = $self->SUPER::initialize(@_);
 
     my $path = $self->repository;
-    $path =~ s!^file://!!    # this should always true since we check that before
-        or die 'sanity check failed';
+    $path =~ s!^file://!!;
 
     Shipwright::Util->run( sub { remove_tree( $path ) } );
     Shipwright::Util->run( sub { make_path( $path ) } );
@@ -154,11 +153,16 @@ sub check_repository {
     my %args = @_;
 
     if ( $args{action} eq 'create' ) {
-        if ( $self->repository =~ m{^file://} ) {
-            return 1;
+        my $repo = $self->repository;
+        if ( $repo =~ m{^file://(.*)} ) {
+            if ( $args{force} || !-e $1 ) {
+                return 1;
+            }
+            $self->log->fatal("$repo exists already");
+            return;
         }
         else {
-            $self->log->error(
+            $self->log->fatal(
                 "git backend only supports creating local repository");
             return;
         }

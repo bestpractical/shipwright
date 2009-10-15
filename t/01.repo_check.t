@@ -96,7 +96,7 @@ sub test_repo {
             my $backend = Shipwright::Backend->new( repository => $repo );
             isa_ok( $backend, 'Shipwright::Backend::' . $bk_class );
             is(
-                $backend->check_repository( action => $action ),
+                $backend->check_repository( action => $action, force => 1 ),
                 $map{$action}{$repo},
                 "$repo for action $action",
             );

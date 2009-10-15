@@ -89,7 +89,7 @@ sub start_test {
     my @cmds = (
 
         # create hello repo
-        [ ['create'], qr/created with success/, "create $repo" ],
+        [ ['create', '-f'], qr/created with success/, "create $repo" ],
 
         # non exist cmd
         [

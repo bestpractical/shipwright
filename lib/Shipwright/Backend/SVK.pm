@@ -270,21 +270,19 @@ sub check_repository {
 
     if ( $args{action} eq 'create' ) {
 
-        # svk always has //
-        return 1 if $self->repository =~ m{^//};
-
-        if ( $self->repository =~ m{^(/[^/]+/)} ) {
-            my $ori = $self->repository;
-            $self->repository($1);
-
-            my $info = $self->info;
-
-            # revert back
-            $self->repository($ori);
-
-            return 1 if $info;
+        my $repo = $self->repository;
+        my ( $info, $err ) = $self->info;
+        if ($err) {
+            $err =~ s{\s+$}{ };
+            $self->log->fatal( $err, "maybe root of $repo does not exist?" );
+            return;
         }
 
+        return 1
+          if $args{force} || $info =~ /not exist/ || $info =~ /Revision: 0/;
+
+        $self->log->fatal("$repo has commits already");
+        return;
     }
     else {
         return $self->SUPER::check_repository(@_);
