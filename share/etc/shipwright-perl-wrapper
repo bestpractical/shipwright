@@ -1,5 +1,5 @@
 #!/bin/sh
-if [ -z `which readlink` ]; then  
+if [ -z `which readlink` ] || [ "`which readlink | grep 'no readlink in'`" ]; then  
     # if we don't have readlink, we're on some pitiful platform like solaris
     test -h $0 && LINK=`ls -l $0 | awk -F\>  '{print $NF}'`
 else
