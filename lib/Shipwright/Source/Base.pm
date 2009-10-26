@@ -180,7 +180,7 @@ sub _follow {
 
                 $makefile =~ s/^\s*requires(?!\w)/shipwright_requires/mg;
                 $makefile =~
-                  s/^\s*build_requires(?!\w)/shipwright_build_requires/mg;
+s/^\s*(?:build|configure)_requires(?!\w)/shipwright_build_requires/mg;
                 $makefile =~
                   s/^\s*test_requires(?!\w)/shipwright_test_requires/mg;
                 $makefile =~ s/^\s*recommends(?!\w)/shipwright_recommends/mg;
