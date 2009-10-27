@@ -67,8 +67,15 @@ sub run {
         $log->error(
             'failed to run ' . join( ' ', @$cmd ) . " with exit number $?" );
         unless ($ignore_failure) {
-	    $out = "\n$out" if length $out;
-	    $err = "\n$err" if length $err;
+            $out = "\n$out" if length $out;
+            $err = "\n$err" if length $err;
+            my $suggest = '';
+            if ( $err && $err =~ /Can't locate (\S+)\.pm in \@INC/ ) {
+                my $module = $1;
+                $module =~ s!/!::!g;
+                $suggest = "install $module first";
+            }
+
             my $cwd = getcwd;
             confess <<"EOF";
 command failed: @$cmd
@@ -76,8 +83,10 @@ command failed: @$cmd
 cwd: $cwd
 stdout was: $out
 stderr was: $err
+suggest: $suggest
 EOF
         }
+
     }
 
     return wantarray ? ( $out, $err ) : $out;
