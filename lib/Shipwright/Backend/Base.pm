@@ -719,7 +719,7 @@ sub update {
     my $self = shift;
     my %args = @_;
 
-    croak "need path option" unless $args{path};
+    confess "need path option" unless $args{path};
 
     if ( $args{path} =~ m{/$} ) {
         # it's a directory
@@ -740,7 +740,7 @@ sub update {
     }
     else {
 
-        croak "$args{path} seems not shipwright's own file"
+        confess "$args{path} seems not shipwright's own file"
           unless -e catfile( Shipwright::Util->share_root, $args{path} );
 
         return $self->_update_file( $args{path},

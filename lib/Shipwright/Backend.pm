@@ -10,7 +10,7 @@ sub new {
     my $class = shift;
     my %args  = @_;
 
-    croak 'need repository arg' unless exists $args{repository};
+    confess 'need repository arg' unless exists $args{repository};
 
     $args{repository} =~ s/^\s+//;
     $args{repository} =~ s/\s+$//;
@@ -24,16 +24,16 @@ sub new {
     if ( $args{repository} =~ /^([a-z]+)(?:\+([a-z]+))?:/ ) {
         ($backend, $subtype) = ($1, $2);
     } else {
-        croak "invalid repository, doesn't start from xxx: or xxx+yyy:";
+        confess "invalid repository, doesn't start from xxx: or xxx+yyy:";
     }
 
     my $module = Shipwright::Util->find_module(__PACKAGE__, $backend);
     unless ( $module ) {
-        croak "Couldn't find backend implementing '$backend'";
+        confess "Couldn't find backend implementing '$backend'";
     }
 
     $module->require
-        or croak "Couldn't load module '$module'"
+        or confess "Couldn't load module '$module'"
             ." implementing backend '$backend': $@";
     return $module->new(%args);
 }

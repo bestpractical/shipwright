@@ -73,7 +73,7 @@ sub _cmd {
     $args{path} ||= '';
 
     for ( @{ $REQUIRE_OPTIONS{$type} } ) {
-        croak "$type need option $_" unless $args{$_};
+        confess "$type need option $_" unless $args{$_};
     }
 
     my @cmd;
@@ -159,7 +159,7 @@ sub _cmd {
 
             if ( -d $path ) {
                 my $dh;
-                opendir $dh, $path or die $!;
+                opendir $dh, $path or confess $!;
                 my $dirs = join "\t", grep { /^[^.]/ } readdir $dh;
                 return $dirs;
             }
@@ -174,13 +174,13 @@ sub _cmd {
             return ( 'No such file or directory' ) unless -e $path;
             return ( '', 'Is a directory' ) unless -f $path;
             local $/;
-            open my $fh, '<', $path or die $!;
+            open my $fh, '<', $path or confess $!;
             my $c = <$fh>;
             return $c;
         };
     }
     else {
-        croak "invalid command: $type";
+        confess "invalid command: $type";
     }
 
     return @cmd;

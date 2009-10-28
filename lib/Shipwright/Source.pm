@@ -55,7 +55,7 @@ sub new {
         close $fh;
     }
 
-    croak "need source arg" unless exists $args{source};
+    confess "need source arg" unless exists $args{source};
 
     for my $dir (qw/directory download_directory scripts_directory/) {
         make_path( $args{$dir} ) unless -e $args{$dir};
@@ -63,7 +63,7 @@ sub new {
 
     my $type = type( \$args{source} );
 
-    croak "invalid source: $args{source}" unless $type;
+    confess "invalid source: $args{source}" unless $type;
 
     my $module = 'Shipwright::Source::' . $type;
     $module->require;

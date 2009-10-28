@@ -42,7 +42,7 @@ sub _run {
         $self->_lwp_get($source);
     }
     else {
-        croak "invalid source: $source";
+        confess "invalid source: $source";
     }
     return 1;
 }

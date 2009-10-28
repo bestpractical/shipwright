@@ -512,7 +512,7 @@ EOF
         Shipwright::Util::DumpFile( $require_path, $require );
     }
     else {
-        croak "invalid __require.yml in $path";
+        confess "invalid __require.yml in $path";
     }
 
     # go back to the cwd before we run _follow
@@ -696,7 +696,7 @@ sub _lwp_get {
         print $fh $response->content;
     }
     else {
-        croak "failed to get $source: " . $response->status_line;
+        confess "failed to get $source: " . $response->status_line;
     }
 }
 

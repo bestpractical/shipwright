@@ -92,7 +92,7 @@ sub _run {
         }
         chdir $cwd;
         remove_tree( $path ) if -e $path;
-        rcopy( $cloned_path, $path ) or die $!;
+        rcopy( $cloned_path, $path ) or confess $!;
         remove_tree( catdir( $path, '.git' ) );
     };
 
