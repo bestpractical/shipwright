@@ -40,6 +40,7 @@ Shipwright::Script::Create - Create a project
  create -r fs:/tmp/foo
  create -r svk://foo
  create -r svn:file:///tmp/foo/bar
+ create -r git:file:///home/me/shipwright/my_proj.git
 
 =head1 OPTIONS
 
