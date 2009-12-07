@@ -129,8 +129,8 @@ For our tutorial, e.g. perl 5.10, the build can't be created automatically,
 so we need to edit the build file:
 
   configure: ./Configure -des -Dprefix=%%INSTALL_BASE%%
-  test: make test
-  install: make install
+  test: %%MAKE%% test
+  install: %%MAKE%% install
 
 For more information on build scripts, see L<Shipwright::Manual::CustomizeBuild>.
 
