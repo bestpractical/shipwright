@@ -1,5 +1,7 @@
 Revision history for Shipwright
 
+2.4.5
+
 2.4.4 Thu Dec 10 04:00:44 GMT 2009
 
 * git backend tweak: sync when Shipwright::Backend::Git->new
