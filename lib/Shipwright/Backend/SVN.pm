@@ -67,6 +67,7 @@ sub initialize {
         _initialize => 1,
         comment     => 'created project',
     );
+    $self->_initialize_local_dir();
 
 }
 

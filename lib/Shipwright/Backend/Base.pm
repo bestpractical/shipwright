@@ -37,7 +37,7 @@ the constructor
 sub new {
     my $proto = shift;
     my $self = bless {@_}, ref $proto || $proto;
-    return $self->build;
+    return $self->build(@_);
 }
 
 =item build
@@ -902,18 +902,8 @@ sub local_dir {
     $repo =~ s/:/-/g;
     $repo =~ s![/\\]!_!g;
     my $target = catdir( $base_dir, $repo );
-
-# if explicitly defined $need_init, we should do exactly what it asks
-# else, if the $target is not existed yet, we do the init thing
-    if ( defined $need_init ) {
-        if ( $need_init ) {
-            $self->_initialize_local_dir;
-        }
-    }
-    elsif ( !-e $target ) {
-        $self->_initialize_local_dir;
-    }
     return $target;
+
 }
 
 =item strip_repository

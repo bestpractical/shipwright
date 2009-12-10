@@ -47,7 +47,7 @@ for Shipwright L<repository|Shipwright::Manual::Glossary/repository>.
 sub build {
     my $self = shift;
     $self->strip_repository
-        if $self->repository =~ m{^git:[a-z]+(?:\+[a-z]+)?://};
+      if $self->repository =~ m{^git:[a-z]+(?:\+[a-z]+)?://};
     $self->SUPER::build(@_);
 }
 
@@ -69,6 +69,7 @@ sub initialize {
     Shipwright::Util->run( sub { make_path( $path ) } );
 
     $self->_init_new_git_repos( $path );
+    $self->_initialize_local_dir();
 
     rcopy( $dir, $self->local_dir )
       or confess "can't copy $dir to $path: $!";
