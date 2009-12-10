@@ -1,6 +1,14 @@
 Revision history for Shipwright
 
-2.4.4
+2.4.4 Thu Dec 10 04:00:44 GMT 2009
+
+* git backend tweak: sync when Shipwright::Backend::Git->new
+* doc update(jibsheet++)
+* add suggest line when error occurs: currently we just suggest people install modules if not installed
+* handle configure_requires in M::I based Makefile.PL
+* fix the check if realink exists way on solaris
+* Checkpoint of newest jeos-build script(chmrr++)
+* add AUTHORS to manifest
 
 2.4.3 Thu Oct 15 05:53:14 GMT 2009
 
