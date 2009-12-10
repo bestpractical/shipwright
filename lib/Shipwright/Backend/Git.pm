@@ -46,9 +46,12 @@ for Shipwright L<repository|Shipwright::Manual::Glossary/repository>.
 
 sub build {
     my $self = shift;
+    my %args = @_;
+    $self->SUPER::build(%args);
     $self->strip_repository
       if $self->repository =~ m{^git:[a-z]+(?:\+[a-z]+)?://};
-    $self->SUPER::build(@_);
+    $self->_sync_local_dir if -e $self->local_dir && !$args{no_sync_local_dir};
+    return $self;
 }
 
 =item initialize
@@ -142,6 +145,17 @@ sub _initialize_local_dir {
     chdir $cwd;
     return $target;
 }
+
+sub _sync_local_dir {
+    my $self = shift;
+    my $target = $self->local_dir;
+    my $cwd = getcwd;
+    chdir $target or return;
+
+    Shipwright::Util->run( [ $ENV{'SHIPWRIGHT_GIT'}, 'pull' ] );
+    chdir $cwd;
+}
+
 
 =item check_repository
 

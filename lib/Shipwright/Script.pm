@@ -56,8 +56,10 @@ sub prepare {
           if !$cmd->repository && $ENV{SHIPWRIGHT_REPOSITORY};
         if ( $cmd->repository ) {
             require Shipwright::Backend;
-            my $backend =
-              Shipwright::Backend->new( repository => $cmd->repository );
+            my $backend = Shipwright::Backend->new(
+                repository        => $cmd->repository,
+                no_sync_local_dir => 1,
+            );
 
             # this $shipwright object will do nothing, except for init logging
             my $shipwright = Shipwright->new(
