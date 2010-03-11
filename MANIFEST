@@ -44,6 +44,7 @@ lib/Shipwright/Script/List.pm
 lib/Shipwright/Script/Maintain.pm
 lib/Shipwright/Script/Relocate.pm
 lib/Shipwright/Script/Rename.pm
+lib/Shipwright/Script/Requires.pm
 lib/Shipwright/Script/Update.pm
 lib/Shipwright/Source.pm
 lib/Shipwright/Source/Base.pm
@@ -109,7 +110,9 @@ t/hello/shipwright/order.yml
 t/hello/svk.t
 t/hello/svn.t
 TODO
+xbin/update_pod.pl
 xt/99.kwalitee.t
+xt/env-coverage.t
 xt/perlcritic.t
 xt/pod-coverage.t
 xt/pod.t
