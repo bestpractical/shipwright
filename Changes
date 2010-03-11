@@ -1,6 +1,10 @@
 Revision history for Shipwright
 
-2.4.5
+2.4.5 Thu Mar 11 14:42:21 UTC 2010
+
+* requires cmd
+* tiny fix for abnormal version string( it may contains > )
+    ( see http://cpansearch.perl.org/src/JPEACOCK/version-0.80/META.yml )
 
 2.4.4 Thu Dec 10 04:00:44 GMT 2009
 
