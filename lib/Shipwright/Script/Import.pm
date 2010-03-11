@@ -437,6 +437,8 @@ Shipwright::Script::Import - Import sources and their dependencies
  --overwrite                    : import dependency dists anyway even if they
                                   are already in the repository
  --version                      : specify the source's version
+ --skip                         : specify a list of modules/dist names of
+                                  which we don't want to import
  --skip-recommends              : specify a list of modules/dist names of
                                   which recommends we don't want to import
  --skip-all-recommends          : skip all the recommends to import
