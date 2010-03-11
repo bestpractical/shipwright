@@ -407,9 +407,11 @@ EOF
                     next;
                 }
 
+                my $version = $require->{$type}{$module}{version};
+                $version =~ s!^\D+!!; # some may contain '>' or '>=' 
                 if ( !$self->include_dual_lifed 
-                    && Module::CoreList->first_release( $module, $require->{$type}{$module}{version} )
-                    && Module::CoreList->first_release( $module, $require->{$type}{$module}{version} ) <= $self->min_perl_version)
+                    && Module::CoreList->first_release( $module, $version )
+                    && Module::CoreList->first_release( $module, $version ) <= $self->min_perl_version)
                 {
                     $self->log->info("$module is skipped becasue it's in core");
                     delete $require->{$type}{$module};
