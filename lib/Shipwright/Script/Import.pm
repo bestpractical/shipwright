@@ -158,7 +158,7 @@ sub run {
               Shipwright::Util::LoadFile( $shipwright->source->version_path );
             my $name = ( splitdir( $source ) )[-1];
 
-            my $base = $self->_parent_dir($source);
+            my $base = Shipwright::Util->parent_dir($source);
 
             my $script_dir;
             if ( -e catdir( $base, '__scripts', $name ) ) {
@@ -259,7 +259,7 @@ sub _import_req {
     $require_file = catfile( $script_dir, 'require.yml' )
       unless -e catfile( $source, '__require.yml' );
 
-    my $dir = $self->_parent_dir($source);
+    my $dir = Shipwright::Util->parent_dir($source);
 
     my $map_file = catfile( $dir, 'map.yml' );
 
@@ -402,16 +402,6 @@ EOF
     open my $fh, '>', catfile( $script_dir, 'build' ) or confess $@;
     print $fh $_, "\n" for @commands;
     close $fh;
-}
-
-# _parent_dir: return parent dir
-
-sub _parent_dir {
-    my $self   = shift;
-    my $source = shift;
-    my @dirs   = splitdir($source);
-    pop @dirs;
-    return catdir(@dirs);
 }
 
 1;

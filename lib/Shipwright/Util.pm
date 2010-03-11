@@ -246,6 +246,20 @@ sub shipwright_user_root {
     return $ENV{SHIPWRIGHT_USER_ROOT} || catdir( user_home, '.shipwright' );
 }
 
+=head3 parent_dir
+
+return the dir's parent dir, the arg must be a dir path
+
+=cut
+
+sub parent_dir {
+    my $self = shift;
+    my $dir  = shift;
+    my @dirs = splitdir($dir);
+    pop @dirs;
+    return catdir(@dirs);
+}
+
 1;
 
 __END__
