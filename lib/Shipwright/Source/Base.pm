@@ -339,8 +339,29 @@ EOF
                   if $? || !-e 'Makefile';
                 my $prereqs = read_file( catfile('shipwright_prereqs') )
                   or confess "can't read prereqs: $!";
-                  $self->log->error( "prereqs: $prereqs" );
-                eval "$prereqs;1;" or confess "eval error: $@";    ## no critic
+                eval "$prereqs;1;" or confess "eval error: $@"; ## no critic
+
+                if ( -e 'META.yml' ) {
+
+                    # if there's META.yml, let's find more about it
+                    my $meta = Shipwright::Util::LoadFile('META.yml')
+                      or confess "can't read META.yml: $!";
+                    $require ||= {};
+                    $require->{requires} = {
+                        %{ $meta->{requires} || {} },
+                        %{ $require->{requires} || {} },
+                    };
+                    $require->{recommends} = {
+                        %{ $meta->{recommends} || {} },
+                        %{ $require->{recommends} || {} },
+                    };
+                    $require->{build_requires} = {
+                        %{ $meta->{build_requires}     || {} },
+                        %{ $meta->{configure_requires} || {} },
+                        %{ $meta->{test_requires}      || {} },
+                        %{ $require->{build_requires} || {} },
+                    };
+                }
 
                 unlink 'shipwright_makefile.pl', 'shipwright_prereqs';
             }
