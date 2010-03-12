@@ -160,7 +160,7 @@ sub _follow {
             my $source = read_file( catfile( '_build', 'prereqs' ) )
               or confess "can't read _build/prereqs: $!";
             my $eval = '$require = ' . $source;
-            eval $eval or confess "eval error: $@";    ## no critic
+            eval "$eval;1" or confess "eval error: $@";    ## no critic
 
             $source = read_file( catfile('Build.PL') )
               or confess "can't read Build.PL: $!";
@@ -339,7 +339,8 @@ EOF
                   if $? || !-e 'Makefile';
                 my $prereqs = read_file( catfile('shipwright_prereqs') )
                   or confess "can't read prereqs: $!";
-                eval $prereqs or confess "eval error: $@";    ## no critic
+                  $self->log->error( "prereqs: $prereqs" );
+                eval "$prereqs;1;" or confess "eval error: $@";    ## no critic
 
                 unlink 'shipwright_makefile.pl', 'shipwright_prereqs';
             }
@@ -361,7 +362,7 @@ EOF
                 if ( $source && $source =~ /({.*})/ ) {
                     my $eval .= '$require = ' . $1;
                     $eval =~ s/([\w:]+)=>/'$1'=>/g;
-                    eval $eval or confess "eval error: $@";    ## no critic
+                    eval "$eval;1" or confess "eval error: $@";    ## no critic
                 }
 
                 for ( keys %$require ) {
