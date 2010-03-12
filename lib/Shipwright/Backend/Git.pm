@@ -50,7 +50,9 @@ sub build {
     $self->SUPER::build(%args);
     $self->strip_repository
       if $self->repository =~ m{^git:[a-z]+(?:\+[a-z]+)?://};
-    $self->_sync_local_dir if -e $self->local_dir && !$args{no_sync_local_dir};
+    my $repo_path = $self->repository;
+    $repo_path =~ s!.*?://!!;
+    $self->_sync_local_dir if -e $repo_path && -e $self->local_dir && !$args{no_sync_local_dir};
     return $self;
 }
 
