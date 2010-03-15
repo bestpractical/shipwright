@@ -1,5 +1,7 @@
 Revision history for Shipwright
 
+2.4.8
+
 2.4.7 Fri Mar 12 13:28:32 UTC 2010
 
 * make use of META.yml as a complement for M::I

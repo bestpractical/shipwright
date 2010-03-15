@@ -2,7 +2,7 @@ package Shipwright;
 
 use warnings;
 use strict;
-use version; our $VERSION = qv('2.4.7');
+use version; our $VERSION = qv('2.4.8');
 
 use base qw/Class::Accessor::Fast/;
 
