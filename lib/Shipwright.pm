@@ -12,7 +12,8 @@ use Shipwright::Logger;
 use Shipwright::Util;
 use File::Spec::Functions qw/catfile tmpdir/;
 
-$ENV{SHIPWRIGHT_MAKE} ||= 'make';
+# strawberry perl's build make is 'dmake'
+$ENV{SHIPWRIGHT_MAKE} ||= $^O !~ /MSWin/ ? 'dmake' : 'make';
 $ENV{SHIPWRIGHT_SVK} ||= 'svk';
 $ENV{SHIPWRIGHT_SVN} ||= 'svn';
 $ENV{SHIPWRIGHT_GIT} ||= 'git';
