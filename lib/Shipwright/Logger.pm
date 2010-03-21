@@ -1,7 +1,7 @@
 package Shipwright::Logger;
 use strict;
 use warnings;
-use Carp;
+use Shipwright::Util;
 use Log::Log4perl;
 use Scalar::Util qw/blessed/;
 

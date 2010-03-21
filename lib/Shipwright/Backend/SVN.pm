@@ -2,7 +2,6 @@ package Shipwright::Backend::SVN;
 
 use warnings;
 use strict;
-use Carp;
 use File::Spec::Functions qw/catfile/;
 use Shipwright::Util;
 use File::Copy::Recursive qw/rcopy/;
@@ -90,7 +89,7 @@ sub _cmd {
     $args{comment} ||= '';
 
     for ( @{ $REQUIRE_OPTIONS{$type} } ) {
-        confess "$type need option $_" unless $args{$_};
+        confess_or_die "$type need option $_" unless $args{$_};
     }
 
     my @cmd;
@@ -182,7 +181,7 @@ sub _cmd {
         @cmd = [ $ENV{'SHIPWRIGHT_SVN'}, 'cat', $self->repository . $args{path} ];
     }
     else {
-        confess "invalid command: $type";
+        confess_or_die "invalid command: $type";
     }
 
     return @cmd;
@@ -274,7 +273,7 @@ sub _update_file {
 
     $self->_sync_local_dir( $path );
     my $file = $self->local_dir . $path;
-    rcopy( $latest, $file ) or confess "can't copy $latest to $file: $!";
+    rcopy( $latest, $file ) or confess_or_die "can't copy $latest to $file: $!";
     $self->commit(
         path => $file,
         comment => "updated $path",

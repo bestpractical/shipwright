@@ -2,7 +2,6 @@ package Shipwright::Source;
 
 use warnings;
 use strict;
-use Carp;
 use UNIVERSAL::require;
 use File::Temp qw/tempdir/;
 use File::Spec::Functions qw/catfile catdir/;
@@ -51,11 +50,11 @@ sub new {
 
     for (qw/map_path url_path version_path branches_path/) {
         next if -e $args{$_};
-        open my $fh, '>', $args{$_} or confess "can't write to $args{$_}: $!";
+        open my $fh, '>', $args{$_} or confess_or_die "can't write to $args{$_}: $!";
         close $fh;
     }
 
-    confess "need source arg" unless exists $args{source};
+    confess_or_die "need source arg" unless exists $args{source};
 
     for my $dir (qw/directory download_directory scripts_directory/) {
         make_path( $args{$dir} ) unless -e $args{$dir};
@@ -63,7 +62,7 @@ sub new {
 
     my $type = type( \$args{source} );
 
-    confess "invalid source: $args{source}" unless $type;
+    confess_or_die "invalid source: $args{source}" unless $type;
 
     my $module = 'Shipwright::Source::' . $type;
     $module->require;

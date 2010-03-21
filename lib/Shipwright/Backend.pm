@@ -2,7 +2,6 @@ package Shipwright::Backend;
 
 use warnings;
 use strict;
-use Carp;
 use UNIVERSAL::require;
 use Shipwright::Util;
 
@@ -10,7 +9,7 @@ sub new {
     my $class = shift;
     my %args  = @_;
 
-    confess 'need repository arg' unless exists $args{repository};
+    confess_or_die 'need repository arg' unless exists $args{repository};
 
     $args{repository} =~ s/^\s+//;
     $args{repository} =~ s/\s+$//;
@@ -24,16 +23,16 @@ sub new {
     if ( $args{repository} =~ /^([a-z]+)(?:\+([a-z]+))?:/ ) {
         ($backend, $subtype) = ($1, $2);
     } else {
-        confess "invalid repository, doesn't start from xxx: or xxx+yyy:";
+        confess_or_die "invalid repository, doesn't start from xxx: or xxx+yyy:";
     }
 
     my $module = find_module(__PACKAGE__, $backend);
     unless ( $module ) {
-        confess "Couldn't find backend implementing '$backend'";
+        confess_or_die "Couldn't find backend implementing '$backend'";
     }
 
     $module->require
-        or confess "Couldn't load module '$module'"
+        or confess_or_die "Couldn't load module '$module'"
             ." implementing backend '$backend': $@";
     return $module->new(%args);
 }

@@ -2,7 +2,7 @@ package Shipwright::Script::Maintain;
 
 use strict;
 use warnings;
-use Carp;
+use Shipwright::Util;
 
 use base qw/App::CLI::Command Class::Accessor::Fast Shipwright::Script/;
 __PACKAGE__->mk_accessors(

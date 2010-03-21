@@ -1,7 +1,7 @@
 package Shipwright::Source::Directory;
 use strict;
 use warnings;
-use Carp;
+use Shipwright::Util;
 use File::Spec::Functions qw/catdir/;
 use File::Basename;
 use File::Copy::Recursive qw/rcopy/;

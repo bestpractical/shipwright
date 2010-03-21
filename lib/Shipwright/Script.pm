@@ -2,7 +2,7 @@ package Shipwright::Script;
 use strict;
 use warnings;
 use App::CLI;
-use Carp;
+use Shipwright::Util;
 use base qw/App::CLI Class::Accessor::Fast/;
 
 __PACKAGE__->mk_accessors(qw/repository log_file log_level/);
@@ -67,7 +67,7 @@ sub prepare {
                 log_level  => $cmd->log_level,
                 log_file   => $cmd->log_file,
             );
-            confess 'invalid repository: '
+            confess_or_die 'invalid repository: '
               . $cmd->repository
               unless $backend->check_repository(
                 action => $action,
@@ -75,7 +75,7 @@ sub prepare {
               );
         }
         else {
-            confess "need repository arg\n";
+            confess_or_die "need repository arg\n";
         }
     }
     return $cmd;

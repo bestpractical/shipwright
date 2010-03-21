@@ -2,7 +2,6 @@ package Shipwright::Script::Rename;
 
 use strict;
 use warnings;
-use Carp;
 
 use base qw/App::CLI::Command Shipwright::Script/;
 
@@ -14,17 +13,17 @@ sub run {
 
     my ( $name, $new_name ) = @_;
 
-    confess "need name arg\n"     unless $name;
-    confess "need new-name arg\n" unless $new_name;
+    confess_or_die "need name arg\n"     unless $name;
+    confess_or_die "need new-name arg\n" unless $new_name;
 
-    confess "invalid new-name: $new_name, should only contain - and alphanumeric\n"
+    confess_or_die "invalid new-name: $new_name, should only contain - and alphanumeric\n"
       unless $new_name =~ /^[-\w]+$/;
 
     my $shipwright = Shipwright->new( repository => $self->repository, );
 
     my $order = $shipwright->backend->order;
 
-    confess "no such dist: $name\n" unless grep { $_ eq $name } @$order;
+    confess_or_die "no such dist: $name\n" unless grep { $_ eq $name } @$order;
 
     $shipwright->backend->move(
         path     => "/sources/$name",

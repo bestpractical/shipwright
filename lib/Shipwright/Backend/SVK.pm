@@ -2,7 +2,6 @@ package Shipwright::Backend::SVK;
 
 use warnings;
 use strict;
-use Carp;
 use File::Spec::Functions qw/catfile/;
 use Shipwright::Util;
 use File::Copy::Recursive qw/rcopy/;
@@ -79,7 +78,7 @@ sub _svnroot {
             return $self->{svnroot} = "file://$svnroot/$1";
         }
     }
-    confess "Can't find determine underlying SVN repository for ". $self->repository;
+    confess_or_die "Can't find determine underlying SVN repository for ". $self->repository;
 }
 
 # a cmd generating factory
@@ -91,7 +90,7 @@ sub _cmd {
     $args{comment} ||= '';
 
     for ( @{ $REQUIRE_OPTIONS{$type} } ) {
-        confess "$type need option $_" unless $args{$_};
+        confess_or_die "$type need option $_" unless $args{$_};
     }
 
     my @cmd;
@@ -209,7 +208,7 @@ sub _cmd {
         @cmd = [ $ENV{'SHIPWRIGHT_SVN'}, 'cat', $self->_svnroot . $args{path} ];
     }
     else {
-        confess "invalid command: $type";
+        confess_or_die "invalid command: $type";
     }
 
     return @cmd;
@@ -298,7 +297,7 @@ sub _update_file {
     my $file = $self->local_dir . $path;
     $self->_sync_local_dir( $path );
 
-    rcopy( $latest, $file ) or confess "can't copy $latest to $file: $!";
+    rcopy( $latest, $file ) or confess_or_die "can't copy $latest to $file: $!";
     $self->commit(
         path    => $file,
         comment => "updated $path",
@@ -313,7 +312,7 @@ sub _update_dir {
     $self->_sync_local_dir( $path );
     my $dir = $self->local_dir . $path;
     remove_tree( $dir );
-    rcopy( $latest, $dir ) or confess "can't copy $latest to $dir: $!";
+    rcopy( $latest, $dir ) or confess_or_die "can't copy $latest to $dir: $!";
     $self->commit(
         path    => $dir,
         comment => "updated $path",

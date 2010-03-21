@@ -2,7 +2,7 @@ package Shipwright::Source::Shipwright;
 use strict;
 use warnings;
 
-use Carp;
+use Shipwright::Util;
 use File::Spec::Functions qw/catdir/;
 
 use base qw/Shipwright::Source::Base/;

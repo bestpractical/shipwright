@@ -2,12 +2,12 @@ package Shipwright::Source::FTP;
 
 use warnings;
 use strict;
-use Carp;
 
 use Shipwright::Source::Compressed;
 use File::Spec::Functions qw/catfile/;
 
 use base qw/Shipwright::Source::Base/;
+use Shipwright::Util;
 
 =head2 run
 
@@ -40,7 +40,7 @@ sub _run {
         $self->_lwp_get($source);
     }
     else {
-        confess "invalid source: $source";
+        confess_or_die "invalid source: $source";
     }
 }
 

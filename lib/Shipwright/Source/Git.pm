@@ -2,7 +2,7 @@ package Shipwright::Source::Git;
 
 use warnings;
 use strict;
-use Carp;
+use Shipwright::Util;
 use File::Spec::Functions qw/catdir/;
 use File::Path qw/remove_tree/;
 use File::Copy::Recursive qw/rcopy/;
@@ -92,7 +92,7 @@ sub _run {
         }
         chdir $cwd;
         remove_tree( $path ) if -e $path;
-        rcopy( $cloned_path, $path ) or confess $!;
+        rcopy( $cloned_path, $path ) or confess_or_die $!;
         remove_tree( catdir( $path, '.git' ) );
     };
 

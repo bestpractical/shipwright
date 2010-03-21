@@ -2,7 +2,7 @@ package Shipwright::Script::Relocate;
 
 use strict;
 use warnings;
-use Carp;
+use Shipwright::Util;
 
 use base qw/App::CLI::Command Shipwright::Script/;
 
@@ -18,8 +18,8 @@ sub run {
     my $self = shift;
     my ( $name, $new_source ) = @_;
 
-    confess "need name arg"   unless $name;
-    confess "need source arg" unless $new_source;
+    confess_or_die "need name arg"   unless $name;
+    confess_or_die "need source arg" unless $new_source;
 
     my $shipwright = Shipwright->new(
         repository => $self->repository,
@@ -31,7 +31,7 @@ sub run {
 
     # die if the specified branch doesn't exist
     if ( $branches && $self->as ) {
-        confess "$name doesn't have branch "
+        confess_or_die "$name doesn't have branch "
           . $self->as
           . ". please use import cmd instead"
           unless grep { $_ eq $self->as } @{ $branches->{$name} || [] };

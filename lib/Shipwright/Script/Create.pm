@@ -2,7 +2,6 @@ package Shipwright::Script::Create;
 
 use strict;
 use warnings;
-use Carp;
 
 use base qw/App::CLI::Command Shipwright::Script/;
 

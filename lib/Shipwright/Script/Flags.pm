@@ -2,7 +2,7 @@ package Shipwright::Script::Flags;
 
 use strict;
 use warnings;
-use Carp;
+use Shipwright::Util;
 
 use base qw/App::CLI::Command Class::Accessor::Fast Shipwright::Script/;
 __PACKAGE__->mk_accessors(qw/add delete set mandatory/);
@@ -23,7 +23,7 @@ sub run {
     my $self = shift;
     my $name = shift;
 
-    confess "need name arg\n" unless $name;
+    confess_or_die "need name arg\n" unless $name;
 
     if ( $name =~ /^__/ ) {
         $self->log->fatal( "$name can't start as __" );
@@ -43,7 +43,7 @@ sub run {
     }
 
     unless ( 1 == grep { defined $_ } $self->add, $self->delete, $self->set ) {
-        confess "you should specify one and only one of add, delete and set\n";
+        confess_or_die "you should specify one and only one of add, delete and set\n";
     }
 
     my $list;

@@ -3,7 +3,6 @@ package Shipwright::Test;
 use warnings;
 use strict;
 use base qw/Exporter/;
-use Carp;
 
 use File::Temp qw/tempdir/;
 use IPC::Cmd qw/can_run/;
@@ -168,7 +167,7 @@ sub create_svn_repo {
     my $repo =
       tempdir( 'shipwright_test_svn_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
     system("$ENV{SHIPWRIGHT_SVN}admin create $repo")
-      && confess "create repo failed: $!";
+      && confess_or_die "create repo failed: $!";
     return "file://$repo";
 }
 

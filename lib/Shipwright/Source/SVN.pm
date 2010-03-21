@@ -2,7 +2,7 @@ package Shipwright::Source::SVN;
 
 use warnings;
 use strict;
-use Carp;
+use Shipwright::Util;
 use File::Spec::Functions qw/catdir/;
 use File::Path qw/remove_tree/;
 

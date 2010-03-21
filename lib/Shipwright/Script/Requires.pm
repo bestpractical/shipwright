@@ -2,7 +2,6 @@ package Shipwright::Script::Requires;
 
 use strict;
 use warnings;
-use Carp;
 
 use base qw/App::CLI::Command Class::Accessor::Fast Shipwright::Script/;
 __PACKAGE__->mk_accessors(
@@ -29,7 +28,7 @@ sub options {
 sub run {
     my $self   = shift;
     my $source = shift;
-    confess "we need source arg\n" unless $source;
+    confess_or_die "we need source arg\n" unless $source;
 
     $self->skip( { map { $_ => 1 } split /\s*,\s*/, $self->skip || '' } );
     $self->skip_recommends(

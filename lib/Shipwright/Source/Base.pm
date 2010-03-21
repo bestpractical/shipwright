@@ -2,7 +2,6 @@ package Shipwright::Source::Base;
 
 use warnings;
 use strict;
-use Carp;
 use File::Spec::Functions qw/catfile catdir/;
 use File::Slurp;
 use Module::CoreList;
@@ -108,7 +107,7 @@ sub _follow {
             $file .= '.pm';
 
             # so it's a bundle module
-            open my $fh, '<', 'MANIFEST' or confess "no manifest found: $!";
+            open my $fh, '<', 'MANIFEST' or confess_or_die "no manifest found: $!";
             while (<$fh>) {
                 chomp;
                 if (/$file/) {
@@ -116,7 +115,7 @@ sub _follow {
                     last;
                 }
             }
-            open $fh, '<', $file or confess "can't open $file: $!";
+            open $fh, '<', $file or confess_or_die "can't open $file: $!";
             my $flip;
             while (<$fh>) {
                 chomp;
@@ -158,19 +157,19 @@ sub _follow {
             );
             run_cmd( [ $^X, 'Build.PL' ] ) if $? || !-e 'Build';
             my $source = read_file( catfile( '_build', 'prereqs' ) )
-              or confess "can't read _build/prereqs: $!";
+              or confess_or_die "can't read _build/prereqs: $!";
             my $eval = '$require = ' . $source;
-            eval "$eval;1" or confess "eval error: $@";    ## no critic
+            eval "$eval;1" or confess_or_die "eval error: $@";    ## no critic
 
             $source = read_file( catfile('Build.PL') )
-              or confess "can't read Build.PL: $!";
+              or confess_or_die "can't read Build.PL: $!";
 
             run_cmd(
                 [ $^X, 'Build', 'realclean', '--allow_mb_mismatch', 1 ] );
         }
         elsif ( -e 'Makefile.PL' ) {
             my $makefile = read_file('Makefile.PL')
-              or confess "can't read Makefile.PL: $!";
+              or confess_or_die "can't read Makefile.PL: $!";
 
             if ( $makefile =~ /inc::Module::Install/ ) {
                 $self->log->info("is a Module::Install based dist");
@@ -338,14 +337,14 @@ EOF
                 run_cmd( [ $^X, 'shipwright_makefile.pl' ] )
                   if $? || !-e 'Makefile';
                 my $prereqs = read_file( catfile('shipwright_prereqs') )
-                  or confess "can't read prereqs: $!";
-                eval "$prereqs;1;" or confess "eval error: $@"; ## no critic
+                  or confess_or_die "can't read prereqs: $!";
+                eval "$prereqs;1;" or confess_or_die "eval error: $@"; ## no critic
 
                 if ( -e 'META.yml' ) {
 
                     # if there's META.yml, let's find more about it
                     my $meta = load_yaml_file('META.yml')
-                      or confess "can't read META.yml: $!";
+                      or confess_or_die "can't read META.yml: $!";
                     $require ||= {};
                     $require->{requires} = {
                         %{ $meta->{requires} || {} },
@@ -383,7 +382,7 @@ EOF
                 if ( $source && $source =~ /({.*})/ ) {
                     my $eval .= '$require = ' . $1;
                     $eval =~ s/([\w:]+)=>/'$1'=>/g;
-                    eval "$eval;1" or confess "eval error: $@";    ## no critic
+                    eval "$eval;1" or confess_or_die "eval error: $@";    ## no critic
                 }
 
                 for ( keys %$require ) {
@@ -404,7 +403,7 @@ EOF
         }
 
         dump_yaml_file( $require_path, $require )
-          or confess "can't dump __require.yml: $!";
+          or confess_or_die "can't dump __require.yml: $!";
     }
 
     if ( my $require = load_yaml_file($require_path) ) {
@@ -536,7 +535,7 @@ EOF
         dump_yaml_file( $require_path, $require );
     }
     else {
-        confess "invalid __require.yml in $path";
+        confess_or_die "invalid __require.yml in $path";
     }
 
     # go back to the cwd before we run _follow
@@ -716,11 +715,11 @@ sub _lwp_get {
 
     if ( $response->is_success ) {
         open my $fh, '>', $self->source
-          or confess "can't open file " . $self->source . ": $!";
+          or confess_or_die "can't open file " . $self->source . ": $!";
         print $fh $response->content;
     }
     else {
-        confess "failed to get $source: " . $response->status_line;
+        confess_or_die "failed to get $source: " . $response->status_line;
     }
 }
 

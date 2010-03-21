@@ -2,7 +2,6 @@ package Shipwright::Backend::FS;
 
 use warnings;
 use strict;
-use Carp;
 use File::Spec::Functions qw/catfile splitdir catdir rel2abs/;
 use Shipwright::Util;
 use File::Copy::Recursive qw/rcopy rmove/;
@@ -62,7 +61,7 @@ sub initialize {
     $self->delete;    # clean repository in case it exists
 
     rcopy( $dir, $self->repository )
-      or confess "can't copy $dir to " . $self->repository . ": $!";
+      or confess_or_die "can't copy $dir to " . $self->repository . ": $!";
 }
 
 # a cmd generating factory
@@ -73,7 +72,7 @@ sub _cmd {
     $args{path} ||= '';
 
     for ( @{ $REQUIRE_OPTIONS{$type} } ) {
-        confess "$type need option $_" unless $args{$_};
+        confess_or_die "$type need option $_" unless $args{$_};
     }
 
     my @cmd;
@@ -159,7 +158,7 @@ sub _cmd {
 
             if ( -d $path ) {
                 my $dh;
-                opendir $dh, $path or confess $!;
+                opendir $dh, $path or confess_or_die $!;
                 my $dirs = join "\t", grep { /^[^.]/ } readdir $dh;
                 return $dirs;
             }
@@ -174,13 +173,13 @@ sub _cmd {
             return ( 'No such file or directory' ) unless -e $path;
             return ( '', 'Is a directory' ) unless -f $path;
             local $/;
-            open my $fh, '<', $path or confess $!;
+            open my $fh, '<', $path or confess_or_die $!;
             my $c = <$fh>;
             return $c;
         };
     }
     else {
-        confess "invalid command: $type";
+        confess_or_die "invalid command: $type";
     }
 
     return @cmd;
@@ -255,7 +254,7 @@ sub _update_file {
 
     my $file = catfile( $self->repository, $path );
     unlink $file;
-    rcopy( $latest, $file ) or confess "can't copy $latest to $file: $!";
+    rcopy( $latest, $file ) or confess_or_die "can't copy $latest to $file: $!";
 }
 
 sub _update_dir {
@@ -264,7 +263,7 @@ sub _update_dir {
     my $latest = shift;
 
     my $dir = catfile( $self->repository, $path );
-    rcopy( $latest, $dir ) or confess "can't copy $latest to $dir: $!";
+    rcopy( $latest, $dir ) or confess_or_die "can't copy $latest to $dir: $!";
 }
 
 =item import

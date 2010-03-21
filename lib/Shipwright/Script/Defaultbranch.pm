@@ -1,7 +1,7 @@
 package Shipwright::Script::Defaultbranch;
 use strict;
 use warnings;
-use Carp;
+use Shipwright::Util;
 
 use base qw/App::CLI::Command Class::Accessor::Fast Shipwright::Script/;
 
@@ -12,8 +12,8 @@ sub run {
     my $name    = shift;
     my $default = shift;
 
-    confess "need name arg\n"    unless $name;
-    confess "need default arg\n" unless $default;
+    confess_or_die "need name arg\n"    unless $name;
+    confess_or_die "need default arg\n" unless $default;
 
     my $shipwright = Shipwright->new( repository => $self->repository, );
 
@@ -29,7 +29,7 @@ sub run {
             "set default branch for $name with success, now it's $default");
     }
     else {
-        confess "$name doesn't have branches $default.
+        confess_or_die "$name doesn't have branches $default.
 Available branches are " . join( ', ', @{ $branches->{$name} } ) . "\n";
     }
 }

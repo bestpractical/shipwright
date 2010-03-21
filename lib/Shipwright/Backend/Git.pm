@@ -2,7 +2,6 @@ package Shipwright::Backend::Git;
 
 use warnings;
 use strict;
-use Carp;
 use File::Spec::Functions qw/catfile catdir/;
 use Shipwright::Util;
 use File::Temp qw/tempdir/;
@@ -77,7 +76,7 @@ sub initialize {
     $self->_initialize_local_dir();
 
     rcopy( $dir, $self->local_dir )
-      or confess "can't copy $dir to $path: $!";
+      or confess_or_die "can't copy $dir to $path: $!";
     $self->commit( comment => 'create project' );
 }
 
@@ -110,7 +109,7 @@ sub _init_new_git_repos {
         {
             open my $f,
               '>', $initial_file
-              or confess "$! writing $dir/$initial_file"
+              or confess_or_die "$! writing $dir/$initial_file"
         }
 
         run_cmd(

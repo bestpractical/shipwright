@@ -2,7 +2,6 @@ package Shipwright::Backend::Base;
 
 use warnings;
 use strict;
-use Carp;
 use File::Spec::Functions qw/catfile catdir splitpath/;
 use Shipwright::Util;
 use File::Temp qw/tempdir/;
@@ -52,7 +51,7 @@ sub build {
 
 sub _subclass_method {
     my $method = ( caller(0) )[3];
-    confess "your should subclass $method\n";
+    confess_or_die "your should subclass $method\n";
 }
 
 =item initialize
@@ -68,7 +67,7 @@ sub initialize {
       tempdir( 'shipwright_backend_base_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
 
     rcopy( share_root(), $dir )
-      or confess "copy share_root failed: $!";
+      or confess_or_die "copy share_root failed: $!";
 
     $self->_install_yaml_tiny($dir);
     $self->_install_clean_inc($dir);
@@ -97,7 +96,7 @@ sub _install_module_build {
     my $module_build_path = catdir( $dir, 'inc', 'Module', );
     make_path( catdir( $module_build_path, 'Build' ) );
     rcopy( Module::Info->new_from_module('Module::Build')->file,
-            $module_build_path ) or confess "copy Module/Build.pm failed: $!";
+            $module_build_path ) or confess_or_die "copy Module/Build.pm failed: $!";
     rcopy(
         catdir(
             Module::Info->new_from_module('Module::Build')->inc_dir, 'Module',
@@ -105,7 +104,7 @@ sub _install_module_build {
         ),
         catdir( $module_build_path, 'Build' )
       )
-      or confess "copy Module/Build failed: $!";
+      or confess_or_die "copy Module/Build failed: $!";
 }
 
 sub _install_yaml_tiny {
@@ -115,7 +114,7 @@ sub _install_yaml_tiny {
     my $yaml_tiny_path = catdir( $dir, 'inc', 'YAML' );
     make_path( $yaml_tiny_path );
     rcopy( Module::Info->new_from_module('YAML::Tiny')->file, $yaml_tiny_path )
-      or confess "copy YAML/Tiny.pm failed: $!";
+      or confess_or_die "copy YAML/Tiny.pm failed: $!";
 }
 
 sub _install_clean_inc {
@@ -126,7 +125,7 @@ sub _install_clean_inc {
     for my $mod qw(CleanINC PatchModuleBuild) {
         rcopy( Module::Info->new_from_module("Shipwright::Util::$mod")->file,
             $util_inc_path )
-          or confess "copy $mod failed: $!";
+          or confess_or_die "copy $mod failed: $!";
     }
 }
 
@@ -137,7 +136,7 @@ sub _install_file_compare {
     my $path = catdir( $dir, 'inc', 'File' );
     make_path( $path );
     rcopy( Module::Info->new_from_module('File::Compare')->file, $path )
-      or confess "copy File/Compare.pm failed: $!";
+      or confess_or_die "copy File/Compare.pm failed: $!";
 }
 
 sub _install_file_copy_recursive {
@@ -147,7 +146,7 @@ sub _install_file_copy_recursive {
     my $path = catdir( $dir, 'inc', 'File', 'Copy' );
     make_path( $path );
     rcopy( Module::Info->new_from_module('File::Copy::Recursive')->file, $path )
-      or confess "copy File/Copy/Recursive.pm failed: $!";
+      or confess_or_die "copy File/Copy/Recursive.pm failed: $!";
 }
 
 sub _install_file_path {
@@ -156,7 +155,7 @@ sub _install_file_path {
 
     my $path = catdir( $dir, 'inc', 'File' );
     rcopy( Module::Info->new_from_module('File::Path')->file, $path )
-      or confess "copy File/Path.pm failed: $!";
+      or confess_or_die "copy File/Path.pm failed: $!";
 }
 
 =item import
@@ -380,7 +379,7 @@ sub update_order {
     my $source = Algorithm::Dependency::Source::HoA->new($require);
     $source->load();
     my $dep = Algorithm::Dependency::Ordered->new( source => $source, )
-      or confess $@;
+      or confess_or_die $@;
     my $order = $dep->schedule_all();
 
     $self->order($order);
@@ -720,7 +719,7 @@ sub update {
     my $self = shift;
     my %args = @_;
 
-    confess "need path option" unless $args{path};
+    confess_or_die "need path option" unless $args{path};
 
     if ( $args{path} =~ m{/$} ) {
         # it's a directory
@@ -741,7 +740,7 @@ sub update {
     }
     else {
 
-        confess "$args{path} seems not shipwright's own file"
+        confess_or_die "$args{path} seems not shipwright's own file"
           unless -e catfile( share_root(), $args{path} );
 
         return $self->_update_file( $args{path},

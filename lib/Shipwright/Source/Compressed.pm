@@ -2,13 +2,13 @@ package Shipwright::Source::Compressed;
 
 use warnings;
 use strict;
-use Carp;
 use File::Spec::Functions qw/catfile catdir/;
 
 use base qw/Shipwright::Source::Base/;
 use Archive::Extract;
 use File::Temp qw/tempdir/;
 use File::Copy::Recursive qw/rmove/;
+use Shipwright::Util;
 
 =head2 run
 
@@ -61,7 +61,7 @@ sub path {
     $base_dir =~ s![/\\].*!!; 
 
     if ( @$files != grep { /^\Q$base_dir\E/ } @$files ) {
-        confess 'only support compressed file which contains only one directory: '
+        confess_or_die 'only support compressed file which contains only one directory: '
           . $base_dir;
     }
 

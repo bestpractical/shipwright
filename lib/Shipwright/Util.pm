@@ -2,16 +2,16 @@ package Shipwright::Util;
 
 use warnings;
 use strict;
-use Carp;
+use Shipwright::Util;
 use IPC::Run3;
 use File::Spec::Functions qw/catfile catdir splitpath splitdir tmpdir rel2abs/;
 use Cwd qw/abs_path getcwd/;
-
+use Carp;
 use Shipwright;    # we need this to find where Shipwright.pm lives
 use YAML::Tiny;
 use base 'Exporter';
 our @EXPORT = qw/load_yaml load_yaml_file dump_yaml dump_yaml_file run_cmd
-select_fh shipwright_root share_root user_home
+select_fh shipwright_root share_root user_home confess_or_die
 shipwright_user_root parent_dir find_module/;
 
 our ( $SHIPWRIGHT_ROOT, $SHARE_ROOT );
@@ -40,6 +40,19 @@ sub dump_yaml_file {
 =head3 load_yaml, load_yaml_file, dump_yaml, dump_yaml_file
 
 they are just dropped in from YAML::Tiny
+
+=head3 confess_or_die
+
+=cut
+
+sub confess_or_die {
+    if ( $ENV{SHIPWRIGHT_DEVEL} ) {
+        goto &confess;
+    }
+    else {
+        die @_,"\n";
+    }
+}
 
 =head3 parent_dir
 
@@ -101,7 +114,7 @@ sub run_cmd {
             }
 
             my $cwd = getcwd;
-            confess <<"EOF";
+            confess_or_die <<"EOF";
 command failed: @$cmd
 \$?: $?
 cwd: $cwd
@@ -151,7 +164,7 @@ sub select_fh {
         select $cpan_fh;
     }
     else {
-        confess "unknown type: $type";
+        confess_or_die "unknown type: $type";
     }
 }
 
@@ -244,7 +257,7 @@ sub user_home {
 
     my $home = eval { (getpwuid $<)[7] };
     if ( $@ ) {
-        confess "can't find user's home, please set it by env HOME";    
+        confess_or_die "can't find user's home, please set it by env HOME";    
     }
     else {
         return $home;

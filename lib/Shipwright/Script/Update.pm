@@ -2,7 +2,6 @@ package Shipwright::Script::Update;
 
 use strict;
 use warnings;
-use Carp;
 
 use base qw/App::CLI::Command Class::Accessor::Fast Shipwright::Script/;
 __PACKAGE__->mk_accessors(
@@ -56,7 +55,7 @@ sub run {
     }
     elsif ( $self->add_deps ) {
         my @deps = split /\s*,\s*/, $self->add_deps;
-        my $name = shift or confess 'need name arg';
+        my $name = shift or confess_or_die 'need name arg';
         my $requires = $shipwright->backend->requires( name => $name ) || {};
         for my $dep ( @deps ) {
             my $new_dep;
@@ -81,7 +80,7 @@ sub run {
     }
     elsif ( $self->delete_deps ) {
         my @deps = split /\s*,\s*/, $self->delete_deps;
-        my $name = shift or confess 'need name arg';
+        my $name = shift or confess_or_die 'need name arg';
         my $requires = $shipwright->backend->requires( name => $name ) || {};
         for my $dep ( @deps ) {
             for my $type ( qw/requires build_requires recommends/ ) {
@@ -100,7 +99,7 @@ sub run {
         $branches = $shipwright->backend->branches;
 
         if ( $self->all ) {
-            confess '--all can not be specified with --as or NAME'
+            confess_or_die '--all can not be specified with --as or NAME'
               if @_ || $self->as;
 
             my $dists = $shipwright->backend->order || [];
@@ -110,11 +109,11 @@ sub run {
         }
         else {
             my $name = shift;
-            confess "need name arg\n" unless $name;
+            confess_or_die "need name arg\n" unless $name;
 
             # die if the specified branch doesn't exist
             if ( $branches && $self->as ) {
-                confess "$name doesn't have branch "
+                confess_or_die "$name doesn't have branch "
                   . $self->as
                   . ". please use import cmd instead"
                   unless grep { $_ eq $self->as } @{ $branches->{$name} || [] };
@@ -236,7 +235,7 @@ sub _update {
             $name = $map->{$name};
         }
         else {
-            confess 'invalid name ' . $name . "\n";
+            confess_or_die 'invalid name ' . $name . "\n";
         }
 
         unless ( $s ) {

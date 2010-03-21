@@ -2,7 +2,7 @@ package Shipwright::Script::Ktf;
 
 use strict;
 use warnings;
-use Carp;
+use Shipwright::Util;
 
 use base qw/App::CLI::Command Class::Accessor::Fast Shipwright::Script/;
 __PACKAGE__->mk_accessors(qw/set delete/);
@@ -26,7 +26,7 @@ sub run {
     my $ktf = $shipwright->backend->ktf;
 
     if ( $self->delete || defined $self->set ) {
-        confess "need name arg\n" unless @names;
+        confess_or_die "need name arg\n" unless @names;
 
         if ( $self->delete ) {
             delete $ktf->{$_} for @names;

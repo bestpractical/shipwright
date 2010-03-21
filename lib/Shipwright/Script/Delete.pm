@@ -2,7 +2,6 @@ package Shipwright::Script::Delete;
 
 use strict;
 use warnings;
-use Carp;
 
 use base qw/App::CLI::Command Class::Accessor::Fast Shipwright::Script/;
 __PACKAGE__->mk_accessors(qw/unreferenced check_only/);
@@ -22,11 +21,11 @@ sub run {
     my $name = shift;
 
     unless ( $name || $self->unreferenced ) {
-        confess "need name arg or --unreferenced\n";
+        confess_or_die "need name arg or --unreferenced\n";
     }
 
     if ( $name && $self->unreferenced ) {
-        confess "please choose only one thing: a dist name or --unreferenced";
+        confess_or_die "please choose only one thing: a dist name or --unreferenced";
     }
 
     my $shipwright = Shipwright->new( repository => $self->repository, );
