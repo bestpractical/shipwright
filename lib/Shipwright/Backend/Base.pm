@@ -67,7 +67,7 @@ sub initialize {
     my $dir =
       tempdir( 'shipwright_backend_base_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
 
-    rcopy( Shipwright::Util->share_root, $dir )
+    rcopy( share_root(), $dir )
       or confess "copy share_root failed: $!";
 
     $self->_install_yaml_tiny($dir);
@@ -123,9 +123,10 @@ sub _install_clean_inc {
     my $dir = shift;
     my $util_inc_path = catdir( $dir, 'inc', 'Shipwright', 'Util' );
     make_path( $util_inc_path );
-    for my $mod qw(Shipwright::Util::CleanINC Shipwright::Util::PatchModuleBuild) {
-        rcopy( Module::Info->new_from_module($mod)->file, $util_inc_path )
-            or confess "copy $mod failed: $!";
+    for my $mod qw(CleanINC PatchModuleBuild) {
+        rcopy( Module::Info->new_from_module("Shipwright::Util::$mod")->file,
+            $util_inc_path )
+          or confess "copy $mod failed: $!";
     }
 }
 
@@ -185,7 +186,7 @@ sub import {
 
             $self->log->info( "import extra tests to " . $self->repository );
             for my $cmd ( $self->_cmd( import => %args, name => $name ) ) {
-                Shipwright::Util->run($cmd);
+                run_cmd($cmd);
             }
         }
         elsif ( $args{build_script} ) {
@@ -202,7 +203,7 @@ sub import {
                 $self->log->info(
                     "import $args{source}'s scripts to " . $self->repository );
                 for my $cmd ( $self->_cmd( import => %args, name => $name ) ) {
-                    Shipwright::Util->run($cmd);
+                    run_cmd($cmd);
                 }
                 $self->update_refs;
 
@@ -251,7 +252,7 @@ sub import {
                     for
                       my $cmd ( $self->_cmd( import => %args, name => $name ) )
                     {
-                        Shipwright::Util->run($cmd);
+                        run_cmd($cmd);
                     }
                 }
             }
@@ -276,7 +277,7 @@ sub import {
                     for
                       my $cmd ( $self->_cmd( import => %args, name => $name ) )
                     {
-                        Shipwright::Util->run($cmd);
+                        run_cmd($cmd);
                     }
                 }
             }
@@ -284,7 +285,7 @@ sub import {
     }
     else {
         for my $cmd ( $self->_cmd( import => %args, name => $name ) ) {
-            Shipwright::Util->run($cmd);
+            run_cmd($cmd);
         }
     }
 }
@@ -301,7 +302,7 @@ sub export {
     $self->log->info(
         'export ' . $self->repository . "/$path to $args{target}" );
     for my $cmd ( $self->_cmd( export => %args ) ) {
-        Shipwright::Util->run($cmd);
+        run_cmd($cmd);
     }
 }
 
@@ -316,7 +317,7 @@ sub checkout {
     $self->log->info(
         'export ' . $self->repository . "/$path to $args{target}" );
     for my $cmd ( $self->_cmd( checkout => %args ) ) {
-        Shipwright::Util->run($cmd);
+        run_cmd($cmd);
     }
 }
 
@@ -331,7 +332,7 @@ sub commit {
     my %args = @_;
     $self->log->info( 'commit ' . $args{path} );
     for my $cmd ( $self->_cmd( commit => @_ ) ) {
-        Shipwright::Util->run( $cmd, 1 );
+        run_cmd( $cmd, 1 );
     }
 }
 
@@ -461,10 +462,10 @@ sub _yml {
     my $file = catfile( $self->repository, $path );
     if ($yml) {
 
-        Shipwright::Util::DumpFile( $file, $yml );
+        dump_yaml_file( $file, $yml );
     }
     else {
-        Shipwright::Util::LoadFile($file);
+        load_yaml_file($file);
     }
 }
 
@@ -595,7 +596,7 @@ sub delete {
     if ( $self->info( path => $path ) ) {
         $self->log->info( "delete " . $self->repository . $path );
         for my $cmd ( $self->_cmd( delete => path => $path ) ) {
-            Shipwright::Util->run( $cmd, 1 );
+            run_cmd( $cmd, 1 );
         }
     }
 }
@@ -610,7 +611,7 @@ sub list {
     my %args = @_;
     my $path = $args{path} || '';
     if ( $self->info( path => $path ) ) {
-        my $out = Shipwright::Util->run( $self->_cmd( list => path => $path ) );
+        my $out = run_cmd( $self->_cmd( list => path => $path ) );
         return $out;
     }
 }
@@ -646,7 +647,7 @@ sub move {
             )
           )
         {
-            Shipwright::Util->run($cmd);
+            run_cmd($cmd);
         }
     }
 }
@@ -661,7 +662,7 @@ sub info {
     my $path = $args{path} || '';
 
     my ( $info, $err ) =
-      Shipwright::Util->run( $self->_cmd( info => path => $path ), 1 );
+      run_cmd( $self->_cmd( info => path => $path ), 1 );
     $self->log->warn($err) if $err;
 
     if (wantarray) {
@@ -741,10 +742,10 @@ sub update {
     else {
 
         confess "$args{path} seems not shipwright's own file"
-          unless -e catfile( Shipwright::Util->share_root, $args{path} );
+          unless -e catfile( share_root(), $args{path} );
 
         return $self->_update_file( $args{path},
-            catfile( Shipwright::Util->share_root, $args{path} ) );
+            catfile( share_root(), $args{path} ) );
     }
 }
 
@@ -896,7 +897,7 @@ sub local_dir {
     my $self      = shift;
     my $need_init = shift;
     my $base_dir =
-      catdir( Shipwright::Util->shipwright_user_root(), 'backends' );
+      catdir( shipwright_user_root(), 'backends' );
     make_path( $base_dir ) unless -e $base_dir;
     my $repo = $self->repository;
     $repo =~ s/:/-/g;

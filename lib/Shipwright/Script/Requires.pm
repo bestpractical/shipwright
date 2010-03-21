@@ -71,7 +71,7 @@ qq{ "$module" [shape = record, fontsize = 18, label = "$module" ];\n};
         $out .= "\n};";
     }
     else {
-        $out = Shipwright::Util::Dump($deps);
+        $out = dump_yaml($deps);
     }
     $self->log->fatal($out);
 }
@@ -84,9 +84,9 @@ sub _requires {
     my $deps   = shift;
     my $name   = shift;
 
-    my $dir = Shipwright::Util->parent_dir($source);
+    my $dir = parent_dir($source);
     my $map_file    = catfile( $dir, 'map.yml' );
-    my $map         = Shipwright::Util::LoadFile($map_file);
+    my $map         = load_yaml_file($map_file);
     my $reverse_map = { reverse %$map };
 
     opendir my ($d), $dir;
@@ -95,7 +95,7 @@ sub _requires {
 
     my $require_file = catfile( $source, '__require.yml' );
     if ( -e $require_file ) {
-        my $d = Shipwright::Util::LoadFile($require_file);
+        my $d = load_yaml_file($require_file);
         for my $type ( keys %$d ) {
             for my $dep ( keys %{ $d->{$type} } ) {
                 my $dep_source = catdir( $dir, $dep );

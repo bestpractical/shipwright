@@ -27,7 +27,7 @@ sub new {
         confess "invalid repository, doesn't start from xxx: or xxx+yyy:";
     }
 
-    my $module = Shipwright::Util->find_module(__PACKAGE__, $backend);
+    my $module = find_module(__PACKAGE__, $backend);
     unless ( $module ) {
         confess "Couldn't find backend implementing '$backend'";
     }

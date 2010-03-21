@@ -202,13 +202,13 @@ sub _yml {
         else {
             $self->_sync_local_dir($path);
         }
-        Shipwright::Util::DumpFile( $file, $yml );
+        dump_yaml_file( $file, $yml );
         $self->commit( path => $file, comment => "updated $path" );
     }
     else {
-        my ($out) = Shipwright::Util->run(
+        my ($out) = run_cmd(
             [ $ENV{'SHIPWRIGHT_SVN'}, 'cat', $self->repository . $path ] );
-        return Shipwright::Util::Load($out);
+        return load_yaml($out);
     }
 }
 
@@ -296,7 +296,7 @@ sub _initialize_local_dir {
     my $target = $self->local_dir( 0 ); 
     remove_tree( $target ) if -e $target;
 
-    Shipwright::Util->run(
+    run_cmd(
         [ $ENV{'SHIPWRIGHT_SVN'}, 'checkout', $self->repository, $target ] );
     return $target;
 }
@@ -304,7 +304,7 @@ sub _initialize_local_dir {
 sub _sync_local_dir {
     my $self = shift;
     my $path = shift || '';
-    Shipwright::Util->run(
+    run_cmd(
         [ $ENV{'SHIPWRIGHT_SVN'}, 'update', $self->local_dir . $path ], 1 );
 }
 

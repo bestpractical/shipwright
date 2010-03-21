@@ -9,7 +9,6 @@ use base qw/Class::Accessor::Fast/;
 __PACKAGE__->mk_accessors(qw/backend source build log_level log_file/);
 
 use Shipwright::Logger;
-use Shipwright::Util;
 use File::Spec::Functions qw/catfile tmpdir/;
 
 # strawberry perl's build make is 'dmake'

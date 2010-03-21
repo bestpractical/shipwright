@@ -255,7 +255,7 @@ sub _update {
 
     $shipwright->source->run;
 
-    $version = Shipwright::Util::LoadFile( $shipwright->source->version_path );
+    $version = load_yaml_file( $shipwright->source->version_path );
 
     $shipwright->backend->import(
         source    => catdir( $shipwright->source->directory, $name ),

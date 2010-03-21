@@ -109,7 +109,7 @@ sub _run {
 
     my ( $source, $distribution );
 
-    Shipwright::Util->select('cpan');
+    select_fh('cpan');
 
     if ( $self->source =~ /\.tar\.gz$/ ) {
 
@@ -170,7 +170,7 @@ sub _run {
         return -1;
     }
 
-    Shipwright::Util->select('stdout');
+    select_fh('stdout');
 
     $self->name( 'cpan-' . $name );
     $self->_update_map( $self->source, 'cpan-' . $name );

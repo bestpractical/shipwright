@@ -1,4 +1,4 @@
-package Shipwright::Util::CleanINC;
+package CleanINC;
 use strict;
 use warnings;
 use Config;
@@ -52,11 +52,11 @@ __END__
 
 =head1 NAME
 
-Shipwright::Util::CleanINC - Use this to clean @INC
+CleanINC - Use this to clean @INC
 
 =head1 SYNOPSIS
 
-    use Shipwright::Util::CleanINC;
+    use CleanINC;
 
 =head1 DESCRIPTION
 

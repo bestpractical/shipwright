@@ -46,13 +46,13 @@ sub run {
 
     # follow
     if ( $self->follow ) {
-        my $out = Shipwright::Util->run(
+        my $out = run_cmd(
             $source_shipwright->backend->_cmd(
                 'cat', path => "/scripts/$dist/require.yml",
             ),
             1
         );
-        my $require = Shipwright::Util::Load($out) || {};
+        my $require = load_yaml($out) || {};
 
         for my $type ( keys %$require ) {
             for my $req ( keys %{ $require->{$type} } ) {

@@ -196,7 +196,7 @@ sub _latest_version {
             $args{url} =~ s{^svn:(?!//)}{};
             $cmd = [ $ENV{'SHIPWRIGHT_SVN'}, 'info', $args{url} ];
             $cmd = [ $ENV{'SHIPWRIGHT_SVK'}, 'info', $args{url} ];
-            ($out) = Shipwright::Util->run( $cmd, 1 );    # ignore failure
+            ($out) = run_cmd( $cmd, 1 );    # ignore failure
             if ( $out =~ /^Revision:\s*(\d+)/m ) {
                 return $1;
             }
@@ -204,7 +204,7 @@ sub _latest_version {
         elsif ( $args{url} =~ m{^(svk:|//)} ) {
             $args{url} =~ s/^svk://;
             $cmd = [ $ENV{'SHIPWRIGHT_SVK'}, 'info', $args{url} ];
-            ($out) = Shipwright::Util->run( $cmd, 1 );    # ignore failure
+            ($out) = run_cmd( $cmd, 1 );    # ignore failure
             if ( $out =~ /^Revision:\s*(\d+)/m ) {
                 return $1;
             }
@@ -222,10 +222,10 @@ sub _latest_version {
                 TMPDIR  => 1
             );
             my $path = catdir( $dir, 'git' );
-            Shipwright::Util->run(
+            run_cmd(
                 [ $ENV{SHIPWRIGHT_GIT}, 'clone', $args{url}, $path, ] );
             chdir $path;
-            ($out) = Shipwright::Util->run( [ $ENV{SHIPWRIGHT_GIT}, 'log' ] );
+            ($out) = run_cmd( [ $ENV{SHIPWRIGHT_GIT}, 'log' ] );
             chdir $cwd;
 
             if ( $out =~ /^commit\s+(\w+)/m ) {
@@ -240,11 +240,11 @@ sub _latest_version {
         require CPAN;
         require CPAN::DistnameInfo;
 
-        Shipwright::Util->select('cpan');
+        select_fh('cpan');
 
         my $module = CPAN::Shell->expand( 'Module', $args{name} );
 
-        Shipwright::Util->select('stdout');
+        select_fh('stdout');
 
         my $info    = CPAN::DistnameInfo->new( $module->cpan_file );
         my $version = $info->version;

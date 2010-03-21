@@ -70,8 +70,8 @@ sub initialize {
     my $path = $self->repository;
     $path =~ s!^file://!!;
 
-    Shipwright::Util->run( sub { remove_tree( $path ) } );
-    Shipwright::Util->run( sub { make_path( $path ) } );
+    run_cmd( sub { remove_tree( $path ) } );
+    run_cmd( sub { make_path( $path ) } );
 
     $self->_init_new_git_repos( $path );
     $self->_initialize_local_dir();
@@ -89,10 +89,10 @@ sub _init_new_git_repos {
 
     # make  a new bare repos at the target path
     chdir $new_repos_dir;
-    Shipwright::Util->run( [ $ENV{'SHIPWRIGHT_GIT'}, '--bare', 'init' ] );
+    run_cmd( [ $ENV{'SHIPWRIGHT_GIT'}, '--bare', 'init' ] );
 
     my ($output) =
-      Shipwright::Util->run( [ $ENV{'SHIPWRIGHT_GIT'}, '--version' ] );
+      run_cmd( [ $ENV{'SHIPWRIGHT_GIT'}, '--version' ] );
     my ($version) = $output =~ /(\d+\.\d+\.\d+)/;
     if ( $version && $version lt '1.6.2' ) {
 
@@ -103,7 +103,7 @@ sub _init_new_git_repos {
           tempdir( 'shipwright_backend_git_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
 
         chdir $dir;
-        Shipwright::Util->run( [ $ENV{'SHIPWRIGHT_GIT'}, 'init' ] );
+        run_cmd( [ $ENV{'SHIPWRIGHT_GIT'}, 'init' ] );
 
         # touch a file in the non-bare repos
         my $initial_file = '.shipwright_git_initial';
@@ -113,16 +113,16 @@ sub _init_new_git_repos {
               or confess "$! writing $dir/$initial_file"
         }
 
-        Shipwright::Util->run(
+        run_cmd(
             [ $ENV{'SHIPWRIGHT_GIT'}, 'add', $initial_file ] );
-        Shipwright::Util->run(
+        run_cmd(
             [
                 $ENV{'SHIPWRIGHT_GIT'},
                 'commit',
                 -m => 'initial commit, shipwright creating new git repository'
             ]
         );
-        Shipwright::Util->run(
+        run_cmd(
             [ $ENV{'SHIPWRIGHT_GIT'}, 'push', $new_repos_dir, 'master' ] );
 
     }
@@ -137,12 +137,12 @@ sub _initialize_local_dir {
     my $target = $self->local_dir( 0 ); 
     remove_tree( $target ) if -e $target;
 
-    Shipwright::Util->run(
+    run_cmd(
         [ $ENV{'SHIPWRIGHT_GIT'}, 'clone', $self->repository, $target ] );
     my $cwd = getcwd;
     chdir $target; 
     # git 1.6.3.3 will warn if we don't specify push.default
-    Shipwright::Util->run(
+    run_cmd(
         [ $ENV{'SHIPWRIGHT_GIT'}, 'config', 'push.default', 'matching' ] );
     chdir $cwd;
     return $target;
@@ -154,7 +154,7 @@ sub _sync_local_dir {
     my $cwd = getcwd;
     chdir $target or return;
 
-    Shipwright::Util->run( [ $ENV{'SHIPWRIGHT_GIT'}, 'pull' ] );
+    run_cmd( [ $ENV{'SHIPWRIGHT_GIT'}, 'pull' ] );
     chdir $cwd;
 }
 
@@ -271,12 +271,12 @@ sub commit {
         my $cwd = getcwd;
         chdir $self->local_dir or return;
 
-        Shipwright::Util->run( [ $ENV{'SHIPWRIGHT_GIT'}, 'add', '-f', '.' ] );
+        run_cmd( [ $ENV{'SHIPWRIGHT_GIT'}, 'add', '-f', '.' ] );
 
         #    TODO comment need to be something special
-        Shipwright::Util->run(
+        run_cmd(
             [ $ENV{'SHIPWRIGHT_GIT'}, 'commit', '-m', $args{comment} ], 1 );
-        Shipwright::Util->run(
+        run_cmd(
             [ $ENV{'SHIPWRIGHT_GIT'}, 'push', 'origin', 'master' ] );
         chdir $cwd;
     }

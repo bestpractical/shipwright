@@ -62,7 +62,7 @@ sub _run {
     push @cmds, [ $ENV{'SHIPWRIGHT_SVK'}, 'co', '-d', $path, ];
 
     unless ( $self->version ) {
-        my ($out) = Shipwright::Util->run(
+        my ($out) = run_cmd(
             [ $ENV{'SHIPWRIGHT_SVK'}, 'info', $self->source, ] );
 
         if ( $out =~ /^Revision: (\d+)/m ) {
@@ -73,7 +73,7 @@ sub _run {
     remove_tree($path) if -e $path;
 
     $self->source( $path );
-    Shipwright::Util->run($_) for @cmds;
+    run_cmd($_) for @cmds;
 }
 
 1;

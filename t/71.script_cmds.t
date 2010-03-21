@@ -43,7 +43,7 @@ SKIP: {
 
     my $source = create_svn_repo() . '/foo';    # svn source we'll import
 
-    Shipwright::Util->run(
+    run_cmd(
         [
             $ENV{'SHIPWRIGHT_SVN'}, 'import',
             '-m',                   q{''},
@@ -68,7 +68,7 @@ SKIP: {
 
     my $repo   = 'svk://__shipwright/hello';
     my $source = '//foo';
-    Shipwright::Util->run(
+    run_cmd(
         [
             $ENV{'SHIPWRIGHT_SVK'}, 'import',
             '-m',                   q{''},
@@ -356,7 +356,7 @@ qr/set mandatory flags with success\s+mandatory flags of man1 are build/,
         else {
 
             # for the update_cmd
-            Shipwright::Util->run( $item, 1 );
+            run_cmd( $item, 1 );
         }
     }
 }

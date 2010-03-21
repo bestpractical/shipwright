@@ -41,7 +41,7 @@ sub new {
     );
 
     $args{download_directory} ||=
-      catdir( Shipwright::Util->shipwright_user_root, 'downloads' );
+      catdir( shipwright_user_root(), 'downloads' );
 
     $args{scripts_directory} ||= catdir( $args{directory}, '__scripts' );
     $args{map_path}      ||= catfile( $args{directory}, 'map.yml' );
@@ -116,7 +116,7 @@ sub _translate_source {
     if ( $$source =~ /^(file|dir(ectory)?|shipwright):~/i ) {
 
         # replace prefix ~ with real home dir
-        $$source =~ s/~/Shipwright::Util->user_home/e;
+        $$source =~ s/~/user_home/e;
     }
 }
 

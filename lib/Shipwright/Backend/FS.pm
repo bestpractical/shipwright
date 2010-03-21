@@ -40,7 +40,7 @@ sub build {
     $self->strip_repository;
 
     my $repo = $self->repository;
-    $repo =~ s/^~/Shipwright::Util->user_home/e;
+    $repo =~ s/^~/user_home/e;
     my $abs_path = rel2abs($repo);
     $repo = $abs_path if $abs_path;
     $self->repository($repo);
@@ -199,10 +199,10 @@ sub _yml {
     my $file = catfile( $self->repository, $path );
     if ($yml) {
 
-        Shipwright::Util::DumpFile( $file, $yml );
+        dump_yaml_file( $file, $yml );
     }
     else {
-        Shipwright::Util::LoadFile($file);
+        load_yaml_file($file);
     }
 }
 

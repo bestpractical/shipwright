@@ -35,7 +35,7 @@ sub has_svk {
         && can_run( $ENV{'SHIPWRIGHT_SVN'} . 'admin' ) )
     {
         my $out =
-          Shipwright::Util->run( [ $ENV{'SHIPWRIGHT_SVK'}, '--version' ], 1 );
+          run_cmd( [ $ENV{'SHIPWRIGHT_SVK'}, '--version' ], 1 );
         if ( $out && $out =~ /version v(\d)\./i ) {
             return 1 if $1 >= 2;
         }
@@ -55,7 +55,7 @@ sub has_svn {
         && can_run( $ENV{'SHIPWRIGHT_SVN'} . 'admin' ) )
     {
         my $out =
-          Shipwright::Util->run( [ $ENV{'SHIPWRIGHT_SVN'}, '--version' ], 1 );
+          run_cmd( [ $ENV{'SHIPWRIGHT_SVN'}, '--version' ], 1 );
         if ( $out && $out =~ /version 1\.(\d)/i ) {
             return 1 if $1 >= 4;
         }
@@ -136,7 +136,7 @@ sub create_git_repo {
     my $dir = tempdir( 'shipwright_test_git_XXXXXX', CLEANUP => 1, TMPDIR => 1 );
     my $cwd = getcwd();
     chdir $dir;
-    Shipwright::Util->run( [$ENV{'SHIPWRIGHT_GIT'}, 'init', '--bare' ] );
+    run_cmd( [$ENV{'SHIPWRIGHT_GIT'}, 'init', '--bare' ] );
     chdir $cwd;
     return "file://$dir";
 }
@@ -231,7 +231,7 @@ sub test_cmd {
     unshift @$cmd, $^X, '-MDevel::Cover' if devel_cover_enabled;
 
     require Test::More;
-    my ( $out, $err ) = Shipwright::Util->run( $cmd, 1 );    # ingnore failure
+    my ( $out, $err ) = run_cmd( $cmd, 1 );    # ingnore failure
 
     _test_cmd( $out, $exp,     $msg )     if defined $exp;
     _test_cmd( $err, $exp_err, $msg_err ) if defined $exp_err;
