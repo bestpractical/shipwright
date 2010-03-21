@@ -9,7 +9,7 @@ plan skip_all => 'MANIFEST does not exist' unless -e $manifest;
 plan tests => 1;
 
 open my $fh, '<', $manifest;
-my @files = map { chomp; $_ } grep m{^(lib/.*\.pm$|(?:t|xt)/.*\.t$|bin/)}, <$fh>;
+my @files = map { chomp; $_ } grep m{^(lib/.*\.pm$|t/.*\.t$|bin/)}, <$fh>;
 close $fh;
 
 
