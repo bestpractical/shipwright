@@ -10,6 +10,7 @@ else {
 }
 
 use Shipwright;
+use Shipwright::Util;
 use Shipwright::Test;
 use File::Spec::Functions qw/catdir tmpdir/;
 use File::Path qw/remove_tree/;
