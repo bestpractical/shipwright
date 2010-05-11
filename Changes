@@ -1,8 +1,11 @@
 Revision history for Shipwright
 
-2.4.9
+2.4.9 Tue May 11 02:21:28 UTC 2010
 
-2.4.8 Mon Mar 15 04:38:29 GMT 2010
+* add env SHIPWRIGHT_DEVEL to control error output's verboseness
+* to make windows happy, try make, dmake and nmake to find make utility
+
+2.4.8 Mon Mar 15 04:38:29 UTC 2010
 
 * make defaults to "dmake" in windows
 
