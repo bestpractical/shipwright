@@ -1,5 +1,7 @@
 Revision history for Shipwright
 
+2.4.10
+
 2.4.9 Tue May 11 02:21:28 UTC 2010
 
 * add env SHIPWRIGHT_DEVEL to control error output's verboseness

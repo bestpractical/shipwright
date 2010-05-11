@@ -53,4 +53,4 @@ requires:
 resources:
   license: http://dev.perl.org/licenses/
   repository: git://github.com/bestpractical/shipwright.git
-version: 2.004009
+version: 2.004010
