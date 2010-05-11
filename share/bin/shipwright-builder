@@ -4,7 +4,7 @@ use warnings;
 use strict;
 
 use lib 'inc';
-use File::Spec::Functions qw/catfile catdir splitdir rel2abs/;
+use File::Spec::Functions qw/catfile catdir splitdir rel2abs path/;
 use File::Temp qw/tempdir/;
 use File::Copy::Recursive qw/rmove rcopy/;
 use File::Find qw/find/;
@@ -92,7 +92,7 @@ Less commonly needed options:
                 Ex: --with svn=dir:/home/foo/svn
                 'svn' is the dist name, 'dir:/home/foo/svn' is its source code,
                 in the format of a Shipwright source distribution.
-  --make        The path of your make command, default is \$ENV{SHIPWRIGHT_MAKE}' if that's defined, else 'make'
+  --make        The path of your make command, default is \$ENV{SHIPWRIGHT_MAKE}
                 Ex: --make /usr/bin/make
   --branches    Specify the branch of a given package in the vessel you want 
                 to build.
@@ -126,16 +126,12 @@ $args{flags} = {
 $args{with}     = { map { split /=/ } split /\s*,\s*/, $args{with}     || '' };
 $args{branches} = { map { split /=/ } split /\s*,\s*/, $args{branches} || '' };
 
-$args{make} ||= $ENV{SHIPWRIGHT_MAKE};
-unless ( $args{make} ) {
-    if ( is_on_windows() ) {
-        $args{make} ||= 'dmake'; # strawberry perl distribution has dmake.exe
-    }
-    else {
-        $args{make} ||= 'make';
-    }
-}
-
+$args{make} ||=
+     $ENV{SHIPWRIGHT_MAKE}
+  || which('make')
+  || which('dmake')
+  || which('nmake')
+  || 'make';
 
 if ( is_on_windows() ) {
     $args{as} ||= 'MSWin';
@@ -865,3 +861,34 @@ sub is_on_windows {
     return $^O =~ /MSWin/;
 }
 
+my $bin_quote = is_on_windows() ? q{"} : q{'};
+my $bin_ext = $Config{_exe};
+sub which {
+    my $name = shift;
+
+    my $path;
+    eval '$path = `which $name`';
+    chomp $path;
+    if ( !$path ) {
+
+        # fallback to our way
+LINE:
+        for my $dir ( path() ) {
+            my $path = catfile( $dir, $name );
+
+            # XXX  any other names need to try?
+            my @try = grep { -x } ( $path, $path .= $bin_ext );
+            for my $try (@try) {
+                $path = $try;
+                last LINE;
+            }
+        }
+    }
+
+    return unless $path;
+    if ( $path =~ /\s/ && $path !~ /^$bin_quote/ ) {
+        $path = $bin_quote . $path . $bin_quote;
+    }
+
+    return $path;
+}

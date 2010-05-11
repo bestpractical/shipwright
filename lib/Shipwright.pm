@@ -10,12 +10,13 @@ __PACKAGE__->mk_accessors(qw/backend source build log_level log_file/);
 
 use Shipwright::Logger;
 use File::Spec::Functions qw/catfile tmpdir/;
-
+use Shipwright::Util;
 # strawberry perl's build make is 'dmake'
-$ENV{SHIPWRIGHT_MAKE} ||= $^O =~ /MSWin/ ? 'dmake' : 'make';
-$ENV{SHIPWRIGHT_SVK} ||= 'svk';
-$ENV{SHIPWRIGHT_SVN} ||= 'svn';
-$ENV{SHIPWRIGHT_GIT} ||= 'git';
+use File::Which 'which';
+$ENV{SHIPWRIGHT_MAKE} ||= which('make') || which('dmake') || which( 'nmake' ) || 'make';
+$ENV{SHIPWRIGHT_SVK} ||= which 'svk';
+$ENV{SHIPWRIGHT_SVN} ||= which 'svn';
+$ENV{SHIPWRIGHT_GIT} ||= which 'git';
 $ENV{SHIPWRIGHT_LWP_TIMEOUT} ||= 1200;
 
 $ENV{PERL_MM_USE_DEFAULT} = 1; # always true
@@ -36,7 +37,7 @@ sub new {
         source     => undef,
         @_
     );
-    $args{log_level} = uc $args{log_level} || 'FATAL';
+    $args{log_level} = $args{log_level} ? uc $args{log_level} : 'FATAL';
 
     $args{log_file} = '-' unless $args{log_file};
 

@@ -34,6 +34,7 @@ requires 'Archive::Tar' => 0;
 requires 'Archive::Extract' => 0;
 requires 'File::Compare' => 0;
 requires 'File::Path' => 2.07;
+requires 'File::Which' => 0;
 
 no_index( directory => 't' );
 no_index( directory => 'xt' );
