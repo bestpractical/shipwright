@@ -574,7 +574,7 @@ sub wrap_bin {
         $tmp =~ s/\Q$args{'install-base'}\E//g;
         my $wrapped_depth =
           scalar( splitdir($File::Find::dir) ) -
-          scalar( splitdir( $args{'install-base'} ) ) - 2;
+          scalar( splitdir( $args{'install-base'} ) );
 
         mkdir $wrap_dir unless -d $wrap_dir;
 
@@ -611,14 +611,14 @@ sub wrap_bin {
             )
           )
         {
-            symlink catfile( ('..') x $wrapped_depth,
-                'etc', "shipwright-$type-wrapper" ) => $wrap_file
+            symlink catfile( '..', 'etc', "shipwright-$type-wrapper" ) =>
+              $wrap_file
               or confess $!;
         }
         else {
 
-            symlink catfile( ('..') x $wrapped_depth,
-                'etc', 'shipwright-script-wrapper' ) => $wrap_file
+            symlink catfile( '..', 'etc', 'shipwright-script-wrapper' ) =>
+              $wrap_file
               or confess $!;
         }
         chmod oct 755, $wrap_file;
