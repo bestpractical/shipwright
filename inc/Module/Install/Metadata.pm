@@ -6,7 +6,7 @@ use Module::Install::Base ();
 
 use vars qw{$VERSION @ISA $ISCORE};
 BEGIN {
-	$VERSION = '0.92';
+	$VERSION = '0.95';
 	@ISA     = 'Module::Install::Base';
 	$ISCORE  = 1;
 }
@@ -19,7 +19,6 @@ my @scalar_keys = qw{
 	name
 	module_name
 	abstract
-	author
 	version
 	distribution_type
 	tests
@@ -43,7 +42,10 @@ my @resource_keys = qw{
 
 my @array_keys = qw{
 	keywords
+	author
 };
+
+*authors = \&author;
 
 sub Meta              { shift          }
 sub Meta_BooleanKeys  { @boolean_keys  }
@@ -230,7 +232,7 @@ sub all_from {
 		die("The path '$file' does not exist, or is not a file");
 	}
 
-    $self->{values}{all_from} = $file;
+	$self->{values}{all_from} = $file;
 
 	# Some methods pull from POD instead of code.
 	# If there is a matching .pod, use that instead
@@ -242,7 +244,7 @@ sub all_from {
 	$self->name_from($file)         unless $self->name;
 	$self->version_from($file)      unless $self->version;
 	$self->perl_version_from($file) unless $self->perl_version;
-	$self->author_from($pod)        unless $self->author;
+	$self->author_from($pod)        unless @{$self->author || []};
 	$self->license_from($pod)       unless $self->license;
 	$self->abstract_from($pod)      unless $self->abstract;
 
@@ -428,8 +430,49 @@ sub author_from {
 		([^\n]*)
 	/ixms) {
 		my $author = $1 || $2;
-		$author =~ s{E<lt>}{<}g;
-		$author =~ s{E<gt>}{>}g;
+
+		# XXX: ugly but should work anyway...
+		if (eval "require Pod::Escapes; 1") {
+			# Pod::Escapes has a mapping table.
+			# It's in core of perl >= 5.9.3, and should be installed
+			# as one of the Pod::Simple's prereqs, which is a prereq
+			# of Pod::Text 3.x (see also below).
+			$author =~ s{ E<( (\d+) | ([A-Za-z]+) )> }
+			{
+				defined $2
+				? chr($2)
+				: defined $Pod::Escapes::Name2character_number{$1}
+				? chr($Pod::Escapes::Name2character_number{$1})
+				: do {
+					warn "Unknown escape: E<$1>";
+					"E<$1>";
+				};
+			}gex;
+		}
+		elsif (eval "require Pod::Text; 1" && $Pod::Text::VERSION < 3) {
+			# Pod::Text < 3.0 has yet another mapping table,
+			# though the table name of 2.x and 1.x are different.
+			# (1.x is in core of Perl < 5.6, 2.x is in core of
+			# Perl < 5.9.3)
+			my $mapping = ($Pod::Text::VERSION < 2)
+				? \%Pod::Text::HTML_Escapes
+				: \%Pod::Text::ESCAPES;
+			$author =~ s{ E<( (\d+) | ([A-Za-z]+) )> }
+			{
+				defined $2
+				? chr($2)
+				: defined $mapping->{$1}
+				? $mapping->{$1}
+				: do {
+					warn "Unknown escape: E<$1>";
+					"E<$1>";
+				};
+			}gex;
+		}
+		else {
+			$author =~ s{E<lt>}{<}g;
+			$author =~ s{E<gt>}{>}g;
+		}
 		$self->author($author);
 	} else {
 		warn "Cannot determine author info from $_[0]\n";
@@ -437,43 +480,47 @@ sub author_from {
 }
 
 sub _extract_license {
-	if (
-		$_[0] =~ m/
-		(
-			=head \d \s+
-			(?:licen[cs]e|licensing|copyrights?|legal)\b
-			.*?
-		)
-		(=head\\d.*|=cut.*|)
-		\z
-	/ixms ) {
-		my $license_text = $1;
-		my @phrases      = (
-			'under the same (?:terms|license) as (?:perl|the perl programming language)' => 'perl', 1,
-			'under the terms of (?:perl|the perl programming language) itself' => 'perl', 1,
-			'GNU general public license'         => 'gpl',         1,
-			'GNU public license'                 => 'gpl',         1,
-			'GNU lesser general public license'  => 'lgpl',        1,
-			'GNU lesser public license'          => 'lgpl',        1,
-			'GNU library general public license' => 'lgpl',        1,
-			'GNU library public license'         => 'lgpl',        1,
-			'BSD license'                        => 'bsd',         1,
-			'Artistic license'                   => 'artistic',    1,
-			'GPL'                                => 'gpl',         1,
-			'LGPL'                               => 'lgpl',        1,
-			'BSD'                                => 'bsd',         1,
-			'Artistic'                           => 'artistic',    1,
-			'MIT'                                => 'mit',         1,
-			'proprietary'                        => 'proprietary', 0,
-		);
-		while ( my ($pattern, $license, $osi) = splice(@phrases, 0, 3) ) {
-			$pattern =~ s#\s+#\\s+#gs;
-			if ( $license_text =~ /\b$pattern\b/i ) {
-			        return $license;
-			}
+	my $pod = shift;
+	my $matched;
+	return __extract_license(
+		($matched) = $pod =~ m/
+			(=head \d \s+ (?:licen[cs]e|licensing)\b.*?)
+			(=head \d.*|=cut.*|)\z
+		/ixms
+	) || __extract_license(
+		($matched) = $pod =~ m/
+			(=head \d \s+ (?:copyrights?|legal)\b.*?)
+			(=head \d.*|=cut.*|)\z
+		/ixms
+	);
+}
+
+sub __extract_license {
+	my $license_text = shift or return;
+	my @phrases      = (
+		'under the same (?:terms|license) as (?:perl|the perl programming language)' => 'perl', 1,
+		'under the terms of (?:perl|the perl programming language) itself' => 'perl', 1,
+		'Artistic and GPL'                   => 'perl',        1,
+		'GNU general public license'         => 'gpl',         1,
+		'GNU public license'                 => 'gpl',         1,
+		'GNU lesser general public license'  => 'lgpl',        1,
+		'GNU lesser public license'          => 'lgpl',        1,
+		'GNU library general public license' => 'lgpl',        1,
+		'GNU library public license'         => 'lgpl',        1,
+		'BSD license'                        => 'bsd',         1,
+		'Artistic license'                   => 'artistic',    1,
+		'GPL'                                => 'gpl',         1,
+		'LGPL'                               => 'lgpl',        1,
+		'BSD'                                => 'bsd',         1,
+		'Artistic'                           => 'artistic',    1,
+		'MIT'                                => 'mit',         1,
+		'proprietary'                        => 'proprietary', 0,
+	);
+	while ( my ($pattern, $license, $osi) = splice(@phrases, 0, 3) ) {
+		$pattern =~ s#\s+#\\s+#gs;
+		if ( $license_text =~ /\b$pattern\b/i ) {
+			return $license;
 		}
-	} else {
-	        return;
 	}
 }
 
