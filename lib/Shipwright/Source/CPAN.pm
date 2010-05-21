@@ -161,14 +161,14 @@ sub _run {
 
     my $name = CPAN::DistnameInfo->new( $distribution->{ID} )->dist;
 
-    if ( $name eq 'perl' ) {
-        $self->log->warn( 'perl itself contains ' . $self->source . ', will not process');
-        return -1;
-    } 
     if (!$name ) {
         $self->log->warn("You asked to install ".$self->source. " but it isn't on the CPAN. Skipping");
         return -1;
     }
+    elsif ( $name eq 'perl' ) {
+        $self->log->warn( 'perl itself contains ' . $self->source . ', will not process');
+        return -1;
+    } 
 
     select_fh('stdout');
 
