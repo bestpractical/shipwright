@@ -117,6 +117,9 @@ unless ( -d 'shipwright' ) {
     exit -1;
 }
 
+my $bin_quote = is_on_windows() ? q{"} : q{'};
+my $bin_ext = $Config{_exe};
+
 $args{skip} = { map { $_ => 1 } split /\s*,\s*/, $args{skip} || '' };
 $args{flags} = {
     default => 1,
@@ -861,27 +864,20 @@ sub is_on_windows {
     return $^O =~ /MSWin/;
 }
 
-my $bin_quote = is_on_windows() ? q{"} : q{'};
-my $bin_ext = $Config{_exe};
 sub which {
     my $name = shift;
 
     my $path;
-    eval '$path = `which $name`';
-    chomp $path;
-    if ( !$path ) {
 
-        # fallback to our way
-LINE:
-        for my $dir ( path() ) {
-            my $path = catfile( $dir, $name );
+  LINE:
+    for my $dir ( path() ) {
+        my $p = catfile( $dir, $name );
 
-            # XXX  any other names need to try?
-            my @try = grep { -x } ( $path, $path .= $bin_ext );
-            for my $try (@try) {
-                $path = $try;
-                last LINE;
-            }
+        # XXX  any other names need to try?
+        my @try = grep { -x } ( $p, $p . $bin_ext );
+        for my $try (@try) {
+            $path = $try;
+            last LINE;
         }
     }
 
