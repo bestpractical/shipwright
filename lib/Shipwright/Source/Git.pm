@@ -85,7 +85,7 @@ sub _run {
         }
         else {
             my ($out) = run_cmd(
-                [ $ENV{'SHIPWRIGHT_GIT'}, 'log' ] );
+                [ $ENV{'SHIPWRIGHT_GIT'}, 'log', '-n', 1 ] );
             if ( $out =~ /^commit\s+(\w+)/m ) {
                 $self->version($1);
             }
