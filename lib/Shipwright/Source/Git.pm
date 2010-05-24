@@ -65,8 +65,8 @@ sub _run {
         @cmds = sub {
             my $cwd = getcwd();
             chdir $cloned_path;
-            run_cmd(
-                [ $ENV{'SHIPWRIGHT_GIT'}, 'pull' ] );
+            # can be failed if we are not in any branch, e.g. in a tag instead
+            run_cmd( [ $ENV{'SHIPWRIGHT_GIT'}, 'pull' ], 1 );
             chdir $cwd;
         };
     }
