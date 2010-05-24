@@ -48,9 +48,10 @@ sub run {
     confess_or_die "--name and --as args are not supported when importing multiple sources"
       if @sources > 1 && $self->name;
 
-    if ( $self->min_perl_version ) {
+    {
         require version;
-        my $version = version->new( $self->min_perl_version );
+        my $version =
+          version->new( $self->min_perl_version || $Config{version} );
         $self->min_perl_version( $version->numify );
     }
 
