@@ -37,6 +37,7 @@ confess "unknown option"
     'with=s',                 'noclean-after-install',
     'make=s',                 'branches=s',
     'verbose',                'as=s',
+    'no-install-base',
   );
 
 my $USAGE = <<'END';
@@ -49,6 +50,7 @@ Commonly used options:
                             directory.  (Note that vessels are relocatable 
                             once built) 
                             Ex: --install-base /home/local/mydist
+  --no-install-base         install to the default directory for each dist
   --skip-test               Don't run any tests at all
   --skip-test-except-final  Only run tests for the final package built
   --skip-man-pages          Don't install man pages for perl modules
@@ -149,20 +151,23 @@ if ( $args{only} ) {
     $args{only} = { map { $_ => 1 } split /\s*,\s*/, $args{only} };
 }
 
-$args{'install-base'} = get_install_base() unless $args{'install-base'};
+unless ( $args{'no-install-base'} ) {
+    $args{'install-base'} = get_install_base() unless $args{'install-base'};
 
-unless ( $args{'install-base'} ) {
-    my $dir = tempdir( 'vessel_' . $args{name} . '-XXXXXX', TMPDIR => 1 );
-    $args{'install-base'} = catdir( $dir, $args{name} );
-    print "no default install-base, will set it to $args{'install-base'}\n";
+    unless ( $args{'install-base'} ) {
+        my $dir = tempdir( 'vessel_' . $args{name} . '-XXXXXX', TMPDIR => 1 );
+        $args{'install-base'} = catdir( $dir, $args{name} );
+        print "no default install-base, will set it to $args{'install-base'}\n";
+    }
+
+    # replace prefix ~ with real home dir
+    $args{'install-base'} =~ s/^~/(getpwuid $<)[7]/e;
+
+    # remove last / or \
+    $args{'install-base'} =~ s{[/\\]$}{};
 }
 
 
-# replace prefix ~ with real home dir
-$args{'install-base'} =~ s/^~/(getpwuid $<)[7]/e;
-
-# remove last / or \
-$args{'install-base'} =~ s{[/\\]$}{};
 
 unless ( $args{name} ) {
     if ( $build_base =~ m{([-.\w]+)[\\/]([.\d]+)$} ) {
@@ -301,154 +306,171 @@ sub install {
     print $fh $args{'install-base'};
     close $fh;
 
-    unless ( $args{perl} && -e $args{perl} ) {
-        my $perl = catfile( $args{'install-base'}, 'bin', 'perl' );
-
-        # -e $perl makes sense when we install onto another vessel
-        if ( ( grep { /^perl/ } @$order ) || -e $perl ) {
-            $args{perl} = $perl;
-        }
-    }
-
-    {
-
-        my $arch_command = $args{perl} || $^X;
-        if ( is_on_windows() ) {
-            $arch_command .= q{ -MConfig -e "print $Config{archname}"};
-        }
-        else {
-            $arch_command .= q{ -MConfig -e 'print $Config{archname}'};
-        }
-        my $arch = `$arch_command`;
-
-        no warnings 'uninitialized';
 
 # this dirty hack means that ExtUtils::AutoInstall won't try to recurse and run cpan
-        $ENV{'PERL5_CPANPLUS_IS_RUNNING'} = 1;
-        $ENV{'AUTOMATED_TESTING'}         = 1; # Term::ReadLine::Perl and others
-                                               # use this to not prompt
-        $ENV{DYLD_LIBRARY_PATH} =
-          catdir( $args{'install-base'}, 'lib' ) . ':'
-          . $ENV{DYLD_LIBRARY_PATH};
-        $ENV{LD_LIBRARY_PATH} =
-          catdir( $args{'install-base'}, 'lib' ) . ':' . $ENV{LD_LIBRARY_PATH};
-        $ENV{PERL5LIB} = join(
-            ':',
-            catdir( 'blib', 'lib' ),
-            catdir( 'blib', 'arch' ),
-            $inc_lib,    #BLIB COMES FIRST TO PLEASE MODULE::BUILD
-            catdir(
-                $args{'install-base'}, 'lib', 'perl5', $arch
-
-            ),
-            catdir( $args{'install-base'}, 'lib', 'perl5', 'site_perl' ),
-            catdir( $args{'install-base'}, 'lib', 'perl5' ),
-        );
-
-        $ENV{PATH} =
-            catdir( $args{'install-base'}, 'sbin' ) . ':'
-          . catdir( $args{'install-base'}, 'bin' ) . ':'
-          . catdir( $args{'install-base'}, 'usr', 'sbin' ) . ':'
-          . catdir( $args{'install-base'}, 'usr', 'bin' ) . ':'
-          . $ENV{PATH};
-        $ENV{PERL_MM_USE_DEFAULT} = 1;
-        $ENV{PERL_MM_OPT}         = '';
-        $ENV{MODULEBUILDRC}       = '';
-        $ENV{LDFLAGS} .= ' -L' . catdir( $args{'install-base'}, 'lib' );
-        $ENV{CFLAGS}  .= ' -I' . catdir( $args{'install-base'}, 'include' );
-    }
-
-    mkpath $args{'install-base'} unless -e $args{'install-base'};
-
-    mkdir catdir( $args{'install-base'}, 'etc' )
-      unless -e catdir( $args{'install-base'}, 'etc' );
-    mkdir catdir( $args{'install-base'}, 'tools' )
-      unless -e catdir( $args{'install-base'}, 'tools' );
-
-    for ( 'shipwright-script-wrapper', 'shipwright-perl-wrapper' ) {
-        rcopy( catfile( 'etc', $_ ),
-            catfile( $args{'install-base'}, 'etc', $_ ) );
-    }
-
-    for ( 'shipwright-utility', 'shipwright-source-bash',
-        'shipwright-source-tcsh' )
-    {
-        rcopy( catfile( 'etc', $_ ),
-            catfile( $args{'install-base'}, 'tools', $_ ) );
-    }
-
-    chmod oct 755,
-      catfile( $args{'install-base'}, 'tools', 'shipwright-utility' );
-
-    # remove lib it's symbolic link
-    for my $r ('lib') {
-        my $dir = catdir( $args{'install-base'}, $r );
-        unlink $dir if -l $dir;
-    }
-
-    # remove (usr/)?s?bin if it's an install from start
-    unless ( keys %$installed_hash ) {
-        for my $r ( 'bin', 'sbin', catdir( 'usr', 'bin' ),
-            catdir( 'usr', 'sbin' ), )
-        {
-            my $dir = catdir( $args{'install-base'}, $r );
-            next unless -e $dir;
-            rmtree( $dir );
-        }
-    }
+    $ENV{'PERL5_CPANPLUS_IS_RUNNING'} = 1;
+    $ENV{'AUTOMATED_TESTING'}         = 1;    # Term::ReadLine::Perl and others
+                                              # use this to not prompt
+    $ENV{PERL_MM_USE_DEFAULT}         = 1;
+    $ENV{PERL_MM_OPT}                 = '';
+    $ENV{MODULEBUILDRC}               = '';
 
     mkdir 'dists' unless -e 'dists';
-    for my $dist (@$order) {
-        _install( $dist, $log );
-        _record( $dist, $log );
-        chdir $build_base;
+
+    if ( $args{'no-install-base'} ) {
+        for my $dist (@$order) {
+            _install( $dist, $log );
+            _record( $dist, $log );
+            chdir $build_base;
+        }
+        print "install finished\n";
     }
+    else {
 
-    mkdir catdir( $args{'install-base'}, 'bin' )
-      unless -e catdir( $args{'install-base'}, 'bin' );
+        unless ( $args{perl} && -e $args{perl} ) {
+            my $perl = catfile( $args{'install-base'}, 'bin', 'perl' );
 
-    # in case wrappers are overwritten by accident
-    for ( 'shipwright-script-wrapper', 'shipwright-perl-wrapper' ) {
-        rcopy( catfile( 'etc', $_ ),
-            catfile( $args{'install-base'}, 'etc', $_ ) );
-    }
-
-    my $cwd = getcwd;
-    chdir $args{'install-base'};
-    open my $tmp_fh, '>', '__as',
-      or confess "can't wriite to $args{'install-base'}/__as: $!";
-    print $tmp_fh $args{as};
-    close $tmp_fh;
-
-    mkdir 'as';
-    my $as_dir = catdir( 'as', $args{as} );
-    mkdir $as_dir;
-
-    unless( is_on_windows() ) {
-        for my $r ( 'lib', 'bin', 'sbin' ) {
-            next unless -e $r;
-            my $dir = catdir( $as_dir, $r );
-            rmove( $r, catdir( $as_dir, $r ) );
-
-            if ( $r !~ /bin/ ) {
-                symlink $dir, $r;
+            # -e $perl makes sense when we install onto another vessel
+            if ( ( grep { /^perl/ } @$order ) || -e $perl ) {
+                $args{perl} = $perl;
             }
         }
 
-        # in usr dir
-        my $usr_dir = catdir( $as_dir, 'usr' );
-        mkdir $usr_dir;
-        for my $r ( 'bin', 'sbin' ) {
-            next unless -e catdir( 'usr', $r );
-            rmove( catdir( 'usr', $r ), catdir( $usr_dir, $r ) );
+        {
+
+            my $arch_command = $args{perl} || $^X;
+            if ( is_on_windows() ) {
+                $arch_command .= q{ -MConfig -e "print $Config{archname}" };
+            }
+            else {
+                $arch_command .= q{ -MConfig -e 'print $Config{archname}'};
+            }
+            my $arch = `$arch_command`;
+
+            no warnings 'uninitialized';
+            $ENV{DYLD_LIBRARY_PATH} =
+              catdir( $args{'install-base'}, 'lib' ) . ':'
+              . $ENV{DYLD_LIBRARY_PATH};
+            $ENV{LD_LIBRARY_PATH} =
+              catdir( $args{'install-base'}, 'lib' ) . ':'
+              . $ENV{LD_LIBRARY_PATH};
+            $ENV{PERL5LIB} = join(
+                ':',
+                catdir( 'blib', 'lib' ),
+                catdir( 'blib', 'arch' ),
+                $inc_lib,    #BLIB COMES FIRST TO PLEASE MODULE::BUILD
+                catdir(
+                    $args{'install-base'}, 'lib', 'perl5', $arch
+
+                ),
+                catdir( $args{'install-base'}, 'lib', 'perl5', 'site_perl' ),
+                catdir( $args{'install-base'}, 'lib', 'perl5' ),
+            );
+
+            $ENV{PATH} =
+                catdir( $args{'install-base'}, 'sbin' ) . ':'
+              . catdir( $args{'install-base'}, 'bin' ) . ':'
+              . catdir( $args{'install-base'}, 'usr', 'sbin' ) . ':'
+              . catdir( $args{'install-base'}, 'usr', 'bin' ) . ':'
+              . $ENV{PATH};
+            $ENV{LDFLAGS} .= ' -L' . catdir( $args{'install-base'}, 'lib' );
+            $ENV{CFLAGS}  .= ' -I' . catdir( $args{'install-base'}, 'include' );
         }
-        chdir $cwd;
 
-        wrap_bin($log);
+        mkpath $args{'install-base'} unless -e $args{'install-base'};
+
+        mkdir catdir( $args{'install-base'}, 'etc' )
+          unless -e catdir( $args{'install-base'}, 'etc' );
+        mkdir catdir( $args{'install-base'}, 'tools' )
+          unless -e catdir( $args{'install-base'}, 'tools' );
+
+        for ( 'shipwright-script-wrapper', 'shipwright-perl-wrapper' ) {
+            rcopy( catfile( 'etc', $_ ),
+                catfile( $args{'install-base'}, 'etc', $_ ) );
+        }
+
+        for ( 'shipwright-utility', 'shipwright-source-bash',
+            'shipwright-source-tcsh' )
+        {
+            rcopy( catfile( 'etc', $_ ),
+                catfile( $args{'install-base'}, 'tools', $_ ) );
+        }
+
+        chmod oct 755,
+          catfile( $args{'install-base'}, 'tools', 'shipwright-utility' );
+
+        # remove lib it's symbolic link
+        for my $r ('lib') {
+            my $dir = catdir( $args{'install-base'}, $r );
+            unlink $dir if -l $dir;
+        }
+
+        # remove (usr/)?s?bin if it's an install from start
+        unless ( keys %$installed_hash ) {
+            for my $r (
+                'bin', 'sbin',
+                catdir( 'usr', 'bin' ),
+                catdir( 'usr', 'sbin' ),
+              )
+            {
+                my $dir = catdir( $args{'install-base'}, $r );
+                next unless -e $dir;
+                rmtree($dir);
+            }
+        }
+
+        for my $dist (@$order) {
+            _install( $dist, $log );
+            _record( $dist, $log );
+            chdir $build_base;
+        }
+
+        mkdir catdir( $args{'install-base'}, 'bin' )
+          unless -e catdir( $args{'install-base'}, 'bin' );
+
+        # in case wrappers are overwritten by accident
+        for ( 'shipwright-script-wrapper', 'shipwright-perl-wrapper' ) {
+            rcopy( catfile( 'etc', $_ ),
+                catfile( $args{'install-base'}, 'etc', $_ ) );
+        }
+
+        my $cwd = getcwd;
+        chdir $args{'install-base'};
+        open my $tmp_fh, '>', '__as',
+          or confess "can't wriite to $args{'install-base'}/__as: $!";
+        print $tmp_fh $args{as};
+        close $tmp_fh;
+
+        mkdir 'as';
+        my $as_dir = catdir( 'as', $args{as} );
+        mkdir $as_dir;
+
+        unless ( is_on_windows() ) {
+            for my $r ( 'lib', 'bin', 'sbin' ) {
+                next unless -e $r;
+                my $dir = catdir( $as_dir, $r );
+                rmove( $r, catdir( $as_dir, $r ) );
+
+                if ( $r !~ /bin/ ) {
+                    symlink $dir, $r;
+                }
+            }
+
+            # in usr dir
+            my $usr_dir = catdir( $as_dir, 'usr' );
+            mkdir $usr_dir;
+            for my $r ( 'bin', 'sbin' ) {
+                next unless -e catdir( 'usr', $r );
+                rmove( catdir( 'usr', $r ), catdir( $usr_dir, $r ) );
+            }
+            chdir $cwd;
+
+            wrap_bin($log);
+        }
+
+        print "install finished, the dists are at $args{'install-base'}\n";
+        print $log "install finished, the dists are at $args{'install-base'}\n";
     }
-
-    print "install finished, the dists are at $args{'install-base'}\n";
-    print $log "install finished, the dists are at $args{'install-base'}\n";
 }
 
 sub _install {
@@ -640,8 +662,16 @@ sub substitute {
     my $text = shift;
     return unless $text;
 
-    my $install_base = $args{'install-base'};
-    $text =~ s/%%INSTALL_BASE%%/$install_base/g;
+    if ( $args{'no-install-base'} ) {
+        $text =~ s/\s+\S*%%INSTALL_BASE%%\S*/ /g;
+        if ( $text =~ /Build\.PL/ ) {
+            $text =~ s/--install_path//g;
+        }
+    }
+    else {
+        my $install_base = $args{'install-base'};
+        $text =~ s/%%INSTALL_BASE%%/$install_base/g;
+    }
 
     my $perl;
 
@@ -651,7 +681,6 @@ sub substitute {
     else {
         $perl = $^X;
     }
-
     my $perl_archname;
     if ( is_on_windows() ) {
         $perl_archname = `$perl -MConfig -e "print \$Config{archname}"`;
@@ -659,7 +688,6 @@ sub substitute {
     else {
         $perl_archname = `$perl -MConfig -e 'print \$Config{archname}'`;
     }
-
     $text =~ s/%%PERL%%/$perl -I$inc_lib -MShipwright::Util::CleanINC/g;
     $text =~ s/%%PERL_ARCHNAME%%/$perl_archname/g;
     $text =~ s/%%MODULE_BUILD_EXTRA%%//g;
