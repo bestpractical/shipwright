@@ -84,11 +84,10 @@ sub _run {
                 [ $ENV{'SHIPWRIGHT_GIT'}, 'checkout', $self->version ] );
         }
         else {
-            my ($out) = run_cmd(
-                [ $ENV{'SHIPWRIGHT_GIT'}, 'log', '-n', 1 ] );
-            if ( $out =~ /^commit\s+(\w+)/m ) {
-                $self->version($1);
-            }
+            my ($version) = run_cmd(
+                [ $ENV{'SHIPWRIGHT_GIT'}, 'rev-parse', '--verify', 'HEAD' ] );
+            chomp $version;
+            $self->version( $version );
         }
         chdir $cwd;
         remove_tree( $path ) if -e $path;
