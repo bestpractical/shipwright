@@ -288,9 +288,14 @@ sub commit {
 
 sub delete {
     my $self = shift;
-    $self->fs_backend->delete(@_);
     my %args = @_;
-    $self->commit( comment => 'delete ' . $args{path} );
+    my $path = $args{path};
+    $path =~ s!^/!!;
+    my $cwd = getcwd;
+    chdir $self->local_dir or return;
+    run_cmd( [ $ENV{'SHIPWRIGHT_GIT'}, 'rm', '-rf', $path ] );
+    chdir $cwd;
+    $self->commit( comment => 'delete ' . $path );
 }
 
 =item move
@@ -299,10 +304,16 @@ sub delete {
 
 sub move {
     my $self = shift;
-    $self->fs_backend->move(@_);
     my %args     = @_;
     my $path     = $args{path};
+    $path =~ s!^/!!;
     my $new_path = $args{new_path};
+    $new_path =~ s!^/!!;
+    my $cwd = getcwd;
+
+    chdir $self->local_dir or return;
+    run_cmd( [ $ENV{'SHIPWRIGHT_GIT'}, 'mv', $path, $new_path ] );
+    chdir $cwd;
     $self->commit( comment => "move $path to $new_path" );
 }
 
