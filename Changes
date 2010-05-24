@@ -1,5 +1,13 @@
 Revision history for Shipwright
 
+2.4.11 Mon May 24 08:46:12 UTC 2010
+
+* tweak git source part, thanks to rbuels++
+* update git backend's delete and move
+* add --no-install-base option, so we can install dists to their default directories
+* set the min_perl_version to the running perl if not defined
+* not try which cmd: it does not work at all on windows
+
 2.4.10 Wed May 19 05:54:48 UTC 2010
 
 * symlink path fix
