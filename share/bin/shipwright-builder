@@ -137,6 +137,9 @@ $args{make} ||=
   || which('dmake')
   || which('nmake')
   || 'make';
+$args{make} = $bin_quote . $args{make} . $bin_quote
+  if $args{make} =~ /\s/
+      && $args{make} !~ /^$bin_quote/;
 
 if ( is_on_windows() ) {
     $args{as} ||= 'MSWin';
@@ -317,6 +320,22 @@ sub install {
 
     mkdir 'dists' unless -e 'dists';
 
+    unless ( $args{perl} && -e $args{perl} ) {
+        my $perl = catfile( $args{'install-base'}, 'bin', 'perl' );
+
+        # -e $perl makes sense when we install onto another vessel
+        if ( ( grep { /^perl/ } @$order ) || -e $perl ) {
+            $args{perl} = $perl;
+        }
+        else {
+            $args{perl} = $^X;
+        }
+    }
+
+    $args{perl} = $bin_quote . $args{perl} . $bin_quote
+      if $args{perl} =~ /\s/
+          && $args{perl} !~ /^$bin_quote/;
+
     if ( $args{'no-install-base'} ) {
         for my $dist (@$order) {
             _install( $dist, $log );
@@ -327,18 +346,9 @@ sub install {
     }
     else {
 
-        unless ( $args{perl} && -e $args{perl} ) {
-            my $perl = catfile( $args{'install-base'}, 'bin', 'perl' );
-
-            # -e $perl makes sense when we install onto another vessel
-            if ( ( grep { /^perl/ } @$order ) || -e $perl ) {
-                $args{perl} = $perl;
-            }
-        }
-
         {
 
-            my $arch_command = $args{perl} || $^X;
+            my $arch_command = $args{perl};
             if ( is_on_windows() ) {
                 $arch_command .= q{ -MConfig -e "print $Config{archname}" };
             }
@@ -512,7 +522,7 @@ sub _install {
     if ( -e catfile( '..', '..', 'scripts', $dir, 'build.pl' ) ) {
         print $log "Found build.pl for $dir, will install $dir using that\n";
         my $cmd = join ' ',
-          $args{perl} || $^X,
+          $args{perl},
           '-MShipwright::Util::CleanINC',
           catfile( '..', '..', 'scripts', $dir, 'build.pl' ),
           '--install-base' => $args{'install-base'},
@@ -673,14 +683,8 @@ sub substitute {
         $text =~ s/%%INSTALL_BASE%%/$install_base/g;
     }
 
-    my $perl;
+    my $perl = $args{perl};
 
-    if ( $args{perl} && -e $args{perl} ) {
-        $perl = $args{perl};
-    }
-    else {
-        $perl = $^X;
-    }
     my $perl_archname;
     if ( is_on_windows() ) {
         $perl_archname = `$perl -MConfig -e "print \$Config{archname}"`;
@@ -789,7 +793,7 @@ sub _clean {
 
     if ( -e catfile( '..', '..', 'scripts', $dir, 'build.pl' ) ) {
         print $log "Using build.pl to clean $dir\n";
-        $cmd = join ' ', $args{perl} || $^X,
+        $cmd = join ' ', $args{perl},
           "-I $inc_lib",
           '-MShipwright::Util::CleanINC',
           catfile( '..', '..', 'scripts', $dir, 'build.pl' ),
