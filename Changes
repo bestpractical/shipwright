@@ -1,6 +1,8 @@
 Revision history for Shipwright
 
-2.4.12
+2.4.12 Thu May 27 07:18:28 UTC 2010
+
+* shipwright-builder: quote cmd perl and make if necessary( contains spaces )
 
 2.4.11 Mon May 24 08:46:12 UTC 2010
 
