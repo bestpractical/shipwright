@@ -9,6 +9,7 @@ use File::Spec::Functions qw/catfile catdir splitdir/;
 use lib 'inc';
 
 my %args;
+@ARGV = '--help' unless @ARGV;
 
 confess "unknown option"
   unless GetOptions( \%args, 'remove-pod', 'squeeze', 'verbose', 'help' );

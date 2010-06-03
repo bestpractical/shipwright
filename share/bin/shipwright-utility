@@ -8,6 +8,7 @@ use List::MoreUtils qw/uniq firstidx/;
 use Carp;
 
 my %args;
+@ARGV = '--help' unless @ARGV;
 
 confess "unknown option"
   unless GetOptions( \%args, 'update-order', 'keep-requires=s',
@@ -16,7 +17,7 @@ confess "unknown option"
 	);
 
 my $USAGE = <<'END'
-run: ./bin/shipwright-utility --update-order
+run: ./bin/shipwright-utility
 
 options: 
 
