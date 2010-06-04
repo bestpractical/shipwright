@@ -1,6 +1,7 @@
 AUTHORS
 bin/jeos-build
 bin/shipwright
+bin/shipwright-generate
 Changes
 inc/Module/AutoInstall.pm
 inc/Module/Install.pm
