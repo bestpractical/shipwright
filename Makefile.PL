@@ -40,6 +40,7 @@ no_index( directory => 't' );
 no_index( directory => 'xt' );
 
 install_script('bin/shipwright');
+install_script('bin/shipwright-generate');
 install_share;
 auto_install;
 
