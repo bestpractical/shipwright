@@ -90,11 +90,18 @@ elsif ( $args{'generate-tar-file'} ) {
 	my @dirs = File::Spec->splitdir( $cwd );
 	my $name = pop @dirs;
 	my $parent_dir = File::Spec->catdir( @dirs );
-	my $tar_file = Cwd::abs_path( $args{'generate-tar-file'} );
+    my $to = $args{'generate-tar-file'};
+    my $tar_out;
+    if ( $to eq '-' ) {
+        $tar_out = *STDOUT;
+    }
+    else {
+	    $to = Cwd::abs_path( $to );
+	    open $tar_out, '>', $to or die $!;
+	    chmod 0755, $to; ## no critic
+    }
 
 	chdir $parent_dir;
-	open my $tar_out, '>', $tar_file or die $!;
-	chmod 0755, $tar_file; ## no critic
 	print $tar_out <<'EOF';
 #!/usr/bin/env perl
 open my $tar, '|-', 'tar xz 2>/dev/null';
@@ -112,7 +119,7 @@ EOF
 		print $tar_out $_;
 	}
 	chdir $cwd;
-	print "generated with success\n";
+	print "generated with success\n" unless $to eq '-';
 }
 
 sub fill_deps {
