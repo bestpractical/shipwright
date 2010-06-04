@@ -17,9 +17,14 @@ this script actually does 3 things, i.e.
 
 If you don't want to keep a repo and just want the tarball, this script is for you!
 
-Arguments are the same as `shipwright import` without --log... and --repository
+Arguments are the same as `shipwright import` without --log... and --repository.
+It also has two extra options: --help(-h) and --output(-o) outputfile.
+-h is to show this usage, -o is to specify the file to write to.
 
 Examples:
+
+to generate an install file for Plack and all its dependencies to /tmp/plack.pl:
+    $ shipwright-generate cpan:Plack -o /tmp/plack.pl
 
 to install Jifty to current perl without all its recommendations:
     $ shipwright-generate cpan:Jifty --skip-all-recommends | perl - --no-install-base --skip-test
