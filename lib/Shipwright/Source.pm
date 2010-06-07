@@ -79,12 +79,12 @@ sub type {
     _translate_source($source);
 
     # prefix that can't be omitted
-    if ( $$source =~ /^file:.*\.(tar\.gz|tgz|tar\.bz2)$/ ) {
+    if ( $$source =~ /^file:.*\.(?:tar\.(?:gz|bz2)|tgz|tbz|zip)$/ ) {
         $$source =~ s/^file://i;
         return 'Compressed';
     }
 
-    return 'Directory'  if $$source =~ s/^dir(ectory)?://i;
+    return 'Directory'  if $$source =~ s/^dir(?:ectory)?://i;
     return 'Shipwright' if $$source =~ s/^shipwright://i;
 
     if ( $$source =~ s/^cpan://i ) {
