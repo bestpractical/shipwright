@@ -132,7 +132,7 @@ if ( $^O =~ /MSWin/ || ! $tar_cmd ) {
 }
 else {
 # the reason we perfer tar cmd here is we don't need to save the .tar.gz
-# file in disk.
+# file in disk, and Archive::Extract is not in core until 5.9.5.
     open my $tar, '|-', "$tar_cmd xz";
 
     while (<DATA>) {
