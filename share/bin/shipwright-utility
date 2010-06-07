@@ -103,15 +103,71 @@ elsif ( $args{'generate-tar-file'} ) {
 
 	chdir $parent_dir;
 	print $tar_out <<'EOF';
-#!/usr/bin/env perl
-open my $tar, '|-', 'tar xz 2>/dev/null';
-while (<DATA>) {
-    print $tar $_; 
+#!/usr/bin/env perl 
+use strict;
+use warnings;
+use File::Spec::Functions;
+use Config;
+use Cwd;
+use File::Temp 'tempdir';
+my $bin_quote = $^O =~ /MSWin/ ? q{"} : q{'};
+my $bin_ext = $Config{_exe};
+
+
+my $cwd = getcwd;
+my $dir = tempdir( CLEANUP => 1, TMPDIR => 1 );
+chdir $dir;
+my $tar_cmd = which('tar');
+if ( $^O =~ /MSWin/ || ! $tar_cmd ) {
+    open my $fh, '>', 'fs.tar.gz' or die $!;
+    binmode $fh;
+    while (<DATA>) {
+        print $fh $_;
+    }
+    close $fh;
+
+    require Archive::Extract;
+    my $ae = Archive::Extract->new( archive => 'fs.tar.gz' );
+    $ae->extract();
 }
-close $tar;
-EOF
-	print $tar_out <<EOF;
-exec("cd $name; bin/shipwright-builder \@ARGV");
+else {
+    open my $tar, '|-', "$tar_cmd xz";
+
+    while (<DATA>) {
+        print $tar $_;
+    }
+    close $tar;
+}
+
+chdir 'fs';
+system( $^X, catfile( 'bin', 'shipwright-builder' ), @ARGV );
+chdir $cwd;
+
+sub which {
+    my $name = shift;
+
+    my $path;
+
+  LINE:
+    for my $dir ( path() ) {
+        my $p = catfile( $dir, $name );
+
+        # XXX  any other names need to try?
+        my @try = grep { -x } ( $p, $p . $bin_ext );
+        for my $try (@try) {
+            $path = $try;
+            last LINE;
+        }
+    }
+
+    return unless $path;
+    if ( $path =~ /\s/ && $path !~ /^$bin_quote/ ) {
+        $path = $bin_quote . $path . $bin_quote;
+    }
+
+    return $path;
+}
+
 __DATA__
 EOF
 	open my $tar_in, '-|', "tar cz $name" or die $!;
