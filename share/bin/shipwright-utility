@@ -131,6 +131,8 @@ if ( $^O =~ /MSWin/ || ! $tar_cmd ) {
     $ae->extract();
 }
 else {
+# the reason we perfer tar cmd here is we don't need to save the .tar.gz
+# file in disk.
     open my $tar, '|-', "$tar_cmd xz";
 
     while (<DATA>) {
