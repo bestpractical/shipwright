@@ -154,6 +154,15 @@ if ( $args{only} ) {
     $args{only} = { map { $_ => 1 } split /\s*,\s*/, $args{only} };
 }
 
+unless ( $args{name} ) {
+    if ( $build_base =~ m{([-.\w]+)[\\/]([.\d]+)$} ) {
+        $args{name} = "$1-$2";
+    }
+    elsif ( $build_base =~ m{([-.\w]+)$} ) {
+        $args{name} = $1;
+    }
+}
+
 unless ( $args{'no-install-base'} ) {
     $args{'install-base'} = get_install_base() unless $args{'install-base'};
 
@@ -172,29 +181,23 @@ unless ( $args{'no-install-base'} ) {
 
 
 
-unless ( $args{name} ) {
-    if ( $build_base =~ m{([-.\w]+)[\\/]([.\d]+)$} ) {
-        $args{name} = "$1-$2";
-    }
-    elsif ( $build_base =~ m{([-.\w]+)$} ) {
-        $args{name} = $1;
-    }
-}
 
-my $installed;
+my ( $installed, $installed_file );
 my $installed_hash = {};
-my $installed_file =
-  catfile( $args{'install-base'}, "$args{as}_installed.yml" );
-if ( -e $installed_file ) {
-    $installed = YAML::Tiny->read(
-        catfile( $args{'install-base'}, "$args{as}_installed.yml" ) );
-    $installed_hash = { map { $_ => 1 } @{ $installed->[0] } };
-}
-else {
-    $installed = YAML::Tiny->new;
+unless ( $args{'no-install-base'} ) {
+    $installed_file =
+      catfile( $args{'install-base'}, "$args{as}_installed.yml" );
+    if ( -e $installed_file ) {
+        $installed = YAML::Tiny->read(
+            catfile( $args{'install-base'}, "$args{as}_installed.yml" ) );
+        $installed_hash = { map { $_ => 1 } @{ $installed->[0] } };
+    }
+    else {
+        $installed = YAML::Tiny->new;
+    }
+    $args{'install-base'} = rel2abs( $args{'install-base'} );
 }
 
-$args{'install-base'} = rel2abs( $args{'install-base'} );
 
 # YAML::Tiny objects are array based.
 my $order = ( YAML::Tiny->read( catfile( 'shipwright', 'order.yml' ) ) )->[0];
@@ -304,11 +307,6 @@ sub install {
         $CPAN::Config->{prerequisites_policy} = 'ignore';
     };
 
-    open my $fh, '>', '__install_base'
-      or confess "can't write to __install_base: $!";
-    print $fh $args{'install-base'};
-    close $fh;
-
 
 # this dirty hack means that ExtUtils::AutoInstall won't try to recurse and run cpan
     $ENV{'PERL5_CPANPLUS_IS_RUNNING'} = 1;
@@ -339,12 +337,15 @@ sub install {
     if ( $args{'no-install-base'} ) {
         for my $dist (@$order) {
             _install( $dist, $log );
-            _record( $dist, $log );
             chdir $build_base;
         }
         print "install finished\n";
     }
     else {
+        open my $fh, '>', '__install_base'
+            or confess "can't write to __install_base: $!";
+        print $fh $args{'install-base'};
+        close $fh;
 
         {
 
