@@ -170,9 +170,18 @@ sub _follow {
         elsif ( -e 'Makefile.PL' ) {
             my $makefile = read_file('Makefile.PL')
               or confess_or_die "can't read Makefile.PL: $!";
-
             if ( $makefile =~ /inc::Module::Install/ ) {
                 $self->log->info("is a Module::Install based dist");
+
+                # in case people call another file, which contains
+                # keywords like requires, features, etc 
+                # see Task::Plack for a real example
+                while ( $makefile =~ /(do\s+(['"])(.*?)\2\s*;\s*$)/m ) {
+                    my $line    = $1;
+                    my $content = read_file($3);
+                    $content  =~ s/^__END__$ .*//xsmg;
+                    $makefile =~ s/$line/$content;/;
+                }
 
   # PREREQ_PM in Makefile is not good enough for inc::Module::Install, which
   # will omit features(..). we'll put deps in features(...) into recommends part
