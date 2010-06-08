@@ -1,5 +1,7 @@
 Revision history for Shipwright
 
+2.4.14
+
 2.4.13 Tue Jun  8 07:34:55 UTC 2010
 
 * add cmd shipwright-generate: run it with -h to see its usage.
