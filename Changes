@@ -1,6 +1,12 @@
 Revision history for Shipwright
 
-2.4.13
+2.4.13 Tue Jun  8 07:34:55 UTC 2010
+
+* add cmd shipwright-generate: run it with -h to see its usage.
+* add env SHIPWRIGHT_CPAN_MIRROR to specify the cpan mirror url
+* support .zip file as source
+* tweak the "finding deps" procedure for Module::Install
+* improve `shipwright-utility --generate-tar-file`, especially for windows
 
 2.4.12 Thu May 27 07:18:28 UTC 2010
 
