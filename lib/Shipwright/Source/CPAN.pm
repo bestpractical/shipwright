@@ -63,8 +63,13 @@ sub new {
         $CPAN::Config->{prefs_dir}         = catdir( $cpan_dir, 'prefs' );
         $CPAN::Config->{prerequisites_policy} = 'follow';
         unless ( $CPAN::Config->{urllist} && @{ $CPAN::Config->{urllist} } ) {
-            $CPAN::Config->{urllist} = ['http://search.cpan.org/CPAN'];
+            $CPAN::Config->{urllist} = [ 'http://search.cpan.org/CPAN' ];
         }
+
+        if ( $ENV{SHIPWRIGHT_CPAN_MIRROR} ) {
+            unshift @{$CPAN::Config->{urllist}}, $ENV{SHIPWRIGHT_CPAN_MIRROR};
+        }
+
         write_file( $config_file,
             Data::Dumper->Dump( [$CPAN::Config], ['$CPAN::Config'] ) );
 
