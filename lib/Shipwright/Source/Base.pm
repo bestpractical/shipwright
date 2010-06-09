@@ -9,12 +9,13 @@ use Shipwright::Source;
 use Shipwright::Util;
 use Cwd qw/getcwd/;
 use File::Copy::Recursive qw/rcopy/;
+use UNIVERSAL::require;
 
 use base qw/Class::Accessor::Fast/;
 __PACKAGE__->mk_accessors(
     qw/source directory scripts_directory download_directory follow
       min_perl_version map_path skip map skip_recommends skip_all_recommends
-      include_dual_lifed
+      skip_installed include_dual_lifed
       keep_build_requires name log url_path version_path branches_path version/
 );
 
@@ -448,6 +449,25 @@ EOF
                     next;
                 }
 
+                if ( $self->skip_installed ) {
+                    if ( $module->require ) {
+                        $self->log->info("found installed $module");
+                        no strict 'refs';
+                        require version;
+                        my $installed_version = ${ $module . '::VERSION' };
+                        if ( $installed_version
+                            && version->parse($installed_version) >=
+                            version->parse($version) )
+                        {
+                            $self->log->info(
+"$module is skipped because it's installed and the version is good enough"
+                            );
+                            delete $require->{$type}{$module};
+                            next;
+                        }
+                    }
+                }
+
                 my $name = $module;
 
                 if ( $self->_is_skipped($module) ) {
@@ -630,6 +650,7 @@ sub _is_skipped {
             return 1;
         }
     }
+
     return;
 }
 

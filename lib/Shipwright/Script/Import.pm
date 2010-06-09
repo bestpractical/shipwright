@@ -7,7 +7,7 @@ use base qw/App::CLI::Command Class::Accessor::Fast Shipwright::Script/;
 __PACKAGE__->mk_accessors(
     qw/comment no_follow build_script require_yml include_dual_lifed
       name test_script extra_tests overwrite min_perl_version skip version as
-      skip_recommends skip_all_recommends/
+      skip_recommends skip_all_recommends skip_installed/
 );
 
 use Shipwright;
@@ -34,6 +34,7 @@ sub options {
         'as=s'                => 'as',
         'skip-recommends=s'   => 'skip_recommends',
         'skip-all-recommends' => 'skip_all_recommends',
+        'skip-installed'      => 'skip_installed',
         'include-dual-lifed'  => 'include_dual_lifed'
     );
 }
@@ -125,6 +126,7 @@ sub run {
                 version             => $self->version,
                 skip_recommends     => $self->skip_recommends,
                 skip_all_recommends => $self->skip_all_recommends,
+                skip_installed      => $self->skip_installed,
             );
 
             confess_or_die "cpan dists can't be branched"
@@ -442,6 +444,7 @@ Shipwright::Script::Import - Import sources and their dependencies
  --skip-recommends              : specify a list of modules/dist names of
                                   which recommends we don't want to import
  --skip-all-recommends          : skip all the recommends to import
+ --skip-installed               : skip all the installed modules to import
  --include-dual-lifed           : include modules which live both in the perl core 
                                   and on CPAN
  
