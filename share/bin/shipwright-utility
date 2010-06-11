@@ -109,13 +109,13 @@ use warnings;
 use File::Spec::Functions;
 use Config;
 use Cwd;
-use File::Temp 'tempdir';
+use File::Temp;
 my $bin_quote = $^O =~ /MSWin/ ? q{"} : q{'};
 my $bin_ext = $Config{_exe};
 
 
 my $cwd = getcwd;
-my $dir = tempdir( CLEANUP => 1, TMPDIR => 1 );
+my $dir = File::Temp->newdir( CLEANUP => 1, TMPDIR => 1 );
 chdir $dir;
 my $tar_cmd = which('tar');
 if ( $^O =~ /MSWin/ || ! $tar_cmd ) {
@@ -142,7 +142,12 @@ else {
 }
 
 chdir 'fs';
-system( $^X, catfile( 'bin', 'shipwright-builder' ), @ARGV );
+if ( system( $^X, catfile( 'bin', 'shipwright-builder' ), @ARGV ) ) {
+    # error happens
+    $dir->unlink_on_destroy(0);
+    die "error occurred: the repository dir $dir is not cleaned up";
+}
+
 chdir $cwd;
 
 sub which {

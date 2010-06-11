@@ -37,7 +37,7 @@ requires:
   File::Path: 2.07
   File::Slurp: 0
   File::Spec: 0
-  File::Temp: 0
+  File::Temp: 0.18
   File::Which: 0
   IO::Uncompress::Bunzip2: 0
   IO::Uncompress::RawInflate: 2.012
