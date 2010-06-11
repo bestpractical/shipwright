@@ -259,6 +259,7 @@ sub shipwright_recommends {
 
 sub shipwright_feature {
     my ( $name, @mods ) = @_;
+    my $type = $name && $name ne '-core' ? 'recommends' : 'requires';
     for ( my $i = 0 ; $i < @mods ; $i++ ) {
         if ( $mods[$i] eq '-default' ) {
             $i++;    # skip the -default value
@@ -266,11 +267,11 @@ sub shipwright_feature {
         elsif ( $mods[ $i + 1 ] =~ /^[\d\.]*$/ ) {
 
             # index $i+1 is a version
-            $shipwright_req->{recommends}{ $mods[$i] } = $mods[ $i + 1 ] || 0;
+            $shipwright_req->{$type}{ $mods[$i] } = $mods[ $i + 1 ] || 0;
             $i++;
         }
         else {
-            $shipwright_req->{recommends}{ $mods[$i] } = 0;
+            $shipwright_req->{$type}{ $mods[$i] } = 0;
         }
     }
     goto &feature;
@@ -279,6 +280,7 @@ sub shipwright_feature {
 sub shipwright_features {
     my @args = @_;
     while ( my ( $name, $mods ) = splice( @_, 0, 2 ) ) {
+        my $type = $name && $name ne '-core' ? 'recommends' : 'requires';
         for ( my $i = 0; $i < @$mods; $i++ ) {
             if ( $mods->[$i] eq '-default' ) {
                 $i++;
@@ -295,16 +297,16 @@ sub shipwright_features {
 # );
                for ( my $j = 0; $j < @{$mods->[$i]}; $j++ ) {
                     if ( ref $mods->[$i][$j] eq 'ARRAY' ) {
-                        $shipwright_req->{recommends}{$mods->[$i][$j][0]} 
+                        $shipwright_req->{$type}{$mods->[$i][$j][0]} 
                             = $mods->[$i][$j][1] || 0;
                     }
                     elsif ( $mods->[$i][$j+1] =~ /^[\d\.]*$/ ) {
-                        $shipwright_req->{recommends}{$mods->[$i][$j]} 
+                        $shipwright_req->{$type}{$mods->[$i][$j]} 
                             = $mods->[$i][$j+1] || 0;
                         $j++;
                     }
                     else {
-                        $shipwright_req->{recommends}{$mods->[$i][$j]} = 0;
+                        $shipwright_req->{$type}{$mods->[$i][$j]} = 0;
                     }
                 }
                 
@@ -313,11 +315,11 @@ sub shipwright_features {
 
             if ( $mods->[$i+1] =~ /^[\d\.]*$/ ) {
                 # index $i+1 is a version
-                $shipwright_req->{recommends}{$mods->[$i]} = $mods->[$i+1] || 0;
+                $shipwright_req->{$type}{$mods->[$i]} = $mods->[$i+1] || 0;
                 $i++;
             }
             else {
-                $shipwright_req->{recommends}{$mods->[$i]} = 0;
+                $shipwright_req->{$type}{$mods->[$i]} = 0;
             }
         }
     }
