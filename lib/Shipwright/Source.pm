@@ -89,9 +89,10 @@ sub type {
 
     if ( $$source =~ s/^cpan://i ) {
 
-        # if it's not a distribution name, like
+        # if it's not a distribution name like
         # 'S/SU/SUNNAVY/IP-QQWry-v0.0.15.tar.gz', convert '-' to '::'.
-        $$source =~ s/-/::/g unless $$source =~ /\.tar\.gz$/;
+        $$source =~ s/-/::/g
+          unless $$source =~ /\.(?:tar\.(?:gz|bz2)|tgz|tbz)$/;
         return 'CPAN';
     }
 

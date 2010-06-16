@@ -685,7 +685,7 @@ sub just_name {
     my $self = shift;
     my $name = shift;
 
-    $name =~ s/tar\.bz2$/tar.gz/;    # CPAN::DistnameInfo doesn't like bz2
+    $name =~ s/(?:tar\.bz2|zip)$/tar.gz/;    # CPAN::DistnameInfo likes .tar.gz
 
     $name .= '.tar.gz' unless $name =~ /(tar\.gz|tgz)$/;
 
@@ -704,7 +704,7 @@ return version
 sub just_version {
     my $self = shift;
     my $name = shift;
-    $name .= '.tar.gz' unless $name =~ /(tar\.gz|tgz|tar\.bz2)$/;
+    $name .= '.tar.gz' unless $name =~ /\.(tar\.gz|tgz|tar\.bz2|zip)$/;
 
     require CPAN::DistnameInfo;
     my $info    = CPAN::DistnameInfo->new($name);
@@ -721,7 +721,7 @@ return true if the source is compressed file, i.e. tar.gz(tgz) and tar.bz2
 
 sub is_compressed {
     my $self = shift;
-    return 1 if $self->source =~ m{\.(tar.(gz|bz2)|tgz)$};
+    return 1 if $self->source =~ m{\.(tar.(gz|bz2)|tgz|zip)$};
     return;
 }
 
