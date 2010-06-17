@@ -27,6 +27,10 @@ unless ( defined $ENV{FTP_PASSIVE} ) {
     $ENV{FTP_PASSIVE} = 1;
 }
 
+=head2 new
+
+=cut
+
 sub new {
     my $class = shift;
 
