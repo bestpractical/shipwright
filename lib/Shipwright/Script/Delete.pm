@@ -71,18 +71,14 @@ __END__
 
 =head1 NAME
 
-Shipwright::Script::Delete - Delete a dist
+Shipwright::Script::Delete - Delete source(s)
 
 =head1 SYNOPSIS
 
- delete NAME
+ shipwright delete cpan-Jifty
 
 =head1 OPTIONS
 
- -r [--repository] REPOSITORY   : specify the repository of our project
- -l [--log-level] LOGLEVEL      : specify the log level
-                                  (info, debug, warn, error, or fatal)
- --log-file FILENAME            : specify the log file
  --unreferenced                 : to delete all unreferenced dists except the last one
  --check-only                   : show the lists, not really delete
 

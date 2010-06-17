@@ -14,7 +14,7 @@ Shipwright::Script::Help - Show help
 
 =head1 SYNOPSIS
 
- help COMMAND
+ help create
 
 =head1 AUTHORS
 

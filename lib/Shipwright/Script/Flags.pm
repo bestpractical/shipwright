@@ -113,30 +113,25 @@ __END__
 
 =head1 NAME
 
-Shipwright::Script::Flags - Maintain a dist's flags
+Shipwright::Script::Flags - Maintain flags
 
 =head1 SYNOPSIS
 
- flags -r ... DIST --add FLAG
- flags -r ... DIST --delete FLAG
- flags -r ... --mandatory --set FLAGS LABEL
+ shipwright flags mysql --add mysql
+ shipwright flags cpan-DBD-mysql --add mysql
 
 =head1 OPTIONS
 
- -r [--repository] REPOSITORY   : specify the repository of our project
- -l [--log-level] LOGLEVEL      : specify the log level
-                                  (info, debug, warn, error, or fatal)
- --log-file FILENAME            : specify the log file
  --add, --delete, --set FLAGS   : specify the flags, split by commas
  --mandatory                    : set these flags as being required
 
 =head1 DESCRIPTION
 
 The flags command is used for managing the flags feature of Shipwright. Flags
-can be used to group dists in ways which allow a single Shipwright repository
-to support multiple variants of binary vessels. For example, if you are
-shipping some software that requires a database, your repository can use flags
-to allow binary vessels to be built for both MySQL and PostgreSQL from it.
+can be used to group sources in ways which allow a single shipyard to support
+multiple variants of binary vessels. For example, if you are shipping some
+software that requires a database, your repository can use flags to allow
+binary vessels to be built for both MySQL and PostgreSQL from it.
 
 For more information on using flags, see L<Shipwright::Manual::UsingFlags>.
 

@@ -268,10 +268,6 @@ Shipwright::Script::List - List dists of a project
 
 =head1 OPTIONS
 
-   -r [--repository] REPOSITORY    : specify the repository of our project
-   -l [--log-level] LOGLEVEL       : specify the log level
-   --log-file FILENAME             : specify the log file
-                                     (info, debug, warn, error, or fatal)
    --with-latest-version           : show the latest version if possible
    --only-update                   : only show the dists that can be updated
 

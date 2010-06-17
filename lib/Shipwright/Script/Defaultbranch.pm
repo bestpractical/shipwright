@@ -40,20 +40,15 @@ __END__
 
 =head1 NAME
 
-Shipwright::Script::Defaultbranch - Set the default branch for a dist
+Shipwright::Script::Defaultbranch - Set the default branch for a source
 
 =head1 SYNOPSIS
 
- defaultbranch -r ... DIST BRANCH
-
-=head1 OPTIONS
-
- -r [--repository] REPOSITORY   : specify the repository of our project
- -l [--log-level] LOGLEVEL      : specify the log level
-                                  (info, debug, warn, error, or fatal)
- --log-file FILENAME            : specify the log file
+ shipwright defaultbranch cpan-Shipright 2.0
 
 =head1 DESCRIPTION
+
+See also L<Shipwright::Manual::UsingBranches>.
 
 =head1 AUTHORS
 

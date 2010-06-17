@@ -78,29 +78,6 @@ sub _cmd {
 
 __END__
 
-=head1 NAME
-
-Shipwright::Source::Directory - Directory source
-
-
-=head1 DESCRIPTION
-
-
-=head1 DEPENDENCIES
-
-
-None.
-
-
-=head1 INCOMPATIBILITIES
-
-None reported.
-
-
-=head1 BUGS AND LIMITATIONS
-
-No bugs have been reported.
-
 =head1 AUTHOR
 
 sunnavy C<< <sunnavy@bestpractical.com> >>

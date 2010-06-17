@@ -416,13 +416,10 @@ Shipwright::Script::Import - Import sources and their dependencies
 
 =head1 SYNOPSIS
 
- import SOURCE [ SOURCE ] ...
+ shipwright import cpan:Jifty cpan:Catalyst
 
 =head1 OPTIONS
 
- -r [--repository] REPOSITORY   : specify the repository of our project
- -l [--log-level] LOGLEVEL      : specify the log level
- --log-file FILENAME            : specify the log file
  -m [--comment] COMMENT         : specify the comment
  --name NAME                    : specify the source name (only alphanumeric
                                   characters, . and -)
@@ -436,13 +433,12 @@ Shipwright::Script::Import - Import sources and their dependencies
                                   building)
  --min-perl-version             : minimal perl version (default is the same as
                                   the one which runs this command)
- --overwrite                    : import dependency dists anyway even if they
-                                  are already in the repository
+ --overwrite                    : import dependency sources anyway even if they
+                                  are already in the shipyard
  --version                      : specify the source's version
- --skip                         : specify a list of modules/dist names of
-                                  which we don't want to import
- --skip-recommends              : specify a list of modules/dist names of
-                                  which recommends we don't want to import
+ --skip                         : specify a list of sources not to import
+ --skip-recommends              : specify a list of sources of which recommends 
+                                  not to import
  --skip-all-recommends          : skip all the recommends to import
  --skip-installed               : skip all the installed modules to import
  --include-dual-lifed           : include modules which live both in the perl core 
@@ -450,13 +446,13 @@ Shipwright::Script::Import - Import sources and their dependencies
  
 =head1 DESCRIPTION
 
-The import command imports a new dist into a shipwright repository from any of
-a number of supported source types (enumerated below). If a dist of the name
-specified by C<--name> already exists in the repository, the old files for that
-dist in F</dists> and F</scripts> are deleted and new ones added. This is the
-recommended method for updating non-svn, svk, or CPAN dists to new versions
-(see L<Shipwright::Update> for more information on the C<update> command, which
-is used for updating svn, svk, and CPAN dists).
+The import command imports a new source into a shipyard from a number of
+supported source types (enumerated below). If a source of the name specified
+by C<--name> already exists in the shipyard, the old files for that source
+in F</sources> and F</scripts> are deleted and new ones are added. This is the
+recommended method for updating non-svn, svk, or CPAN sources to new versions.
+(see L<Shipwright::Script::Update> for more information on the C<update>
+command, which is used for updating svn, svk, and CPAN dists).
 
 =head1 SUPPORTED SOURCE TYPES
 
@@ -470,7 +466,7 @@ type and schema, just a colon.
 e.g. cpan:Jifty::DBI  cpan:File::Spec
 
 CAVEAT: we don't support renaming CPAN sources when importing, because it
-*really* is not a good idea and maybe hurt shipwright somewhere.
+*really* is not a good idea and may hurt shipwright somewhere.
 
 =item File
 
@@ -514,9 +510,9 @@ L<svn:http://svn.example.com/foo-1.23>
 e.g. L<git:file:///opt/foo.git>
 L<git://github.com/bestpractical/shipwright.git>
 
-=item Shipwright
+=item Shipyard
 
-e.g. L<shipwright:fs:/opt/fs/foo>
+e.g. L<shipyard:/tmp/fs/foo>
 
 =back
 

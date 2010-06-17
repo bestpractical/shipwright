@@ -80,28 +80,6 @@ sub _run {
 
 __END__
 
-=head1 NAME
-
-Shipwright::Source::SVK - SVK source
-
-
-=head1 DESCRIPTION
-
-
-=head1 DEPENDENCIES
-
-None.
-
-
-=head1 INCOMPATIBILITIES
-
-None reported.
-
-
-=head1 BUGS AND LIMITATIONS
-
-No bugs have been reported.
-
 =head1 AUTHOR
 
 sunnavy  C<< <sunnavy@bestpractical.com> >>

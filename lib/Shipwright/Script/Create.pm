@@ -28,26 +28,25 @@ __END__
 
 =head1 NAME
 
-Shipwright::Script::Create - Create a project
+Shipwright::Script::Create - Create a shipyard
 
 =head1 SYNOPSIS
 
- create -r [repository]
+ shipwright create -r fs:/tmp/foo
+ shipwright create -r svk://foo
+ shipwright create -r svn:file:///tmp/foo/bar
+ shipwright create -r git:file:///home/me/shipwright/my_proj.git
 
-=head1 EXAMPLES
+=head1 GLOBAL OPTIONS
 
- create -r fs:/tmp/foo
- create -r svk://foo
- create -r svn:file:///tmp/foo/bar
- create -r git:file:///home/me/shipwright/my_proj.git
-
-=head1 OPTIONS
-
- -r [--repository] REPOSITORY   : specify the repository of our project
+ -r [--repository] REPOSITORY   : specify the repository uri of our shipyard
  -l [--log-level] LOGLEVEL      : specify the log level
                                   (info, debug, warn, error, or fatal)
  --log-file FILENAME            : specify the log file
- -f [--force]                   : delete the old one if exists
+
+=head1 OPTIONS
+
+ -f [--force]                   : delete the old shipyard if exists
 
 =head1 AUTHORS
 

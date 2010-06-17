@@ -1,28 +1,28 @@
 =head1 NAME
 
-Shipwright::Manual::Glossary - Glossary for Shipwright
+Shipwright::Manual::Glossary - Glossary
 
 =head1 DESCRIPTION
 
-=head2 distribution
+=head2 source
+ 
+the distribution to be imported into a shipyard; e.g. a package from cpan.
+Normally, shipyard has more than one source.
 
-What is imported into a Shipwright repository; e.g. a package from cpan.
-Normally, A Shipwright repository generally has more than one distribution, or
-dist for short, in it.
+=head2 shipyard
 
-=head2 repository
-
-the backend, where all stuff lives, e.g. metadata, sources, etc..
-Currently, SVN, SVK and FS(file system) are supported.
+The place where all stuff lives, shipwright's own wrappers, all the dists, etc.
+Currently, FS(file system), SVN, SVK and Git are supported.
 
 =head2 vessel
 
-Shipwright's final product; i.e. what is produced after running C<shipwright
-build>.
+the final product.
+e.g. after running C<./bin/shipwright-builder --install-base /tmp/foo>
+all stuff below /tmp/foo is the vessel
 
 =head1 SEE ALSO
 
-L<Shipwright::Manual::Tutorial>, L<Shipwright::Manual::UsingFlags>, L<Shipwright::Manual::CustomizeBuild>,
+L<Shipwright::Manual::Tutorial>, L<Shipwright::Manual::UsingFlags>, L<Shipwright::Manual::CustomizeBuild>
 
 =head1 AUTHORS
 

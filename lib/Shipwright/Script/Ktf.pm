@@ -69,18 +69,14 @@ __END__
 
 =head1 NAME
 
-Shipwright::Script::Ktf - Maintain a dist's known test failure conditions
+Shipwright::Script::Ktf - Maintain known test failure conditions
 
 =head1 SYNOPSIS
 
- ktf NAME1 NAME2 ... --set '$^O eq "darwin"'
+ shipwright ktf cpan-DBD-mysql --set '$^O eq "darwin"'
 
 =head1 OPTIONS
 
- -r [--repository] REPOSITORY   : specify the repository of our project
- -l [--log-level]               : specify the log level
-                                  (info, debug, warn, error, or fatal)
- --log-file FILENAME            : specify the log file
  --delete conditions            : delete conditions
  --set conditions               : set conditions
 

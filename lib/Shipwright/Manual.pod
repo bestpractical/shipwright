@@ -1,6 +1,6 @@
 =head1 NAME
 
-Shipwright::Manual - Shipwright documentation
+Shipwright::Manual - Shipwright Manual
 
 =head1 DESCRIPTION
 
@@ -10,25 +10,31 @@ This manual is divided into several parts, each covering a specific topic.
 
 =item L<Shipwright::Manual::Tutorial>
 
-A simple tutorial that leads through the creation of a simple Shipwright
-vessel.
-
-=item L<Shipwright::Manual::CustomizeBuild>
-
-A guide of customizing the build process of individual distributions in a
-Shipwright repository.
-
-=item L<Shipwright::Manual::UsingFlags>
-
-A guide of using Shipwright's flags feature.
-
-=item L<Shipwright::Manual::UsingBranches>
-
-A guide of using Shipwright's branches feature.
+a simple tutorial that leads through the creation of a simple vessel.
 
 =item L<Shipwright::Manual::Glossary>
 
-A Glossary of terms relevant to Shipwright and its documentation.
+a glossary of terms relevant.
+
+=item L<Shipwright::Manual::ENV>
+
+a summary of all the environment variables relevant.
+
+=item L<Shipwright::Manual::CustomizeBuild>
+
+a guide of customizing the build process of individual sources.
+
+=item L<Shipwright::Manual::UsingFlags>
+
+a guide of using flags feature.
+
+=item L<Shipwright::Manual::UsingBranches>
+
+a guide of using branches feature.
+
+=item L<Shipwright::Manual::BuildMultiArchVessel>
+
+a guide of building a vessel with multi-arch support.
 
 =back
 

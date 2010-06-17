@@ -1,21 +1,21 @@
 =head1 NAME
 
-Shipwright::Manual::CustomizeBuild - Customize the build method for a
-distribution
+Shipwright::Manual::CustomizeBuild - Customize the build method for a source
+
 
 =head1 DESCRIPTION
 
-There are currently two ways to build a dist: through a perl script
-(F<dists/foo/build.pl>) which allows for heavy customization, or using a list
-of tagged commands (F<dists/foo/build>), which is simpler but less
+There are currently two ways to build a source: through a perl script
+(F<scripts/foo/build.pl>) which allows for heavy customization, or using a list
+of tagged commands (F<scripts/foo/build>), which is simpler but less
 customizable.
 
-The script F<dists/foo/build.pl> has higher precedence, so if both
-F<dists/foo/build.pl> and F<dists/foo/build> exist, the former will be used.
+F<scripts/foo/build.pl> has higher precedence, so if both
+F<scripts/foo/build.pl> and F<scripts/foo/build> exist, the former will be used.
 
 =head2 build.pl
 
-When executing F<build.pl> for the dist I<foo>, the current working directory
+When executing F<build.pl> for the source I<foo>, the current working directory
 will be F<dists/foo>
 
 The script will be run with a list of arguments (the format is designed
@@ -55,7 +55,7 @@ the C<install> work.
 
 This is a text file; each line should be either blank or use the format
 C<type: command>. The command will be executed line by line, and the current
-working directory for building the dist I<foo> will be F<dists/foo>.
+working directory for building the source I<foo> will be F<dists/foo>.
 
 In a normal build script, the following types of commands are specified:
 configure, make, install, clean, and sometimes test. Their functions should be

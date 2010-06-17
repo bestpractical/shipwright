@@ -25,8 +25,8 @@ Let's do this on Mac first:
 if we don't specify --as, the default name is the system's uname.
 e.g. the name is Darwin on Mac.
 
-after we built it on Mac, we need to transfer the source of vessel and
-vessel itself to ubuntu, then build it again, to let it build to the same vessel dir.
+after we built it on Mac, we need to transfer both shipyard and vessel to
+ubuntu, then build it again, to let it build to the same vessel dir.
 
     $ ./bin/shipwright-builder --install-base /tmp/foo --as Ubuntu
 

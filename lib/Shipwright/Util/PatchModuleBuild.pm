@@ -20,10 +20,6 @@ __END__
 
 PatchModuleBuild - use this to ignore man pages generation
 
-=head1 SYNOPSIS
-
-    use PatchModuleBuild;
-
 =head1 DESCRIPTION
 
 This stops Module::Build from failing to (or succeeding at) generating man pages 

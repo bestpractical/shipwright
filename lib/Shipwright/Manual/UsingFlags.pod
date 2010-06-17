@@ -1,13 +1,13 @@
 =head1 NAME
 
-Shipwright::Manual::UsingFlags - Using Flags
+Shipwright::Manual::UsingFlags - Using flags
 
 =head1 DESCRIPTION
 
-Shipwright B<flags> is a method to make a single repository to support multiple variants of vessels.
+Shipwright B<flags> is a method to make a single shipyard to support multiple variants of vessels.
 
 Imagine you want to create a project which requires a database. There are
-several database types you want to support in the same repository, while you'd
+several database types you want to support in the same shipyard, while you'd
 like each built vessel to only support one type. (Sometimes you have to choose
 one because some dists will be confused if provided with more than one type;
 e.g.  for RT, you have to supply the database type when running ./configure).
@@ -43,7 +43,7 @@ If necessary, you can also specify certain flags as being mandatory. For
 example, you can specify that a database flag is mandatory; if no flag labelled
 C<db> is specified when invoking the build script, the first one is used as a
 default (mysql in this case) rather than the repository being built with no
-flags. This allows repositories to support different variants or versions of a
+flags. This allows shipyards to support different variants or versions of a
 program.
 
 Note:

@@ -54,10 +54,6 @@ __END__
 
 CleanINC - Use this to clean @INC
 
-=head1 SYNOPSIS
-
-    use CleanINC;
-
 =head1 DESCRIPTION
 
 this will limit the @INC to only contain "Core" ( technically, they are

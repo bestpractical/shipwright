@@ -50,12 +50,9 @@ Shipwright::Backend - Backend
     # shipwright some_command -r backend_type:path
     shipwright create -r svn:file:///svnrepo/shipwright/my_proj
 
-    use Shipwright::Backend;
-    $backend = Shipwright::Backend->new(repository => $args{repository});
-
 =head1 DESCRIPTION
 
-See <Shipwright::Manual::Glossary/repository> to understand concept. Look
+See <Shipwright::Manual::Glossary/shipyard> to understand its concept. Look
 at list of </SUPPORTED BACKENDS> or L<IMPLEMENTING BACKENDS> if you want
 add a new one.
 

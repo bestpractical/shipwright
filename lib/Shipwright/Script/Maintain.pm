@@ -58,7 +58,7 @@ __END__
 
 =head1 NAME
 
-Shipwright::Script::Maintain - Maintain a project
+Shipwright::Script::Maintain - Maintain a shipyard
 
 =head1 SYNOPSIS
 
@@ -66,15 +66,12 @@ Shipwright::Script::Maintain - Maintain a project
 
 =head1 OPTIONS
 
- -r [--repository] REPOSITORY : specify the repository of our project
- -l [--log-level] LOGLEVEL    : specify the log level
-                                (info, debug, warn, error, or fatal)
- --log-file FILENAME          : specify the log file
  --update-order               : update the build order
- --update-refs                : update refs( times a dist shows in all the require.yml )
+ --update-refs                : update refs count
+                                times a source shows in all the require.yml
  --graph-deps                 : output a graph of all the dependencies in your vessel
                                 suitable for rendering by dot (http://graphviz.org) 
- --for-dists                  : limit the dists
+ --for-dists                  : limit the sources
  --skip-requires              : skip requires when finding deps
  --skip-recommends            : skip recommends when finding deps
  --skip-build-requires        : skip build requires when finding deps

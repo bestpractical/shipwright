@@ -271,7 +271,7 @@ __END__
 
 =head1 NAME
 
-Shipwright::Script::Update - Update dist(s) and scripts
+Shipwright::Script::Update - Update sources and shipyard itself
 
 =head1 SYNOPSIS
 
@@ -282,13 +282,9 @@ Shipwright::Script::Update - Update dist(s) and scripts
 
 =head1 OPTIONS
 
- -r [--repository] REPOSITORY : specify the repository of our project
- -l [--log-level] LOGLEVEL    : specify the log level
-                                (info, debug, warn, error, or fatal)
- --log-file FILENAME          : specify the log file
- --version                    : specify the version of the dist
- --all                        : update all dists
- --follow                     : update one dist with all its dependencies
+ --version                    : specify the version of the source
+ --all                        : update all sources
+ --follow                     : update one source with all its dependencies
  --builder                    : update bin/shipwright-builder
  --utility                    : update bin/shipwright-utility
  --inc                        : update inc/
@@ -298,16 +294,12 @@ Shipwright::Script::Update - Update dist(s) and scripts
 
 =head1 DESCRIPTION
 
-The update command updates one or multiple svk, svn, git or CPAN dists in a
-Shipwright repository to the latest version. 
-To update other types of sources, you must re-import the new version, using the same name in order to overwrite.
+The update command updates sources to the latest or the specified version. 
 
-with --only-sources, only sources will be updated, 
-while scripts( technically, the stuff below scripts/ ) won't.
+with --only-sources, only sources will be updated, scripts won't.
 
-The update command can also be used to update a repository's builder or utility
-script to the version shipped with the Shipwright dist on your system, by
-specifying the C<--builder> or C<--utility> options.
+The update command can also be used to update shipyard's own files like
+builder, utility and the inc directory.
 
 =head1 ALIASES
 

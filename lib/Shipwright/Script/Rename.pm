@@ -76,18 +76,11 @@ __END__
 
 =head1 NAME
 
-Shipwright::Script::Rename - Rename a dist
+Shipwright::Script::Rename - Rename a source
 
 =head1 SYNOPSIS
 
-  shipwright rename NAME NEWNAME          rename a dist
-
-=head1 OPTIONS
-
- -r [--repository] REPOSITORY : specify the repository of our project
- -l [--log-level] LOGLEVEL    : specify the log level
-                                (info, debug, warn, error, or fatal)
- --log-file FILENAME          : specify the log file
+  shipwright rename gd libgd
 
 =head1 AUTHORS
 

@@ -78,21 +78,11 @@ __END__
 
 =head1 NAME
 
-Shipwright::Script::Relocate - Relocate source of a dist(not cpan)
+Shipwright::Script::Relocate - Relocate uri of a source
 
 =head1 SYNOPSIS
 
- relocate NAME SOURCE
-
-=head1 OPTIONS
-
-   -r [--repository] REPOSITORY    : specify the repository of our project
-   -l [--log-level] LOGLEVEL       : specify the log level
-   --log-file FILENAME             : specify the log file
-                                     (info, debug, warn, error, or fatal)
-   NAME                            : sepecify the dist name
-   SOURCE                          : specify the new source
-
+ relocate mysql http://new_uri_of_mysql.tar.gz
 
 =head1 AUTHORS
 

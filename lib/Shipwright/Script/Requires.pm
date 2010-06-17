@@ -138,12 +138,10 @@ Shipwright::Script::Requires - list CPAN modules the source depends on
 
 =head1 SYNOPSIS
 
- requires SOURCE
+ requires cpan:Jifty
 
 =head1 OPTIONS
 
- -l [--log-level] LOGLEVEL      : specify the log level
- --log-file FILENAME            : specify the log file
  --version                      : specify the source's version
  --skip                         : specify a list of modules/dist names of
                                   which we don't want to show
@@ -159,9 +157,8 @@ Shipwright::Script::Requires - list CPAN modules the source depends on
  
 =head1 DESCRIPTION
 
-The requires command only show the requirements of the source, it doesn't
+The requires command only show the requirements of a source, it doesn't
 create or import at all.
-SOURCE format is like in other cmds, e.g. cpan:Moose
 
 =head1 AUTHORS
 
