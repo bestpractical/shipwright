@@ -55,7 +55,7 @@ lib/Shipwright/Source/Directory.pm
 lib/Shipwright/Source/FTP.pm
 lib/Shipwright/Source/Git.pm
 lib/Shipwright/Source/HTTP.pm
-lib/Shipwright/Source/Shipwright.pm
+lib/Shipwright/Source/Shipyard.pm
 lib/Shipwright/Source/SVK.pm
 lib/Shipwright/Source/SVN.pm
 lib/Shipwright/Test.pm
