@@ -18,27 +18,29 @@ sub options {
 
 sub run {
     my $self = shift;
-    my $name = shift;
+    my @sources = @_;
 
-    unless ( $name || $self->unreferenced ) {
+    unless ( @sources || $self->unreferenced ) {
         confess_or_die "need name arg or --unreferenced\n";
     }
 
-    if ( $name && $self->unreferenced ) {
+    if ( @sources && $self->unreferenced ) {
         confess_or_die "please choose only one thing: a dist name or --unreferenced";
     }
 
     my $shipwright = Shipwright->new( repository => $self->repository, );
     my @names;
 
-    if ($name) {
-        my $map = $shipwright->backend->map;
-        if ( $map && $map->{$name} ) {
+    if (@sources) {
+        for my $name (@sources) {
+            my $map = $shipwright->backend->map;
+            if ( $map && $map->{$name} ) {
 
-            # it's a cpan module
-            $name = $map->{$name};
+                # it's a cpan module
+                $name = $map->{$name};
+            }
+            push @names, $name;
         }
-        @names = $name;
     }
     else {
 
@@ -54,7 +56,7 @@ sub run {
     }
 
     if ( $self->check_only ) {
-        $self->log->info( "dists to be deleted are: @names" );
+        $self->log->fatal( "dists to be deleted are: @names" );
     }
     else {
         for my $name (@names) {
@@ -75,7 +77,7 @@ Shipwright::Script::Delete - Delete source(s)
 
 =head1 SYNOPSIS
 
- shipwright delete cpan-Jifty
+ shipwright delete cpan-Jifty cpan-Catalyst
 
 =head1 OPTIONS
 
