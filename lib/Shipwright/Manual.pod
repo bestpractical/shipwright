@@ -38,6 +38,10 @@ a guide of building a vessel with multi-arch support.
 
 =back
 
+=head1 SEE ALSO
+
+L<Shipwright>
+
 =head1 AUTHORS
 
 sunnavy  C<< <sunnavy@bestpractical.com> >>
