@@ -1,6 +1,17 @@
 Revision history for Shipwright
 
-2.4.14
+2.4.14 Thu Jun 24 13:23:04 UTC 2010
+
+* update documents
+* delete cmd can delete multiple sources with one cmd
+* add --skip-installed for import cmd
+* Module::Install's feature named "-core" has special meaning
+* add branch support for shipyard source
+* update compressed file extensions for source
+* delete the dep if can't find it when to import
+* don't clear fs repository if build fails
+    ( for the script genetated by shipwright-generate )
+
 
 2.4.13 Tue Jun  8 07:34:55 UTC 2010
 
