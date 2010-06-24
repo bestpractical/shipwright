@@ -210,8 +210,7 @@ $ perl /tmp/shipyard --install-base /tmp/vessel
 
 =head1 SEE ALSO
 
-L<Shipwright::Manual::UsingFlags>, L<Shipwright::Manual::CustomizeBuild>,
-L<Shipwright::Manual::Glossary>
+L<Shipwright>, L<Shipwright::Manual>
 
 =head1 AUTHORS
 

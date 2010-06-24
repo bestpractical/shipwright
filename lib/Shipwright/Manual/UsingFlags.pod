@@ -54,7 +54,7 @@ it will be given the C<default> flag and will be installed by default.
 
 =head1 SEE ALSO
 
-L<Shipwright::Manual::CustomizeBuild>
+L<Shipwright>, L<Shipwright::Manual>
 
 =head1 AUTHORS
 

@@ -60,7 +60,7 @@ to run a cmd to tell it to, e.g.
 
 =head1 SEE ALSO
 
-L<Shipwright::Manual::Tutorial>,
+L<Shipwright>, L<Shipwright::Manual>
 
 =head1 AUTHORS
 

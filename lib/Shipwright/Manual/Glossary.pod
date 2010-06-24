@@ -22,7 +22,7 @@ all stuff below /tmp/foo is the vessel
 
 =head1 SEE ALSO
 
-L<Shipwright::Manual::Tutorial>, L<Shipwright::Manual::UsingFlags>, L<Shipwright::Manual::CustomizeBuild>
+L<Shipwright>, L<Shipwright::Manual>
 
 =head1 AUTHORS
 

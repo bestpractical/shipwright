@@ -84,7 +84,7 @@ If executed with C<--clean>, all commands will be skipped except this one.
 
 =head1 SEE ALSO
 
-L<Shipwright::Manual::UsingFlags>
+L<Shipwright>, L<Shipwright::Manual>
 
 =head1 AUTHORS
 

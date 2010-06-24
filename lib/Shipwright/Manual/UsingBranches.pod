@@ -46,6 +46,10 @@ Since all these branches share the same build script and the same dep sources,
 if branches are way too different, it's better to import it as another source
 instead of branching.
 
+=head1 SEE ALSO
+
+L<Shipwright>, L<Shipwright::Manual>
+
 =head1 AUTHORS
 
 sunnavy  C<< <sunnavy@bestpractical.com> >>
