@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Cwd;
 use File::Temp 'tempdir';
-use File::Spec::Functions 'catdir';
+use File::Spec::Functions 'catdir', 'catfile', 'file_name_is_absolute';
 use IPC::Run3;
 use File::Which 'which';
 my $cwd = getcwd;
@@ -48,6 +48,7 @@ for my $arg ( @ARGV ) {
     }
     elsif ( $found_tarfile ) {
         $tarfile = $arg;
+        $tarfile = catfile( $cwd, $tarfile ) unless file_name_is_absolute($tarfile);
         undef $found_tarfile;
         next;
     }
