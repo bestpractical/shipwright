@@ -454,7 +454,7 @@ EOF
                 if ( $self->skip_installed ) {
                     if ( $module->require ) {
                         $self->log->info("found installed $module");
-                        no strict 'refs';
+                        no strict 'refs'; ## no critic
                         require version;
                         my $installed_version = ${ $module . '::VERSION' };
                         if ( $installed_version
