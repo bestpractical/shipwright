@@ -320,14 +320,7 @@ sub install {
 
     unless ( $args{perl} && -e $args{perl} ) {
         my $perl = catfile( $args{'install-base'}, 'bin', 'perl' );
-
-        # -e $perl makes sense when we install onto another vessel
-        if ( ( grep { /^perl/ } @$order ) || -e $perl ) {
-            $args{perl} = $perl;
-        }
-        else {
-            $args{perl} = $^X;
-        }
+        $args{perl} = -e $perl ? $perl : $^X;
     }
 
     $args{perl} = $bin_quote . $args{perl} . $bin_quote
@@ -337,6 +330,11 @@ sub install {
     if ( $args{'no-install-base'} ) {
         for my $dist (@$order) {
             _install( $dist, $log );
+            if ( $dist =~ /^perl/ ) {
+                my $perl = catfile( $args{'install-base'}, 'bin', 'perl' );
+                $args{perl} = -e $perl ? $perl : $^X;
+            }
+
             chdir $build_base;
         }
         print "install finished\n";
@@ -349,15 +347,6 @@ sub install {
 
         {
 
-            my $arch_command = $args{perl};
-            if ( is_on_windows() ) {
-                $arch_command .= q{ -MConfig -e "print $Config{archname}" };
-            }
-            else {
-                $arch_command .= q{ -MConfig -e 'print $Config{archname}'};
-            }
-            my $arch = `$arch_command`;
-
             no warnings 'uninitialized';
             $ENV{DYLD_LIBRARY_PATH} =
               catdir( $args{'install-base'}, 'lib' ) . ':'
@@ -365,18 +354,7 @@ sub install {
             $ENV{LD_LIBRARY_PATH} =
               catdir( $args{'install-base'}, 'lib' ) . ':'
               . $ENV{LD_LIBRARY_PATH};
-            $ENV{PERL5LIB} = join(
-                ':',
-                catdir( 'blib', 'lib' ),
-                catdir( 'blib', 'arch' ),
-                $inc_lib,    #BLIB COMES FIRST TO PLEASE MODULE::BUILD
-                catdir(
-                    $args{'install-base'}, 'lib', 'perl5', $arch
-
-                ),
-                catdir( $args{'install-base'}, 'lib', 'perl5', 'site_perl' ),
-                catdir( $args{'install-base'}, 'lib', 'perl5' ),
-            );
+            _set_perl5lib();
 
             $ENV{PATH} =
                 catdir( $args{'install-base'}, 'sbin' ) . ':'
@@ -433,6 +411,11 @@ sub install {
         for my $dist (@$order) {
             _install( $dist, $log );
             _record( $dist, $log );
+            if ( $dist =~ /^perl/ ) {
+                my $perl = catfile( $args{'install-base'}, 'bin', 'perl' );
+                $args{perl} = -e $perl ? $perl : $^X;
+                _set_perl5lib();
+            }
             chdir $build_base;
         }
 
@@ -684,7 +667,7 @@ sub substitute {
         $text =~ s/%%INSTALL_BASE%%/$install_base/g;
     }
 
-    my $perl = $args{perl};
+    my $perl = -e $args{perl} ? $args{perl} : $^X;
 
     my $perl_archname;
     if ( is_on_windows() ) {
@@ -920,4 +903,27 @@ sub which {
     }
 
     return $path;
+}
+
+sub _get_perl_arch {
+    my $arch_command = -e $args{perl} ? $args{perl} : $^X;
+    if ( is_on_windows() ) {
+        $arch_command .= q{ -MConfig -e "print $Config{archname}" };
+    }
+    else {
+        $arch_command .= q{ -MConfig -e 'print $Config{archname}'};
+    }
+    return `$arch_command`;
+}
+
+sub _set_perl5lib {
+    $ENV{PERL5LIB} = join(
+        ':',
+        catdir( 'blib', 'lib' ),
+        catdir( 'blib', 'arch' ),
+        $inc_lib,    #BLIB COMES FIRST TO PLEASE MODULE::BUILD
+        catdir( $args{'install-base'}, 'lib', 'perl5', _get_perl_arch() ),
+        catdir( $args{'install-base'}, 'lib', 'perl5', 'site_perl' ),
+        catdir( $args{'install-base'}, 'lib', 'perl5' ),
+    );
 }
