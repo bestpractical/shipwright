@@ -501,10 +501,10 @@ sub _install {
         $skip_test = 0;
     }
 
-    print "Building $dir\n";
+    print "building $dir\n";
 
     if ( -e catfile( '..', '..', 'scripts', $dir, 'build.pl' ) ) {
-        print $log "Found build.pl for $dir, will install $dir using that\n";
+        print $log "found build.pl for $dir, will install $dir using that\n";
         my $cmd = join ' ',
           $args{perl},
           '-MShipwright::Util::CleanINC',
@@ -521,7 +521,10 @@ sub _install {
                 ? ": $!"
                 : ( ' with value ' . ( $? >> 8 ) )
               ) . "\n";
-            confess "Build $dir failed\n";
+            my $error =
+              "build $dir failed, the last output of build.log is:\n"
+              . "\t" . _get_log();
+            confess $error;
         }
     }
     else {
@@ -536,9 +539,9 @@ sub _install {
                 next;
             }
 
-            print $log "Build $type part in $dir with cmd: $cmd\n";
+            print $log "build $type part in $dir with cmd: $cmd\n";
 
-            print $log "Running shipwright build command: $cmd\n";
+            print $log "running shipwright build command: $cmd\n";
             system("$cmd $system_cmd_pipe");
             if ( $? >> 8 ) {
                 print $log "build $dir $type failed"
@@ -564,7 +567,10 @@ sub _install {
                 if ( $type ne 'clean' ) {
 
                     # clean is trivial, we'll just ignore if 'clean' fails
-                    confess "build $dir $type part failed.\n";
+                    my $error =
+"build $dir $type part failed, last output of build.log is:\n"
+                      . "\t" . _get_log();
+                    confess $error;
                 }
             }
             else {
@@ -927,3 +933,17 @@ sub _set_perl5lib {
         catdir( $args{'install-base'}, 'lib', 'perl5' ),
     );
 }
+
+sub _get_log {
+    my $number = shift || 20;
+    require Tie::File;
+    if ( tie my @array, 'Tie::File', $build_log_file, autochomp => 0 ) {
+        $number = @array if $number > @array;
+        return join "\t", grep { defined } @array[ -1*$number .. -1 ];
+    }
+    else {
+        warn "failed to open $build_log_file";
+        return;
+    }
+}
+
