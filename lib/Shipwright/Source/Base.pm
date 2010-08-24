@@ -151,7 +151,7 @@ sub _follow {
             run_cmd(
                 [
                     $^X,               '-Mversion',
-                    '-MModule::Build', '-MCleanINC',
+                    '-MModule::Build', '-MShipwright::Util::CleanINC',
                     'Build.PL'
                 ],
                 1, # don't die if this fails
@@ -341,7 +341,7 @@ EOF
                     [
                         $^X,
                         '-Mversion',
-                        '-MCleanINC',
+                        '-MShipwright::Util::CleanINC',
                         'shipwright_makefile.pl'
                     ],
                     1, # don't die if this fails
@@ -382,7 +382,7 @@ EOF
                 run_cmd(
                     [
                         $^X,
-                        '-MCleanINC',
+                        '-MShipwright::Util::CleanINC',
                         'Makefile.PL'
                     ],
                     1, # don't die if this fails
