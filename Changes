@@ -1,5 +1,9 @@
 Revision history for Shipwright
 
+2.4.16 Tue Aug 24 02:22:15 UTC 2010
+
+* fix a bug when using --generate-tar-file
+
 2.4.15 Tue Aug 24 00:19:00 UTC 2010
 
 * fix CleanINC name
