@@ -141,7 +141,10 @@ else {
     close $tar;
 }
 
-chdir 'fs';
+opendir my $dh, '.' or die $!;
+my ( $tarpath ) = grep { $_ && $_ !~ /^\./ && $_ !~ /\.tar\.gz$/} readdir $dh;
+chdir $tarpath or die $!;
+
 if ( system( $^X, catfile( 'bin', 'shipwright-builder' ), @ARGV ) ) {
     # error happens
     $dir->unlink_on_destroy(0);
