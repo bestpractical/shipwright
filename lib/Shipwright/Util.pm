@@ -2,7 +2,6 @@ package Shipwright::Util;
 
 use warnings;
 use strict;
-use Shipwright::Util;
 use IPC::Run3;
 use File::Spec::Functions qw/catfile catdir splitpath splitdir tmpdir rel2abs/;
 use Cwd qw/abs_path getcwd/;
