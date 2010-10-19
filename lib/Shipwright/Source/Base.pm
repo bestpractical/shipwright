@@ -446,7 +446,7 @@ EOF
                     && Module::CoreList->first_release( $module, $version )
                     && Module::CoreList->first_release( $module, $version ) <= $self->min_perl_version)
                 {
-                    $self->log->info("$module is skipped becasue it's in core");
+                    $self->log->info("Skipping $module because it's in core");
                     delete $require->{$type}{$module};
                     next;
                 }
@@ -462,7 +462,7 @@ EOF
                             version->parse($version) )
                         {
                             $self->log->info(
-"$module is skipped because it's installed and the version is good enough"
+"Skipping $module because a new enough version is already installed"
                             );
                             delete $require->{$type}{$module};
                             next;
