@@ -516,6 +516,14 @@ e.g. L<shipyard:/tmp/fs/foo>
 
 =back
 
+=head1 GLOBAL OPTIONS
+
+ -r [--repository] REPOSITORY   : specify the repository uri of our shipyard
+ -l [--log-level] LOGLEVEL      : specify the log level
+                                  (info, debug, warn, error, or fatal)
+ --log-file FILENAME            : specify the log file
+
+
 =head1 AUTHORS
 
 sunnavy  C<< <sunnavy@bestpractical.com> >>

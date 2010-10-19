@@ -271,6 +271,13 @@ Shipwright::Script::List - List dists of a project
    --with-latest-version           : show the latest version if possible
    --only-update                   : only show the dists that can be updated
 
+=head1 GLOBAL OPTIONS
+
+ -r [--repository] REPOSITORY   : specify the repository uri of our shipyard
+ -l [--log-level] LOGLEVEL      : specify the log level
+                                  (info, debug, warn, error, or fatal)
+ --log-file FILENAME            : specify the log file
+
 =head1 AUTHORS
 
 sunnavy  C<< <sunnavy@bestpractical.com> >>

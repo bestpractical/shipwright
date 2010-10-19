@@ -160,6 +160,13 @@ Shipwright::Script::Requires - list CPAN modules the source depends on
 The requires command only show the requirements of a source, it doesn't
 create or import at all.
 
+=head1 GLOBAL OPTIONS
+
+ -r [--repository] REPOSITORY   : specify the repository uri of our shipyard
+ -l [--log-level] LOGLEVEL      : specify the log level
+                                  (info, debug, warn, error, or fatal)
+ --log-file FILENAME            : specify the log file
+
 =head1 AUTHORS
 
 sunnavy  C<< <sunnavy@bestpractical.com> >>
