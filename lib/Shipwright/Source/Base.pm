@@ -16,7 +16,9 @@ __PACKAGE__->mk_accessors(
     qw/source directory scripts_directory download_directory follow
       min_perl_version map_path skip map skip_recommends skip_all_recommends
       skip_installed include_dual_lifed
-      keep_build_requires name log url_path version_path branches_path version/
+      keep_build_requires name log url_path version_path branches_path version
+      skip_all_test_requires
+      /
 );
 
 =head1 NAME
@@ -93,6 +95,7 @@ sub _follow {
         && $self->skip_recommends->{ $reverse_map->{ $self->name } } )
       || $self->skip_all_recommends;
     push @types, 'recommends' unless $skip_recommends;
+    push @types, 'test_requires' unless $self->skip_all_test_requires;
 
     if ( !-e $require_path ) {
 
@@ -222,7 +225,7 @@ sub shipwright_build_requires {
 }
 
 sub shipwright_test_requires {
-    _shipwright_requires( 'build_requires', @_ == 1 ? ( @_, 0 ) : @_ );
+    _shipwright_requires( 'test_requires', @_ == 1 ? ( @_, 0 ) : @_ );
     goto &test_requires;
 }
 
@@ -243,7 +246,7 @@ sub _shipwright_requires_from {
 }
 
 sub shipwright_test_requires_from {
-    _shipwright_requires_from( 'build_requires', @_ );
+    _shipwright_requires_from( 'test_requires', @_ );
     goto &test_requires_from;
 }
 
@@ -357,6 +360,13 @@ EOF
                     # if there's META.yml, let's find more about it
                     my $meta = load_yaml_file('META.yml')
                       or confess_or_die "can't read META.yml: $!";
+
+                # Module::Install will make test_requires into build_requires
+                    for ( keys %{ $require->{test_requires} } ) {
+                        delete $meta->{build_requires}{$_}
+                          if exists $meta->{build_requires}{$_};
+                    }
+
                     $require ||= {};
                     $require->{requires} = {
                         %{ $meta->{requires} || {} },
@@ -369,9 +379,13 @@ EOF
                     $require->{build_requires} = {
                         %{ $meta->{build_requires}     || {} },
                         %{ $meta->{configure_requires} || {} },
-                        %{ $meta->{test_requires}      || {} },
                         %{ $require->{build_requires} || {} },
                     };
+                    $require->{test_requires} = {
+                        %{ $meta->{test_rquires} || {} },
+                        %{ $require->{test_requires} || {} },
+                    };
+
                 }
 
                 unlink 'shipwright_makefile.pl', 'shipwright_prereqs';
@@ -562,6 +576,7 @@ EOF
         # don't keep recommends info if we skip them, so we won't encounter
         # them when update later
         $require->{recommends} = {} if $skip_recommends;
+        $require->{test_requires} = {} if $self->skip_all_test_requires;
 
         dump_yaml_file( $require_path, $require );
     }

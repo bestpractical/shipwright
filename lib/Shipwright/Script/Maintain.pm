@@ -7,7 +7,7 @@ use Shipwright::Util;
 use base qw/App::CLI::Command Class::Accessor::Fast Shipwright::Script/;
 __PACKAGE__->mk_accessors(
     qw/update_order update_refs graph_deps skip_recommends 
-      skip_build_requires skip_requires for_dists/
+      skip_build_requires skip_requires skip_test_requires for_dists/
 );
 
 use Shipwright;
@@ -20,6 +20,7 @@ sub options {
         'skip-recommends'     => 'skip_recommends',
         'skip-requires'       => 'skip_requires',
         'skip-build-requires' => 'skip_build_requires',
+        'skip-test-requires'  => 'skip_test_requires',
         'for-dists=s'         => 'for_dists',
     );
 }
@@ -33,7 +34,8 @@ sub run {
         $shipwright->backend->update_order(
             for_dists => [ split /,\s*/, $self->for_dists || '' ],
             map { $_ => $self->$_ }
-              qw/skip_requires skip_recommends skip_build_requires/,
+              qw/skip_requires skip_recommends skip_build_requires
+              skip_test_requires/,
         );
         $self->log->fatal( 'updated order with success' );
     } 

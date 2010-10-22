@@ -83,7 +83,7 @@ sub run {
         my $name = shift or confess_or_die 'need name arg';
         my $requires = $shipwright->backend->requires( name => $name ) || {};
         for my $dep ( @deps ) {
-            for my $type ( qw/requires build_requires recommends/ ) {
+            for my $type ( qw/requires build_requires recommends test_requires/ ) {
                 delete $requires->{$type}{$dep} if $requires->{$type};
             }
 
@@ -153,7 +153,11 @@ sub run {
 
                     my ($require) =
                       $shipwright->backend->requires( name => $name );
-                    for my $type (qw/requires build_requires recommends/) {
+                    for my $type (
+                        qw/requires build_requires recommends
+                        test_requires/
+                      )
+                    {
                         for ( keys %{ $require->{$type} } ) {
                             $find_deps->($_);
                         }

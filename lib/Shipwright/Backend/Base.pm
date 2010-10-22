@@ -435,7 +435,7 @@ sub _fill_deps {
     my $req = $self->requires( name => $name ) || {};
 
     if ( $req->{requires} ) {
-        for (qw/requires recommends build_requires/) {
+        for (qw/requires recommends build_requires test_requires/) {
             push @{ $require->{$name} }, keys %{ $req->{$_} }
               unless $args{"skip_$_"};
         }
@@ -852,7 +852,8 @@ sub update_refs {
             @deps = (
                 keys %{ $req->{requires} },
                 keys %{ $req->{recommends} },
-                keys %{ $req->{build_requires} }
+                keys %{ $req->{build_requires} },
+                keys %{ $req->{test_requires} }
             );
         }
         else {

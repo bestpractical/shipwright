@@ -7,7 +7,7 @@ use base qw/App::CLI::Command Class::Accessor::Fast Shipwright::Script/;
 __PACKAGE__->mk_accessors(
     qw/comment no_follow build_script require_yml include_dual_lifed
       name test_script extra_tests overwrite min_perl_version skip version as
-      skip_recommends skip_all_recommends skip_installed/
+      skip_recommends skip_all_test_requires skip_all_recommends skip_installed/
 );
 
 use Shipwright;
@@ -20,22 +20,23 @@ use List::MoreUtils qw/firstidx/;
 
 sub options {
     (
-        'm|comment=s'         => 'comment',
-        'name=s'              => 'name',
-        'no-follow'           => 'no_follow',
-        'build-script=s'      => 'build_script',
-        'require-yml=s'       => 'require_yml',
-        'test-script'         => 'test_script',
-        'extra-tests'         => 'extra_tests',
-        'overwrite'           => 'overwrite',
-        'min-perl-version=s'    => 'min_perl_version',
-        'skip=s'              => 'skip',
-        'version=s'           => 'version',
-        'as=s'                => 'as',
-        'skip-recommends=s'   => 'skip_recommends',
-        'skip-all-recommends' => 'skip_all_recommends',
-        'skip-installed'      => 'skip_installed',
-        'include-dual-lifed'  => 'include_dual_lifed'
+        'm|comment=s'            => 'comment',
+        'name=s'                 => 'name',
+        'no-follow'              => 'no_follow',
+        'build-script=s'         => 'build_script',
+        'require-yml=s'          => 'require_yml',
+        'test-script'            => 'test_script',
+        'extra-tests'            => 'extra_tests',
+        'overwrite'              => 'overwrite',
+        'min-perl-version=s'     => 'min_perl_version',
+        'skip=s'                 => 'skip',
+        'version=s'              => 'version',
+        'as=s'                   => 'as',
+        'skip-recommends=s'      => 'skip_recommends',
+        'skip-all-recommends'    => 'skip_all_recommends',
+        'skip-all-test-requires' => 'skip_all_test_requires',
+        'skip-installed'         => 'skip_installed',
+        'include-dual-lifed'     => 'include_dual_lifed'
     );
 }
 
@@ -116,17 +117,18 @@ sub run {
 
         for my $source (@sources) {
             my $shipwright = Shipwright->new(
-                repository          => $self->repository,
-                source              => $source,
-                name                => $self->name,
-                follow              => !$self->no_follow,
-                min_perl_version    => $self->min_perl_version,
-                include_dual_lifed  => $self->include_dual_lifed,
-                skip                => $self->skip,
-                version             => $self->version,
-                skip_recommends     => $self->skip_recommends,
-                skip_all_recommends => $self->skip_all_recommends,
-                skip_installed      => $self->skip_installed,
+                repository             => $self->repository,
+                source                 => $source,
+                name                   => $self->name,
+                follow                 => !$self->no_follow,
+                min_perl_version       => $self->min_perl_version,
+                include_dual_lifed     => $self->include_dual_lifed,
+                skip                   => $self->skip,
+                version                => $self->version,
+                skip_recommends        => $self->skip_recommends,
+                skip_all_recommends    => $self->skip_all_recommends,
+                skip_all_test_requires => $self->skip_all_test_requires,
+                skip_installed         => $self->skip_installed,
             );
 
             confess_or_die "cpan dists can't be branched"
@@ -278,7 +280,7 @@ sub _import_req {
         my @sources = readdir $d;
         close $d;
 
-        for my $type (qw/requires recommends build_requires/) {
+        for my $type (qw/requires recommends build_requires test_requires/) {
             for my $module ( keys %{ $req->{$type} } ) {
                 my $dist = $map->{$module} || $module;
                 $dist =~ s/::/-/g;
