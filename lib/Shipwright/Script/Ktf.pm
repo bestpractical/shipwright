@@ -56,7 +56,7 @@ sub _show_ktf {
     else {
         if ( defined $self->set ) {
             $self->log->fatal(
-                "set known test failure condition for $name with success");
+                "successfully set known test failure condition for $name");
         }
 
         $self->log->fatal( "the condition of $name is: " . ( $ktf->{$name} || 'undef' ) );

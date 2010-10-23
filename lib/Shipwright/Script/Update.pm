@@ -208,7 +208,7 @@ sub run {
             }
         }
     }
-    $self->log->fatal( 'updated with success' );
+    $self->log->fatal( 'successfully updated' );
 }
 
 sub _update {

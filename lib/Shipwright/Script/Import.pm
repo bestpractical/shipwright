@@ -247,7 +247,7 @@ sub run {
 
     }
 
-    $self->log->fatal( 'imported with success' );
+    $self->log->fatal( 'successfully imported' );
 
 }
 

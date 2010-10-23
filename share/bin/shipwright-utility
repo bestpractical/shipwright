@@ -81,7 +81,7 @@ if ( $args{'update-order'} ) {
     my $order = $dep->schedule_all();
 
     DumpFile( 'shipwright/order.yml', $order );
-	print "updated order with success\n";
+	print "successfully updated order\n";
 }
 elsif ( $args{'generate-tar-file'} ) {
 	require File::Spec;
@@ -185,7 +185,7 @@ EOF
 		print $tar_out $_;
 	}
 	chdir $cwd;
-	print "generated with success\n" unless $to eq '-';
+	print "successfully generated\n" unless $to eq '-';
 }
 
 sub fill_deps {

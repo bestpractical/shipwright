@@ -26,7 +26,7 @@ sub run {
           ( $default, grep { $_ ne $default } @{ $branches->{$name} } );
         $shipwright->backend->branches($branches);
         $self->log->fatal(
-            "set default branch for $name with success, now it's $default");
+            "successfully set default branch for $name, now it's $default");
     }
     else {
         confess_or_die "$name doesn't have branches $default.

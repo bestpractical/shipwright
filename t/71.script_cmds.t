@@ -90,7 +90,7 @@ sub start_test {
     my @cmds = (
 
         # create hello repo
-        [ ['create', '-f'], qr/created with success/, "create $repo" ],
+        [ ['create', '-f'], qr/successfully created/, "create $repo" ],
 
         # non exist cmd
         [
@@ -132,7 +132,7 @@ sub start_test {
 
         [
             [ 'import', 'file:t/hello/Foo-Bar-v0.01.tar.gz', '--no-follow' ],
-            qr/imported with success/,
+            qr/successfully imported/,
             'import tar.gz file',
         ],
 
@@ -150,7 +150,7 @@ sub start_test {
         # rename cmd
         [
             [ 'rename', 'Foo-Bar', 'foo' ],
-            qr/renamed Foo-Bar to foo with success/
+            qr/successfully renamed Foo-Bar to foo/
         ],
 
         # now Foo-Bar is renamed to foo
@@ -193,7 +193,7 @@ sub start_test {
         ],
 
         # delete cmd
-        [ [ 'delete', 'foo' ], qr/deleted foo with success/, 'deleted foo' ],
+        [ [ 'delete', 'foo' ], qr/successfully deleted foo/, 'deleted foo' ],
 
         # we don't have foo dist any more
         [ [ 'list', 'foo' ], qr/foo doesn't exist/, "foo is deleted" ],
@@ -201,7 +201,7 @@ sub start_test {
         # import dists/dir_configure
         [
             [ 'import', 'dir:t/dists/dir_configure', '--version', 3.14 ],
-            qr/imported with success/,
+            qr/successfully imported/,
             'imported dists_dir_configure',
         ],
         [
@@ -222,7 +222,7 @@ sub start_test {
                 '--version', 2.72,
                 '--no-follow',
             ],
-            qr/imported with success/,
+            qr/successfully imported/,
             'imported tgz_build',
         ],
         [
@@ -238,7 +238,7 @@ sub start_test {
         # import dists/tbz_make.tar.bz
         [
             [ 'import', 'file:t/dists/tbz_make.tar.bz2', '--no-follow' ],
-            qr/imported with success/,
+            qr/successfully imported/,
             'imported tbz_make',
         ],
         [
@@ -259,27 +259,27 @@ sub start_test {
         ],
         [
             [ 'flags', 'dir_configure', '--set', 'configure,foo', ],
-qr/set flags with success\s+flags of dir_configure are configure, foo/,
-            'set flags with success',
+qr/successfully set flags\s+flags of dir_configure are configure, foo/,
+            'successfully set flags',
         ],
         [
             [ 'flags', 'dir_configure', '--add', 'bar', ],
-qr/set flags with success\s+flags of dir_configure are bar, configure, foo/,
+qr/successfully set flags\s+flags of dir_configure are bar, configure, foo/,
             'add flags to dir_configure',
         ],
         [
             [ 'flags', 'dir_configure', '--delete', 'foo,bar', ],
-            qr/set flags with success\s+flags of dir_configure are configure/,
+            qr/successfully set flags\s+flags of dir_configure are configure/,
             'delete flags to dir_configure',
         ],
         [
             [ 'flags', 'tgz_build', '--set', 'build' ],
-            qr/set flags with success\s+flags of tgz_build are build/,
+            qr/successfully set flags\s+flags of tgz_build are build/,
             'set flags to tgz_build',
         ],
         [
             [ 'flags', 'man1', '--set', 'build', '--mandatory' ],
-qr/set mandatory flags with success\s+mandatory flags of man1 are build/,
+qr/successfully set mandatory flags\s+mandatory flags of man1 are build/,
             'set mandatory flag man1',
         ],
         [
@@ -289,12 +289,12 @@ qr/set mandatory flags with success\s+mandatory flags of man1 are build/,
         ],
         [
             [ 'update', '--builder' ],
-            qr/updated with success/,
+            qr/successfully updated/,
             "updated builder",
         ],
         [
             [ 'update', '--utility' ],
-            qr/updated with success/,
+            qr/successfully updated/,
             "updated utility",
         ],
         $^O =~ /MSWin/
@@ -314,12 +314,12 @@ qr/set mandatory flags with success\s+mandatory flags of man1 are build/,
             # import an svn or svk dist named foo
             [
                 [ 'import', $source ],
-                qr/imported with success/,
+                qr/successfully imported/,
                 "imported $source",
             ],
             $update_cmd,    # if the source dist is svk, $update_cmd is undef
                             # update cmd
-            [ [ 'update', 'foo' ], qr/updated with success/, "updated foo", ],
+            [ [ 'update', 'foo' ], qr/successfully updated/, "updated foo", ],
           )
         : (),
     );

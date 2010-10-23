@@ -62,7 +62,7 @@ sub run {
         for my $name (@names) {
             $shipwright->backend->trim( name => $name );
         }
-        $self->log->fatal( "deleted @names with success" );
+        $self->log->fatal( "successfully deleted @names" );
     }
 
 }

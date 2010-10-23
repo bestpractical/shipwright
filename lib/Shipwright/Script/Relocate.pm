@@ -63,7 +63,7 @@ sub run {
             }
 
             $shipwright->backend->source($source);
-            $self->log->fatal( "relocated $name to $new_source with success" );
+            $self->log->fatal( "successfully relocated $name to $new_source" );
         }
     }
     else {

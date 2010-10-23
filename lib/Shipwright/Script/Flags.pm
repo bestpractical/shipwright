@@ -85,7 +85,7 @@ sub _show_flags {
 
     my $flags_info;
     if ( $self->mandatory ) {
-        $self->log->fatal( 'set mandatory flags with success' ) if $changed;
+        $self->log->fatal( 'successfully set mandatory flags' ) if $changed;
         if ( @{ $flags->{__mandatory}{$name} || [] } ) {
             $flags_info = join ', ', @{ $flags->{__mandatory}{$name} };
         }
@@ -95,7 +95,7 @@ sub _show_flags {
         $self->log->fatal( "mandatory flags of $name are $flags_info" );
     }
     else {
-        $self->log->fatal( 'set flags with success' ) if $changed;
+        $self->log->fatal( 'successfully set flags' ) if $changed;
         if ( @{ $flags->{$name} || [] } ) {
             $flags_info =  join ', ', @{ $flags->{$name} };
         }

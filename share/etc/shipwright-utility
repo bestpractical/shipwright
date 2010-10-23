@@ -80,7 +80,7 @@ elsif ( defined $args{'switch'} ) {
         print $fh $name;
         close $fh;
 
-        print "switched to $name with success.\n";
+        print "successfully switched to $name.\n";
 
     }
     else {

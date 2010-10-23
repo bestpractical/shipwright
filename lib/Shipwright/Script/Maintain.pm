@@ -37,7 +37,7 @@ sub run {
               qw/skip_requires skip_recommends skip_build_requires
               skip_test_requires/,
         );
-        $self->log->fatal( 'updated order with success' );
+        $self->log->fatal( 'successfully updated order' );
     } 
     if ($self->graph_deps)  {
         my $out = $shipwright->backend->graph_deps(
@@ -50,7 +50,7 @@ sub run {
 
     if ( $self->update_refs ) {
         $shipwright->backend->update_refs;
-        $self->log->fatal( 'updated refs with success' );
+        $self->log->fatal( 'successfully updated refs' );
     }
 }
 
