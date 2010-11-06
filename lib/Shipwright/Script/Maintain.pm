@@ -77,6 +77,7 @@ Shipwright::Script::Maintain - Maintain a shipyard
  --skip-requires              : skip requires when finding deps
  --skip-recommends            : skip recommends when finding deps
  --skip-build-requires        : skip build requires when finding deps
+ --skip-test-requires         : skip requires when finding deps
 
 =head1 GLOBAL OPTIONS
 

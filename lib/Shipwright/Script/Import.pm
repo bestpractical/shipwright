@@ -442,6 +442,7 @@ Shipwright::Script::Import - Import sources and their dependencies
  --skip-recommends              : specify a list of sources of which recommends 
                                   not to import
  --skip-all-recommends          : skip all the recommends to import
+ --skip-all-test-requires       : skip all the test requires to import
  --skip-installed               : skip all the installed modules to import
  --include-dual-lifed           : include modules which live both in the perl core 
                                   and on CPAN
