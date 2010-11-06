@@ -82,9 +82,13 @@ sub run {
         my @deps = split /\s*,\s*/, $self->delete_deps;
         my $name = shift or confess_or_die 'need name arg';
         my $requires = $shipwright->backend->requires( name => $name ) || {};
+        my $deleted;
         for my $dep ( @deps ) {
             for my $type ( qw/requires build_requires recommends test_requires/ ) {
-                delete $requires->{$type}{$dep} if $requires->{$type};
+                if ( $requires->{$type} && exists $requires->{$type}{$dep} ) {
+                    delete $requires->{$type}{$dep};
+                    $deleted = 1;
+                }
             }
 
             $shipwright->backend->_yml( "/scripts/$name/require.yml", $requires );
@@ -92,6 +96,13 @@ sub run {
             $refs->{$dep}-- if $refs->{$dep} > 0;
             $shipwright->backend->refs($refs);
         }
+        if ( $deleted ) {
+            $self->log->fatal( 'successfully updated' );
+        }
+        else {
+            $self->log->fatal( "not updated: no such deps in $name" );
+        }
+        return;
     }
     else {
         $map    = $shipwright->backend->map    || {};
