@@ -295,6 +295,7 @@ Shipwright::Script::Update - Update sources and shipyard itself
  --only-sources               : only update sources, no build scripts
  --as                         : the branch name
  --add-deps                   : add requires deps for a dist e.g. cpan-Foo=0.30,cpan-Bar,cpan-Baz=2.34
+ --delete-deps                : delete deps for a dist e.g. cpan-Foo,cpan-Bar
 
 =head1 DESCRIPTION
 
