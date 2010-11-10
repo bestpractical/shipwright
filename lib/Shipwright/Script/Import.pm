@@ -178,13 +178,11 @@ sub run {
                 );
 
                 if ( my $script = $self->build_script ) {
-                    if ( $script =~ /\.pl/ ) {
-                        copy( $self->build_script,
-                            catfile( $script_dir, 'build.pl' ) );
+                    if ( $script =~ /\.pl$/ ) {
+                        copy( $script, catfile( $script_dir, 'build.pl' ) );
                     }
                     else {
-                        copy( $self->build_script,
-                            catfile( $script_dir, 'build' ) );
+                        copy( $script, catfile( $script_dir, 'build' ) );
                     }
                 }
                 else {
