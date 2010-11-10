@@ -178,8 +178,14 @@ sub run {
                 );
 
                 if ( my $script = $self->build_script ) {
-                    copy( $self->build_script,
-                        catfile( $script_dir, 'build' ) );
+                    if ( $script =~ /\.pl/ ) {
+                        copy( $self->build_script,
+                            catfile( $script_dir, 'build.pl' ) );
+                    }
+                    else {
+                        copy( $self->build_script,
+                            catfile( $script_dir, 'build' ) );
+                    }
                 }
                 else {
                     $self->_generate_build( $source, $script_dir, $shipwright );
