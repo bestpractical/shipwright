@@ -9,7 +9,7 @@ Shipwright.
 
 =head1 TUTORIAL
 
-=head1 Introduction
+=head2 Introduction
 
 Shipwright ships with command line tool F<shipwright> which allows you to
 manage shipyard: L<create|/Create a new shipyard>,
@@ -17,7 +17,7 @@ L<import sources|/Import sources>, L</update>, and so on.
 
 Let's start from a new shipyard.
 
-=head2 Create a new shipyard
+=head3 Create a new shipyard
 
 shipyard - the place where all source code lives.
 Shipwright supports several backends: L<SVK|Shipwright::Backend::SVK>,
@@ -36,7 +36,7 @@ environment variable.
 
 From now on we don't need the "-r ..." for the session.
 
-=head2 Import sources
+=head3 Import sources
 
 Our shipyard is worthless if it doesn't contain any source, let's import some.
 
@@ -121,7 +121,7 @@ peculiarities of how to build perl, so we need to edit the build file:
 
 For more information on build scripts, see L<Shipwright::Manual::CustomizeBuild>.
 
-=head2 update
+=head3 update
 
 For dists with I<CPAN>, I<SVK>, I<SVN>, I<Git> and I<shipyard> types,
 we can simply use the I<update> command to update:
@@ -143,7 +143,7 @@ set the source URL first before updating.
     $ shipwright relocate apache http://www.apache.org/dist/httpd/httpd-2.2.10.tar.gz 
     $ shipwright update apache
 
-=head2 tweak manually 
+=head3 tweak manually 
 
 You may find that I<cpan-XML-LibXML> needs I<libxml> as a dependency, but
 in F</scripts/cpan-XML-LibXML/require.yml> there's no such entry,
@@ -154,7 +154,7 @@ So we need to do it manually, e.g. use the following command to do so:
 
     $ shipwright update apache --add-deps libxml
 
-=head2 build
+=head3 build
 
 We need to I<checkout> the repository into some directory first,
 then I<chdir> there, and run:
@@ -165,12 +165,12 @@ $ ./bin/shipwright-builder --install-base /tmp/vessel
 Run I<./bin/shipwright-builder --help> to see more options and
 I<./bin/shipwright-builder --advanced-help> to see even more options.
 
-=head2 fiddle the vessel
+=head3 fiddle the vessel
 
 We can use F<bin/shipwright-filter> to fiddle the vessel, e.g. removing pods.
 Run I<./bin/shipwright-filter --help> to see more options
 
-=head2 ship our vessel
+=head3 ship our vessel
 
 We call the built code the I<vessel>.
 
@@ -195,7 +195,7 @@ modules from our vessel as with normal installed programs, though they will
 need to start a new shell or re-run their startup script.
 
 
-=head2 ship shipyard
+=head3 ship shipyard
 
 If you want to ship a shipyard instead of the vessel, you can just tar your
 shipyard( i.e. "/tmp/foo" ) and ship it, though Shipwright supplies a
