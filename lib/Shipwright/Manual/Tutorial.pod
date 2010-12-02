@@ -4,13 +4,14 @@ Shipwright::Manual::Tutorial - Shipwright tutorial
 
 =head1 DESCRIPTION
 
-In this tutorial, we'll create a vessel to represent basic stuff of Shipwright.
+In this tutorial, we'll create a vessel to demonstrate the basic operation of
+Shipwright.
 
 =head1 TUTORIAL
 
 =head1 Introduction
 
-Shipwright is shipped with command line tool F<shipwright> which allows you to
+Shipwright ships with command line tool F<shipwright> which allows you to
 manage shipyard: L<create|/Create a new shipyard>,
 L<import sources|/Import sources>, L</update>, and so on.
 
@@ -18,7 +19,7 @@ Let's start from a new shipyard.
 
 =head2 Create a new shipyard
 
-shipyard - the place where all stuff lives.
+shipyard - the place where all source code lives.
 Shipwright supports several backends: L<SVK|Shipwright::Backend::SVK>,
 L<SVN|Shipwright::Backend::SVN>, L<Git|Shipwright::Backend::Git> and
 L<plain file system|Shipwright::Backend::FS>.
@@ -33,14 +34,14 @@ environment variable.
 
     $ export SHIPWRIGHT_SHIPYARD="fs:/tmp/foo"
 
-from now on we don't need the "-r ..." for the session.
+From now on we don't need the "-r ..." for the session.
 
 =head2 Import sources
 
-Our shipyard is worthless if it doesn't contain any source, let's import some
+Our shipyard is worthless if it doesn't contain any source, let's import some.
 
 Shipwright supports various types of sources.
-Here're some examples:
+Here are some examples:
 
 =over 4
 
@@ -111,8 +112,8 @@ for (currently I<autoconf>, L<ExtUtils::MakeMaker>, L<Module::Install>, and
 L<Module::Build>), we would now need to edit F<scripts/SOURCE_NAME/build> to tell
 Shipwright how to build that source.
 
-For our tutorial, e.g. perl 5.10, the build can't be created automatically,
-so we need to edit the build file:
+For our tutorial, e.g. perl 5.10, Shipwright doesn't know about the
+peculiarities of how to build perl, so we need to edit the build file:
 
   configure: ./Configure -des -Dprefix=%%INSTALL_BASE%%
   test: %%MAKE%% test
@@ -123,41 +124,41 @@ For more information on build scripts, see L<Shipwright::Manual::CustomizeBuild>
 =head2 update
 
 For dists with I<CPAN>, I<SVK>, I<SVN>, I<Git> and I<shipyard> types,
-we can simply use the I<update> cmd to update:
+we can simply use the I<update> command to update:
 
     $ shipwright update cpan-XML-LibXML
     (yeah, that's right, cpan:XML::LibXML will be named cpan-XML-LibXML)
 
-we can also specify the version we want to update to with --version arg:
+We can also specify the version we want to update to with --version argument:
 
     $ shipwright update cpan-XML-LibXML --version 1.60
 
-For other types, Shipwright can't find the latest version, so we have to tell 
-Shipwright where it is by I<relocate> cmd.
+For other types, Shipwright can't guess the latest version, so we have to tell
+Shipwright where it is using the I<relocate> command.
 
 e.g. apache 2.2.10 is released one day, with download link
 L<http://apache.mirror.phpchina.com/httpd/httpd-2.2.10.tar.gz>, we need to 
-set the source url first before update.
+set the source URL first before updating.
 
     $ shipwright relocate apache http://www.apache.org/dist/httpd/httpd-2.2.10.tar.gz 
     $ shipwright update apache
 
 =head2 tweak manually 
 
-You may find that I<cpan-XML-LibXML> needs I<libxml> as a dependence, but
+You may find that I<cpan-XML-LibXML> needs I<libxml> as a dependency, but
 in F</scripts/cpan-XML-LibXML/require.yml> there's no such entry,
 because F<require.yml> is created automatically, filled with perl module dists,
 no extra dependences will be set.
 
-So we need to do it manually, e.g. use the following cmd to do so:
+So we need to do it manually, e.g. use the following command to do so:
 
     $ shipwright update apache --add-deps libxml
 
 =head2 build
 
-We need to I<checkout> the repository to some place first,
+We need to I<checkout> the repository into some directory first,
 then I<chdir> there, and run:
-(for FS backend, no need to checkout, just chdir to /tmp/foo ),
+(for FS backend, there's no need to checkout, just chdir to /tmp/foo ),
 
 $ ./bin/shipwright-builder --install-base /tmp/vessel
 
@@ -166,12 +167,12 @@ I<./bin/shipwright-builder --advanced-help> to see even more options.
 
 =head2 fiddle the vessel
 
-We can use bin/shipwright-filter to fiddle the vessel, e.g. removing pods.
+We can use F<bin/shipwright-filter> to fiddle the vessel, e.g. removing pods.
 Run I<./bin/shipwright-filter --help> to see more options
 
 =head2 ship our vessel
 
-We call the built stuff the I<vessel>.
+We call the built code the I<vessel>.
 
 To ship our vessel, create an archive of the built files using an archive
 program such as I<tar>, e.g. by running I<tar czvf vessel.tar.gz
@@ -198,13 +199,13 @@ need to start a new shell or re-run their startup script.
 
 If you want to ship a shipyard instead of the vessel, you can just tar your
 shipyard( i.e. "/tmp/foo" ) and ship it, though Shipwright supplies a
-convinent way too:
+convenient way too:
 
-let's chdir to our shipyard first, then run:
+Let's chdir to our shipyard first, then run:
 $ ./bin/shipwright-utility --generate-tar-file /tmp/shipyard.pl
 
-the shipyard.pl is a shipyard perl script working like "shipwright-builder"
-but it's self contained, so you can build vessel with shipyard.pl like this:
+The shipyard.pl is a shipyard perl script working like "shipwright-builder"
+but it's self contained, so you can build a vessel with shipyard.pl like this:
 
 $ perl /tmp/shipyard.pl --install-base /tmp/vessel
 
