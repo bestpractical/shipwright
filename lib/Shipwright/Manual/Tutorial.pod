@@ -172,7 +172,7 @@ Run I<./bin/shipwright-filter --help> to see more options
 
 =head3 ship our vessel
 
-We call the built code the I<vessel>.
+We call the built source the I<vessel>.
 
 To ship our vessel, create an archive of the built files using an archive
 program such as I<tar>, e.g. by running I<tar czvf vessel.tar.gz
