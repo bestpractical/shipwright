@@ -59,10 +59,14 @@ sub run {
 
     my $shipwright = Shipwright->new( repository => $self->repository, );
 
+    my $order      = $shipwright->backend->order || []; 
+    my $installed  = { map { $_ => 1 } @$order };
+
     if ( $self->name && !$source ) {
 
         # don't have source specified, use the one in repo
         my $map        = $shipwright->backend->map    || {};
+
         my $source_yml = $shipwright->backend->source || {};
         my $branches   = $shipwright->backend->branches;
 
@@ -125,6 +129,7 @@ sub run {
                 include_dual_lifed     => $self->include_dual_lifed,
                 skip                   => $self->skip,
                 version                => $self->version,
+                installed              => $installed,
                 skip_recommends        => $self->skip_recommends,
                 skip_all_recommends    => $self->skip_all_recommends,
                 skip_all_test_requires => $self->skip_all_test_requires,

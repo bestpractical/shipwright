@@ -17,7 +17,7 @@ __PACKAGE__->mk_accessors(
       min_perl_version map_path skip map skip_recommends skip_all_recommends
       skip_installed include_dual_lifed
       keep_build_requires name log url_path version_path branches_path version
-      skip_all_test_requires
+      skip_all_test_requires installed
       /
 );
 
@@ -486,18 +486,14 @@ EOF
 
                 my $name = $module;
 
-                if ( $self->_is_skipped($module) ) {
+                if ( $self->_is_skipped($module)
+                    && !$self->_is_installed($module) )
+                {
+
                     # skipped contains all modules imported before,
                     # so we need to check if they are imported ones
-                    unless ( defined $map->{$module}
-                        || defined $url->{$module} )
-                    {
-
-                        # not in the map, meaning it's not been imported before,
-                        # so it's safe to erase it
-                        delete $require->{$type}{$module};
-                        next;
-                    }
+                    delete $require->{$type}{$module};
+                    next;
                 }
                 else {
 
@@ -669,6 +665,21 @@ sub _is_skipped {
     }
 
     return;
+}
+
+sub _is_installed {
+    my $self   = shift;
+    my $module = shift;
+    my $installed;
+
+    my $name = $module;
+    if ( $module !~ /-/ ) {
+        my $source = Shipwright::Source->new( source => "cpan:$module" );
+        $source->_run;
+        $name = $source->name;
+    }
+
+    return $self->installed->{$name};
 }
 
 sub _copy {
