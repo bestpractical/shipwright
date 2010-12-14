@@ -1,5 +1,14 @@
 Revision history for Shipwright
 
+2.4.18 Fri Dec 10 02:49:24 UTC 2010
+
+* use order.yml to get imported list(previously used map.yml and source.yml,
+     which is wrong ).
+* pod/doc fixes thanks to sartak++
+* build_script can be either build or build.pl in import cmd
+* don't show updated msg if there are no updates in update cmd
+* more doc
+
 2.4.17 Thu Oct 28 00:16:07 UTC 2010
 
 * split test_requires out of build_requires
