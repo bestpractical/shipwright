@@ -2,6 +2,8 @@ Revision history for Shipwright
 
 2.4.19
 
+* use Class::XSAccessor::Compat if possible
+
 2.4.18 Fri Dec 10 02:49:24 UTC 2010
 
 * use order.yml to get imported list(previously used map.yml and source.yml,
