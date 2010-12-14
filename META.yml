@@ -21,6 +21,8 @@ no_index:
     - share
     - t
     - xt
+recommends:
+  Class::XSAccessor::Compat: 0
 requires:
   Algorithm::Dependency::Ordered: 0
   Algorithm::Dependency::Source::HoA: 0

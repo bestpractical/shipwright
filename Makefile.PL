@@ -14,6 +14,7 @@ requires 'Algorithm::Dependency::Source::HoA' => 0;
 requires 'CPAN' => 1.9205;
 requires 'CPAN::DistnameInfo' => 0;
 requires 'Class::Accessor::Fast' => 0;
+recommends 'Class::XSAccessor::Compat' => 0;
 requires 'File::Temp' => 0.18;
 requires 'File::Copy' => 0;
 requires 'File::Copy::Recursive' => 0;
