@@ -3,7 +3,7 @@ package Shipwright::Script::Requires;
 use strict;
 use warnings;
 
-use base qw/App::CLI::Command Class::Accessor::Fast Shipwright::Script/;
+use base qw/App::CLI::Command Shipwright::Base Shipwright::Script/;
 __PACKAGE__->mk_accessors(
     qw/skip skip_recommends skip_all_recommends version as_graph min_perl_version
       include_dual_lifed/

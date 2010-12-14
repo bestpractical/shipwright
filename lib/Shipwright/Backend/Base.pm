@@ -12,7 +12,7 @@ use Module::Info;
 
 our %REQUIRE_OPTIONS = ( import => [qw/source/] );
 
-use base qw/Class::Accessor::Fast/;
+use base qw/Shipwright::Base/;
 __PACKAGE__->mk_accessors(qw/repository log/);
 
 =head1 NAME

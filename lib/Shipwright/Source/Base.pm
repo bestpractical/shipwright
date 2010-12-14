@@ -11,7 +11,7 @@ use Cwd qw/getcwd/;
 use File::Copy::Recursive qw/rcopy/;
 use UNIVERSAL::require;
 
-use base qw/Class::Accessor::Fast/;
+use base qw/Shipwright::Base/;
 __PACKAGE__->mk_accessors(
     qw/source directory scripts_directory download_directory follow
       min_perl_version map_path skip map skip_recommends skip_all_recommends

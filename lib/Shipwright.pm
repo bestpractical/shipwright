@@ -4,7 +4,7 @@ use warnings;
 use strict;
 use version; our $VERSION = qv('2.4.18');
 
-use base qw/Class::Accessor::Fast/;
+use base qw/Shipwright::Base/;
 
 __PACKAGE__->mk_accessors(qw/backend source build log_level log_file/);
 

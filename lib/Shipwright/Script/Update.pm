@@ -3,7 +3,7 @@ package Shipwright::Script::Update;
 use strict;
 use warnings;
 
-use base qw/App::CLI::Command Class::Accessor::Fast Shipwright::Script/;
+use base qw/App::CLI::Command Shipwright::Base Shipwright::Script/;
 __PACKAGE__->mk_accessors(
     qw/all follow builder utility inc version only_sources as add_deps delete_deps/
 );

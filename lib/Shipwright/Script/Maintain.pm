@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Shipwright::Util;
 
-use base qw/App::CLI::Command Class::Accessor::Fast Shipwright::Script/;
+use base qw/App::CLI::Command Shipwright::Base Shipwright::Script/;
 __PACKAGE__->mk_accessors(
     qw/update_order update_refs graph_deps skip_recommends 
       skip_build_requires skip_requires skip_test_requires for_dists/

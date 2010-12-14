@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use App::CLI;
 use Shipwright::Util;
-use base qw/App::CLI Class::Accessor::Fast/;
+use base qw/App::CLI Shipwright::Base/;
 
 __PACKAGE__->mk_accessors(qw/repository log_file log_level/);
 

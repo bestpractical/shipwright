@@ -3,7 +3,7 @@ package Shipwright::Script::Import;
 use strict;
 use warnings;
 
-use base qw/App::CLI::Command Class::Accessor::Fast Shipwright::Script/;
+use base qw/App::CLI::Command Shipwright::Base Shipwright::Script/;
 __PACKAGE__->mk_accessors(
     qw/comment no_follow build_script require_yml include_dual_lifed
       name test_script extra_tests overwrite min_perl_version skip version as
