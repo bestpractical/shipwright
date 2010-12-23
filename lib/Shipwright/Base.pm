@@ -4,6 +4,8 @@ use warnings;
 use strict;
 
 our @ISA;
+require Class::Accessor::Fast;
+
 BEGIN {
     eval { require Class::XSAccessor::Compat };
     push @ISA, $@ ? 'Class::Accessor::Fast' : 'Class::XSAccessor::Compat' ;
