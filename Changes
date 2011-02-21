@@ -1,5 +1,7 @@
 Revision history for Shipwright
 
+2.4.20
+
 2.4.19
 
 * use Class::XSAccessor::Compat if possible
