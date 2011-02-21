@@ -3,6 +3,9 @@ Revision history for Shipwright
 2.4.19
 
 * use Class::XSAccessor::Compat if possible
+* copy deps of Module::Build not in core into inc( except version.pm ).
+* for Module::Build: hack to not require so strcit version.pm, as it's not in
+    core and is xs( which makes it not appropriate to copy into inc )
 
 2.4.18 Fri Dec 10 02:49:24 UTC 2010
 
