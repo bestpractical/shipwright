@@ -24,6 +24,7 @@ lib/Shipwright/Backend/FS.pm
 lib/Shipwright/Backend/Git.pm
 lib/Shipwright/Backend/SVK.pm
 lib/Shipwright/Backend/SVN.pm
+lib/Shipwright/Base.pm
 lib/Shipwright/Logger.pm
 lib/Shipwright/Manual.pod
 lib/Shipwright/Manual/BuildMultiArchVessel.pod
