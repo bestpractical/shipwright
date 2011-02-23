@@ -5,7 +5,7 @@ author:
 build_requires:
   ExtUtils::MakeMaker: 6.42
   IPC::Cmd: 0
-  Module::Build: 0
+  Test::More: 0
 configure_requires:
   ExtUtils::MakeMaker: 6.42
 distribution_type: module
@@ -46,6 +46,7 @@ requires:
   LWP::UserAgent: 0
   List::MoreUtils: 0
   Log::Log4perl: 0
+  Module::Build: 0
   Module::CoreList: 0
   Module::Info: 0
   UNIVERSAL::require: 0
