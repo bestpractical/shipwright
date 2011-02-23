@@ -1,5 +1,7 @@
 Revision history for Shipwright
 
+2.4.23
+
 2.4.22 Wed Feb 23 11:32:58 CST 2011
 
 * make shipwright happy with old Module::Build
