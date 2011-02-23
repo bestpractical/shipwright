@@ -6,8 +6,11 @@ author 'sunnavy <sunnavy@bestpractical.com>';
 all_from 'lib/Shipwright.pm';
 repository 'git://github.com/bestpractical/shipwright.git';
 perl_version '5.008008';
-build_requires 'Module::Build' => 0;
+
+build_requires 'Test::More' => 0;
 build_requires 'IPC::Cmd' => 0;
+
+requires 'Module::Build' => 0;
 requires 'App::CLI' => 0;
 requires 'Algorithm::Dependency::Ordered' => 0;
 requires 'Algorithm::Dependency::Source::HoA' => 0;
