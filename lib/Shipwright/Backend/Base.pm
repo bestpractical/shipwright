@@ -108,34 +108,37 @@ sub _install_module_build {
       or confess_or_die "copy Module/Build failed: $!";
 
     # Module::Build needs Module::Metadata, Perl::OSType
-    make_path( catdir( $dir, 'inc', 'Module::Metadata' ) );
-    make_path( catdir( $dir, 'inc', 'Perl' ) );
-    copy(
-        Module::Info->new_from_module('Perl::OSType')->file,
-        catdir( $dir, 'inc', 'Perl' ) )
+    if ( Module::Info->new_from_module('Perl::OSType') ) {
+        make_path( catdir( $dir, 'inc', 'Perl' ) );
+        copy( Module::Info->new_from_module('Perl::OSType')->file,
+            catdir( $dir, 'inc', 'Perl' ) )
           or confess_or_die "copy Perl/OSType.pm failed: $!";
+    }
 
-    copy(
-        Module::Info->new_from_module('Module::Metadata')->file,
-        catdir( $dir, 'inc', 'Module' ) )
-          or confess_or_die "copy Module/Metadata.pm failed: $!";
 # Module::Metadata 1.02 requires version 0.87+, which isn't in perl core yet
 # we can't simply copy version.pm to inc because it's not plain perl.
 # so here we do a maybe dangerous thing, hack Module::Metadata to not require
 # version 0.87+
 # so is Module::Build
-    my @files = ( catfile( $dir, 'inc', 'Module', 'Metadata.pm' ),
-      catfile( $dir, 'inc', 'Module', 'Build', 'Version.pm' ) );
+    my @files = catfile( $dir, 'inc', 'Module', 'Build', 'Version.pm' );
+
+    if ( Module::Info->new_from_module('Module::Metadata') ) {
+        copy( Module::Info->new_from_module('Module::Metadata')->file,
+            catdir( $dir, 'inc', 'Module' ) )
+          or confess_or_die "copy Module/Metadata.pm failed: $!";
+        push @files, catfile( $dir, 'inc', 'Module', 'Metadata.pm' );
+    }
 
     for my $file ( @files ) {
         open my $fh, '<', $file or die $!;
         local $/;
         my $content = <$fh>;
-        $content =~ s!use version.*?;!use version;!;
-        chmod 0755, $file unless -w $file;
-        open $fh, '>', $file or die $!;
-        print $fh $content;
-        close $fh;
+        if ( $content =~ s!use version.+?;!use version;! ) {
+            chmod 0755, $file unless -w $file;
+            open $fh, '>', $file or die $!;
+            print $fh $content;
+            close $fh;
+        }
     }
 }
 
