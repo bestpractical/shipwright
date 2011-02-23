@@ -1,4 +1,4 @@
-package PatchModuleBuild;
+package Shipwright::Util::PatchModuleBuild;
 use strict;
 use warnings;
 
@@ -18,7 +18,7 @@ __END__
 
 =head1 NAME
 
-PatchModuleBuild - use this to ignore man pages generation
+Shipwright::Util::PatchModuleBuild - use this to ignore man pages generation
 
 =head1 DESCRIPTION
 
