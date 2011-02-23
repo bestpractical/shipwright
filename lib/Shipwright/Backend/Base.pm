@@ -133,7 +133,7 @@ sub _install_module_build {
         open my $fh, '<', $file or die $!;
         local $/;
         my $content = <$fh>;
-        if ( $content =~ s!use version.+?;!use version;! ) {
+        if ( $content =~ s!use version[^'"]+?(['"]\s*;)!use version $1;! ) {
             chmod 0755, $file unless -w $file;
             open $fh, '>', $file or die $!;
             print $fh $content;
