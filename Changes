@@ -1,8 +1,15 @@
 Revision history for Shipwright
 
-2.4.20
+2.4.21 Wed Feb 23 10:23:10 CST 2011
 
-2.4.19
+* fix the bug that old Module::Build(0.36-) doesn't depend on Perl::OSType 
+    and Module::Metadata
+
+2.4.20 Tue Feb 22 16:04:31 CST 2011
+
+* fix the bug that Shipwright::Base is missing
+
+2.4.19 Mon Feb 21 15:11:57 CST 2011
 
 * use Class::XSAccessor::Compat if possible
 * copy deps of Module::Build not in core into inc( except version.pm ).
