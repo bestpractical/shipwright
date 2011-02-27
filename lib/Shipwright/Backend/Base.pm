@@ -157,7 +157,7 @@ sub _install_clean_inc {
     my $dir = shift;
     my $util_inc_path = catdir( $dir, 'inc', 'Shipwright', 'Util' );
     make_path( $util_inc_path );
-    for my $mod qw(CleanINC PatchModuleBuild) {
+    for my $mod ( qw/CleanINC PatchModuleBuild/ ) {
         rcopy( Module::Info->new_from_module("Shipwright::Util::$mod")->file,
             $util_inc_path )
           or confess_or_die "copy $mod failed: $!";
