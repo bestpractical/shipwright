@@ -260,15 +260,22 @@ sub import {
                     $self->_add_to_order($name);
 
                     my $version = $self->version;
-                    $version->{$name}{$args{as}} = $args{version};
+                    if ( $args{as} ) {
+                        $version->{$name}{$args{as}} = $args{version};
+                    }
+                    else {
+                        $version->{$name} = $args{version};
+                    }
                     $self->version($version);
 
                     my $branches = $self->branches;
                     if ( $args{branches} ) {
 
                   # mostly this happens when import from another shipwright repo
-                        $branches->{$name} = $args{branches};
-                        $self->branches($branches);
+                        if ( %{ $args{branches} } ) {
+                            $branches->{$name} = $args{branches};
+                            $self->branches($branches);
+                        }
                     }
                     elsif (
                             $name !~ /^cpan-/ && 
