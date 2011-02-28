@@ -252,10 +252,18 @@ sub run {
               || {};
             my $source_url = delete $new_url->{$name};
 
-            if ( $name !~ /^cpan-/ ) {
+            if (   $name !~ /^cpan-/
+                || $shipwright->source->isa('Shipwright::Source::Shipyard') )
+            {
                 my $source = $shipwright->backend->source || {};
-                $source->{$name}{$self->as||'vendor'} = $source_url;
-                $shipwright->backend->source( $source );
+                if ( $shipwright->source->isa('Shipwright::Source::Shipyard') )
+                {
+                    $source->{$name} = $source_url;
+                }
+                else {
+                    $source->{$name}{ $self->as || 'vendor' } = $source_url;
+                }
+                $shipwright->backend->source($source);
             }
         }
 
@@ -352,6 +360,19 @@ sub _import_req {
                         build_script => $script_dir,
                         overwrite    => $self->overwrite,
                     );
+                    if (
+                        $shipwright->source->isa(
+                            'Shipwright::Source::Shipyard')
+                      )
+                    {
+                        my $new_url =
+                          load_yaml_file( $shipwright->source->url_path )
+                          || {};
+                        my $source_url = delete $new_url->{$dist};
+                        my $source = $shipwright->backend->source || {};
+                        $source->{$dist} = $source_url;
+                        $shipwright->backend->source($source);
+                    }
                 }
             }
         }
