@@ -272,7 +272,7 @@ sub import {
                     if ( $args{branches} ) {
 
                   # mostly this happens when import from another shipwright repo
-                        if ( %{ $args{branches} } ) {
+                        if ( @{ $args{branches} } ) {
                             $branches->{$name} = $args{branches};
                             $self->branches($branches);
                         }

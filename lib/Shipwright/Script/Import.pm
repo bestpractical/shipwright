@@ -228,7 +228,7 @@ sub run {
                 as        => $self->as,
                 branches =>
                   $shipwright->source->isa('Shipwright::Source::Shipyard')
-                ? ( $branches->{$name} || {} )
+                ? ( $branches->{$name} || [] )
                 : (undef),
             );
 
@@ -351,7 +351,7 @@ sub _import_req {
                         version   => $version->{$dist},
                         branches  => $shipwright->source->isa(
                             'Shipwright::Source::Shipyard')
-                        ? ( $branches->{$dist} || {} )
+                        ? ( $branches->{$dist} || [] )
                         : (undef),
                     );
                     $shipwright->backend->import(
