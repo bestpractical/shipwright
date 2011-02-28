@@ -75,8 +75,10 @@ sub run {
             $source = 'cpan:' . $r_map->{ $self->name };
         }
         elsif ($branches) {
-            $source = $source_yml->{ $self->name }{ $self->as
-                  || $branches->{ $self->name }[0] };
+            $source = $source_yml->{ $self->name };
+            if ( ref $source ) {
+                $source = $source->{ $self->as || $branches->{ $self->name }[0] };
+            }
         }
         else {
             $source = $source_yml->{$self->name};

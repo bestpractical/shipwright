@@ -230,8 +230,12 @@ sub _update {
     if ( $source->{$name} ) {
         $shipwright->source(
             Shipwright::Source->new(
-                name    => $name,
-                source  => $source->{$name}{$as||$branches->{$name}[0]},
+                name   => $name,
+                source => (
+                    ref $source->{$name}
+                    ? $source->{$name}{ $as || $branches->{$name}[0] }
+                    : $source->{$name}
+                ),
                 follow  => 0,
                 version => $version,
             )
@@ -271,12 +275,16 @@ sub _update {
 
     $version = load_yaml_file( $shipwright->source->version_path );
 
+    my $branches   = $shipwright->backend->branches;
     $shipwright->backend->import(
         source    => catdir( $shipwright->source->directory, $name ),
         comment   => "update $name",
         overwrite => 1,
         version   => $version->{$name},
         as        => $as,
+        branches => $shipwright->source->isa('Shipwright::Source::Shipyard')
+        ? ( $branches->{$name} || [] )
+        : (undef),
     );
 }
 
