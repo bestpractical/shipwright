@@ -215,16 +215,21 @@ sub run {
 
             my $branches =
               load_yaml_file( $shipwright->source->branches_path );
+            $branches ||= {} if
 
             $self->log->fatal( "importing $name" );
             $shipwright->backend->import(
                 source  => $source,
                 comment => $self->comment || 'import ' . $source,
-# import anyway for the main dist, unless it's already imported in this run
-                overwrite => $imported{$name} ? 0 : 1, 
+
+     # import anyway for the main dist, unless it's already imported in this run
+                overwrite => $imported{$name} ? 0 : 1,
                 version   => $version->{$name},
                 as        => $self->as,
-                branches => $branches->{$name},
+                branches =>
+                  $shipwright->source->isa('Shipwright::Source::Shipyard')
+                ? ( $branches->{$name} || {} )
+                : (undef),
             );
 
             $shipwright->backend->import(
@@ -336,7 +341,10 @@ sub _import_req {
                         source    => $s,
                         overwrite => $self->overwrite,
                         version   => $version->{$dist},
-                        branches  => $branches->{$dist},
+                        branches  => $shipwright->source->isa(
+                            'Shipwright::Source::Shipyard')
+                        ? ( $branches->{$dist} || {} )
+                        : (undef),
                     );
                     $shipwright->backend->import(
                         source       => $s,
