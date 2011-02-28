@@ -15,8 +15,7 @@ sub run {
     my $self = shift;
 
     $self->log->info( "prepare to run source: " . $self->source );
-    my ( $base, $dist, $branch ) = $self->source =~ m{(.*)/([^/]+)(?:/(.+))?};
-    $branch ||= 'vendor';
+    my ( $base, $dist ) = $self->source =~ m{(.*)/([^/]+)};
 
     my $source_shipwright = Shipwright->new( repository => $base );
     $self->name($dist) unless $self->name;
@@ -39,10 +38,10 @@ sub run {
         path   => "/scripts/$dist",
     );
     my $source_version = $source_shipwright->backend->version->{$dist};
-    my $branches       = $source_shipwright->backend->branches;
-    $self->_update_version( $self->name || $dist, $source_version->{$branch} );
-    $self->_update_url( $self->name || $dist, 'shipwright:' . $self->source );
-    $self->_update_branches( $self->name || $dist, $branches->{$dist} );
+    my $source_branch  = %{ $source_shipwright->backend->branches || {} }->{$dist};
+    $self->_update_version( $self->name, $source_version );
+    $self->_update_url( $self->name, 'shipyard:' . $self->source );
+    $self->_update_branches( $self->name, $source_branch ) if $source_branch;
 
     # follow
     if ( $self->follow ) {
