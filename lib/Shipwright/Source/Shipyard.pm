@@ -38,7 +38,13 @@ sub run {
         path   => "/scripts/$dist",
     );
     my $source_version = $source_shipwright->backend->version->{$dist};
-    my $source_branch  = %{ $source_shipwright->backend->branches || {} }->{$dist};
+    my $source_branch;
+    if (   $source_shipwright->backend->branches
+        && $source_shipwright->backend->branches->{$dist} )
+    {
+        $source_branch = $source_shipwright->backend->branches->{$dist};
+    }
+
     $self->_update_version( $self->name, $source_version );
     $self->_update_url( $self->name, 'shipyard:' . $self->source );
     $self->_update_branches( $self->name, $source_branch ) if $source_branch;
