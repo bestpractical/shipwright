@@ -1,5 +1,7 @@
 Revision history for Shipwright
 
+2.4.24
+
 2.4.23 Thu Mar 17 14:03:45 CST 2011
 
 * clean warnings for perl 5.13+
