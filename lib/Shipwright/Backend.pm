@@ -19,11 +19,11 @@ sub new {
         $args{repository} = 'svk:'. $args{repository};
     }
 
-    my ($backend, $subtype);
+    my $backend;
     if ( $args{repository} =~ /^([a-z]+)(?:\+([a-z]+))?:/ ) {
-        ($backend, $subtype) = ($1, $2);
+        ($backend) = $1;
     } else {
-        confess_or_die "invalid repository, doesn't start from xxx: or xxx+yyy:";
+        confess_or_die "invalid repository, doesn't start with xxx: or xxx+yyy:";
     }
 
     my $module = find_module(__PACKAGE__, $backend);
