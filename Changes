@@ -1,6 +1,12 @@
 Revision history for Shipwright
 
-2.4.23
+2.4.23 Thu Mar 17 14:03:45 CST 2011
+
+* clean warnings for perl 5.13+
+* fix bugs when importing from shipyard.
+* no branch specification support when importing from another shipyard:
+    import all branches or none at all
+* tweak to suit rpm(thanks to Robin Lee).
 
 2.4.22 Wed Feb 23 11:32:58 CST 2011
 
