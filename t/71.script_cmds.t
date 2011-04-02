@@ -1,7 +1,13 @@
 use strict;
 use warnings;
 
+
 use Test::More;
+
+if ( ! $ENV{SHIPWRIGHT_TEST_EXTRA} ) {
+    plan skip_all => 'SHIPWRIGHT_TEST_EXTRA is not set';
+}
+
 if ( $^O =~ /MSWin/ ) {
     plan tests => 136;
 }

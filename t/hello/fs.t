@@ -1,6 +1,14 @@
 use strict;
 use warnings;
 
+use Test::More;
+
+if ( ! $ENV{SHIPWRIGHT_TEST_EXTRA} ) {
+    plan skip_all => 'SHIPWRIGHT_TEST_EXTRA is not set';
+}
+
+plan tests => 38;
+
 use Shipwright;
 use File::Temp qw/tempdir/;
 use File::Copy;
@@ -10,7 +18,6 @@ use File::Path qw/remove_tree/;
 use Cwd qw/getcwd abs_path/;
 use File::Slurp;
 
-use Test::More tests => 38;
 use Shipwright::Test;
 Shipwright::Test->init;
 
