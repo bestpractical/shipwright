@@ -1,6 +1,8 @@
 Revision history for Shipwright
 
-2.4.24
+2.4.24 Sat Apr  2 19:30:01 CST 2011
+
+* add SHIPWRIGHT_TEST_EXTRA env, some complex tests are skipped by default
 
 2.4.23 Thu Mar 17 14:03:45 CST 2011
 
