@@ -1,5 +1,7 @@
 Revision history for Shipwright
 
+2.4.26
+
 2.4.25 Thu Apr 28 01:57:42 CST 2011
 
 * support archives which include filenames prefixed with ./
