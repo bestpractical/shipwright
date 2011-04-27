@@ -56,11 +56,14 @@ sub path {
     my $files = $ae->files;
 
     my $base_dir = $files->[0];
+    # some compressed file has name like ./PerlImagick-6.67/
+    $base_dir =~ s!^\.[/\\]!!;
+
 # sunnavy found that the 1st file is not the directory name when extracting
 # HTML-Strip-1.06.tar.gz, which is weird but valid compressed file.
     $base_dir =~ s![/\\].*!!; 
 
-    if ( @$files != grep { /^\Q$base_dir\E/ } @$files ) {
+    if ( @$files != grep { /^(?:\.[\/\\])?\Q$base_dir\E/ } @$files ) {
         confess_or_die 'only support compressed file which contains only one directory: '
           . $base_dir;
     }
