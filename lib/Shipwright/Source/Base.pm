@@ -454,7 +454,11 @@ EOF
                     next;
                 }
 
-                my $version = $require->{$type}{$module}{version} || 0;
+                my $version =
+                  ref $require->{$type}{$module}
+                  ? $require->{$type}{$module}{version}
+                  : $require->{$type}{$module};
+                $version ||= 0;
                 $version =~ s!^\D+!!; # some may contain '>' or '>=' 
                 if ( !$self->include_dual_lifed 
                     && Module::CoreList->first_release( $module, $version )
