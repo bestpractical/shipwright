@@ -7,7 +7,9 @@ use base qw/App::CLI::Command Shipwright::Base Shipwright::Script/;
 __PACKAGE__->mk_accessors(
     qw/comment no_follow build_script require_yml include_dual_lifed
       name test_script extra_tests overwrite min_perl_version skip version as
-      skip_recommends skip_all_test_requires skip_all_recommends skip_installed/
+      skip_recommends skip_all_test_requires skip_all_recommends skip_installed
+      no_default_build
+      /
 );
 
 use Shipwright;
@@ -36,7 +38,8 @@ sub options {
         'skip-all-recommends'    => 'skip_all_recommends',
         'skip-all-test-requires' => 'skip_all_test_requires',
         'skip-installed'         => 'skip_installed',
-        'include-dual-lifed'     => 'include_dual_lifed'
+        'include-dual-lifed'     => 'include_dual_lifed',
+        'no-default-build'       => 'no_default_build',
     );
 }
 
@@ -192,10 +195,9 @@ sub run {
                         copy( $script, catfile( $script_dir, 'build' ) );
                     }
                 }
-                else {
+                elsif ( ! $self->no_default_build ) {
                     $self->_generate_build( $source, $script_dir, $shipwright );
                 }
-
             }
 
             if ( $self->no_follow ) {
@@ -486,6 +488,7 @@ Shipwright::Script::Import - Import sources and their dependencies
  --skip-installed               : skip all the installed modules to import
  --include-dual-lifed           : include modules which live both in the perl core 
                                   and on CPAN
+ --no-default-build             : don't try to detect and set build system
  
 =head1 DESCRIPTION
 
