@@ -32,7 +32,7 @@ for ( keys %source ) {
     }
 }
 
-my @invalid_sources = ( 'file:/tmp/ok', 'foo', '' );
+my @invalid_sources = ( 'file:/tmp/ok', 'foo:bla', '' );
 
 for (@invalid_sources) {
     eval { my $source = Shipwright::Source->new( source => $_ ) };

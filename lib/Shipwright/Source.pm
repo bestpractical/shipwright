@@ -75,6 +75,7 @@ sub new {
 
 sub type {
     my $source = shift;
+    return unless $$source;
 
     _translate_source($source);
 
@@ -86,15 +87,6 @@ sub type {
 
     return 'Directory'  if $$source =~ s/^dir(?:ectory)?://i;
     return 'Shipyard' if $$source =~ s/^(?:shipyard|shipwright)://i;
-
-    if ( $$source =~ s/^cpan://i ) {
-
-        # if it's not a distribution name like
-        # 'S/SU/SUNNAVY/IP-QQWry-v0.0.15.tar.gz', convert '-' to '::'.
-        $$source =~ s/-/::/g
-          unless $$source =~ /\.(?:tar\.(?:gz|bz2)|tgz|tbz)$/;
-        return 'CPAN';
-    }
 
     # prefix that can be omitted
     for my $type (qw/svn http ftp git/) {
@@ -108,6 +100,19 @@ sub type {
         $$source =~ s/^svk://i;
         return 'SVK';
     }
+
+    # default is cpan module or distribution
+    $$source =~ s!^cpan:!!i;
+
+    return if $$source =~ /:/ && $$source !~ /::/;
+
+
+    # if it's not a distribution name like
+    # 'S/SU/SUNNAVY/IP-QQWry-v0.0.15.tar.gz', convert '-' to '::'.
+    $$source =~ s/-/::/g
+      unless $$source =~ /\.(?:tar\.(?:gz|bz2)|tgz|tbz)$/;
+
+    return 'CPAN';
 
 }
 
