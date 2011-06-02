@@ -179,9 +179,6 @@ unless ( $args{'no-install-base'} ) {
     $args{'install-base'} =~ s{[/\\]$}{};
 }
 
-
-
-
 my ( $installed, $installed_file );
 my $installed_hash = {};
 unless ( $args{'no-install-base'} ) {
@@ -197,7 +194,6 @@ unless ( $args{'no-install-base'} ) {
     }
     $args{'install-base'} = rel2abs( $args{'install-base'} );
 }
-
 
 # YAML::Tiny objects are array based.
 my $order = ( YAML::Tiny->read( catfile( 'shipwright', 'order.yml' ) ) )->[0];
@@ -307,7 +303,6 @@ sub install {
         $CPAN::Config->{prerequisites_policy} = 'ignore';
     };
 
-
 # this dirty hack means that ExtUtils::AutoInstall won't try to recurse and run cpan
     $ENV{'PERL5_CPANPLUS_IS_RUNNING'} = 1;
     $ENV{'AUTOMATED_TESTING'}         = 1;    # Term::ReadLine::Perl and others
@@ -341,7 +336,7 @@ sub install {
     }
     else {
         open my $fh, '>', '__install_base'
-            or confess "can't write to __install_base: $!";
+          or confess "can't write to __install_base: $!";
         print $fh $args{'install-base'};
         close $fh;
 
@@ -486,7 +481,7 @@ sub _install {
                 $branch = 'vendor';
             }
             my $dist_dir = catdir( 'dists', $dir );
-            rmtree( $dist_dir ) if -e $dist_dir;
+            rmtree($dist_dir) if -e $dist_dir;
             rcopy( catdir( 'sources', $dir, split /\//, $branch ), $dist_dir )
               or confess "copy sources/$dir/$branch to dists/$dir failed: $!";
         }
@@ -522,13 +517,21 @@ sub _install {
                 : ( ' with value ' . ( $? >> 8 ) )
               ) . "\n";
             my $error =
-              "build $dir failed, the last output of build.log is:\n"
-              . "\t" . _get_log();
+              "build $dir failed, the last output of build.log is:\n" . "\t"
+              . _get_log();
             confess $error;
         }
     }
     else {
-        my $cmds = cmds( catfile( '..', '..', 'scripts', $dir, 'build' ) );
+        my $cmds;
+        if ( -e catfile( '..', '..', 'scripts', $dir, 'build' ) ) {
+            print $log "found build for $dir, will install $dir using that\n";
+            $cmds = cmds( catfile( '..', '..', 'scripts', $dir, 'build' ) );
+        }
+        else {
+            print $log "no build for $dir, will detect\n";
+            $cmds = detect_cmds( '.' );
+        }
 
         for (@$cmds) {
             my ( $type, $cmd ) = @$_;
@@ -569,7 +572,8 @@ sub _install {
                     # clean is trivial, we'll just ignore if 'clean' fails
                     my $error =
 "build $dir $type part failed, last output of build.log is:\n"
-                      . "\t" . _get_log();
+                      . "\t"
+                      . _get_log();
                     confess $error;
                 }
             }
@@ -613,8 +617,9 @@ sub wrap_bin {
         if ( -T $file ) {
             open my $fh, '<', $file or confess "can't open $file: $!";
             my $shebang = <$fh>;
-            if ( defined($shebang) &&
-                $shebang =~ m{
+            if (
+                defined($shebang)
+                && $shebang =~ m{
 \Q$args{'install-base'}\E(?:/|\\)(?:s?bin)(?:/|\\)(\w+)
 |\benv\s+(\w+)
 }x
@@ -727,13 +732,17 @@ sub cmds {
 
     my @cmds;
 
-    {
+    if ( ref $file eq 'ARRAY' ) {
+        @cmds = @$file;
+    }
+    elsif ( -e $file ) {
         open my $fh, '<', $file or confess "$!: $file";
         @cmds = <$fh>;
         close $fh;
         chomp @cmds;
-        @cmds = map { substitute($_) } @cmds;
     }
+
+    @cmds = map { substitute($_) } @cmds;
 
     my $return = [];
     for (@cmds) {
@@ -757,7 +766,7 @@ sub cmds {
 sub clean {
     open my $log, '>', 'clean.log' or confess $!;
 
-    rmtree( 'tmp_dists');
+    rmtree('tmp_dists');
     print $log "removed tmp_dists\n";
 
     if ($branches) {
@@ -792,7 +801,15 @@ sub _clean {
           '--clean';
     }
     else {
-        my $cmds = cmds( catfile( '..', '..', 'scripts', $dir, 'build' ) );
+        my $cmds;
+        if ( -e catfile( '..', '..', 'scripts', $dir, 'build' ) ) {
+            print $log "found build for $dir, will install $dir using that\n";
+            $cmds = cmds( catfile( '..', '..', 'scripts', $dir, 'build' ) );
+        }
+        else {
+            print $log "no build for $dir, will detect\n";
+            $cmds = detect_cmds( '.' );
+        }
 
         for (@$cmds) {
             my ( $type, $c ) = @$_;
@@ -939,11 +956,53 @@ sub _get_log {
     require Tie::File;
     if ( tie my @array, 'Tie::File', $build_log_file, autochomp => 0 ) {
         $number = @array if $number > @array;
-        return join "\t", grep { defined } @array[ -1*$number .. -1 ];
+        return join "\t", grep { defined } @array[ -1 * $number .. -1 ];
     }
     else {
         warn "failed to open $build_log_file";
         return;
+    }
+}
+
+sub detect_cmds {
+    my $dir = shift;
+    if ( -f catfile( $dir, 'Build.PL' )) {
+        print $log "detected Module::Build build system\n";
+        return cmds(
+            [
+'configure: %%PERL%% %%MODULE_BUILD_BEFORE_BUILD_PL%% Build.PL --install_base=%%INSTALL_BASE%% --install_path lib=%%INSTALL_BASE%%/lib/perl5 --install_path arch=%%INSTALL_BASE%%/lib/perl5',
+                'make: %%PERL%% %%MODULE_BUILD_BEFORE_BUILD%% Build',
+                'test: %%PERL%% %%MODULE_BUILD_BEFORE_BUILD%% Build test',
+                'install: %%PERL%% %%MODULE_BUILD_BEFORE_BUILD%% Build install',
+                'clean: %%PERL%% %%MODULE_BUILD_BEFORE_BUILD%% Build realclean',
+            ]
+        );
+    }
+    if ( -f catfile( $dir, 'Makefile.PL' )) {
+        print $log "detected ExtUtils::MakeMaker build system\n";
+        return cmds(
+            [
+'configure: %%PERL%% Makefile.PL LIB=%%INSTALL_BASE%%/lib/perl5/ PREFIX=%%INSTALL_BASE%% INSTALLSITEARCH=%%INSTALL_BASE%%/lib/perl5 INSTALLARCHLIB=%%INSTALL_BASE%%/lib/perl5 %%MAKEMAKER_CONFIGURE_EXTRA%%',
+                'make: %%MAKE%%',
+                'test: %%MAKE%% test',
+                'install: %%MAKE%% install',
+                'clean: %%MAKE%% clean',
+            ]
+        );
+    }
+    if ( -f catfile( $dir, 'configure' )) {
+        print $log "detected autoconf build system\n";
+        return cmds(
+            [
+                'configure: ./configure --prefix=%%INSTALL_BASE%%',
+                'make: %%MAKE%%',
+                'install: %%MAKE%% install',
+                'clean: %%MAKE%% clean',
+            ]
+        );
+    }
+    else {
+        die "unknown build system for $dir";
     }
 }
 
