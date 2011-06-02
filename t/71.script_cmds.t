@@ -9,10 +9,10 @@ if ( ! $ENV{SHIPWRIGHT_TEST_EXTRA} ) {
 }
 
 if ( $^O =~ /MSWin/ ) {
-    plan tests => 136;
+    plan tests => 132;
 }
 else {
-    plan tests => 140;
+    plan tests => 136;
 }
 
 use Shipwright;
@@ -36,14 +36,14 @@ my $build_base   = catdir( tmpdir(), 'shipwright_build_71_scripts_cmds' );
 
 SKIP: {
     skip "git: no git found or env SHIPWRIGHT_TEST_GIT not set", ( $^O =~
-        /MSWin/ ? 33 : 34 )
+        /MSWin/ ? 32 : 33 )
       if skip_git();
     start_test( 'git:' . create_git_repo() );
 }
 
 SKIP: {
     skip "svn: no svn found or env SHIPWRIGHT_TEST_SVN not set", ( $^O =~
-        /MSWin/ ? 35 : 36 )
+        /MSWin/ ? 34 : 35 )
       if skip_svn();
 
     my $repo = 'svn:' . create_svn_repo() . '/hello';
@@ -68,7 +68,7 @@ SKIP: {
 
 SKIP: {
     skip "svk: no svk found or env SHIPWRIGHT_TEST_SVK not set", ( $^O =~
-        /MSWin/ ? 35 : 36 )
+        /MSWin/ ? 34 : 35 )
       if skip_svk();
 
     create_svk_repo();
@@ -122,14 +122,7 @@ sub start_test {
             'import without source ...'
         ],
         [
-            [ 'import', 'foo' ],
-            undef,
-            undef,
-            qr/invalid source: foo/,
-            'import with invalid source'
-        ],
-        [
-            [ 'import', 'foo' ],
+            [ 'import', 'foo:bar' ],
             undef,
             undef,
             qr/invalid source: foo/,
