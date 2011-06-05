@@ -79,13 +79,14 @@ sub type {
 
     _translate_source($source);
 
-    # prefix that can't be omitted
-    if ( $$source =~ /^file:.*\.(?:tar\.(?:gz|bz2)|tgz|tbz|zip)$/ ) {
-        $$source =~ s/^file://i;
-        return 'Compressed';
+    if ( $$source =~ /\.(?:tar\.(?:gz|bz2)|tgz|tbz|zip)$/ ) {
+        if ( $$source =~ s/^file://i || -f $$source ) {
+            return 'Compressed';
+        }
     }
 
-    return 'Directory'  if $$source =~ s/^dir(?:ectory)?://i;
+    return 'Directory' if $$source =~ s/^dir(?:ectory)?://i;
+
     return 'Shipyard' if $$source =~ s/^(?:shipyard|shipwright)://i;
 
     # prefix that can be omitted
@@ -100,6 +101,8 @@ sub type {
         $$source =~ s/^svk://i;
         return 'SVK';
     }
+
+    return 'Directory' if -d $$source;
 
     # default is cpan module or distribution
     $$source =~ s!^cpan:!!i;
