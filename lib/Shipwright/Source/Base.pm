@@ -664,6 +664,15 @@ sub _is_skipped {
               if $self->skip->{$name} || $self->skip->{$name_without_prefix};
         }
 
+        my @spaces = grep { /::$/ } keys %{$self->skip};
+        for my $space ( @spaces ) {
+            # we want to skip both Foo and Foo::*
+            if ( "${module}::" =~ /^$space/ ) {
+                $skip = 1;
+                last;
+            }
+        }
+
         if ($skip) {
             $self->log->info("$module is skipped");
             return 1;
