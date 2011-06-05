@@ -8,7 +8,7 @@ __PACKAGE__->mk_accessors(
     qw/comment no_follow build_script require_yml include_dual_lifed
       name test_script extra_tests overwrite min_perl_version skip version as
       skip_recommends skip_all_test_requires skip_all_recommends skip_installed
-      no_default_build
+      no_default_build skip_all_build_requires
       /
 );
 
@@ -22,24 +22,25 @@ use List::MoreUtils qw/firstidx/;
 
 sub options {
     (
-        'm|comment=s'            => 'comment',
-        'name=s'                 => 'name',
-        'no-follow'              => 'no_follow',
-        'build-script=s'         => 'build_script',
-        'require-yml=s'          => 'require_yml',
-        'test-script'            => 'test_script',
-        'extra-tests'            => 'extra_tests',
-        'overwrite'              => 'overwrite',
-        'min-perl-version=s'     => 'min_perl_version',
-        'skip=s'                 => 'skip',
-        'version=s'              => 'version',
-        'as=s'                   => 'as',
-        'skip-recommends=s'      => 'skip_recommends',
-        'skip-all-recommends'    => 'skip_all_recommends',
-        'skip-all-test-requires' => 'skip_all_test_requires',
-        'skip-installed'         => 'skip_installed',
-        'include-dual-lifed'     => 'include_dual_lifed',
-        'no-default-build'       => 'no_default_build',
+        'm|comment=s'             => 'comment',
+        'name=s'                  => 'name',
+        'no-follow'               => 'no_follow',
+        'build-script=s'          => 'build_script',
+        'require-yml=s'           => 'require_yml',
+        'test-script'             => 'test_script',
+        'extra-tests'             => 'extra_tests',
+        'overwrite'               => 'overwrite',
+        'min-perl-version=s'      => 'min_perl_version',
+        'skip=s'                  => 'skip',
+        'version=s'               => 'version',
+        'as=s'                    => 'as',
+        'skip-recommends=s'       => 'skip_recommends',
+        'skip-all-recommends'     => 'skip_all_recommends',
+        'skip-all-test-requires'  => 'skip_all_test_requires',
+        'skip-all-build-requires' => 'skip_all_build_requires',
+        'skip-installed'          => 'skip_installed',
+        'include-dual-lifed'      => 'include_dual_lifed',
+        'no-default-build'        => 'no_default_build',
     );
 }
 
@@ -126,19 +127,20 @@ sub run {
 
         for my $source (@sources) {
             my $shipwright = Shipwright->new(
-                repository             => $self->repository,
-                source                 => $source,
-                name                   => $self->name,
-                follow                 => !$self->no_follow,
-                min_perl_version       => $self->min_perl_version,
-                include_dual_lifed     => $self->include_dual_lifed,
-                skip                   => $self->skip,
-                version                => $self->version,
-                installed              => $installed,
-                skip_recommends        => $self->skip_recommends,
-                skip_all_recommends    => $self->skip_all_recommends,
-                skip_all_test_requires => $self->skip_all_test_requires,
-                skip_installed         => $self->skip_installed,
+                repository              => $self->repository,
+                source                  => $source,
+                name                    => $self->name,
+                follow                  => !$self->no_follow,
+                min_perl_version        => $self->min_perl_version,
+                include_dual_lifed      => $self->include_dual_lifed,
+                skip                    => $self->skip,
+                version                 => $self->version,
+                installed               => $installed,
+                skip_recommends         => $self->skip_recommends,
+                skip_all_recommends     => $self->skip_all_recommends,
+                skip_all_test_requires  => $self->skip_all_test_requires,
+                skip_all_build_requires => $self->skip_all_build_requires,
+                skip_installed          => $self->skip_installed,
             );
 
             confess_or_die "cpan dists can't be branched"
@@ -221,7 +223,7 @@ sub run {
               load_yaml_file( $shipwright->source->branches_path );
             $branches ||= {} if
 
-            $self->log->fatal( "importing $name" );
+            $self->log->fatal( "import $name" );
             $shipwright->backend->import(
                 source  => $source,
                 comment => $self->comment || 'import ' . $source,
@@ -285,6 +287,9 @@ sub _import_req {
     my $shipwright = shift;
     my $script_dir = shift;
 
+    my $name = (splitdir( $source ))[-1];
+    $self->log->fatal( "import requirements for $name" );
+
     my $require_file = catfile( $source, '__require.yml' );
     $require_file = catfile( $script_dir, 'require.yml' )
       unless -e catfile( $source, '__require.yml' );
@@ -321,7 +326,7 @@ sub _import_req {
                         next;
                     }
 
-                    $self->log->fatal( "importing $name" );
+                    $self->log->fatal( "import $name" );
                     my $s = catdir( $dir, $name );
 
                     my $script_dir;
@@ -485,6 +490,7 @@ Shipwright::Script::Import - Import sources and their dependencies
                                   not to import
  --skip-all-recommends          : skip all the recommends to import
  --skip-all-test-requires       : skip all the test requires to import
+ --skip-all-build-requires      : skip all the build requires to import
  --skip-installed               : skip all the installed modules to import
  --include-dual-lifed           : include modules which live both in the perl core 
                                   and on CPAN

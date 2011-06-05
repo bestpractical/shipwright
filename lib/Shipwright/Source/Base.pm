@@ -17,7 +17,7 @@ __PACKAGE__->mk_accessors(
       min_perl_version map_path skip map skip_recommends skip_all_recommends
       skip_installed include_dual_lifed
       keep_build_requires name log url_path version_path branches_path version
-      skip_all_test_requires installed
+      skip_all_test_requires skip_all_build_requires installed
       /
 );
 
@@ -96,6 +96,7 @@ sub _follow {
       || $self->skip_all_recommends;
     push @types, 'recommends' unless $skip_recommends;
     push @types, 'test_requires' unless $self->skip_all_test_requires;
+    push @types, 'build_requires' unless $self->skip_all_build_requires;
 
     if ( !-e $require_path ) {
 
@@ -577,6 +578,7 @@ EOF
         # them when update later
         $require->{recommends} = {} if $skip_recommends;
         $require->{test_requires} = {} if $self->skip_all_test_requires;
+        $require->{build_requires} = {} if $self->skip_all_build_requires;
 
         dump_yaml_file( $require_path, $require );
     }
