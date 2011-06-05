@@ -288,7 +288,7 @@ sub _import_req {
     my $script_dir = shift;
 
     my $name = (splitdir( $source ))[-1];
-    $self->log->fatal( "import requirements for $name" );
+    $self->log->info( "import requirements for $name" );
 
     my $require_file = catfile( $source, '__require.yml' );
     $require_file = catfile( $script_dir, 'require.yml' )
