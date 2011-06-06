@@ -126,6 +126,22 @@ sub run {
         }
 
         for my $source (@sources) {
+            if ( $source =~ /perl-\d+/ ) {
+                $source = "http://www.cpan.org/src/$source";
+            }
+            elsif ( $source eq 'perl' ) {
+                if ( $self->version ) {
+                    $source =
+                        "http://www.cpan.org/src/perl-"
+                      . $self->version
+                      . '.tar.gz';
+                }
+                else {
+                    confess_or_die
+                      "unknown perl version, please specify --version";
+                }
+            }
+
             my $shipwright = Shipwright->new(
                 repository              => $self->repository,
                 source                  => $source,
