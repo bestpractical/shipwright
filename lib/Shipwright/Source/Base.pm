@@ -17,7 +17,7 @@ __PACKAGE__->mk_accessors(
       min_perl_version map_path skip map skip_recommends skip_all_recommends
       skip_installed include_dual_lifed
       keep_build_requires name log url_path version_path branches_path version
-      skip_all_test_requires skip_all_build_requires installed store
+      skip_all_test_requires skip_all_build_requires installed 
       /
 );
 
