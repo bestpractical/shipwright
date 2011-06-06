@@ -84,7 +84,7 @@ sub new {
 
 sub run {
     my $self = shift;
-    $self->log->info( "prepare to run source: " . $self->source );
+    $self->log->info( "preparing to run source: " . $self->source );
 
     my $result = $self->_run;
     if ( $result && $result == 1) {
@@ -103,7 +103,7 @@ sub run {
                          #deletion
         confess_or_die $error;
     } else {
-            $self->log->warn("Removing source ".$self->source);
+            $self->log->warn("removing source ".$self->source);
             return;
     }
 }

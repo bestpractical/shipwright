@@ -15,7 +15,7 @@ use Shipwright::Util;
 
 sub run {
     my $self = shift;
-    $self->log->info( "prepare to run source: " . $self->source );
+    $self->log->info( "preparing to run source: " . $self->source );
     if ( $self->_run ) {
         my $compressed =
           Shipwright::Source::Compressed->new( %$self, _no_update_url => 1 );

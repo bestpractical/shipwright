@@ -14,7 +14,7 @@ use base qw/Shipwright::Source::Base/;
 sub run {
     my $self = shift;
 
-    $self->log->info( "prepare to run source: " . $self->source );
+    $self->log->info( "preparing to run source: " . $self->source );
     my ( $base, $dist ) = $self->source =~ m{(.*)/([^/]+)};
 
     my $source_shipwright = Shipwright->new( repository => $base );

@@ -17,7 +17,7 @@ __PACKAGE__->mk_accessors(
       min_perl_version map_path skip map skip_recommends skip_all_recommends
       skip_installed include_dual_lifed
       keep_build_requires name log url_path version_path branches_path version
-      skip_all_test_requires skip_all_build_requires installed
+      skip_all_test_requires skip_all_build_requires installed store
       /
 );
 
@@ -105,7 +105,7 @@ sub _follow {
         chdir catdir($path);
 
         if ( $path =~ /\bcpan-Bundle-(.*)/ ) {
-            $self->log->info("is a CPAN Bundle");
+            $self->log->info("$path is a CPAN Bundle distribution");
 
             my $file = $1;
             $file =~ s!-!/!;
@@ -150,7 +150,7 @@ sub _follow {
 
         }
         elsif ( -e 'Build.PL' ) {
-            $self->log->info("is a Module::Build based dist");
+            $self->log->info("$path is a Module::Build based distribution");
 
             run_cmd(
                 [
@@ -176,7 +176,8 @@ sub _follow {
             my $makefile = read_file('Makefile.PL')
               or confess_or_die "can't read Makefile.PL: $!";
             if ( $makefile =~ /inc::Module::Install/ ) {
-                $self->log->info("is a Module::Install based dist");
+                $self->log->info(
+                    "$path is a Module::Install based distribution");
 
                 # in case people call another file, which contains
                 # keywords like requires, features, etc 
@@ -465,7 +466,7 @@ EOF
                     && Module::CoreList->first_release( $module, $version )
                     && Module::CoreList->first_release( $module, $version ) <= $self->min_perl_version)
                 {
-                    $self->log->info("Skipping $module because it's in core");
+                    $self->log->info("skipping $module because it's in core");
                     delete $require->{$type}{$module};
                     next;
                 }
@@ -481,8 +482,7 @@ EOF
                             version->parse($version) )
                         {
                             $self->log->info(
-"Skipping $module because a new enough version is already installed"
-                            );
+                                "skipping $module because it's installed" );
                             delete $require->{$type}{$module};
                             next;
                         }
@@ -674,7 +674,7 @@ sub _is_skipped {
         }
 
         if ($skip) {
-            $self->log->info("$module is skipped");
+            $self->log->info("skipping $module");
             return 1;
         }
     }

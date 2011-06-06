@@ -179,7 +179,7 @@ sub check_repository {
         }
         else {
             $self->log->fatal(
-                "git backend only supports creating local repository");
+                "git backend doesn't support remote repository");
             return;
         }
     }

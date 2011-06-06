@@ -19,7 +19,7 @@ sub run {
 
     $self->name( $self->just_name( $self->path ) )       unless $self->name;
     $self->version( $self->just_version( $self->path ) ) unless $self->version;
-    $self->log->info( 'run source ' . $self->name . ': ' . $self->source );
+    $self->log->info( 'running source ' . $self->name . ': ' . $self->source );
 
     $self->_update_version( $self->name, $self->version );
 

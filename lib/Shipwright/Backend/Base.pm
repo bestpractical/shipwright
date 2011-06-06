@@ -218,7 +218,7 @@ sub import {
         if ( $args{_extra_tests} ) {
             $self->delete( path => "/t/extra" ) if $args{delete};
 
-            $self->log->info( "import extra tests to " . $self->repository );
+            $self->log->info( "importing extra tests to " . $self->repository );
             for my $cmd ( $self->_cmd( import => %args, name => $name ) ) {
                 run_cmd($cmd);
             }
@@ -227,15 +227,13 @@ sub import {
             if ( $self->info( path => "/scripts/$name" )
                 && not $args{overwrite} )
             {
-                $self->log->warn(
-"path /scripts/$name alreay exists, need to set overwrite arg to overwrite"
-                );
+                $self->log->warn("/scripts/$name exists already");
             }
             else {
                 $self->delete( path => "/scripts/$name" ) if $args{delete};
 
-                $self->log->info(
-                    "import $args{source}'s scripts to " . $self->repository );
+                $self->log->info( "importing $args{source}'s scripts to "
+                      . $self->repository );
                 for my $cmd ( $self->_cmd( import => %args, name => $name ) ) {
                     run_cmd($cmd);
                 }
@@ -248,15 +246,13 @@ sub import {
                 if ( $self->info( path => "/sources/$name/$args{as}" )
                     && not $args{overwrite} )
                 {
-                    $self->log->warn(
-"path sources/$name/$args{as} alreay exists, need to set overwrite arg to overwrite"
-                    );
+                    $self->log->warn( "sources/$name/$args{as} exists already" );
                 }
                 else {
                     $self->delete( path => "/sources/$name/$args{as}" )
                       if $args{delete};
                     $self->log->info(
-                        "import $args{source} to " . $self->repository );
+                        "importing $args{source} to " . $self->repository );
                     $self->_add_to_order($name);
 
                     my $version = $self->version;
@@ -301,14 +297,12 @@ sub import {
                 if ( $self->info( path => "/dists/$name" )
                     && not $args{overwrite} )
                 {
-                    $self->log->warn(
-"path dists/$name alreay exists, need to set overwrite arg to overwrite"
-                    );
+                    $self->log->warn( "dists/$name exists already" );
                 }
                 else {
                     $self->delete( path => "/dists/$name" ) if $args{delete};
                     $self->log->info(
-                        "import $args{source} to " . $self->repository );
+                        "importing $args{source} to " . $self->repository );
                     $self->_add_to_order($name);
 
                     my $version = $self->version;
@@ -341,7 +335,7 @@ sub export {
     my %args = @_;
     my $path = $args{path} || '';
     $self->log->info(
-        'export ' . $self->repository . "/$path to $args{target}" );
+        'exporting ' . $self->repository . "/$path to $args{target}" );
     for my $cmd ( $self->_cmd( export => %args ) ) {
         run_cmd($cmd);
     }
@@ -356,7 +350,7 @@ sub checkout {
     my %args = @_;
     my $path = $args{path} || '';
     $self->log->info(
-        'export ' . $self->repository . "/$path to $args{target}" );
+        'exporting ' . $self->repository . "/$path to $args{target}" );
     for my $cmd ( $self->_cmd( checkout => %args ) ) {
         run_cmd($cmd);
     }
@@ -371,7 +365,7 @@ A wrapper around svn's commit command.
 sub commit {
     my $self = shift;
     my %args = @_;
-    $self->log->info( 'commit ' . $args{path} );
+    $self->log->info( 'committing ' . $args{path} );
     for my $cmd ( $self->_cmd( commit => @_ ) ) {
         run_cmd( $cmd, 1 );
     }
@@ -384,7 +378,7 @@ sub _add_to_order {
     my $order = $self->order;
 
     unless ( grep { $name eq $_ } @$order ) {
-        $self->log->info( "add $name to order for " . $self->repository );
+        $self->log->info( "adding $name to order for " . $self->repository );
         push @$order, $name;
         $self->order($order);
     }
@@ -400,7 +394,7 @@ sub update_order {
     my $self = shift;
     my %args = @_;
 
-    $self->log->info( "update order for " . $self->repository );
+    $self->log->info( "updating order for " . $self->repository );
 
     my @dists = @{ $args{for_dists} || [] };
     unless (@dists) {
@@ -437,7 +431,7 @@ sub graph_deps {
     my $self = shift;
     my %args = @_;
 
-    $self->log->info( "Outputting a graphviz order for " . $self->repository );
+    $self->log->info( "outputting a graphviz order for " . $self->repository );
 
     my @dists = @{ $args{for_dists} || [] };
     unless (@dists) {
@@ -635,7 +629,7 @@ sub delete {
     my %args = @_;
     my $path = $args{path} || '';
     if ( $self->info( path => $path ) ) {
-        $self->log->info( "delete " . $self->repository . $path );
+        $self->log->info( "deleting " . $self->repository . $path );
         for my $cmd ( $self->_cmd( delete => path => $path ) ) {
             run_cmd( $cmd, 1 );
         }
@@ -680,7 +674,7 @@ sub move {
     my $new_path = $args{new_path} || '';
     if ( $self->info( path => $path ) ) {
         $self->log->info(
-            "move " . $self->repository . "/$path to /$new_path" );
+            "moving " . $self->repository . "/$path to /$new_path" );
         for my $cmd (
             $self->_cmd(
                 move     => path => $path,

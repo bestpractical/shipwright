@@ -26,7 +26,7 @@ sub new {
 
 sub run {
     my $self = shift;
-    $self->log->info( "prepare to run source: " . $self->source );
+    $self->log->info( "preparing to run source: " . $self->source );
     $self->_update_url( $self->name, 'svn:' . $self->source );
 
     $self->_run;

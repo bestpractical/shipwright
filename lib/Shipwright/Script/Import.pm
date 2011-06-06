@@ -113,9 +113,9 @@ sub run {
 
         if ( $self->name ) {
             if ( $self->name =~ /::/ ) {
-                $self->log->warn(
-                    "we saw '::' in the name, will treat it as '-'");
                 my $name = $self->name;
+                $self->log->warn(
+                    "$name contains '::', will treat it as '-'");
                 $name =~ s/::/-/g;
                 $self->name($name);
             }
@@ -223,7 +223,7 @@ sub run {
               load_yaml_file( $shipwright->source->branches_path );
             $branches ||= {} if
 
-            $self->log->fatal( "import $name" );
+            $self->log->fatal( "importing $name" );
             $shipwright->backend->import(
                 source  => $source,
                 comment => $self->comment || 'import ' . $source,
@@ -288,7 +288,7 @@ sub _import_req {
     my $script_dir = shift;
 
     my $name = (splitdir( $source ))[-1];
-    $self->log->info( "import requirements for $name" );
+    $self->log->info( "going to import requirements for $name" );
 
     my $require_file = catfile( $source, '__require.yml' );
     $require_file = catfile( $script_dir, 'require.yml' )
@@ -321,7 +321,7 @@ sub _import_req {
                     my ($name) = grep { $_ eq $dist } @sources;
                     unless ($name) {
                         $self->log->warn(
-                            "we don't have $dist in source which is for "
+                            "missing $dist in source which is for "
                               . $source );
                         next;
                     }
@@ -436,7 +436,7 @@ sub _generate_build {
 unknown build system for this dist; you MUST manually edit /scripts/$name/build 
 or provide a build.pl file or this dist will not be built!
 EOF
-        $self->log->warn("I have no idea how to build this distribution");
+        $self->log->warn("no idea how to build $source_dir");
 
         # stub build file to provide the user something to go from
         @commands = (
