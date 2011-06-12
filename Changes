@@ -1,6 +1,14 @@
 Revision history for Shipwright
 
-2.4.26
+2.4.26 Sun Jun 12 14:14:32 CST 2011
+
+* "import perl --version VERSION" will import perl automatically
+* "--skip Foo::" to skip both Foo and Foo::*
+* default source type is CPAN, so Foo::Bar means cpan:Foo::Bar, unless
+    there is a directory/file with that name
+* add --skip-all-build-requires option
+* add --no-default-build option to not store generated build in shipyard
+* tweak log msg a bit
 
 2.4.25 Thu Apr 28 01:57:42 CST 2011
 
