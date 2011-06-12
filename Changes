@@ -1,5 +1,7 @@
 Revision history for Shipwright
 
+2.4.27
+
 2.4.26 Sun Jun 12 14:14:32 CST 2011
 
 * "import perl --version VERSION" will import perl automatically
