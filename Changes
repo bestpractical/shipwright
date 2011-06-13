@@ -1,6 +1,8 @@
 Revision history for Shipwright
 
-2.4.27
+2.4.27 Mon Jun 13 09:55:12 CST 2011
+
+* allow to import perl with full uri
 
 2.4.26 Sun Jun 12 14:14:32 CST 2011
 
