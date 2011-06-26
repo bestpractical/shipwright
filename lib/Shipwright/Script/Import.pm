@@ -459,6 +459,7 @@ EOF
             '# Edit this file to specify commands for building this dist.',
             '# See the perldoc for Shipwright::Manual::CustomizeBuild for more',
             '# info.',
+            'configure: ',
             'make: ',
             'test: ',
             'install: ',
