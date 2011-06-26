@@ -446,6 +446,15 @@ sub _generate_build {
             'clean: %%MAKE%% clean',
         );
     }
+    elsif ( -f catfile( $source_dir, 'configure.cmake' ) ) {
+        $self->log->info( 'detected cmake build system' );
+        @commands = (
+            'configure: cmake . -DCMAKE_INSTALL_PREFIX=%%INSTALL_BASE%%',
+            'make: %%MAKE%%',
+            'install: %%MAKE%% install',
+            'clean: %%MAKE%% clean',
+        );
+    }
     else {
         my ($name) = $source_dir =~ /([-\w.]+)$/;
         $self->log->warn(<<EOF);

@@ -1001,6 +1001,17 @@ sub detect_cmds {
             ]
         );
     }
+    if ( -f catfile( $dir, 'configure.cmake' )) {
+        print $log "detected cmake build system\n";
+        return cmds(
+            [
+                'configure: cmake . -DCMAKE_INSTALL_PREFIX==%%INSTALL_BASE%%',
+                'make: %%MAKE%%',
+                'install: %%MAKE%% install',
+                'clean: %%MAKE%% clean',
+            ]
+        );
+    }
     else {
         die "unknown build system for $dir";
     }
