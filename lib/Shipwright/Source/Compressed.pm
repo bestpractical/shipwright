@@ -103,7 +103,7 @@ sub _cmd {
 
             my $old = getcwd();
             chdir $from . '-tmp';
-            run_cmd( [ 'dzil', 'build', '--in', $to ] );
+            run_cmd( [ $ENV{SHIPWRIGHT_DZIL}, 'build', '--in', $to ] );
             chdir $old;
         }
 

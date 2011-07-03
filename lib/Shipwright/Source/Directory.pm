@@ -79,7 +79,7 @@ sub _cmd {
         # assume it's a Dist::Zilla dist
         return sub {
             chdir $self->source;
-            run_cmd( [ 'dzil', 'build', '--in', $to ] );
+            run_cmd( [ $ENV{SHIPWRIGHT_DZIL}, 'build', '--in', $to ] );
             chdir $old;
         };
     }
