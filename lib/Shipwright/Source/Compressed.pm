@@ -9,6 +9,7 @@ use Archive::Extract;
 use File::Temp qw/tempdir/;
 use File::Copy::Recursive qw/rmove/;
 use Shipwright::Util;
+use Cwd qw/getcwd/;
 
 =head2 run
 
@@ -87,16 +88,29 @@ sub _cmd {
 
     my $ae = Archive::Extract->new( archive => $self->source );
 
-    my @cmds;
-    push @cmds, sub { $ae->extract( to => $self->directory ) };
+    return sub {
+        $ae->extract( to => $self->directory );
 
-    if ( $from ne $to ) {
-        push @cmds, sub {
+        if (   -e catfile( $from, 'dist.ini' )
+            && !-e catfile( $from, 'configure' )
+            && !-e catfile( $from, 'Makefile.PL' )
+            && !-e catfile( $from, 'Build.PL' ) )
+        {
+            # assume it's a Dist::Zilla dist
+            if ( $from eq $to ) {
+                rmove( $from, $from . '-tmp' );
+            }
+
+            my $old = getcwd();
+            chdir $from . '-tmp';
+            run_cmd( [ 'dzil', 'build', '--in', $to ] );
+            chdir $old;
+        }
+
+        if ( $from ne $to ) {
             rmove( $from, $to );
-        };
-    }
-
-    return @cmds;
+        }
+    };
 }
 
 1;

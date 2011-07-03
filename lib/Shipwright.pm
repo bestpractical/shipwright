@@ -17,6 +17,7 @@ $ENV{SHIPWRIGHT_MAKE} ||= which('make') || which('dmake') || which( 'nmake' ) ||
 $ENV{SHIPWRIGHT_SVK} ||= which 'svk';
 $ENV{SHIPWRIGHT_SVN} ||= which 'svn';
 $ENV{SHIPWRIGHT_GIT} ||= which 'git';
+$ENV{SHIPWRIGHT_DZIL} ||= which 'dzil';
 $ENV{SHIPWRIGHT_LWP_TIMEOUT} ||= 1200;
 
 $ENV{PERL_MM_USE_DEFAULT} = 1; # always true
