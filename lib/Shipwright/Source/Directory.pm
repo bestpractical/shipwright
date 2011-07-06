@@ -2,7 +2,7 @@ package Shipwright::Source::Directory;
 use strict;
 use warnings;
 use Shipwright::Util;
-use File::Spec::Functions qw/catfile catdir/;
+use File::Spec::Functions qw/catfile catdir rel2abs/;
 use File::Basename;
 use File::Copy::Recursive qw/rcopy/;
 use Cwd qw/getcwd/;
@@ -18,7 +18,7 @@ sub new {
     my $self  = $class->SUPER::new(@_);
     my $s     = $self->source;
     $s =~ s{/$}{};    # trim the last / to let cp work as we like
-    $self->source($s);
+    $self->source(rel2abs $s);
     return $self;
 }
 
