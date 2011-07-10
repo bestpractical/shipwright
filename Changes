@@ -1,5 +1,7 @@
 Revision history for Shipwright
 
+2.4.29
+
 2.4.28
 
 * auto build Dist::Zilla distribution when importing.
