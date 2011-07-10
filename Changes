@@ -3,6 +3,7 @@ Revision history for Shipwright
 2.4.28
 
 * auto build Dist::Zilla distribution when importing.
+* support cmake build system
 
 2.4.27 Mon Jun 13 09:55:12 CST 2011
 
