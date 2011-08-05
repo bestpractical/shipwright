@@ -948,6 +948,17 @@ sub _set_perl5lib {
         catdir( $args{'install-base'}, 'lib', 'perl5', _get_perl_arch() ),
         catdir( $args{'install-base'}, 'lib', 'perl5', 'site_perl' ),
         catdir( $args{'install-base'}, 'lib', 'perl5' ),
+        catdir(
+            $args{'install-base'}, 'as',
+            $args{as},             'lib',
+            'perl5',               _get_perl_arch()
+        ),
+        catdir(
+            $args{'install-base'}, 'as',
+            $args{as},             'lib',
+            'perl5',               'site_perl'
+        ),
+        catdir( $args{'install-base'}, 'as', $args{as}, 'lib', 'perl5' ),
     );
 }
 
