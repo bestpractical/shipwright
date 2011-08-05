@@ -208,7 +208,7 @@ sub start_test {
 
             qr{dir_configure:\s+ 
               version:\s+vendor:\s+3\.14\s+
-              from:\s+vendor:\s+\Qdirectory:t/dists/dir_configure\E\s+
+              from:\s+vendor:\s+\Qdirectory:\E.*?\Qt/dists/dir_configure\E\s+
               references:\s+0\s+
             }mx,
             'list dir_configure, --version arg works too',
