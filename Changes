@@ -2,6 +2,9 @@ Revision history for Shipwright
 
 2.4.30
 
+* use env proxy to get http/ftp sources.
+* install the dist again if the version to install is not the same as the installed one
+
 2.4.29
 
 * fix PERL5LIB in case multiple shipyards install to the same place.
