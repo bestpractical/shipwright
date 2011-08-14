@@ -98,7 +98,7 @@ Less commonly needed options:
                 Ex: --make /usr/bin/make
   --branches    Specify the branch of a given package in the vessel you want 
                 to build.
-                Ex: --branches Foo,trunk,Bar,2.0
+                Ex: --branches Foo=trunk,Bar=2.0
   --as          for multi-arch dists, you can use this to specify the arch name.
                 By default it's the uname.
 END
@@ -187,7 +187,15 @@ unless ( $args{'no-install-base'} ) {
     if ( -e $installed_file ) {
         $installed = YAML::Tiny->read(
             catfile( $args{'install-base'}, "$args{as}_installed.yml" ) );
-        $installed_hash = { map { $_ => 1 } @{ $installed->[0] } };
+        if ( ref $installed->[0] eq 'ARRAY' ) {
+            $installed_hash = { map { $_ => 0 } @{ $installed->[0] } };
+        }
+        elsif ( ref $installed->[0] eq 'HASH' ) {
+            $installed_hash = $installed->[0];
+        }
+        else {
+            warn "invalid $args{as}_installed.yml";
+        }
     }
     else {
         $installed = YAML::Tiny->new;
@@ -197,6 +205,7 @@ unless ( $args{'no-install-base'} ) {
 
 # YAML::Tiny objects are array based.
 my $order = ( YAML::Tiny->read( catfile( 'shipwright', 'order.yml' ) ) )->[0];
+my $version = ( YAML::Tiny->read( catfile( 'shipwright', 'version.yml' ) ) )->[0];
 
 my ( $flags, $ktf, $branches );
 
@@ -247,7 +256,26 @@ else {
 }
 
 # remove the already installed ones
-@$order = grep { !$installed_hash->{$_} } @$order;
+my @tmporder = @$order;
+$order = [];
+for my $item ( @tmporder ) {
+    if ( exists $installed_hash->{$item} ) {
+        my $installed_version = $installed_hash->{$item} || 0;
+        my $branch =
+          defined $args{branches}{$item}
+          ? $args{branches}{$item}
+          : $branches->{$item}[0];
+        my $current_version   = $version->{$item}{$branch};
+        if ( defined $current_version
+            && $installed_version ne $current_version )
+        {
+            push @$order, $item;
+        }
+    }
+    else {
+        push @$order, $item;
+    }
+}
 
 my $log;
 my $build_log_file  = rel2abs('build.log');
@@ -895,7 +923,12 @@ sub cmd {
 
 sub _record {
     my $dist = shift;
-    push @{ $installed->[0] }, $dist;
+    my $branch =
+      defined $args{branches}{$dist}
+      ? $args{branches}{$dist}
+      : $branches->{$dist}[0];
+    my $current_version = $version->{$dist}{$branch};
+    $installed->[0]{$dist} = $current_version;
     $installed->write($installed_file);
 }
 
