@@ -14,10 +14,10 @@ use Shipwright::Util;
 # strawberry perl's build make is 'dmake'
 use File::Which 'which';
 $ENV{SHIPWRIGHT_MAKE} ||= which('make') || which('dmake') || which( 'nmake' ) || 'make';
-$ENV{SHIPWRIGHT_SVK} ||= which 'svk';
-$ENV{SHIPWRIGHT_SVN} ||= which 'svn';
-$ENV{SHIPWRIGHT_GIT} ||= which 'git';
-$ENV{SHIPWRIGHT_DZIL} ||= which 'dzil';
+$ENV{SHIPWRIGHT_SVK}  ||= which('svk')  || 'svk';
+$ENV{SHIPWRIGHT_SVN}  ||= which('svn')  || 'svn';
+$ENV{SHIPWRIGHT_GIT}  ||= which('git')  || 'git';
+$ENV{SHIPWRIGHT_DZIL} ||= which('dzil') || 'dzil';
 $ENV{SHIPWRIGHT_LWP_TIMEOUT} ||= 1200;
 
 $ENV{PERL_MM_USE_DEFAULT} = 1; # always true
