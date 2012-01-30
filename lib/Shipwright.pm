@@ -2,7 +2,7 @@ package Shipwright;
 
 use warnings;
 use strict;
-use version; our $VERSION = qv('2.4.31');
+use version; our $VERSION = qv('2.4.32');
 
 use base qw/Shipwright::Base/;
 

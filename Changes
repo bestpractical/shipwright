@@ -1,6 +1,8 @@
 Revision history for Shipwright
 
-2.4.31
+2.4.32
+
+2.4.31 Tue Jan 31 07:00:59 CST 2012
 
 * fix a bug(version not recorded correctly) in bin/shipwright-builder
 
