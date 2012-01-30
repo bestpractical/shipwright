@@ -927,6 +927,7 @@ sub _record {
       defined $args{branches}{$dist}
       ? $args{branches}{$dist}
       : $branches->{$dist}[0];
+    $branch ||= 'vendor';
     my $current_version = $version->{$dist}{$branch};
     $installed->[0]{$dist} = $current_version;
     $installed->write($installed_file);
