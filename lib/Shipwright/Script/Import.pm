@@ -414,8 +414,20 @@ sub _generate_build {
     my $script_dir = shift;
     my $shipwright = shift;
 
+    my ($name) = $source_dir =~ /([-\w.]+)$/;
+
     my @commands;
-    if ( -f catfile( $source_dir, 'Build.PL' ) ) {
+    if ( $name eq 'perl' ) {
+        $self->log->info( 'detected perl source' );
+        @commands = (
+            'configure: sh Configure -de -Dprefix=%%INSTALL_BASE%%',
+            'make: %%MAKE%%',
+            'test: %%MAKE%% test',
+            'install: %%MAKE%% install',
+            'clean: %%MAKE%% clean'
+        );
+    }
+    elsif ( -f catfile( $source_dir, 'Build.PL' ) ) {
         $self->log->info( 'detected Module::Build build system' );
         @commands = (
             'configure: %%PERL%% %%MODULE_BUILD_BEFORE_BUILD_PL%% Build.PL --install_base=%%INSTALL_BASE%% --install_path lib=%%INSTALL_BASE%%/lib/perl5 --install_path arch=%%INSTALL_BASE%%/lib/perl5',
@@ -456,7 +468,6 @@ sub _generate_build {
         );
     }
     else {
-        my ($name) = $source_dir =~ /([-\w.]+)$/;
         $self->log->warn(<<EOF);
 unknown build system for this dist; you MUST manually edit /scripts/$name/build 
 or provide a build.pl file or this dist will not be built!
