@@ -85,19 +85,19 @@ sub type {
         }
     }
 
-    return 'Directory' if $$source =~ s/^dir(?:ectory)?://i;
+    return 'Directory' if $$source =~ s/^dir(?:ectory)?:(?!:\w+)//i;
 
     return 'Shipyard' if $$source =~ s/^(?:shipyard|shipwright)://i;
 
     # prefix that can be omitted
     for my $type (qw/svn http ftp git/) {
-        if ( $$source =~ /^$type:/i ) {
+        if ( $$source =~ /^$type:(?!:\w+)/i ) {
             $$source =~ s{^$type:(?!//)}{}i;
             return $type eq 'git' ? 'Git' : uc $type;
         }
     }
 
-    if ( $$source =~ m{^(//|svk:)}i ) {
+    if ( $$source =~ m{^(//|svk:(?!:\w+))}i ) {
         $$source =~ s/^svk://i;
         return 'SVK';
     }
@@ -105,7 +105,7 @@ sub type {
     return 'Directory' if -d $$source;
 
     # default is cpan module or distribution
-    $$source =~ s!^cpan:!!i;
+    $$source =~ s/^cpan:(?!:\w+)//i;
 
     return if $$source =~ /:/ && $$source !~ /::/;
 
