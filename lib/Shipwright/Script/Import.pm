@@ -420,7 +420,7 @@ sub _generate_build {
     if ( $name eq 'perl' ) {
         $self->log->info( 'detected perl source' );
         @commands = (
-            'configure: sh Configure -de -Dprefix=%%INSTALL_BASE%%',
+            'configure: sh Configure -de -Dprefix=%%INSTALL_BASE%% -Dinstallstyle=lib/perl5',
             'make: %%MAKE%%',
             'test: %%MAKE%% test',
             'install: %%MAKE%% install',
