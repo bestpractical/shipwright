@@ -126,8 +126,8 @@ sub run {
         }
 
         for my $source (@sources) {
-            if ( $source =~ /^perl-[\d.]+(?:\.tar\.gz)?$/ ) {
-                $source = "http://www.cpan.org/src/$source";
+            if ( $source =~ /^(perl-[\d.]+)(?:\.tar\.gz)?$/ ) {
+                $source = "http://www.cpan.org/src/$1.tar.gz";
             }
             elsif ( $source eq 'perl' ) {
                 if ( $self->version ) {
