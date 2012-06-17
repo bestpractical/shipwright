@@ -2,6 +2,10 @@ Revision history for Shipwright
 
 2.4.32
 
+* automatically set perl build script(thanks to David Good)
+* take care of sources like CPAN::Meta and Directory::Queue
+* allow to specify perl dist like perl-5.16.0
+
 2.4.31 Tue Jan 31 07:00:59 CST 2012
 
 * fix a bug(version not recorded correctly) in bin/shipwright-builder
