@@ -1,6 +1,10 @@
 Revision history for Shipwright
 
-2.4.32
+2.4.33 Sun Sep  9 14:48:28 CST 2012
+
+* tweak CleanINC to move "." to the end of @INC
+
+2.4.32 Sun Jun 17 13:25:17 CST 2012
 
 * automatically set perl build script(thanks to David Good)
 * take care of sources like CPAN::Meta and Directory::Queue
