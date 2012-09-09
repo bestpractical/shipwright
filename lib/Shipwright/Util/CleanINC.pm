@@ -9,7 +9,6 @@ sub import {
     # and what we should drop because it's baked into perl as a local lib
     
     my %skip_lib_path = map { $_ => 1 } _default_inc();
-    delete $skip_lib_path{'.'}; # . is important
     my @explicit_libs = grep {!/inc$/}  split( /[:;]/,($ENV{'PERL5LIB'} ||''));
     my @inc_libs = grep {/inc$/}  split( /[:;]/,($ENV{'PERL5LIB'} ||''));
     # if the libs are explicitly specified, don't pull them from @INC
@@ -17,7 +16,7 @@ sub import {
     @INC = map { /(.+)/; $1 } grep { defined } (
         @new_base_inc,               $Config::Config{updatesarch},
         $Config::Config{updateslib}, $Config::Config{archlibexp},
-        $Config::Config{privlibexp},
+        $Config::Config{privlibexp}, '.'
     );
 }
 
