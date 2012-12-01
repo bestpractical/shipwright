@@ -152,7 +152,7 @@ no extra dependences will be set.
 
 So we need to do it manually, e.g. use the following command to do so:
 
-    $ shipwright update apache --add-deps libxml
+    $ shipwright update cpan-XML-LibXML --add-deps libxml
 
 =head3 build
 
