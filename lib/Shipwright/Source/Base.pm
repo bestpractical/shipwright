@@ -87,7 +87,7 @@ sub _follow {
         $url = load_yaml_file( $self->url_path );
     }
 
-    my @types = qw/requires build_requires/;
+    my @types = qw/requires configure_requires/;
 
     my $reverse_map = { reverse %$map };
     my $skip_recommends = $self->skip_recommends->{ $self->name }
@@ -104,6 +104,7 @@ sub _follow {
         my $require = {};
         chdir catdir($path);
 
+        my $run_failed;
         if ( $path =~ /\bcpan-Bundle-(.*)/ ) {
             $self->log->info("$path is a CPAN Bundle distribution");
 
@@ -161,13 +162,16 @@ sub _follow {
                 1, # don't die if this fails
             );
             run_cmd( [ $^X, 'Build.PL' ] ) if $? || !-e 'Build';
-            my $source = read_file( catfile( '_build', 'prereqs' ) )
-              or confess_or_die "can't read _build/prereqs: $!";
-            my $eval = '$require = ' . $source;
-            eval "$eval;1" or confess_or_die "eval error: $@";    ## no critic
-
-            $source = read_file( catfile('Build.PL') )
-              or confess_or_die "can't read Build.PL: $!";
+            if ( -e catfile( '_build', 'prereqs' ) ) {
+                my $source = read_file( catfile( '_build', 'prereqs' ) )
+                    or confess_or_die "can't read _build/prereqs: $!";
+                my $eval = '$require = ' . $source;
+                eval "$eval;1" or confess_or_die "eval error: $@";    ## no critic
+            }
+            else {
+                # could be something else, e.g. Module::Build::Tiny
+                $run_failed = 1;
+            }
 
             run_cmd(
                 [ $^X, 'Build', 'realclean', '--allow_mb_mismatch', 1 ] );
@@ -423,7 +427,17 @@ EOF
             unlink 'Makefile.old';
         }
 
+        if ( $run_failed ) {
+            # read "require" from META.yml instead
+            my $meta = load_yaml_file('META.yml') or confess_or_die "can't read META.yml: $!";
+            for my $type ( keys %$meta ) {
+                next unless $type =~ /requires|recommends/;
+                $require->{$type} = $meta->{$type};
+            }
+        }
+
         for my $type ( @types ) {
+            next unless $require->{$type};
             for my $module ( keys %{ $require->{$type} } ) {
                 $require->{$type}{$module}{version} =
                   delete $require->{$type}{$module};

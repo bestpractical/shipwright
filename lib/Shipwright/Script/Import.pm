@@ -327,7 +327,7 @@ sub _import_req {
         my @sources = readdir $d;
         close $d;
 
-        for my $type (qw/requires recommends build_requires test_requires/) {
+        for my $type (qw/requires configure_requires recommends build_requires test_requires/) {
             for my $module ( keys %{ $req->{$type} } ) {
                 my $dist = $map->{$module} || $module;
                 $dist =~ s/::/-/g;
