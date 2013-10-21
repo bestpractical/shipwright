@@ -1,5 +1,7 @@
 Revision history for Shipwright
 
+2.4.35
+
 2.4.34 Mon Oct 21 23:26:35 2013 +0800
 
 * handle special configure modules(Module::Build::Tiny)
