@@ -1,5 +1,7 @@
 Revision history for Shipwright
 
+2.4.36
+
 2.4.35 Thu Oct 24 23:46:03 CST 2013
 
 * handle compressed sources with "./" as the first file listed(#89729)
