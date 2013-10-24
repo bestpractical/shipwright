@@ -56,6 +56,8 @@ sub path {
     $ae->extract( to => $tmp_dir );
     my $files = $ae->files;
 
+    # 1st file in Crypt-DH-0.07.tar.gz is "./"
+    shift @$files if $files->[0] =~ /^\.[\/\\]$/;
     my $base_dir = $files->[0];
     # some compressed file has name like ./PerlImagick-6.67/
     $base_dir =~ s!^\.[/\\]!!;
