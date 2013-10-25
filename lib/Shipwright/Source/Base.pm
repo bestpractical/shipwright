@@ -197,8 +197,8 @@ sub _follow {
   # will omit features(..). we'll put deps in features(...) into recommends part
 
                 $makefile =~ s/^\s*requires(?!\w)/shipwright_requires/mg;
-                $makefile =~
-s/^\s*(?:build|configure)_requires(?!\w)/shipwright_build_requires/mg;
+                $makefile =~ s/^\s*build_requires(?!\w)/shipwright_build_requires/mg;
+                $makefile =~ s/^\s*configure_requires(?!\w)/shipwright_configure_requires/mg;
                 $makefile =~
                   s/^\s*test_requires(?!\w)/shipwright_test_requires/mg;
                 $makefile =~ s/^\s*recommends(?!\w)/shipwright_recommends/mg;
@@ -228,6 +228,11 @@ sub shipwright_requires {
 sub shipwright_build_requires {
     _shipwright_requires( 'build_requires', @_ == 1 ? ( @_, 0 ) : @_ );
     goto &build_requires;
+}
+
+sub shipwright_configure_requires {
+    _shipwright_requires( 'configure_requires', @_ == 1 ? ( @_, 0 ) : @_ );
+    goto &configure_requires;
 }
 
 sub shipwright_test_requires {
