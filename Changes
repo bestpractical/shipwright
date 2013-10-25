@@ -1,5 +1,7 @@
 Revision history for Shipwright
 
+2.4.37
+
 2.4.36 Sat Oct 26 07:56:06 CST 2013
 
 * separate configure_requires from build_requires for M:I based packages
