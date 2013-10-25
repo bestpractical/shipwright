@@ -410,15 +410,37 @@ EOF
                 run_cmd( [ $^X, 'Makefile.PL' ] )
                   if $? || !-e 'Makefile';
 
-                my ($source) = grep { /PREREQ_PM/ } read_file('Makefile');
+                my @makefile = read_file('Makefile');
+                my ($source) = grep { /PREREQ_PM/ } @makefile;
                 if ( $source && $source =~ /({.*})/ ) {
                     my $eval .= '$require = ' . $1;
                     $eval =~ s/([\w:]+)=>/'$1'=>/g;
                     eval "$eval;1" or confess_or_die "eval error: $@";    ## no critic
+
+                    for ( keys %$require ) {
+                        $require->{requires}{$_} = delete $require->{$_};
+                    }
                 }
 
-                for ( keys %$require ) {
-                    $require->{requires}{$_} = delete $require->{$_};
+                my %requires_map = (
+                    PREREQ_PM          => 'requires',
+                    BUILD_REQUIRES     => 'build_requires',
+                    TEST_REQUIRES      => 'test_requires',
+                    CONFIGURE_REQUIRES => 'configure_requires',
+                );
+
+                for my $item ( keys %requires_map ) {
+                    my ($source) = grep { /$item/ } @makefile;
+                    if ( $source && $source =~ /({.*})/ ) {
+                        my $tmp_requires;
+                        my $eval .= '$tmp_requires = ' . $1;
+                        $eval =~ s/([\w:]+)=>/'$1'=>/g;
+                        eval "$eval;1" or confess_or_die "eval error: $@";    ## no critic
+
+                        for ( keys %$tmp_requires ) {
+                            $require->{$requires_map{$item}}{$_} = delete $tmp_requires->{$_};
+                        }
+                    }
                 }
 
             }
