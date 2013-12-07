@@ -192,6 +192,11 @@ sub run {
                     }
                 }
                 else {
+                    local $ENV{SHIPWRIGHT_SOURCE_ROOT} = tempdir(
+                        'shipwright_source_XXXXXX',
+                        CLEANUP => 1,
+                        TMPDIR  => 1
+                    );
                     system(
                             "$0 import -r " 
                           . $self->repository
