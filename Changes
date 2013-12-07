@@ -1,6 +1,8 @@
 Revision history for Shipwright
 
-2.4.37
+2.4.37 Sat Dec  7 17:06:54 CST 2013
+
+* fix possible failures of command "update --follow" (#91220)
 
 2.4.36 Sat Oct 26 07:56:06 CST 2013
 
