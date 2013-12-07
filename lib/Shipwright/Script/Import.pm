@@ -237,7 +237,7 @@ sub run {
 
             my $branches =
               load_yaml_file( $shipwright->source->branches_path );
-            $branches ||= {} if
+            $branches ||= {};
 
             $self->log->fatal( "importing $name" );
             $shipwright->backend->import(
