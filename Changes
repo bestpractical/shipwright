@@ -1,6 +1,9 @@
 Revision history for Shipwright
 
-2.4.38
+2.4.38 Wed Dec 11 22:10:05 CST 2013
+
+* edge case fix("requires" is empty but "configure_requires" is not for
+  usual Makefile.PL)
 
 2.4.37 Sat Dec  7 17:06:54 CST 2013
 
