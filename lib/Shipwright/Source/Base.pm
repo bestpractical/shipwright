@@ -442,6 +442,7 @@ EOF
                         $eval =~ s/([\w:]+)=>/'$1'=>/g;
                         eval "$eval;1" or confess_or_die "eval error: $@";    ## no critic
 
+                        $require->{$requires_map{$item}} ||= {};
                         for ( keys %$tmp_requires ) {
                             $require->{$requires_map{$item}}{$_} = delete $tmp_requires->{$_};
                         }
