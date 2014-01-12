@@ -1,5 +1,7 @@
 Revision history for Shipwright
 
+2.4.40
+
 2.4.39 Sun Jan 12 10:34:35 CST 2014
 
 * in case some modules got removed from core(#91303)
