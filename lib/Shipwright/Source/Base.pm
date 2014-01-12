@@ -506,7 +506,8 @@ EOF
                 $version =~ s!^\D+!!; # some may contain '>' or '>=' 
                 if ( !$self->include_dual_lifed 
                     && Module::CoreList->first_release( $module, $version )
-                    && Module::CoreList->first_release( $module, $version ) <= $self->min_perl_version)
+                    && Module::CoreList->first_release( $module, $version ) <= $self->min_perl_version
+                    && ( !Module::CoreList->removed_from($module) || Module::CoreList->removed_from($module) > $self->min_perl_version) )
                 {
                     $self->log->info("skipping $module because it's in core");
                     delete $require->{$type}{$module};
