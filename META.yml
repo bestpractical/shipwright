@@ -10,7 +10,7 @@ configure_requires:
   ExtUtils::MakeMaker: 6.59
 distribution_type: module
 dynamic_config: 1
-generated_by: 'Module::Install version 1.06'
+generated_by: 'Module::Install version 1.14'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -42,7 +42,7 @@ requires:
   File::Temp: 0.18
   File::Which: 0
   IO::Uncompress::Bunzip2: 0
-  IO::Uncompress::RawInflate: 2.012
+  IO::Uncompress::RawInflate: '2.012'
   IPC::Run3: 0
   LWP::UserAgent: 0
   List::MoreUtils: 0
@@ -57,4 +57,4 @@ requires:
 resources:
   license: http://dev.perl.org/licenses/
   repository: git://github.com/bestpractical/shipwright.git
-version: 2.004040
+version: '2.004040'
