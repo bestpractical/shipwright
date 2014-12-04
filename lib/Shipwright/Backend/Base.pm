@@ -120,7 +120,10 @@ sub _install_module_build {
 # so here we do a maybe dangerous thing, hack Module::Metadata to not require
 # version 0.87+
 # so is Module::Build
-    my @files = catfile( $dir, 'inc', 'Module', 'Build', 'Version.pm' );
+    my @files;
+    if ( -e catfile( $dir, 'inc', 'Module', 'Build', 'Version.pm' ) ) {
+        push @files, catfile( $dir, 'inc', 'Module', 'Build', 'Version.pm' );
+    }
 
     if ( Module::Info->new_from_module('Module::Metadata') ) {
         copy( Module::Info->new_from_module('Module::Metadata')->file,
