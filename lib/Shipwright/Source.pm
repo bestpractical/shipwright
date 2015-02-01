@@ -107,8 +107,8 @@ sub type {
     # default is cpan module or distribution
     $$source =~ s/^cpan:(?!:\w+)//i;
 
-    return if $$source =~ /:/ && $$source !~ /::/;
-
+    # in case typos like IO:File
+    $$source =~ s/(?<!:):(?!:)/::/g;
 
     # if it's not a distribution name like
     # 'S/SU/SUNNAVY/IP-QQWry-v0.0.15.tar.gz', convert '-' to '::'.

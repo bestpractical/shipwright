@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 31;
+use Test::More;
 use Shipwright::Test;
 use Shipwright::Source;
 use File::Spec::Functions qw/catfile/;
@@ -32,7 +32,7 @@ for ( keys %source ) {
     }
 }
 
-my @invalid_sources = ( 'file:/tmp/ok', 'foo:bla', '' );
+my @invalid_sources = ( '' );
 
 for (@invalid_sources) {
     eval { my $source = Shipwright::Source->new( source => $_ ) };
@@ -42,3 +42,4 @@ for (@invalid_sources) {
 eval { my $source = Shipwright::Source->new };
 like( $@, qr/need source arg/, 'new need source arg' );
 
+done_testing;

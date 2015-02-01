@@ -8,13 +8,6 @@ if ( ! $ENV{SHIPWRIGHT_TEST_EXTRA} ) {
     plan skip_all => 'SHIPWRIGHT_TEST_EXTRA is not set';
 }
 
-if ( $^O =~ /MSWin/ ) {
-    plan tests => 132;
-}
-else {
-    plan tests => 136;
-}
-
 use Shipwright;
 use Shipwright::Util;
 use Shipwright::Test;
@@ -121,14 +114,6 @@ sub start_test {
             qr/need source arg/,
             'import without source ...'
         ],
-        [
-            [ 'import', 'foo:bar' ],
-            undef,
-            undef,
-            qr/invalid source: foo/,
-            'import with invalid source'
-        ],
-
         [
             [ 'import', 'file:t/hello/Foo-Bar-v0.01.tar.gz', '--no-follow' ],
             qr/successfully imported/,
@@ -361,3 +346,4 @@ qr/successfully set mandatory flags\s+mandatory flags of man1 are build/,
     }
 }
 
+done_testing;
