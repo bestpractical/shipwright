@@ -93,6 +93,10 @@ sub run {
         $compressed->run(@_);
     }
     elsif ( !$result &&  $self->source =~ /\S/ ) {
+        if ( Module::CoreList->is_core( $self->source )) {
+            $self->log->info("skipping dual lifed " . $self->source . " because can't find it on cpan any more");
+            return;
+        }
         my $error = q{invalid source: can't find '} . $self->source . q{'};
         if ( $self->version ) {
             $error .= ' version ' . $self->version;
