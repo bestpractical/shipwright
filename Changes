@@ -1,5 +1,7 @@
 Revision history for Shipwright
 
+2.4.42
+
 2.4.41 Sun Feb  1 13:31:40 CST 2015
 
 * automatically fix cpan module names like IO:File
