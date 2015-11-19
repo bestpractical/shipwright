@@ -160,7 +160,7 @@ We need to I<checkout> the repository into some directory first,
 then I<chdir> there, and run:
 (for FS backend, there's no need to checkout, just chdir to /tmp/foo ),
 
-$ ./bin/shipwright-builder --install-base /tmp/vessel
+    $ ./bin/shipwright-builder --install-base /tmp/vessel
 
 Run I<./bin/shipwright-builder --help> to see more options and
 I<./bin/shipwright-builder --advanced-help> to see even more options.
@@ -202,12 +202,13 @@ shipyard( i.e. "/tmp/foo" ) and ship it, though Shipwright supplies a
 convenient way too:
 
 Let's chdir to our shipyard first, then run:
-$ ./bin/shipwright-utility --generate-tar-file /tmp/shipyard.pl
+
+    $ ./bin/shipwright-utility --generate-tar-file /tmp/shipyard.pl
 
 The shipyard.pl is a shipyard perl script working like "shipwright-builder"
 but it's self contained, so you can build a vessel with shipyard.pl like this:
 
-$ perl /tmp/shipyard.pl --install-base /tmp/vessel
+    $ perl /tmp/shipyard.pl --install-base /tmp/vessel
 
 =head1 SEE ALSO
 

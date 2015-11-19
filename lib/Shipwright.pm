@@ -128,53 +128,53 @@ The idea of Shipwright is simple:
 
 After initializing a shipyard, the files in the repository are:
 
-bin/
-    # used for building, installing and testing
-     shipwright-builder
-    # a utility for doing things such as updating the build order
-     shipwright-utility
+  bin/
+      # used for building, installing and testing
+      shipwright-builder
+      # a utility for doing things such as updating the build order
+      shipwright-utility
 
-etc/
-    # wrapper for installed bin files, mainly for optimizing the environment
-     shipwright-script-wrapper
-    # wrapper for installed perl scripts
-    shipwright-perl-wrapper
-    # source files you can `source', for tcsh and bash, respectively.
-    # both will be installed to tools/
-    shipwright-source-tcsh, shipwright-source-bash
-    # utility which will be installed to tools/
-    shipwright-utility
-    # set env bat for windows
-    shipwright-windows-setenv.bat
+  etc/
+      # wrapper for installed bin files, mainly for optimizing the environment
+      shipwright-script-wrapper
+      # wrapper for installed perl scripts
+      shipwright-perl-wrapper
+      # source files you can `source', for tcsh and bash, respectively.
+      # both will be installed to tools/
+      shipwright-source-tcsh, shipwright-source-bash
+      # utility which will be installed to tools/
+      shipwright-utility
+      # set env bat for windows
+      shipwright-windows-setenv.bat
 
-inc/ # modules for shipwright itself
+  inc/ # modules for shipwright itself
 
-sources/      # all the sources live here
+  sources/      # all the sources live here
 
-scripts/    # all the build scripts and dependency hints live here
+  scripts/    # all the build scripts and dependency hints live here
 
-shipwright/
+  shipwright/
 
-    # branches note, see L<Shipwright::Manual::UsingBranches>
-    branches.yml
-    # flags note, see L<Shipwright::Manual::UsingFlags>
-    flags.yml		
-    # test failures note
-    known_test_failures.yml
-    # cpan dists' module => name map
-    map.yml
-    # the actual build order
-    order.yml
-    # reference count note
-    refs.yml
-    # non-cpan dists' name => url map
-    source.yml
-    # sources' version
-    version.yml
+      # branches note, see L<Shipwright::Manual::UsingBranches>
+      branches.yml
+      # flags note, see L<Shipwright::Manual::UsingFlags>
+      flags.yml
+      # test failures note
+      known_test_failures.yml
+      # cpan dists' module => name map
+      map.yml
+      # the actual build order
+      order.yml
+      # reference count note
+      refs.yml
+      # non-cpan dists' name => url map
+      source.yml
+      # sources' version
+      version.yml
 
-t/
-    # will run this if with --only-test when build
-    test
+  t/
+      # will run this if with --only-test when build
+      test
 
 =head3 shipyard after import
 
@@ -185,11 +185,11 @@ Under scripts/cpan-Acme-Hello there are two files: 'build' and 'require.yml'.
 
 =head4 build
 
-configure: %%PERL%% %%MODULE_BUILD_BEFORE_BUILD_PL%% Build.PL --install_base=%%INSTALL_BASE%% --install_path lib=%%INSTALL_BASE%%/lib/perl5 --install_path arch=%%INSTALL_BASE%%/lib/perl5
-make: %%PERL%% %%MODULE_BUILD_BEFORE_BUILD%% Build
-test: %%PERL%% %%MODULE_BUILD_BEFORE_BUILD%% Build test
-install: %%PERL%% %%MODULE_BUILD_BEFORE_BUILD%% Build install
-clean: %%PERL%% %%MODULE_BUILD_BEFORE_BUILD%% Build realclean
+  configure: %%PERL%% %%MODULE_BUILD_BEFORE_BUILD_PL%% Build.PL --install_base=%%INSTALL_BASE%% --install_path lib=%%INSTALL_BASE%%/lib/perl5 --install_path arch=%%INSTALL_BASE%%/lib/perl5
+  make: %%PERL%% %%MODULE_BUILD_BEFORE_BUILD%% Build
+  test: %%PERL%% %%MODULE_BUILD_BEFORE_BUILD%% Build test
+  install: %%PERL%% %%MODULE_BUILD_BEFORE_BUILD%% Build install
+  clean: %%PERL%% %%MODULE_BUILD_BEFORE_BUILD%% Build realclean
 
 Each line is of `type: command' format, and the command is executed line by
 line (which is also true for t/test).
@@ -199,21 +199,21 @@ customizing the build process for dists.
 
 =head4 require.yml
 
-build_requires: {}
-
-conflicts: {}
-
-recommends:
-  cpan-Locale-Maketext-Lexicon: 
-    version: 0.15
-requires: {}
+  build_requires: {}
+  
+  conflicts: {}
+  
+  recommends:
+    cpan-Locale-Maketext-Lexicon:
+      version: 0.15
+  requires: {}
 
 This file details the hints needed in order for Shipwright to create the
 right build order.
 
 =head4 vessel
 
-After the cmd `./bin/shipwright-builder --install-base /tmp/vessel`,
+After the cmd C<./bin/shipwright-builder --install-base /tmp/vessel>,
 we have a new directory structure which we call a I<vessel>(/tmp/vessel).
 
 =head1 SEE ALSO
